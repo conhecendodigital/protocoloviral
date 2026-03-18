@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { label: 'Meu Perfil', href: '/perfil', msIcon: 'person' },
   { label: 'Minha Jornada', href: '/jornada', msIcon: 'explore' },
   { label: 'Geradores', href: '/prompts', msIcon: 'auto_awesome' },
+  { label: 'Formatos', href: '/formatos', msIcon: 'movie_filter' },
   { label: 'Ganchos Virais', href: '/ganchos', msIcon: 'anchor' },
   { label: 'Rotina Semanal', href: '/rotina', msIcon: 'calendar_today' },
   { label: 'Stories', href: '/stories', msIcon: 'video_camera_front' },
