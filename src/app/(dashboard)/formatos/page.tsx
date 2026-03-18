@@ -172,9 +172,9 @@ export default function FormatosPage() {
           {!loading && formatos.length === 0 && (
             <div className="text-center py-20">
               <span className="material-symbols-outlined text-6xl text-slate-600 mb-4 block">movie_filter</span>
-              <h3 className="text-xl font-bold text-white mb-2">Nenhum formato ainda</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Em breve!</h3>
               <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed">
-                Os formatos aparecerão aqui quando forem adicionados via n8n ou diretamente no Supabase.
+                Vamos adicionar novos formatos em breve para você modelar conteúdos virais. 🚀
               </p>
             </div>
           )}
