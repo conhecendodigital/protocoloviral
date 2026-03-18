@@ -9,12 +9,30 @@ interface Formato {
   titulo: string
   plataforma: string
   tipo: string
+  nicho: string
   descricao: string | null
   video_url: string
   link_original: string | null
   estudo: string
   destaque: boolean
   created_at: string
+}
+
+// Emoji map for nichos
+const nichoEmojis: Record<string, string> = {
+  'Empresas': '🏢',
+  'Vlog': '🎥',
+  'Educação': '📚',
+  'Fitness': '💪',
+  'Comida': '🍕',
+  'Tech': '💻',
+  'Moda': '👗',
+  'Beleza': '💄',
+  'Finanças': '💰',
+  'Humor': '😂',
+  'Lifestyle': '✨',
+  'Saúde': '🏥',
+  'Todos': '🔥',
 }
 
 export default function FormatosPage() {
@@ -39,25 +57,22 @@ export default function FormatosPage() {
     fetchFormatos()
   }, [supabase])
 
-  const plataformas = useMemo(() => {
-    const unique = [...new Set(formatos.map(f => f.plataforma))]
+  // Dynamic nicho filters based on data
+  const nichos = useMemo(() => {
+    const unique = [...new Set(formatos.map(f => f.nicho).filter(Boolean))]
     return ['Todos', ...unique]
   }, [formatos])
 
   const formatosFiltrados = filtroAtivo === 'Todos'
     ? formatos
-    : formatos.filter(f => f.plataforma === filtroAtivo)
+    : formatos.filter(f => f.nicho === filtroAtivo)
 
-  // Extract Google Drive file ID from various URL formats
+  // Extract Google Drive file ID
   const getDriveFileId = (url: string): string | null => {
-    // Match: drive.google.com/uc?export=download&id=FILE_ID
     const ucMatch = url.match(/drive\.google\.com\/uc\?.*id=([^&\s]+)/)
     if (ucMatch) return ucMatch[1]
-    
-    // Match: drive.google.com/file/d/FILE_ID/...
     const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^/\s]+)/)
     if (fileMatch) return fileMatch[1]
-    
     return null
   }
 
@@ -68,15 +83,14 @@ export default function FormatosPage() {
     return 'embed'
   }
 
-  // Render video based on type
-  const renderVideo = (url: string, titulo: string) => {
+  // Render video — autoplay param for modal
+  const renderVideo = (url: string, titulo: string, autoplay = false) => {
     const type = getVideoType(url)
     
     if (type === 'drive') {
       const fileId = getDriveFileId(url)
-      const embedUrl = fileId 
-        ? `https://drive.google.com/file/d/${fileId}/preview`
-        : url
+      const base = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : url
+      const embedUrl = autoplay ? `${base}` : base // Drive preview auto-plays by default
       return (
         <iframe
           src={embedUrl}
@@ -94,6 +108,7 @@ export default function FormatosPage() {
         <video
           src={url}
           controls
+          autoPlay={autoplay}
           preload="metadata"
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
@@ -101,9 +116,11 @@ export default function FormatosPage() {
       )
     }
     
+    const separator = url.includes('?') ? '&' : '?'
+    const embedUrl = autoplay ? `${url}${separator}autoplay=1` : url
     return (
       <iframe
-        src={url}
+        src={embedUrl}
         className="absolute inset-0 w-full h-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
@@ -132,11 +149,11 @@ export default function FormatosPage() {
               transition={{ delay: 0.1 }}
               className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed"
             >
-              Análises semanais dos formatos mais eficientes do Instagram e TikTok.
+              Análises semanais dos formatos mais eficientes por nicho.
             </motion.p>
           </section>
 
-          {/* Platform Filters */}
+          {/* Nicho Filters */}
           {!loading && formatos.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -144,20 +161,18 @@ export default function FormatosPage() {
               transition={{ delay: 0.2 }}
               className="flex flex-wrap items-center justify-center gap-3"
             >
-              {plataformas.map(plat => (
+              {nichos.map(nicho => (
                 <button
-                  key={plat}
-                  onClick={() => setFiltroAtivo(plat)}
-                  className={`flex items-center gap-2 text-xs py-2.5 px-6 rounded-full font-bold uppercase tracking-widest transition-all ${
-                    filtroAtivo === plat
+                  key={nicho}
+                  onClick={() => setFiltroAtivo(nicho)}
+                  className={`flex items-center gap-2 text-xs py-2.5 px-5 rounded-full font-bold uppercase tracking-widest transition-all ${
+                    filtroAtivo === nicho
                       ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20'
                       : 'glass-card text-slate-300 hover:text-white hover:border-white/20'
                   }`}
                 >
-                  {plat === 'Instagram' && <span className="text-sm">📸</span>}
-                  {plat === 'TikTok' && <span className="text-sm">🎵</span>}
-                  {plat === 'Todos' && <span className="text-sm">🔥</span>}
-                  {plat}
+                  <span className="text-sm">{nichoEmojis[nicho] || '📁'}</span>
+                  {nicho}
                 </button>
               ))}
             </motion.div>
@@ -191,7 +206,8 @@ export default function FormatosPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: Math.min(i * 0.08, 0.3) }}
-                  className="glass-card rounded-2xl overflow-hidden group relative"
+                  className="glass-card rounded-2xl overflow-hidden group relative cursor-pointer"
+                  onClick={() => setModalFormato(formato)}
                 >
                   {/* Destaque Badge */}
                   {formato.destaque && (
@@ -201,15 +217,24 @@ export default function FormatosPage() {
                     </div>
                   )}
 
-                  {/* Video — cropped in card, fullscreen on click */}
-                  <div className="relative w-full aspect-[9/16] max-h-[350px] bg-black/50 overflow-hidden rounded-t-xl">
+                  {/* Video thumbnail — cropped, click opens modal */}
+                  <div className="relative w-full aspect-[9/16] max-h-[350px] bg-black/50 overflow-hidden rounded-t-xl pointer-events-none">
                     {renderVideo(formato.video_url, formato.titulo)}
+                    {/* Play overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
+                      <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-all group-hover:scale-110">
+                        <span className="material-symbols-outlined text-white text-3xl ml-1">play_arrow</span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Content */}
                   <div className="p-6 space-y-4">
-                    {/* Platform + Type + Date */}
+                    {/* Nicho + Type + Date */}
                     <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-[10px] px-2.5 py-1 rounded font-black tracking-widest uppercase text-purple-400 bg-purple-500/10">
+                        {nichoEmojis[formato.nicho] || '📁'} {formato.nicho || 'Geral'}
+                      </span>
                       <span className={`text-[10px] px-2.5 py-1 rounded font-black tracking-widest uppercase ${
                         formato.plataforma === 'Instagram'
                           ? 'text-pink-400 bg-pink-500/10'
@@ -230,29 +255,13 @@ export default function FormatosPage() {
 
                     {/* Description */}
                     {formato.descricao && (
-                      <p className="text-sm text-slate-400 leading-relaxed">{formato.descricao}</p>
+                      <p className="text-sm text-slate-400 leading-relaxed line-clamp-2">{formato.descricao}</p>
                     )}
 
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap items-center gap-3 pt-2">
-                      {formato.link_original && (
-                        <a
-                          href={formato.link_original}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-xs text-slate-300 bg-white/5 py-2.5 px-4 rounded-xl border border-white/10 hover:bg-white/10 hover:text-white transition-all font-semibold"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">open_in_new</span>
-                          Ver Original
-                        </a>
-                      )}
-                      <button
-                        onClick={() => setModalFormato(formato)}
-                        className="flex items-center gap-2 text-xs py-2.5 px-4 rounded-xl font-bold transition-all bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/30 hover:bg-[#0ea5e9]/20"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">science</span>
-                        Ver Estudo
-                      </button>
+                    {/* CTA */}
+                    <div className="flex items-center gap-2 text-xs text-[#0ea5e9] font-bold pt-1">
+                      <span className="material-symbols-outlined text-[16px]">play_circle</span>
+                      Assistir e ver estudo completo
                     </div>
                   </div>
                 </motion.div>
@@ -264,7 +273,7 @@ export default function FormatosPage() {
           {!loading && formatos.length > 0 && formatosFiltrados.length === 0 && (
             <div className="text-center py-20">
               <span className="material-symbols-outlined text-5xl text-slate-600 mb-4 block">movie_filter</span>
-              <p className="text-slate-400 text-lg">Nenhum formato encontrado para esta plataforma.</p>
+              <p className="text-slate-400 text-lg">Nenhum formato encontrado para este nicho.</p>
               <button
                 onClick={() => setFiltroAtivo('Todos')}
                 className="mt-4 text-[#0ea5e9] text-sm font-bold hover:underline"
@@ -278,10 +287,11 @@ export default function FormatosPage() {
         </div>
       </main>
 
-      {/* ===== STUDY MODAL (responsive popup) ===== */}
+      {/* ===== STUDY MODAL (responsive popup) — opens on card click ===== */}
       <AnimatePresence>
         {modalFormato && (
           <motion.div
+            key={modalFormato.id}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -313,6 +323,9 @@ export default function FormatosPage() {
                 <div className="px-6 py-4 sm:py-5 flex items-start gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <span className="text-[10px] px-2 py-0.5 rounded font-black tracking-widest uppercase text-purple-400 bg-purple-500/10">
+                        {nichoEmojis[modalFormato.nicho] || '📁'} {modalFormato.nicho || 'Geral'}
+                      </span>
                       <span className={`text-[10px] px-2 py-0.5 rounded font-black tracking-widest uppercase ${
                         modalFormato.plataforma === 'Instagram'
                           ? 'text-pink-400 bg-pink-500/10'
@@ -339,9 +352,9 @@ export default function FormatosPage() {
 
               {/* Modal Body (scrollable) */}
               <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
-                {/* Video (vertical 9:16) */}
+                {/* Video (autoplay in modal) */}
                 <div className="relative w-full max-w-[320px] mx-auto aspect-[9/16] rounded-xl overflow-hidden bg-black/50 mb-6">
-                  {renderVideo(modalFormato.video_url, modalFormato.titulo)}
+                  {renderVideo(modalFormato.video_url, modalFormato.titulo, true)}
                 </div>
 
                 {/* Link Original */}
