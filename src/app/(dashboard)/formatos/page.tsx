@@ -16,11 +16,12 @@ interface Formato {
   estudo: string
   destaque: boolean
   curtidas: number | null
-  visualizacoes: number | null
+  views: number | null
   reproducoes: number | null
   comentarios: number | null
-  duracao_segundos: number | null
+  duracao: number | null
   engajamento: number | null
+  username: string | null
   created_at: string
 }
 
@@ -275,13 +276,18 @@ export default function FormatosPage() {
                     {/* Title */}
                     <h3 className="font-bold text-xl tracking-tight text-white leading-tight">{formato.titulo}</h3>
 
+                    {/* Username */}
+                    {formato.username && (
+                      <p className="text-xs text-slate-500 font-medium">@{formato.username}</p>
+                    )}
+
                     {/* Description */}
                     {formato.descricao && (
                       <p className="text-sm text-slate-400 leading-relaxed line-clamp-2">{formato.descricao}</p>
                     )}
 
                     {/* Metrics Bar */}
-                    {(formato.curtidas || formato.visualizacoes || formato.engajamento) && (
+                    {(formato.curtidas || formato.views || formato.engajamento) && (
                       <div className="flex items-center gap-4 pt-1 text-[11px] text-slate-400">
                         {formato.curtidas != null && (
                           <span className="flex items-center gap-1">
@@ -289,10 +295,10 @@ export default function FormatosPage() {
                             {formatNumber(formato.curtidas)}
                           </span>
                         )}
-                        {formato.visualizacoes != null && (
+                        {formato.views != null && (
                           <span className="flex items-center gap-1">
                             <span className="material-symbols-outlined text-[14px] text-blue-400">visibility</span>
-                            {formatNumber(formato.visualizacoes)}
+                            {formatNumber(formato.views)}
                           </span>
                         )}
                         {formato.comentarios != null && (
@@ -301,10 +307,10 @@ export default function FormatosPage() {
                             {formatNumber(formato.comentarios)}
                           </span>
                         )}
-                        {formato.duracao_segundos != null && (
+                        {formato.duracao != null && (
                           <span className="flex items-center gap-1">
                             <span className="material-symbols-outlined text-[14px] text-slate-400">timer</span>
-                            {formatDuration(formato.duracao_segundos)}
+                            {formatDuration(formato.duracao)}
                           </span>
                         )}
                         {formato.engajamento != null && (
@@ -429,7 +435,7 @@ export default function FormatosPage() {
                 )}
 
                 {/* Metrics Grid */}
-                {(modalFormato.curtidas || modalFormato.visualizacoes || modalFormato.engajamento) && (
+                {(modalFormato.curtidas || modalFormato.views || modalFormato.engajamento) && (
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-6">
                     {modalFormato.curtidas != null && (
                       <div className="glass-card rounded-xl p-3 text-center">
@@ -438,10 +444,10 @@ export default function FormatosPage() {
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Curtidas</p>
                       </div>
                     )}
-                    {modalFormato.visualizacoes != null && (
+                    {modalFormato.views != null && (
                       <div className="glass-card rounded-xl p-3 text-center">
                         <span className="material-symbols-outlined text-blue-400 text-xl block mb-1">visibility</span>
-                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.visualizacoes)}</p>
+                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.views)}</p>
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Views</p>
                       </div>
                     )}
@@ -459,10 +465,10 @@ export default function FormatosPage() {
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Coment.</p>
                       </div>
                     )}
-                    {modalFormato.duracao_segundos != null && (
+                    {modalFormato.duracao != null && (
                       <div className="glass-card rounded-xl p-3 text-center">
                         <span className="material-symbols-outlined text-slate-400 text-xl block mb-1">timer</span>
-                        <p className="text-white font-bold text-sm">{formatDuration(modalFormato.duracao_segundos)}</p>
+                        <p className="text-white font-bold text-sm">{formatDuration(modalFormato.duracao)}</p>
                         <p className="text-[10px] text-slate-500 uppercase tracking-wider">Duração</p>
                       </div>
                     )}
