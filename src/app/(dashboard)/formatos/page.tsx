@@ -61,13 +61,6 @@ export default function FormatosPage() {
     return null
   }
 
-  // Convert Drive URL to streamable URL
-  const getDriveStreamUrl = (url: string): string => {
-    const fileId = getDriveFileId(url)
-    if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}`
-    return url
-  }
-
   // Detect URL type
   const getVideoType = (url: string): 'drive' | 'direct' | 'embed' => {
     if (url.includes('drive.google.com')) return 'drive'
@@ -76,17 +69,22 @@ export default function FormatosPage() {
   }
 
   // Render video based on type
-  const renderVideo = (url: string, titulo: string, className: string = '') => {
+  const renderVideo = (url: string, titulo: string) => {
     const type = getVideoType(url)
     
     if (type === 'drive') {
+      const fileId = getDriveFileId(url)
+      const embedUrl = fileId 
+        ? `https://drive.google.com/file/d/${fileId}/preview`
+        : url
       return (
-        <video
-          src={getDriveStreamUrl(url)}
-          controls
-          preload="metadata"
-          playsInline
-          className={`absolute inset-0 w-full h-full object-cover ${className}`}
+        <iframe
+          src={embedUrl}
+          className="absolute inset-0 w-full h-full"
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+          title={titulo}
+          style={{ border: 'none' }}
         />
       )
     }
@@ -98,7 +96,7 @@ export default function FormatosPage() {
           controls
           preload="metadata"
           playsInline
-          className={`absolute inset-0 w-full h-full object-cover ${className}`}
+          className="absolute inset-0 w-full h-full object-cover"
         />
       )
     }
@@ -106,7 +104,7 @@ export default function FormatosPage() {
     return (
       <iframe
         src={url}
-        className={`absolute inset-0 w-full h-full ${className}`}
+        className="absolute inset-0 w-full h-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         title={titulo}
@@ -203,8 +201,8 @@ export default function FormatosPage() {
                     </div>
                   )}
 
-                  {/* Video (vertical 9:16 — 1080x1920) */}
-                  <div className="relative w-full aspect-[9/16] bg-black/50 overflow-hidden">
+                  {/* Video — cropped in card, fullscreen on click */}
+                  <div className="relative w-full aspect-[9/16] max-h-[350px] bg-black/50 overflow-hidden rounded-t-xl">
                     {renderVideo(formato.video_url, formato.titulo)}
                   </div>
 
