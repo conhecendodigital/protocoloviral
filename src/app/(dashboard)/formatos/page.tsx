@@ -15,7 +15,29 @@ interface Formato {
   link_original: string | null
   estudo: string
   destaque: boolean
+  curtidas: number | null
+  visualizacoes: number | null
+  reproducoes: number | null
+  comentarios: number | null
+  duracao_segundos: number | null
+  engajamento: number | null
   created_at: string
+}
+
+// Format large numbers (e.g., 52977 -> 52.9K)
+const formatNumber = (n: number | null): string => {
+  if (!n) return '0'
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`
+  return n.toString()
+}
+
+// Format duration (33.066 -> 0:33)
+const formatDuration = (s: number | null): string => {
+  if (!s) return '0:00'
+  const min = Math.floor(s / 60)
+  const sec = Math.floor(s % 60)
+  return `${min}:${sec.toString().padStart(2, '0')}`
 }
 
 // Emoji map for nichos
@@ -258,6 +280,42 @@ export default function FormatosPage() {
                       <p className="text-sm text-slate-400 leading-relaxed line-clamp-2">{formato.descricao}</p>
                     )}
 
+                    {/* Metrics Bar */}
+                    {(formato.curtidas || formato.visualizacoes || formato.engajamento) && (
+                      <div className="flex items-center gap-4 pt-1 text-[11px] text-slate-400">
+                        {formato.curtidas != null && (
+                          <span className="flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px] text-red-400">favorite</span>
+                            {formatNumber(formato.curtidas)}
+                          </span>
+                        )}
+                        {formato.visualizacoes != null && (
+                          <span className="flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px] text-blue-400">visibility</span>
+                            {formatNumber(formato.visualizacoes)}
+                          </span>
+                        )}
+                        {formato.comentarios != null && (
+                          <span className="flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px] text-amber-400">chat_bubble</span>
+                            {formatNumber(formato.comentarios)}
+                          </span>
+                        )}
+                        {formato.duracao_segundos != null && (
+                          <span className="flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px] text-slate-400">timer</span>
+                            {formatDuration(formato.duracao_segundos)}
+                          </span>
+                        )}
+                        {formato.engajamento != null && (
+                          <span className="flex items-center gap-1 ml-auto font-bold text-green-400">
+                            <span className="material-symbols-outlined text-[14px]">trending_up</span>
+                            {formato.engajamento.toFixed(2)}%
+                          </span>
+                        )}
+                      </div>
+                    )}
+
                     {/* CTA */}
                     <div className="flex items-center gap-2 text-xs text-[#0ea5e9] font-bold pt-1">
                       <span className="material-symbols-outlined text-[16px]">play_circle</span>
@@ -368,6 +426,54 @@ export default function FormatosPage() {
                     <span className="material-symbols-outlined text-[16px]">open_in_new</span>
                     Ver Original no {modalFormato.plataforma}
                   </a>
+                )}
+
+                {/* Metrics Grid */}
+                {(modalFormato.curtidas || modalFormato.visualizacoes || modalFormato.engajamento) && (
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-6">
+                    {modalFormato.curtidas != null && (
+                      <div className="glass-card rounded-xl p-3 text-center">
+                        <span className="material-symbols-outlined text-red-400 text-xl block mb-1">favorite</span>
+                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.curtidas)}</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Curtidas</p>
+                      </div>
+                    )}
+                    {modalFormato.visualizacoes != null && (
+                      <div className="glass-card rounded-xl p-3 text-center">
+                        <span className="material-symbols-outlined text-blue-400 text-xl block mb-1">visibility</span>
+                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.visualizacoes)}</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Views</p>
+                      </div>
+                    )}
+                    {modalFormato.reproducoes != null && (
+                      <div className="glass-card rounded-xl p-3 text-center">
+                        <span className="material-symbols-outlined text-purple-400 text-xl block mb-1">play_circle</span>
+                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.reproducoes)}</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Plays</p>
+                      </div>
+                    )}
+                    {modalFormato.comentarios != null && (
+                      <div className="glass-card rounded-xl p-3 text-center">
+                        <span className="material-symbols-outlined text-amber-400 text-xl block mb-1">chat_bubble</span>
+                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.comentarios)}</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Coment.</p>
+                      </div>
+                    )}
+                    {modalFormato.duracao_segundos != null && (
+                      <div className="glass-card rounded-xl p-3 text-center">
+                        <span className="material-symbols-outlined text-slate-400 text-xl block mb-1">timer</span>
+                        <p className="text-white font-bold text-sm">{formatDuration(modalFormato.duracao_segundos)}</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Duração</p>
+                      </div>
+                    )}
+                    {modalFormato.engajamento != null && (
+                      <div className="glass-card rounded-xl p-3 text-center border border-green-500/20">
+                        <span className="material-symbols-outlined text-green-400 text-xl block mb-1">trending_up</span>
+                        <p className="text-green-400 font-bold text-sm">{modalFormato.engajamento.toFixed(2)}%</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Engaj.</p>
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* Study Terminal */}
