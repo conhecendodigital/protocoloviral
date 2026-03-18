@@ -1,28 +1,30 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getNivelByXP, getProgressoNivel } from '@/data/niveis'
 import { ACHIEVEMENTS } from '@/data/achievements'
 
-export function useGamification(xp: number = 0, conquistas: string[] = []) {
+export function useGamification(userId: string | undefined, xp: number = 0, conquistas: string[] = []) {
   const [currentXp, setCurrentXp] = useState(xp)
   const [currentConquistas, setCurrentConquistas] = useState<string[]>(conquistas)
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   const nivel = getNivelByXP(currentXp)
   const progresso = getProgressoNivel(currentXp)
 
-  const addXp = useCallback(async (userId: string, amount: number) => {
+  const addXp = useCallback(async (amount: number) => {
+    if (!userId) return
     setCurrentXp(prev => prev + amount)
     try {
       await supabase.rpc('add_xp', { p_user_id: userId, p_amount: amount })
     } catch (e) {
       console.error('Erro ao adicionar XP:', e)
     }
-  }, [supabase])
+  }, [supabase, userId])
 
-  const unlockAchievement = useCallback(async (userId: string, key: string) => {
+  const unlockAchievement = useCallback(async (key: string) => {
+    if (!userId) return false
     if (currentConquistas.includes(key)) return false
 
     const achievement = ACHIEVEMENTS[key]
@@ -42,7 +44,7 @@ export function useGamification(xp: number = 0, conquistas: string[] = []) {
     }
 
     return true
-  }, [currentConquistas, supabase])
+  }, [currentConquistas, supabase, userId])
 
   const hasAchievement = useCallback((key: string) => {
     return currentConquistas.includes(key)

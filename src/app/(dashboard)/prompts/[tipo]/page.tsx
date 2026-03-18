@@ -64,8 +64,20 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
     setGenerated(true)
   }
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(prompt)
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(prompt)
+    } catch {
+      // Fallback for non-HTTPS environments
+      const textarea = document.createElement('textarea')
+      textarea.value = prompt
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textarea)
+    }
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }

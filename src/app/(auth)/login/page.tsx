@@ -59,45 +59,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative w-full h-full bg-black text-slate-100 flex items-center justify-center overflow-auto py-8">
-      <style dangerouslySetInnerHTML={{__html: `
-        .glow-sphere-sky {
-          background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, rgba(14, 165, 233, 0) 70%);
-          filter: blur(80px);
-        }
-        .glow-sphere-blue {
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 70%);
-          filter: blur(80px);
-        }
-        .glass-card-login {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(40px);
-          -webkit-backdrop-filter: blur(40px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .shimmer-btn-auth {
-          position: relative;
-          overflow: hidden;
-          background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
-        }
-        .shimmer-btn-auth::after {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: linear-gradient(
-            to bottom right,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,0) 40%,
-            rgba(255,255,255,0.3) 50%,
-            rgba(255,255,255,0) 60%,
-            rgba(255,255,255,0) 100%
-          );
-          transform: rotate(30deg);
-          pointer-events: none;
-        }
-      `}} />
 
       {/* Immersive Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">

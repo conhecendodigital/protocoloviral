@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# stitch html exports (debug/design files)
+stitch_*.html
+stitch_export/
+
+# temp files
+temp/

@@ -1,14 +1,29 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+
+/** Whitelist of fields the user is allowed to auto-save */
+const EDITABLE_FIELDS = new Set([
+  'nicho', 'assunto', 'formacoes', 'resultado', 'diferencial',
+  'publico', 'dor', 'tentou', 'concorrentes', 'proposito',
+  'receio', 'tempo', 'naoquer',
+  'resposta1', 'resposta2', 'resposta3', 'resposta4', 'resposta5',
+  'ideia_roteiro', 'produto_venda',
+])
 
 export function useAutoSave(userId: string | undefined) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   const saveField = useCallback(async (fieldName: string, value: string) => {
     if (!userId) return false
+
+    // Security: block writes to non-whitelisted fields (xp, nivel, etc.)
+    if (!EDITABLE_FIELDS.has(fieldName)) {
+      console.warn(`[useAutoSave] Blocked write to non-editable field: "${fieldName}"`)
+      return false
+    }
 
     try {
       const updateData: Record<string, string> = {}

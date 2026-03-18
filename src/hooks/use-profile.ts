@@ -1,14 +1,23 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/types/profile'
+
+/** Whitelist of fields the user is allowed to edit */
+const EDITABLE_FIELDS = new Set([
+  'nicho', 'assunto', 'formacoes', 'resultado', 'diferencial',
+  'publico', 'dor', 'tentou', 'concorrentes', 'proposito',
+  'receio', 'tempo', 'naoquer',
+  'resposta1', 'resposta2', 'resposta3', 'resposta4', 'resposta5',
+  'ideia_roteiro', 'produto_venda',
+])
 
 export function useProfile() {
   const [profile, setProfile] = useState<Partial<Profile> | null>(null)
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | undefined>()
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   const fetchProfile = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser()
@@ -37,6 +46,12 @@ export function useProfile() {
 
   const updateField = useCallback(async (field: string, value: string) => {
     if (!userId) return
+    // Security: only allow whitelisted fields
+    if (!EDITABLE_FIELDS.has(field)) {
+      console.warn(`[useProfile] Blocked write to non-editable field: "${field}"`)
+      return
+    }
+
     setProfile(prev => prev ? { ...prev, [field]: value } : null)
 
     await supabase
