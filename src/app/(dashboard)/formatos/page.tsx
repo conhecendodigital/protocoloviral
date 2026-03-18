@@ -203,8 +203,8 @@ export default function FormatosPage() {
                     </div>
                   )}
 
-                  {/* Video (vertical 9:16) */}
-                  <div className="relative w-full aspect-[9/16] max-h-[400px] bg-black/50 overflow-hidden">
+                  {/* Video (vertical 9:16 — 1080x1920) */}
+                  <div className="relative w-full aspect-[9/16] bg-black/50 overflow-hidden">
                     {renderVideo(formato.video_url, formato.titulo)}
                   </div>
 
