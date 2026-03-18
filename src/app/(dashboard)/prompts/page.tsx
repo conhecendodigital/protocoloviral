@@ -1,0 +1,127 @@
+'use client'
+
+
+import { PROMPT_CONFIGS, type PromptType } from '@/types/prompt'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+
+const PROMPT_ORDER: PromptType[] = ['clareza', 'persona', 'ideias', 'roteiro', 'vendas']
+
+const COLORS: Record<PromptType, string> = {
+  clareza: 'from-sky-500 to-cyan-400',
+  persona: 'from-violet-500 to-purple-400',
+  ideias: 'from-amber-500 to-yellow-400',
+  roteiro: 'from-emerald-500 to-green-400',
+  vendas: 'from-rose-500 to-pink-400',
+}
+
+const BORDER_COLORS: Record<PromptType, string> = {
+  clareza: 'border-sky-500/30 hover:border-sky-500/60',
+  persona: 'border-violet-500/30 hover:border-violet-500/60',
+  ideias: 'border-amber-500/30 hover:border-amber-500/60',
+  roteiro: 'border-emerald-500/30 hover:border-emerald-500/60',
+  vendas: 'border-rose-500/30 hover:border-rose-500/60',
+}
+
+const GLOW_COLORS: Record<PromptType, string> = {
+  clareza: 'shadow-sky-500/20',
+  persona: 'shadow-violet-500/20',
+  ideias: 'shadow-amber-500/20',
+  roteiro: 'shadow-emerald-500/20',
+  vendas: 'shadow-rose-500/20',
+}
+
+export default function PromptsIndexPage() {
+  return (
+    <>
+
+      <main className="flex-1 flex flex-col items-center w-full relative z-10 overflow-y-auto custom-scrollbar">
+        <div className="w-full max-w-5xl px-6 lg:px-8 py-8 md:py-12 pb-24">
+
+          {/* Page Header */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#0ea5e9] to-indigo-600 flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.3)]">
+                <span className="material-symbols-outlined text-white text-3xl">auto_awesome</span>
+              </div>
+              <div>
+                <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Geradores de Prompt</h1>
+                <p className="text-[#0ea5e9] font-medium mt-1">Escolha o gerador que deseja utilizar</p>
+              </div>
+            </div>
+            <p className="text-slate-400 max-w-2xl leading-relaxed mt-4">
+              Os 5 geradores funcionam em sequência — comece pelo <strong className="text-white">Prompt 1 (Clareza)</strong> para definir 
+              seu posicionamento, depois avance para os próximos. Cada gerador usa os dados do seu perfil para 
+              criar prompts totalmente personalizados.
+            </p>
+          </motion.div>
+
+          {/* Pipeline Visual */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {PROMPT_ORDER.map((tipo, i) => {
+              const config = PROMPT_CONFIGS[tipo]
+              const hasDeps = config.dependencias.length > 0
+
+              return (
+                <motion.div
+                  key={tipo}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <Link
+                    href={`/prompts/${tipo}`}
+                    className={`group block glass-card rounded-3xl p-6 border ${BORDER_COLORS[tipo]} transition-all duration-300 hover:shadow-lg ${GLOW_COLORS[tipo]} hover:-translate-y-1 relative overflow-hidden h-full`}
+                  >
+                    {/* Glow blob on hover */}
+                    <div className={`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br ${COLORS[tipo]} opacity-0 group-hover:opacity-10 rounded-full blur-3xl transition-opacity duration-500 pointer-events-none`}></div>
+
+                    <div className="relative z-10">
+                      {/* Number badge + emoji */}
+                      <div className="flex items-center justify-between mb-5">
+                        <div className={`size-12 rounded-xl bg-gradient-to-br ${COLORS[tipo]} flex items-center justify-center shadow-lg ${GLOW_COLORS[tipo]}`}>
+                          <span className="text-2xl">{config.icone}</span>
+                        </div>
+                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                          Prompt {config.numero}
+                        </span>
+                      </div>
+
+                      {/* Title & Subtitle */}
+                      <h3 className="text-lg font-bold text-white tracking-tight mb-1 group-hover:text-white/90 transition-colors">
+                        {config.titulo}
+                      </h3>
+                      <p className="text-sm text-[#0ea5e9] font-semibold mb-3">{config.subtitulo}</p>
+                      
+                      {/* Description */}
+                      <p className="text-xs text-slate-400 leading-relaxed mb-5">
+                        {config.descricao}
+                      </p>
+
+                      {/* Dependencies */}
+                      {hasDeps && (
+                        <div className="flex items-center gap-2 mb-4">
+                          <span className="material-symbols-outlined text-slate-600 text-sm">link</span>
+                          <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+                            Requer: {config.dependencias.map(d => PROMPT_CONFIGS[d].titulo).join(', ')}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* CTA */}
+                      <div className={`flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r ${COLORS[tipo]} opacity-80 group-hover:opacity-100 transition-opacity`}>
+                        <span className="text-sm font-bold text-white">Abrir Gerador</span>
+                        <span className="material-symbols-outlined text-white text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              )
+            })}
+          </div>
+
+        </div>
+      </main>
+    </>
+  )
+}

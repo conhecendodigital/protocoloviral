@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Banco de Ganchos Virais - Mapa do Engajamento</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0ea5e9",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#000000",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            background-color: #000000;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-header {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .shimmer-btn {
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .tool-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.3);
+        }
+        .text-gradient-sky {
+            background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white min-h-screen">
+<!-- Background Elements -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-500/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-blue-600/10 rounded-full blur-[120px]"></div>
+</div>
+<div class="relative z-10 flex h-screen overflow-hidden">
+<!-- Sidebar Navigation (Matching SCREEN_21) -->
+<aside class="w-20 lg:w-72 flex flex-col border-r border-white/5 bg-black/50 backdrop-blur-md shrink-0">
+<div class="p-8 flex items-center gap-3">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined">map</span>
+</div>
+<span class="font-bold text-lg tracking-tight hidden lg:block">Mapa do Engajamento</span>
+</div>
+<nav class="flex-1 px-6 space-y-2 py-4">
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-medium hidden lg:block text-sm">Home</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-medium hidden lg:block text-sm">Jornada</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-medium hidden lg:block text-sm">Geradores</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl bg-primary/20 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">anchor</span>
+<span class="font-medium hidden lg:block text-sm font-bold">Ganchos</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">video_camera_front</span>
+<span class="font-medium hidden lg:block text-sm">Stories</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-medium hidden lg:block text-sm">Rotina</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-medium hidden lg:block text-sm">Analisador</span>
+</a>
+</nav>
+<div class="p-6 mt-auto">
+<div class="bg-white/5 p-6 rounded-3xl hidden lg:block border border-white/5 mb-6">
+<p class="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-2">Suporte</p>
+<p class="text-xs text-slate-400 leading-relaxed mb-4">Precisa de ajuda com sua estratégia?</p>
+<button class="text-xs font-bold text-white flex items-center gap-1 hover:underline">
+                        Abrir Ticket <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<div class="flex items-center gap-3 lg:px-2">
+<div class="size-10 rounded-full bg-cover bg-center ring-2 ring-primary/20" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCJ9eL2VlvHNN8lzU9RPSkSzDs8ByFtzhLzGfIl1wOou7HchU5h5A3TefPkGj-LQwZ6Zs4dxRpAh4pp-4kei3GdJoJxBCYUBAuFDMkDQtfXyJAm1kE9r_OHplrjyXzWj5rv9ByuPEvwK4eY0tTidn7ZRwJjHanpgK_BNi-MnITVXn-91Xyn3sF1eG90hVz75u08I41dhaVzWQytIH7hIakpIVL2hx5L4V8j6V8PVg7OCScNO9ug_KxRYYqSit1HoKAq78Fx7RriaX3a')"></div>
+<div class="hidden lg:block">
+<p class="text-sm font-bold text-white leading-tight">Alex Silva</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Plano Pro</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+<!-- Glass Header (Matching SCREEN_21) -->
+<header class="glass-header sticky top-0 z-20 px-8 py-5 flex items-center justify-between shrink-0">
+<div class="flex items-center gap-8 flex-1">
+<div class="hidden md:flex flex-col min-w-[280px]">
+<div class="flex justify-between items-end mb-2">
+<span class="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Nível 12</span>
+<span class="text-[10px] font-bold text-slate-500 uppercase">1.200 / 2.500 XP</span>
+</div>
+<div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+<div class="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(14,165,233,0.5)]" style="width: 48%;"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="size-10 rounded-full bg-white/5 flex items-center justify-center text-slate-300 hover:text-white transition-colors border border-white/10">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="px-8 py-3 rounded-full shimmer-btn text-white text-[13px] font-black tracking-tight shadow-xl shadow-primary/20">
+                        Criar Novo Hook
+                    </button>
+</div>
+</header>
+<div class="p-8 lg:p-12 max-w-7xl mx-auto w-full space-y-12">
+<!-- Title Section -->
+<section>
+<h1 class="text-5xl lg:text-6xl font-black tracking-[-0.04em] mb-4 text-white uppercase italic">
+                        BANCO DE <span class="text-gradient-sky">GANCHOS VIRAIS</span>
+</h1>
+<p class="text-slate-400 text-lg max-w-3xl leading-relaxed">
+                        Acesso instantâneo às melhores estratégias de abertura para prender a atenção do seu público nos primeiros segundos.
+                    </p>
+</section>
+<!-- Search Bar -->
+<section>
+<div class="relative group">
+<div class="absolute inset-0 bg-primary/5 blur-3xl opacity-0 group-focus-within:opacity-100 transition-opacity rounded-3xl"></div>
+<div class="relative flex items-center glass-card rounded-2xl border border-white/10 bg-white/[0.02]">
+<div class="pl-6 text-slate-500">
+<span class="material-symbols-outlined text-2xl">search</span>
+</div>
+<input class="w-full bg-transparent border-none h-18 py-6 pl-4 pr-6 text-lg focus:ring-0 placeholder:text-slate-600 text-white font-medium" placeholder="Pesquise por nichos, temas ou palavras-chave..." type="text"/>
+</div>
+</div>
+</section>
+<!-- Filters -->
+<section class="flex flex-wrap gap-3">
+<button class="px-8 py-3 rounded-full bg-primary text-white font-black text-[11px] uppercase tracking-[0.15em] shadow-lg shadow-primary/20 transition-all hover:scale-105">Todos os Ganchos</button>
+<button class="px-8 py-3 rounded-full glass-card text-slate-500 hover:text-white hover:bg-white/5 font-black text-[11px] uppercase tracking-[0.15em] transition-all border border-white/5">Curiosidade</button>
+<button class="px-8 py-3 rounded-full glass-card text-slate-500 hover:text-white hover:bg-white/5 font-black text-[11px] uppercase tracking-[0.15em] transition-all border border-white/5">Polêmica</button>
+<button class="px-8 py-3 rounded-full glass-card text-slate-500 hover:text-white hover:bg-white/5 font-black text-[11px] uppercase tracking-[0.15em] transition-all border border-white/5">Autoridade</button>
+<button class="px-8 py-3 rounded-full glass-card text-slate-500 hover:text-white hover:bg-white/5 font-black text-[11px] uppercase tracking-[0.15em] transition-all border border-white/5">Tutorial</button>
+<button class="px-8 py-3 rounded-full glass-card text-slate-500 hover:text-white hover:bg-white/5 font-black text-[11px] uppercase tracking-[0.15em] transition-all border border-white/5">Storytelling</button>
+</section>
+<!-- Bento-Grid of Hooks -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="glass-card tool-card p-10 rounded-3xl transition-all duration-500 flex flex-col justify-between group h-full border border-white/[0.05] relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+<span class="material-symbols-outlined text-[100px] text-primary">anchor</span>
+</div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-8">
+<span class="px-4 py-1.5 rounded-lg bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.15em]">Curiosidade</span>
+<button class="text-slate-600 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">bookmark</span>
+</button>
+</div>
+<h3 class="text-2xl font-bold leading-snug text-white tracking-tight">
+                                "Eu não acredito que ninguém está falando sobre [TEMA] do jeito certo..."
+                            </h3>
+</div>
+<div class="relative z-10 flex items-center justify-between mt-12 pt-6 border-t border-white/5">
+<span class="text-slate-500 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary/50">visibility</span>
+                                1.2k usos
+                            </span>
+<button class="text-primary text-[11px] font-black uppercase tracking-[0.15em] flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                Variações <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-card tool-card p-10 rounded-3xl transition-all duration-500 flex flex-col justify-between group h-full border border-white/[0.05] relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+<span class="material-symbols-outlined text-[100px] text-primary">anchor</span>
+</div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-8">
+<span class="px-4 py-1.5 rounded-lg bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.15em]">Polêmica</span>
+<button class="text-slate-600 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">bookmark</span>
+</button>
+</div>
+<h3 class="text-2xl font-bold leading-snug text-white tracking-tight">
+                                "Parem de fazer [AÇÃO COMUM] se você realmente quer ter resultados em 2024."
+                            </h3>
+</div>
+<div class="relative z-10 flex items-center justify-between mt-12 pt-6 border-t border-white/5">
+<span class="text-slate-500 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary/50">visibility</span>
+                                3.5k usos
+                            </span>
+<button class="text-primary text-[11px] font-black uppercase tracking-[0.15em] flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                Variações <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="glass-card tool-card p-10 rounded-3xl transition-all duration-500 flex flex-col justify-between group h-full border border-white/[0.05] relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+<span class="material-symbols-outlined text-[100px] text-primary">anchor</span>
+</div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-8">
+<span class="px-4 py-1.5 rounded-lg bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.15em]">Tutorial</span>
+<button class="text-slate-600 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">bookmark</span>
+</button>
+</div>
+<h3 class="text-2xl font-bold leading-snug text-white tracking-tight">
+                                "O passo a passo exato que eu usei para sair de zero a [RESULTADO] em 30 dias."
+                            </h3>
+</div>
+<div class="relative z-10 flex items-center justify-between mt-12 pt-6 border-t border-white/5">
+<span class="text-slate-500 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary/50">visibility</span>
+                                890 usos
+                            </span>
+<button class="text-primary text-[11px] font-black uppercase tracking-[0.15em] flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                Variações <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Load More Button -->
+<div class="pt-12 pb-24 flex justify-center">
+<button class="px-12 py-5 glass-card rounded-full text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-white/5 transition-all border border-white/10 hover:scale-105">
+                        Carregar mais ganchos virais
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

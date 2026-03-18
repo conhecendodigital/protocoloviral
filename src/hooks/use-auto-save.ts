@@ -1,0 +1,46 @@
+'use client'
+
+import { useEffect, useRef, useCallback } from 'react'
+import { createClient } from '@/lib/supabase/client'
+
+export function useAutoSave(userId: string | undefined) {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const supabase = createClient()
+
+  const saveField = useCallback(async (fieldName: string, value: string) => {
+    if (!userId) return false
+
+    try {
+      const updateData: Record<string, string> = {}
+      updateData[fieldName] = value
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('id', userId)
+
+      return !error
+    } catch {
+      return false
+    }
+  }, [userId, supabase])
+
+  const debouncedSave = useCallback((fieldName: string, value: string, onStatus: (s: 'saving' | 'saved' | 'error') => void) => {
+    onStatus('saving')
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+    timeoutRef.current = setTimeout(async () => {
+      const success = await saveField(fieldName, value)
+      onStatus(success ? 'saved' : 'error')
+    }, 1000)
+  }, [saveField])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
+
+  return { debouncedSave, saveField }
+}
