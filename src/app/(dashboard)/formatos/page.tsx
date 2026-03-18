@@ -134,7 +134,7 @@ export default function FormatosPage() {
           autoPlay={autoplay}
           preload="metadata"
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain"
         />
       )
     }
