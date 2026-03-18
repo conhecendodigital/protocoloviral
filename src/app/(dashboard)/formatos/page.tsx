@@ -48,17 +48,24 @@ export default function FormatosPage() {
     ? formatos
     : formatos.filter(f => f.plataforma === filtroAtivo)
 
-  // Convert Google Drive download URL to embeddable preview URL
-  const getDriveEmbedUrl = (url: string): string | null => {
+  // Extract Google Drive file ID from various URL formats
+  const getDriveFileId = (url: string): string | null => {
     // Match: drive.google.com/uc?export=download&id=FILE_ID
-    const ucMatch = url.match(/drive\.google\.com\/uc\?.*id=([^&]+)/)
-    if (ucMatch) return `https://drive.google.com/file/d/${ucMatch[1]}/preview`
+    const ucMatch = url.match(/drive\.google\.com\/uc\?.*id=([^&\s]+)/)
+    if (ucMatch) return ucMatch[1]
     
     // Match: drive.google.com/file/d/FILE_ID/...
-    const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/)
-    if (fileMatch) return `https://drive.google.com/file/d/${fileMatch[1]}/preview`
+    const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^/\s]+)/)
+    if (fileMatch) return fileMatch[1]
     
     return null
+  }
+
+  // Convert Drive URL to streamable URL
+  const getDriveStreamUrl = (url: string): string => {
+    const fileId = getDriveFileId(url)
+    if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}`
+    return url
   }
 
   // Detect URL type
@@ -73,15 +80,13 @@ export default function FormatosPage() {
     const type = getVideoType(url)
     
     if (type === 'drive') {
-      const embedUrl = getDriveEmbedUrl(url)
       return (
-        <iframe
-          src={embedUrl || url}
-          className={`absolute inset-0 w-full h-full ${className}`}
-          allow="autoplay; encrypted-media"
-          allowFullScreen
-          title={titulo}
-          style={{ border: 'none' }}
+        <video
+          src={getDriveStreamUrl(url)}
+          controls
+          preload="metadata"
+          playsInline
+          className={`absolute inset-0 w-full h-full object-cover ${className}`}
         />
       )
     }
