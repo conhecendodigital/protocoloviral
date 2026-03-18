@@ -514,10 +514,36 @@ export default function FormatosPage() {
                       Copiar
                     </button>
                   </div>
-                  <div className="p-4 sm:p-6 overflow-x-auto">
-                    <pre className="text-[13px] sm:text-[14px] font-mono text-[#0ea5e9] whitespace-pre-wrap leading-relaxed">
-                      {modalFormato.estudo}
-                    </pre>
+                  <div className="p-4 sm:p-6 overflow-x-auto space-y-4">
+                    {modalFormato.estudo.split('\n\n').map((block, i) => {
+                      // Check if block starts with a section header like **Gancho:**
+                      const headerMatch = block.match(/^\*\*(.+?)\*\*(.*)/)
+                      if (headerMatch) {
+                        const title = headerMatch[1]
+                        const rest = headerMatch[2]?.trim() || ''
+                        // Get remaining lines after the header
+                        const lines = block.split('\n').slice(1).join('\n')
+                        const content = rest ? `${rest}\n${lines}` : lines
+                        return (
+                          <div key={i} className="border-l-2 border-[#0ea5e9]/40 pl-4">
+                            <p className="text-[13px] sm:text-[14px] font-mono font-bold text-white mb-1.5 tracking-wide">
+                              {title}
+                            </p>
+                            {content.trim() && (
+                              <p className="text-[13px] sm:text-[14px] font-mono text-[#0ea5e9] whitespace-pre-wrap leading-relaxed opacity-80">
+                                {content.trim()}
+                              </p>
+                            )}
+                          </div>
+                        )
+                      }
+                      // Regular paragraph
+                      return (
+                        <p key={i} className="text-[13px] sm:text-[14px] font-mono text-[#0ea5e9] whitespace-pre-wrap leading-relaxed opacity-80">
+                          {block}
+                        </p>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
