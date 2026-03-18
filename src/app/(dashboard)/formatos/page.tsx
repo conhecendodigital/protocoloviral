@@ -48,9 +48,65 @@ export default function FormatosPage() {
     ? formatos
     : formatos.filter(f => f.plataforma === filtroAtivo)
 
-  // Detect if URL is a direct video file or an embed
-  const isDirectVideo = (url: string) => {
-    return url.includes('.mp4') || url.includes('.mov') || url.includes('.webm') || url.includes('/storage/v1/object/')
+  // Convert Google Drive download URL to embeddable preview URL
+  const getDriveEmbedUrl = (url: string): string | null => {
+    // Match: drive.google.com/uc?export=download&id=FILE_ID
+    const ucMatch = url.match(/drive\.google\.com\/uc\?.*id=([^&]+)/)
+    if (ucMatch) return `https://drive.google.com/file/d/${ucMatch[1]}/preview`
+    
+    // Match: drive.google.com/file/d/FILE_ID/...
+    const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/)
+    if (fileMatch) return `https://drive.google.com/file/d/${fileMatch[1]}/preview`
+    
+    return null
+  }
+
+  // Detect URL type
+  const getVideoType = (url: string): 'drive' | 'direct' | 'embed' => {
+    if (url.includes('drive.google.com')) return 'drive'
+    if (url.includes('.mp4') || url.includes('.mov') || url.includes('.webm') || url.includes('/storage/v1/object/')) return 'direct'
+    return 'embed'
+  }
+
+  // Render video based on type
+  const renderVideo = (url: string, titulo: string, className: string = '') => {
+    const type = getVideoType(url)
+    
+    if (type === 'drive') {
+      const embedUrl = getDriveEmbedUrl(url)
+      return (
+        <iframe
+          src={embedUrl || url}
+          className={`absolute inset-0 w-full h-full ${className}`}
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+          title={titulo}
+          style={{ border: 'none' }}
+        />
+      )
+    }
+    
+    if (type === 'direct') {
+      return (
+        <video
+          src={url}
+          controls
+          preload="metadata"
+          playsInline
+          className={`absolute inset-0 w-full h-full object-cover ${className}`}
+        />
+      )
+    }
+    
+    return (
+      <iframe
+        src={url}
+        className={`absolute inset-0 w-full h-full ${className}`}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        title={titulo}
+      />
+    )
   }
 
   return (
@@ -144,23 +200,7 @@ export default function FormatosPage() {
 
                   {/* Video (vertical 9:16) */}
                   <div className="relative w-full aspect-[9/16] max-h-[400px] bg-black/50 overflow-hidden">
-                    {isDirectVideo(formato.video_url) ? (
-                      <video
-                        src={formato.video_url}
-                        controls
-                        preload="metadata"
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    ) : (
-                      <iframe
-                        src={formato.video_url}
-                        className="absolute inset-0 w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title={formato.titulo}
-                      />
-                    )}
+                    {renderVideo(formato.video_url, formato.titulo)}
                   </div>
 
                   {/* Content */}
@@ -298,23 +338,7 @@ export default function FormatosPage() {
               <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
                 {/* Video (vertical 9:16) */}
                 <div className="relative w-full max-w-[320px] mx-auto aspect-[9/16] rounded-xl overflow-hidden bg-black/50 mb-6">
-                  {isDirectVideo(modalFormato.video_url) ? (
-                    <video
-                      src={modalFormato.video_url}
-                      controls
-                      preload="metadata"
-                      playsInline
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  ) : (
-                    <iframe
-                      src={modalFormato.video_url}
-                      className="absolute inset-0 w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      title={modalFormato.titulo}
-                    />
-                  )}
+                  {renderVideo(modalFormato.video_url, modalFormato.titulo)}
                 </div>
 
                 {/* Link Original */}
