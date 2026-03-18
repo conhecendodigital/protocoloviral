@@ -155,14 +155,14 @@ export default function FormatosPage() {
   return (
     <>
       <main className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative z-10 custom-scrollbar">
-        <div className="p-6 lg:p-12 max-w-6xl mx-auto w-full space-y-12">
+        <div className="p-4 sm:p-6 lg:p-12 max-w-6xl mx-auto w-full space-y-6 sm:space-y-12">
 
           {/* Title */}
           <section className="text-center space-y-4">
             <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase italic"
+              className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase italic"
             >
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">FORMATOS</span> QUE VIRALIZAM
             </motion.h1>
@@ -170,7 +170,7 @@ export default function FormatosPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed"
+              className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed"
             >
               Análises semanais dos formatos mais eficientes por nicho.
             </motion.p>
@@ -182,13 +182,13 @@ export default function FormatosPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex flex-wrap items-center justify-center gap-3"
+              className="flex flex-wrap items-center justify-center gap-2 sm:gap-3"
             >
               {nichos.map(nicho => (
                 <button
                   key={nicho}
                   onClick={() => setFiltroAtivo(nicho)}
-                  className={`flex items-center gap-2 text-xs py-2.5 px-5 rounded-full font-bold uppercase tracking-widest transition-all ${
+                  className={`flex items-center gap-1.5 text-[10px] sm:text-xs py-2 px-3 sm:py-2.5 sm:px-5 rounded-full font-bold uppercase tracking-widest transition-all ${
                     filtroAtivo === nicho
                       ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20'
                       : 'glass-card text-slate-300 hover:text-white hover:border-white/20'
@@ -222,7 +222,7 @@ export default function FormatosPage() {
 
           {/* Formats Grid */}
           {!loading && formatosFiltrados.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
               {formatosFiltrados.map((formato, i) => (
                 <motion.div
                   key={formato.id}
@@ -241,20 +241,20 @@ export default function FormatosPage() {
                   )}
 
                   {/* Video thumbnail — cropped, click opens modal */}
-                  <div className="relative w-full aspect-[9/16] max-h-[350px] bg-black/50 overflow-hidden rounded-t-xl pointer-events-none">
+                  <div className="relative w-full aspect-video sm:aspect-[9/16] sm:max-h-[350px] bg-black/50 overflow-hidden rounded-t-xl pointer-events-none">
                     {renderVideo(formato.video_url, formato.titulo)}
                     {/* Play overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
-                      <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-all group-hover:scale-110">
-                        <span className="material-symbols-outlined text-white text-3xl ml-1">play_arrow</span>
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-all group-hover:scale-110">
+                        <span className="material-symbols-outlined text-white text-2xl sm:text-3xl ml-0.5">play_arrow</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="p-6 space-y-4">
+                  <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     {/* Nicho + Type + Date */}
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                       <span className="text-[10px] px-2.5 py-1 rounded font-black tracking-widest uppercase text-purple-400 bg-purple-500/10">
                         {nichoEmojis[formato.nicho] || '📁'} {formato.nicho || 'Geral'}
                       </span>
@@ -274,7 +274,7 @@ export default function FormatosPage() {
                     </div>
 
                     {/* Title */}
-                    <h3 className="font-bold text-xl tracking-tight text-white leading-tight">{formato.titulo}</h3>
+                    <h3 className="font-bold text-base sm:text-xl tracking-tight text-white leading-tight line-clamp-2">{formato.titulo}</h3>
 
                     {/* Username */}
                     {formato.username && (
@@ -288,7 +288,7 @@ export default function FormatosPage() {
 
                     {/* Metrics Bar */}
                     {(formato.curtidas || formato.views || formato.engajamento) && (
-                      <div className="flex items-center gap-4 pt-1 text-[11px] text-slate-400">
+                      <div className="flex items-center flex-wrap gap-3 sm:gap-4 pt-1 text-[10px] sm:text-[11px] text-slate-400">
                         {formato.curtidas != null && (
                           <span className="flex items-center gap-1">
                             <span className="material-symbols-outlined text-[14px] text-red-400">favorite</span>
