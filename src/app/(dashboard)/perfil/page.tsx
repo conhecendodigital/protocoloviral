@@ -24,6 +24,7 @@ export default function PerfilPage() {
   const [tempName, setTempName] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [enhancingAll, setEnhancingAll] = useState(false)
+  const [enhanceResult, setEnhanceResult] = useState<'idle' | 'success' | 'error'>('idle')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const completion = getCompletionPercent()
@@ -83,6 +84,8 @@ export default function PerfilPage() {
 
   const handleEnhanceAll = async () => {
     if (!profile) return
+    setEnhanceResult('idle')
+
     const filledFields = PROFILE_FIELDS
       .filter(f => {
         const val = (profile as Record<string, string | null>)?.[f.id]
@@ -105,16 +108,22 @@ export default function PerfilPage() {
       })
       const data = await res.json()
       if (data.enhanced && data.used_ai) {
+        let updated = 0
         for (const [fieldId, value] of Object.entries(data.enhanced)) {
           if (typeof value === 'string' && value.trim()) {
             handleFieldChange(fieldId, value)
+            updated++
           }
         }
+        setEnhanceResult(updated > 0 ? 'success' : 'error')
+      } else {
+        setEnhanceResult('error')
       }
     } catch {
-      // Silently fail — keep original answers
+      setEnhanceResult('error')
     }
     setEnhancingAll(false)
+    setTimeout(() => setEnhanceResult('idle'), 4000)
   }
 
   if (loading) {
@@ -244,12 +253,28 @@ export default function PerfilPage() {
                      animate={{ opacity: 1 }}
                      onClick={handleEnhanceAll}
                      disabled={enhancingAll}
-                     className="mt-6 w-full py-3.5 rounded-2xl flex items-center justify-center gap-3 text-sm font-bold transition-all active:scale-[0.98] relative z-10 border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 disabled:opacity-60 disabled:pointer-events-none"
+                     className={`mt-6 w-full py-3.5 rounded-2xl flex items-center justify-center gap-3 text-sm font-bold transition-all active:scale-[0.98] relative z-10 border disabled:opacity-60 disabled:pointer-events-none ${
+                       enhanceResult === 'success'
+                         ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                         : enhanceResult === 'error'
+                         ? 'border-red-500/30 bg-red-500/10 text-red-300'
+                         : 'border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50'
+                     }`}
                    >
                      {enhancingAll ? (
                        <>
                          <Loader2 className="w-4 h-4 animate-spin" />
                          <span>Melhorando respostas...</span>
+                       </>
+                     ) : enhanceResult === 'success' ? (
+                       <>
+                         <CheckCircle2 className="w-4 h-4" />
+                         <span>Respostas melhoradas!</span>
+                       </>
+                     ) : enhanceResult === 'error' ? (
+                       <>
+                         <span className="material-symbols-outlined text-lg">warning</span>
+                         <span>Erro — tente novamente</span>
                        </>
                      ) : (
                        <>

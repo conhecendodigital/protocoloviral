@@ -9,22 +9,22 @@ export async function POST(req: NextRequest) {
     const { fields } = body as { fields: { id: string; label: string; value: string }[] }
 
     if (!apiKey || !fields || fields.length === 0) {
-      // No API key or no fields — return originals unchanged
       const result: Record<string, string> = {}
       if (fields) fields.forEach((f: { id: string; value: string }) => { result[f.id] = f.value })
-      return NextResponse.json({ enhanced: result, used_ai: false })
+      return NextResponse.json({ enhanced: result, used_ai: false, error: !apiKey ? 'NO_API_KEY' : 'NO_FIELDS' })
     }
 
-    // Build a single prompt that enhances ALL fields at once with app context
     const fieldsText = fields
       .map((f, i) => `${i + 1}. [CAMPO: ${f.id}] Pergunta: "${f.label}"\nResposta: "${f.value}"`)
       .join('\n\n')
+
+    const fieldIds = fields.map(f => `"${f.id}": "resposta melhorada aqui"`).join(',\n  ')
 
     const prompt = `Você é um assistente especializado em ajudar criadores de conteúdo a preencher perfis de forma estratégica.
 
 Este perfil é usado por um sistema de IA que gera:
 - Prompts de posicionamento e clareza de nicho
-- Definição de persona/público-alvo
+- Definição de persona e público-alvo
 - Ideias de conteúdo para Instagram
 - Roteiros completos para Reels
 - Estratégias de vendas
@@ -36,21 +36,18 @@ Aqui estão as respostas atuais da pessoa:
 ${fieldsText}
 
 REGRAS OBRIGATÓRIAS:
-1. Mantenha 100% a VOZ e o TOM da pessoa — se ela escreve informal, mantenha informal
+1. Mantenha 100% a VOZ e o TOM da pessoa
 2. NÃO invente informações que a pessoa não mencionou
 3. Apenas ORGANIZE melhor, COMPLETE frases incompletas e ENRIQUEÇA com base no que ela já escreveu
 4. Se uma resposta já estiver boa, mantenha como está
 5. O resultado deve parecer que a PRÓPRIA PESSOA escreveu com mais calma
 6. NÃO use bullet points, emojis, hashtags ou formatação especial
-7. Mantenha respostas curtas se o campo era curto, e mais elaboradas se era texto longo
+7. Mantenha respostas curtas se o campo era curto
 
-Retorne EXATAMENTE no formato JSON (sem markdown, sem code blocks):
+Retorne EXATAMENTE neste formato JSON, sem nenhum texto extra, sem markdown:
 {
-  "${fields[0]?.id || 'campo'}": "resposta melhorada",
-  ...
-}
-
-Retorne APENAS o JSON, nada mais.`
+  ${fieldIds}
+}`
 
     const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: 'POST',
@@ -60,38 +57,49 @@ Retorne APENAS o JSON, nada mais.`
         generationConfig: {
           temperature: 0.3,
           maxOutputTokens: 2000,
-          responseMimeType: 'application/json',
         },
       }),
     })
 
     if (!response.ok) {
+      const errText = await response.text().catch(() => 'Unknown error')
+      console.error('[enhance-answer] Gemini API error:', response.status, errText)
       const result: Record<string, string> = {}
-      fields.forEach((f: { id: string; value: string }) => { result[f.id] = f.value })
-      return NextResponse.json({ enhanced: result, used_ai: false })
+      fields.forEach((f) => { result[f.id] = f.value })
+      return NextResponse.json({ enhanced: result, used_ai: false, error: `API_ERROR_${response.status}` })
     }
 
     const data = await response.json()
     const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
 
     if (!rawText) {
+      console.error('[enhance-answer] Empty response from Gemini')
       const result: Record<string, string> = {}
-      fields.forEach((f: { id: string; value: string }) => { result[f.id] = f.value })
-      return NextResponse.json({ enhanced: result, used_ai: false })
+      fields.forEach((f) => { result[f.id] = f.value })
+      return NextResponse.json({ enhanced: result, used_ai: false, error: 'EMPTY_RESPONSE' })
+    }
+
+    // Extract JSON from response - handle markdown code blocks and extra text
+    let jsonStr = rawText
+    // Remove markdown code fences
+    jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim()
+    // Try to extract JSON object if there's extra text
+    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      jsonStr = jsonMatch[0]
     }
 
     try {
-      // Clean potential markdown code blocks
-      const cleaned = rawText.replace(/^```json?\s*/i, '').replace(/```\s*$/i, '').trim()
-      const enhanced = JSON.parse(cleaned)
+      const enhanced = JSON.parse(jsonStr)
       return NextResponse.json({ enhanced, used_ai: true })
-    } catch {
-      // JSON parse failed — return originals
+    } catch (parseErr) {
+      console.error('[enhance-answer] JSON parse failed:', parseErr, 'Raw:', rawText.substring(0, 200))
       const result: Record<string, string> = {}
-      fields.forEach((f: { id: string; value: string }) => { result[f.id] = f.value })
-      return NextResponse.json({ enhanced: result, used_ai: false })
+      fields.forEach((f) => { result[f.id] = f.value })
+      return NextResponse.json({ enhanced: result, used_ai: false, error: 'PARSE_ERROR' })
     }
-  } catch {
-    return NextResponse.json({ enhanced: {}, used_ai: false })
+  } catch (err) {
+    console.error('[enhance-answer] Unexpected error:', err)
+    return NextResponse.json({ enhanced: {}, used_ai: false, error: 'UNEXPECTED_ERROR' })
   }
 }
