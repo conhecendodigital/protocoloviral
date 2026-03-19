@@ -13,16 +13,19 @@ interface Step {
   href: string
   btnLabel: string
   color: string
+  external?: boolean
 }
+
+const HOTMART_AULAS_URL = 'https://go.hotmart.com/I99444830U' // URL das aulas na Hotmart
 
 interface ExecutionMapProps {
   completion: number
-  isRecurring?: boolean // user has already completed initial flow
+  isRecurring?: boolean
 }
 
 export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapProps) {
   const getSteps = (): Step[] => {
-    // State 3: Recurring user (profile done, already went through initial flow)
+    // State 3: Recurring user (daily routine)
     if (isRecurring && completion === 100) {
       return [
         {
@@ -44,20 +47,28 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
           color: '#8b5cf6',
         },
         {
-          icon: 'check_circle',
-          title: 'Postar e Interagir',
+          icon: 'calendar_today',
+          title: 'Seguir a Rotina',
           description: 'Siga a rotina semanal para manter a consistência e engajamento.',
           status: 'locked',
           href: '/rotina',
           btnLabel: 'Ver Rotina',
           color: '#10b981',
         },
+        {
+          icon: 'trending_up',
+          title: 'Postar e Interagir',
+          description: 'Publique o conteúdo e interaja com seus seguidores para crescer.',
+          status: 'locked',
+          href: '/rotina',
+          btnLabel: 'Ver Checklist',
+          color: '#f59e0b',
+        },
       ]
     }
 
-    // State 1 & 2: New user flow
+    // State 1 & 2: New user flow (4 steps)
     const step1Done = completion === 100
-    const step2Active = step1Done
 
     return [
       {
@@ -72,23 +83,33 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
         color: '#f59e0b',
       },
       {
-        icon: 'explore',
-        title: 'Escolher o Tema',
-        description: step2Active
-          ? 'Vá para a Jornada de Conteúdo e escolha a Estação 01.'
+        icon: 'play_circle',
+        title: 'Assistir as Aulas',
+        description: step1Done
+          ? 'Assista as aulas do método para aprender a estratégia completa de conteúdo.'
           : 'Desbloqueie ao completar o treinamento da IA.',
-        status: step2Active ? 'current' : 'locked',
+        status: step1Done ? 'current' : 'locked',
+        href: HOTMART_AULAS_URL,
+        btnLabel: 'Assistir Aulas',
+        color: '#ef4444',
+        external: true,
+      },
+      {
+        icon: 'explore',
+        title: 'Jornada de Conteúdo',
+        description: 'Siga o mapa metodológico com 30 estações e frameworks prontos.',
+        status: 'locked',
         href: '/jornada',
         btnLabel: 'Abrir Jornada',
         color: '#0ea5e9',
       },
       {
-        icon: 'edit_note',
-        title: 'Gerar o Roteiro',
-        description: 'Use o Gerador de Prompts para criar seu primeiro conteúdo.',
+        icon: 'target',
+        title: 'Definir Posicionamento',
+        description: 'Use o Gerador de Prompts para definir seu nicho, persona e posicionamento.',
         status: 'locked',
         href: '/prompts',
-        btnLabel: 'Gerar Roteiro',
+        btnLabel: 'Definir Agora',
         color: '#8b5cf6',
       },
     ]
@@ -138,12 +159,12 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
       </div>
       <p className="text-sm text-slate-500 mb-6 ml-9">
         {isRecurring && completion === 100
-          ? 'Siga estes 3 passos para criar conteúdo consistente todos os dias.'
-          : 'Complete estes 3 passos para ter seu conteúdo pronto em 15 minutos.'}
+          ? 'Siga estes 4 passos para criar conteúdo consistente todos os dias.'
+          : 'Complete estes 4 passos para ter seu conteúdo pronto.'}
       </p>
 
       {/* Steps */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">  
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">  
         {steps.map((step, i) => {
           const config = statusConfig[step.status]
           
@@ -198,14 +219,27 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
 
               {/* Action Button */}
               {step.status === 'current' && (
-                <Link
-                  href={step.href}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
-                  style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
-                >
-                  <span className="material-symbols-outlined text-base">arrow_forward</span>
-                  {step.btnLabel}
-                </Link>
+                step.external ? (
+                  <a
+                    href={step.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
+                    style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
+                  >
+                    <span className="material-symbols-outlined text-base">open_in_new</span>
+                    {step.btnLabel}
+                  </a>
+                ) : (
+                  <Link
+                    href={step.href}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
+                    style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
+                  >
+                    <span className="material-symbols-outlined text-base">arrow_forward</span>
+                    {step.btnLabel}
+                  </Link>
+                )
               )}
 
               {step.status === 'done' && (
