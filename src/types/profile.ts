@@ -1,6 +1,8 @@
 export interface Profile {
   id: string
   email: string
+  nome_completo: string | null
+  avatar_url: string | null
   nicho: string | null
   assunto: string | null
   formacoes: string | null

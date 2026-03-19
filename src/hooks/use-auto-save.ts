@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 
 /** Whitelist of fields the user is allowed to auto-save */
 const EDITABLE_FIELDS = new Set([
+  'nome_completo', 'avatar_url',
   'nicho', 'assunto', 'formacoes', 'resultado', 'diferencial',
   'publico', 'dor', 'tentou', 'concorrentes', 'proposito',
   'receio', 'tempo', 'naoquer',

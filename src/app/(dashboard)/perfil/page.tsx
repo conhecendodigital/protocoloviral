@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 import { useProfile } from '@/hooks/use-profile'
 import { useAutoSave } from '@/hooks/use-auto-save'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { motion } from 'framer-motion'
-import { CheckCircle2, Loader2, User, Users, Rocket } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { CheckCircle2, Loader2 } from 'lucide-react'
 
 const SECTION_META = {
   sobre: { icon: 'person', title: 'Sobre Você', desc: 'Seu nicho, experiência e diferencial' },
@@ -17,9 +17,14 @@ const SECTION_META = {
 }
 
 export default function PerfilPage() {
-  const { profile, loading, userId, updateField, getCompletionPercent } = useProfile()
+  const { profile, loading, userId, updateField, uploadAvatar, getCompletionPercent } = useProfile()
   const { debouncedSave } = useAutoSave(userId)
   const [saveStatus, setSaveStatus] = useState<Record<string, 'idle' | 'saving' | 'saved' | 'error'>>({})
+  const [editingName, setEditingName] = useState(false)
+  const [tempName, setTempName] = useState('')
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [enhancingField, setEnhancingField] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const completion = getCompletionPercent()
 
@@ -33,10 +38,68 @@ export default function PerfilPage() {
     })
   }
 
-  // Helper to extract name from email or use default
-  const getFirstName = () => {
+  const getDisplayName = () => {
+    if (profile?.nome_completo) return profile.nome_completo
     if (!profile?.email) return 'Usuário Mapeador'
     return profile.email.split('@')[0].split('.')[0].replace(/^\w/, c => c.toUpperCase())
+  }
+
+  const getInitials = () => {
+    const name = profile?.nome_completo || profile?.email?.split('@')[0] || 'U'
+    const parts = name.split(/[\s.]+/)
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+    return name.substring(0, 2).toUpperCase()
+  }
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingAvatar(true)
+    await uploadAvatar(file)
+    setUploadingAvatar(false)
+    // Reset input so same file can be re-selected
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleStartEditName = () => {
+    setTempName(profile?.nome_completo || getDisplayName())
+    setEditingName(true)
+  }
+
+  const handleSaveName = () => {
+    if (tempName.trim()) {
+      handleFieldChange('nome_completo', tempName.trim())
+    }
+    setEditingName(false)
+  }
+
+  const handleCancelEditName = () => {
+    setEditingName(false)
+  }
+
+  const handleEnhanceField = async (fieldId: string, fieldLabel: string) => {
+    const currentValue = (profile as Record<string, string | null>)?.[fieldId]
+    if (!currentValue || currentValue.trim().length < 5) return
+
+    setEnhancingField(fieldId)
+    try {
+      const res = await fetch('/api/enhance-answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer: currentValue, fieldLabel }),
+      })
+      const data = await res.json()
+      if (data.enhanced && data.enhanced !== currentValue) {
+        handleFieldChange(fieldId, data.enhanced)
+      }
+    } catch {
+      // Silently fail — keep original answer
+    }
+    setEnhancingField(null)
   }
 
   if (loading) {
@@ -56,23 +119,73 @@ export default function PerfilPage() {
       <main className="flex-1 flex flex-col items-center w-full relative z-10 overflow-y-auto custom-scrollbar">
         <div className="w-full max-w-7xl px-6 lg:px-8 py-8 md:py-12 pb-24">
           
-          {/* Profile Banner Section */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="relative mb-24">
-            <div className="h-48 md:h-64 w-full rounded-3xl overflow-hidden glass-card border border-white/10 relative">
-               {/* Abstract Grid Background */}
-               <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-               <div className="w-full h-full bg-gradient-to-br from-[#0ea5e9]/20 via-black/40 to-indigo-900/30"></div>
-            </div>
-            
-            <div className="absolute -bottom-16 left-6 md:left-12 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left w-full md:w-auto">
-              <div className="size-32 rounded-full border-4 border-black p-1 glass-card shadow-[0_0_30px_rgba(14,165,233,0.3)] bg-black/50 z-10 relative">
-                <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#0ea5e9] to-indigo-500 overflow-hidden flex items-center justify-center">
-                   <span className="material-symbols-outlined text-[64px] text-white">sentiment_satisfied</span>
+          {/* Profile Header — Clean, no cover */}
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
+              {/* Avatar with Upload */}
+              <div className="relative group">
+                <div 
+                  className="size-28 rounded-full border-4 border-white/10 p-0.5 glass-card shadow-[0_0_30px_rgba(14,165,233,0.2)] bg-black/50 cursor-pointer overflow-hidden"
+                  onClick={handleAvatarClick}
+                >
+                  {profile?.avatar_url ? (
+                    <img 
+                      src={profile.avatar_url} 
+                      alt="Avatar" 
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-gradient-to-tr from-[#0ea5e9] to-indigo-500 flex items-center justify-center">
+                      <span className="text-3xl font-black text-white">{getInitials()}</span>
+                    </div>
+                  )}
                 </div>
+                {/* Upload overlay */}
+                <div 
+                  className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  onClick={handleAvatarClick}
+                >
+                  {uploadingAvatar ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-white" />
+                  ) : (
+                    <span className="material-symbols-outlined text-white text-2xl">photo_camera</span>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
               </div>
+
+              {/* Name & Email */}
               <div className="mb-2 md:mb-4">
-                <h2 className="text-3xl font-black text-white tracking-tight">{getFirstName()}</h2>
-                <p className="text-[#0ea5e9] font-medium tracking-wide text-sm">{profile?.email}</p>
+                {editingName ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={tempName}
+                      onChange={(e) => setTempName(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') handleCancelEditName() }}
+                      autoFocus
+                      className="text-2xl font-black text-white tracking-tight bg-white/5 border border-white/20 rounded-xl px-4 py-2 focus:outline-none focus:border-[#0ea5e9] transition-all"
+                    />
+                    <button onClick={handleSaveName} className="text-[#0ea5e9] hover:text-white transition-colors">
+                      <span className="material-symbols-outlined">check</span>
+                    </button>
+                    <button onClick={handleCancelEditName} className="text-slate-500 hover:text-white transition-colors">
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 group cursor-pointer" onClick={handleStartEditName}>
+                    <h2 className="text-3xl font-black text-white tracking-tight">{getDisplayName()}</h2>
+                    <span className="material-symbols-outlined text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity text-lg">edit</span>
+                  </div>
+                )}
+                <p className="text-[#0ea5e9] font-medium tracking-wide text-sm mt-1">{profile?.email}</p>
               </div>
             </div>
           </motion.div>
@@ -138,6 +251,8 @@ export default function PerfilPage() {
                         const fieldValue = profile?.[field.id] as string || ''
                         const status = saveStatus[field.id] || 'idle'
                         const isTextarea = field.type === 'textarea'
+                        const isEnhancing = enhancingField === field.id
+                        const canEnhance = fieldValue.trim().length >= 5
 
                         return (
                           <div key={field.id} className={`space-y-2 ${isTextarea ? 'md:col-span-2' : ''}`}>
@@ -145,7 +260,7 @@ export default function PerfilPage() {
                               <label htmlFor={field.id} className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">
                                 {field.label}
                               </label>
-                              <div className="h-4 flex items-center">
+                              <div className="h-4 flex items-center gap-2">
                                 {status === 'saving' && <span className="text-[10px] text-slate-500 flex items-center gap-1 uppercase tracking-widest font-bold"><Loader2 className="w-3 h-3 animate-spin" />Salvando</span>}
                                 {status === 'saved' && <span className="text-[10px] text-[#0ea5e9] flex items-center gap-1 uppercase tracking-widest font-bold"><CheckCircle2 className="w-3 h-3" />Salvo</span>}
                                 {status === 'error' && <span className="text-[10px] text-red-400 flex items-center gap-1 uppercase tracking-widest font-bold">Erro ao salvar</span>}
@@ -173,6 +288,31 @@ export default function PerfilPage() {
                                 />
                               )}
                             </div>
+
+                            {/* AI Enhance Button */}
+                            {canEnhance && (
+                              <AnimatePresence>
+                                <motion.button
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  onClick={() => handleEnhanceField(field.id, field.label)}
+                                  disabled={isEnhancing}
+                                  className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-[#0ea5e9] transition-colors uppercase tracking-widest ml-1 disabled:opacity-50"
+                                >
+                                  {isEnhancing ? (
+                                    <>
+                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                      <span>Melhorando...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <span className="material-symbols-outlined text-xs">auto_fix_high</span>
+                                      <span>Melhorar com IA</span>
+                                    </>
+                                  )}
+                                </motion.button>
+                              </AnimatePresence>
+                            )}
                           </div>
                         )
                       })}
@@ -199,6 +339,7 @@ export default function PerfilPage() {
                     <ul className="space-y-3 text-sm text-slate-400">
                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Seja específico na dor do seu público.</li>
                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Evite jargões muito técnicos, a menos que seu público entenda.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-[#0ea5e9]">"Melhorar com IA"</strong> para organizar suas respostas automaticamente.</li>
                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Você pode alterar estes dados a qualquer momento e os roteiros mudarão automaticamente!</li>
                     </ul>
                  </div>

@@ -6,6 +6,7 @@ import type { Profile } from '@/types/profile'
 
 /** Whitelist of fields the user is allowed to edit */
 const EDITABLE_FIELDS = new Set([
+  'nome_completo', 'avatar_url',
   'nicho', 'assunto', 'formacoes', 'resultado', 'diferencial',
   'publico', 'dor', 'tentou', 'concorrentes', 'proposito',
   'receio', 'tempo', 'naoquer',
@@ -60,6 +61,35 @@ export function useProfile() {
       .eq('id', userId)
   }, [userId, supabase])
 
+  const uploadAvatar = useCallback(async (file: File) => {
+    if (!userId) return null
+    const ext = file.name.split('.').pop() || 'jpg'
+    const filePath = `${userId}/avatar.${ext}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file, { upsert: true })
+
+    if (uploadError) {
+      console.error('[useProfile] Avatar upload error:', uploadError)
+      return null
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath)
+
+    const publicUrl = urlData.publicUrl + '?t=' + Date.now()
+
+    await supabase
+      .from('profiles')
+      .update({ avatar_url: publicUrl })
+      .eq('id', userId)
+
+    setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null)
+    return publicUrl
+  }, [userId, supabase])
+
   const getCompletionPercent = useCallback(() => {
     if (!profile) return 0
     const fields = ['nicho', 'assunto', 'formacoes', 'resultado', 'diferencial',
@@ -70,5 +100,5 @@ export function useProfile() {
     return Math.round((filled / fields.length) * 100)
   }, [profile])
 
-  return { profile, loading, userId, updateField, fetchProfile, getCompletionPercent }
+  return { profile, loading, userId, updateField, uploadAvatar, fetchProfile, getCompletionPercent }
 }
