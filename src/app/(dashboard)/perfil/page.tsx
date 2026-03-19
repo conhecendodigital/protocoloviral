@@ -7,8 +7,9 @@ import { useAutoSave } from '@/hooks/use-auto-save'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, Loader2 } from 'lucide-react'
+import Link from 'next/link'
 
 const SECTION_META = {
   sobre: { icon: 'person', title: 'Sobre Você', desc: 'Seu nicho, experiência e diferencial' },
@@ -234,11 +235,11 @@ export default function PerfilPage() {
                  </div>
                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-2">Seu Perfil</h3>
-                      <p className="text-sm text-slate-400 max-w-sm">
-                        {completion < 50 ? 'O algoritmo do mapa precisa de mais informações para gerar conteúdos precisos. Continue preenchendo.' :
-                         completion < 100 ? 'Quase lá! Faltam apenas alguns detalhes para destrancar seu potencial máximo de prompts.' :
-                         'Excelente! Seu perfil está 100% completo, a Inteligência Artificial tem todo contexto necessário.'}
+                      <h3 className="text-xl font-bold text-white mb-2">Treinando a sua Inteligência Artificial</h3>
+                      <p className="text-sm text-slate-400 max-w-md">
+                        {completion < 50 ? 'Responda as perguntas abaixo para ensinar a IA sobre o seu negócio. É com base nisso que ela vai escrever todos os seus roteiros e ganchos daqui pra frente.' :
+                         completion < 100 ? 'Quase lá! Faltam alguns detalhes para a IA entender completamente o seu negócio e gerar conteúdos precisos.' :
+                         'Sua IA está treinada! Ela agora conhece seu negócio, público e objetivos. Todos os roteiros e ganchos serão personalizados para você.'}
                       </p>
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
@@ -278,7 +279,7 @@ export default function PerfilPage() {
                      ) : enhanceResult === 'success' ? (
                        <>
                          <CheckCircle2 className="w-4 h-4" />
-                         <span>Respostas melhoradas!</span>
+                         <span>Sua IA agora entende seu negócio!</span>
                        </>
                      ) : enhanceResult === 'error' ? (
                        <>
@@ -292,6 +293,54 @@ export default function PerfilPage() {
                        </>
                      )}
                    </motion.button>
+                 )}
+
+                 {/* Success Toast after AI enhance */}
+                 <AnimatePresence>
+                   {enhanceResult === 'success' && (
+                     <motion.div
+                       initial={{ opacity: 0, y: 10 }}
+                       animate={{ opacity: 1, y: 0 }}
+                       exit={{ opacity: 0, y: -10 }}
+                       className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 relative z-10"
+                     >
+                       <p className="text-sm text-emerald-300 text-center font-medium">
+                         Pronto! Sua IA agora entende seu negócio como um especialista. Seus próximos roteiros serão baseados nestas informações.
+                       </p>
+                     </motion.div>
+                   )}
+                 </AnimatePresence>
+
+                 {/* CTA: Next step after 100% */}
+                 {completion === 100 && enhanceResult !== 'success' && (
+                   <motion.div
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     transition={{ delay: 0.3 }}
+                     className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-[#0ea5e9]/10 border border-emerald-500/20 text-center relative z-10"
+                   >
+                     <span className="material-symbols-outlined text-[32px] text-emerald-400 mb-2 block">rocket_launch</span>
+                     <h4 className="text-lg font-black text-white mb-1">IA Treinada com Sucesso! 🚀</h4>
+                     <p className="text-sm text-slate-400 mb-5">
+                       Agora que a IA conhece seu negócio, vamos criar seu primeiro conteúdo.
+                     </p>
+                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                       <Link
+                         href="/jornada"
+                         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-[#0ea5e9] text-white font-bold text-sm hover:opacity-90 transition-opacity active:scale-[0.97]"
+                       >
+                         <span className="material-symbols-outlined text-lg">explore</span>
+                         Ir para a Jornada de Conteúdo
+                       </Link>
+                       <Link
+                         href="/prompts"
+                         className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white/10 transition-colors active:scale-[0.97]"
+                       >
+                         <span className="material-symbols-outlined text-lg">auto_awesome</span>
+                         Gerar meu primeiro Roteiro
+                       </Link>
+                     </div>
+                   </motion.div>
                  )}
               </motion.div>
 
@@ -383,10 +432,10 @@ export default function PerfilPage() {
                        Escreva da forma mais natural possível, como se estivesse explicando seu negócio para um amigo.
                     </p>
                     <ul className="space-y-3 text-sm text-slate-400">
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Seja específico na dor do seu público.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Evite jargões muito técnicos, a menos que seu público entenda.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-[#0ea5e9]">"Melhorar com IA"</strong> para organizar suas respostas automaticamente.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Você pode alterar estes dados a qualquer momento e os roteiros mudarão automaticamente!</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Pense nessas respostas como se estivesse treinando um funcionário novo sobre seu negócio.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Seja específico na dor do seu público — quanto mais detalhes, mais preciso o roteiro.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-violet-400">"Melhorar Tudo com IA"</strong> para a IA organizar e enriquecer suas respostas.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Você pode alterar estes dados a qualquer momento — os roteiros se atualizam automaticamente!</li>
                     </ul>
                  </div>
               </motion.div>
