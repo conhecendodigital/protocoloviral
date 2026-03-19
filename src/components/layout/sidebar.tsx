@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import { useProfile } from '@/hooks/use-profile'
 
 // Using Material Icons strings instead of Lucide icons to match Stitch UI
 interface NavItem {
@@ -33,10 +34,24 @@ interface SidebarProps {
 export function Sidebar({ className = '' }: SidebarProps) {
   const pathname = usePathname()
   const supabase = createClient()
+  const { profile } = useProfile()
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     window.location.href = '/login'
+  }
+
+  const getDisplayName = () => {
+    if (profile?.nome_completo) return profile.nome_completo
+    if (!profile?.email) return 'Usuário'
+    return profile.email.split('@')[0].split('.')[0].replace(/^\w/, c => c.toUpperCase())
+  }
+
+  const getInitials = () => {
+    const name = profile?.nome_completo || profile?.email?.split('@')[0] || 'U'
+    const parts = name.split(/[\s.]+/)
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+    return name.substring(0, 2).toUpperCase()
   }
 
   return (
@@ -93,20 +108,33 @@ export function Sidebar({ className = '' }: SidebarProps) {
           </button>
         </div>
 
-        {/* Profile / Logout */}
+        {/* User Profile + Logout */}
         <div className="flex items-center gap-3 lg:px-2 pt-2">
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 text-slate-400 hover:text-white transition-colors"
-          >
-            <div className="size-10 rounded-full bg-slate-800 flex items-center justify-center shrink-0 ring-2 ring-[#0ea5e9]/20 hover:bg-slate-700">
-               <span className="material-symbols-outlined">logout</span>
+          {/* Avatar */}
+          <Link href="/perfil" className="shrink-0">
+            <div className="size-10 rounded-full overflow-hidden ring-2 ring-[#0ea5e9]/20 hover:ring-[#0ea5e9]/50 transition-all">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-tr from-[#0ea5e9] to-indigo-500 flex items-center justify-center">
+                  <span className="text-xs font-black text-white">{getInitials()}</span>
+                </div>
+              )}
             </div>
-            <div className="hidden lg:flex flex-col text-left">
-              <p className="text-sm font-bold text-white">Sair da Conta</p>
-              <p className="text-[10px] text-slate-400 uppercase tracking-tighter">Até logo</p>
-            </div>
-          </button>
+          </Link>
+
+          {/* Name + Sair */}
+          <div className="hidden lg:flex flex-1 items-center justify-between min-w-0">
+            <Link href="/perfil" className="truncate">
+              <p className="text-sm font-bold text-white truncate hover:text-[#0ea5e9] transition-colors">{getDisplayName()}</p>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="text-xs font-bold text-slate-500 hover:text-red-400 transition-colors px-2 py-1 rounded-lg hover:bg-red-500/10 shrink-0"
+            >
+              Sair
+            </button>
+          </div>
         </div>
       </div>
     </aside>

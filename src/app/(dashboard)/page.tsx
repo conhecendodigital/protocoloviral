@@ -17,6 +17,9 @@ export default function HomePage() {
 
   // Helper to extract name from email or use default
   const getFirstName = () => {
+    if (profile?.nome_completo) {
+      return profile.nome_completo.split(' ')[0]
+    }
     if (!profile?.email) return 'Mapeador'
     return profile.email.split('@')[0].split('.')[0].replace(/^\w/, c => c.toUpperCase())
   }
