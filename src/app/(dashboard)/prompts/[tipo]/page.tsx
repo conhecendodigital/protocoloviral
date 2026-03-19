@@ -22,6 +22,14 @@ const generators: Record<PromptType, (p: Parameters<typeof generateClarezaPrompt
   vendas: generateVendasPrompt,
 }
 
+const NEXT_PROMPT: Record<PromptType, PromptType | null> = {
+  clareza: 'persona',
+  persona: 'ideias',
+  ideias: 'roteiro',
+  roteiro: 'vendas',
+  vendas: null,
+}
+
 export default function PromptPage({ params }: { params: Promise<{ tipo: string }> }) {
   const resolvedParams = use(params)
   const tipo = resolvedParams.tipo as PromptType
@@ -196,6 +204,34 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                 onChange={e => updateField(`resposta${config.numero}`, e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all min-h-[140px]"
               />
+
+              {/* Next Prompt Button — appears when response is pasted */}
+              {((profile as Record<string, string | null>)?.[`resposta${config.numero}`] || '').trim().length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="mt-5"
+                >
+                  {NEXT_PROMPT[tipo] ? (
+                    <Link
+                      href={`/prompts/${NEXT_PROMPT[tipo]}`}
+                      className="shimmer-btn w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg group transition-transform hover:scale-[1.02] active:scale-95"
+                    >
+                      <span>Próximo Prompt: {PROMPT_CONFIGS[NEXT_PROMPT[tipo]!].titulo}</span>
+                      <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/prompts"
+                      className="w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg bg-gradient-to-r from-emerald-500 to-green-400 transition-transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-500/20"
+                    >
+                      <span className="material-symbols-outlined text-xl">check_circle</span>
+                      <span>Todos os Prompts Concluídos!</span>
+                    </Link>
+                  )}
+                </motion.div>
+              )}
             </motion.div>
           )}
 

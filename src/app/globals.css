@@ -392,3 +392,72 @@ a.glass-card:hover, button.glass-card:hover, .hover-physics:hover {
   transform: rotate(30deg);
   pointer-events: none;
 }
+
+/* ─── Onboarding Modal ─── */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  overflow-y: auto;
+}
+.onboarding-overlay::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -15%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.onboarding-overlay::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  right: -10%;
+  width: 40%;
+  height: 40%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.onboarding-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+.onboarding-next-btn {
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+  box-shadow: 0 8px 30px -4px rgba(14, 165, 233, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+.onboarding-next-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0) 40%,
+    rgba(255,255,255,0.2) 50%,
+    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0) 100%
+  );
+  transform: rotate(30deg);
+  pointer-events: none;
+}
+.onboarding-next-btn:hover {
+  box-shadow: 0 12px 40px -4px rgba(14, 165, 233, 0.5);
+  transform: translateY(-1px);
+}
