@@ -18,7 +18,7 @@ const SECTION_LABELS: Record<string, { icon: string; label: string; color: strin
 }
 
 export function OnboardingModal({ userId, onComplete, updateField }: OnboardingModalProps) {
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(-1) // -1 = intro screen
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [direction, setDirection] = useState(1) // 1 = forward, -1 = backward
   const [isCompleting, setIsCompleting] = useState(false)
@@ -26,8 +26,8 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
 
   const supabase = useMemo(() => createClient(), [])
   const totalSteps = PROFILE_FIELDS.length
-  const currentField = PROFILE_FIELDS[currentStep]
-  const progress = ((currentStep + 1) / totalSteps) * 100
+  const currentField = currentStep >= 0 ? PROFILE_FIELDS[currentStep] : null
+  const progress = currentStep >= 0 ? ((currentStep + 1) / totalSteps) * 100 : 0
 
   const currentSection = currentField ? SECTION_LABELS[currentField.section] : null
 
@@ -37,6 +37,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
   }, [currentField])
 
   const handleNext = useCallback(async () => {
+    if (!currentField) return
     // Save current answer
     const value = answers[currentField.id] || ''
     if (value.trim()) {
@@ -72,6 +73,9 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
     if (currentStep > 0) {
       setDirection(-1)
       setCurrentStep(prev => prev - 1)
+    } else if (currentStep === 0) {
+      setDirection(-1)
+      setCurrentStep(-1) // Go back to intro
     }
   }, [currentStep])
 
@@ -142,6 +146,73 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
       </div>
     )
   }
+
+  // Intro welcome screen
+  if (currentStep === -1) {
+    return (
+      <div className="onboarding-overlay">
+        <div className="w-full max-w-2xl mx-auto px-6 flex flex-col items-center justify-center min-h-screen py-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center"
+          >
+            {/* Logo */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              className="size-20 bg-gradient-to-br from-[#0ea5e9] to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(14,165,233,0.3)]"
+            >
+              <span className="material-symbols-outlined text-[40px] text-white">waving_hand</span>
+            </motion.div>
+
+            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-4 leading-tight">
+              Antes de começar,<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">preciso te conhecer melhor!</span>
+            </h2>
+
+            <p className="text-base text-slate-400 max-w-lg mx-auto mb-4 leading-relaxed">
+              Vou te fazer algumas perguntas rápidas sobre você, seu público e seus objetivos.
+            </p>
+
+            <p className="text-base text-slate-400 max-w-lg mx-auto mb-4 leading-relaxed">
+              Essas respostas vão alimentar diretamente a <span className="font-bold text-white">Inteligência Artificial</span> que gera seus prompts, roteiros, ideias de conteúdo e estratégias de vendas.
+            </p>
+
+            <p className="text-sm text-slate-500 max-w-lg mx-auto mb-10 leading-relaxed">
+              Quanto mais detalhado você for, <span className="font-bold text-[#0ea5e9]">mais personalizados e poderosos</span> serão os conteúdos gerados para o seu nicho. Sem essas informações, a IA não tem contexto suficiente.
+            </p>
+
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              onClick={() => {
+                setDirection(1)
+                setCurrentStep(0)
+              }}
+              className="onboarding-next-btn inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-white font-bold text-base transition-all active:scale-[0.97]"
+            >
+              <span>Vamos começar</span>
+              <span className="material-symbols-outlined text-xl">arrow_forward</span>
+            </motion.button>
+
+            <button
+              onClick={onComplete}
+              className="block mx-auto mt-6 text-sm font-medium text-slate-600 hover:text-slate-400 transition-colors"
+            >
+              Preencher depois
+            </button>
+          </motion.div>
+        </div>
+      </div>
+    )
+  }
+
+  // Main question flow
+  if (!currentField) return null
 
   return (
     <div className="onboarding-overlay">
@@ -267,7 +338,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
           {/* Back */}
           <button
             onClick={handleBack}
-            disabled={currentStep === 0}
+            disabled={currentStep < 0}
             className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none px-4 py-3"
           >
             <span className="material-symbols-outlined text-xl">arrow_back</span>
