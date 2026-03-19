@@ -234,7 +234,7 @@ export default function PerfilPage() {
                  </div>
                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-2">Completude do Perfil</h3>
+                      <h3 className="text-xl font-bold text-white mb-2">Seu Perfil</h3>
                       <p className="text-sm text-slate-400 max-w-sm">
                         {completion < 50 ? 'O algoritmo do mapa precisa de mais informações para gerar conteúdos precisos. Continue preenchendo.' :
                          completion < 100 ? 'Quase lá! Faltam apenas alguns detalhes para destrancar seu potencial máximo de prompts.' :
