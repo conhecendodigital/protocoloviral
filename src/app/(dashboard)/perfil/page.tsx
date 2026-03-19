@@ -7,7 +7,7 @@ import { useAutoSave } from '@/hooks/use-auto-save'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { CheckCircle2, Loader2 } from 'lucide-react'
 
 const SECTION_META = {
@@ -23,7 +23,7 @@ export default function PerfilPage() {
   const [editingName, setEditingName] = useState(false)
   const [tempName, setTempName] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
-  const [enhancingField, setEnhancingField] = useState<string | null>(null)
+  const [enhancingAll, setEnhancingAll] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const completion = getCompletionPercent()
@@ -81,25 +81,40 @@ export default function PerfilPage() {
     setEditingName(false)
   }
 
-  const handleEnhanceField = async (fieldId: string, fieldLabel: string) => {
-    const currentValue = (profile as Record<string, string | null>)?.[fieldId]
-    if (!currentValue || currentValue.trim().length < 5) return
+  const handleEnhanceAll = async () => {
+    if (!profile) return
+    const filledFields = PROFILE_FIELDS
+      .filter(f => {
+        const val = (profile as Record<string, string | null>)?.[f.id]
+        return val && val.trim().length >= 5
+      })
+      .map(f => ({
+        id: f.id,
+        label: f.label,
+        value: (profile as Record<string, string | null>)?.[f.id] || '',
+      }))
 
-    setEnhancingField(fieldId)
+    if (filledFields.length === 0) return
+
+    setEnhancingAll(true)
     try {
       const res = await fetch('/api/enhance-answer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answer: currentValue, fieldLabel }),
+        body: JSON.stringify({ fields: filledFields }),
       })
       const data = await res.json()
-      if (data.enhanced && data.enhanced !== currentValue) {
-        handleFieldChange(fieldId, data.enhanced)
+      if (data.enhanced && data.used_ai) {
+        for (const [fieldId, value] of Object.entries(data.enhanced)) {
+          if (typeof value === 'string' && value.trim()) {
+            handleFieldChange(fieldId, value)
+          }
+        }
       }
     } catch {
-      // Silently fail — keep original answer
+      // Silently fail — keep original answers
     }
-    setEnhancingField(null)
+    setEnhancingAll(false)
   }
 
   if (loading) {
@@ -221,6 +236,29 @@ export default function PerfilPage() {
                       style={{ width: `${completion}%` }}
                     />
                  </div>
+
+                 {/* Single AI Enhance Button */}
+                 {completion > 0 && (
+                   <motion.button
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     onClick={handleEnhanceAll}
+                     disabled={enhancingAll}
+                     className="mt-6 w-full py-3.5 rounded-2xl flex items-center justify-center gap-3 text-sm font-bold transition-all active:scale-[0.98] relative z-10 border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 disabled:opacity-60 disabled:pointer-events-none"
+                   >
+                     {enhancingAll ? (
+                       <>
+                         <Loader2 className="w-4 h-4 animate-spin" />
+                         <span>Melhorando respostas...</span>
+                       </>
+                     ) : (
+                       <>
+                         <span className="material-symbols-outlined text-lg">auto_fix_high</span>
+                         <span>Melhorar Tudo com IA</span>
+                       </>
+                     )}
+                   </motion.button>
+                 )}
               </motion.div>
 
               {/* Form Sections */}
@@ -251,9 +289,6 @@ export default function PerfilPage() {
                         const fieldValue = profile?.[field.id] as string || ''
                         const status = saveStatus[field.id] || 'idle'
                         const isTextarea = field.type === 'textarea'
-                        const isEnhancing = enhancingField === field.id
-                        const canEnhance = fieldValue.trim().length >= 5
-
                         return (
                           <div key={field.id} className={`space-y-2 ${isTextarea ? 'md:col-span-2' : ''}`}>
                             <div className="flex items-center justify-between">
@@ -289,30 +324,7 @@ export default function PerfilPage() {
                               )}
                             </div>
 
-                            {/* AI Enhance Button */}
-                            {canEnhance && (
-                              <AnimatePresence>
-                                <motion.button
-                                  initial={{ opacity: 0, height: 0 }}
-                                  animate={{ opacity: 1, height: 'auto' }}
-                                  onClick={() => handleEnhanceField(field.id, field.label)}
-                                  disabled={isEnhancing}
-                                  className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-[#0ea5e9] transition-colors uppercase tracking-widest ml-1 disabled:opacity-50"
-                                >
-                                  {isEnhancing ? (
-                                    <>
-                                      <Loader2 className="w-3 h-3 animate-spin" />
-                                      <span>Melhorando...</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <span className="material-symbols-outlined text-xs">auto_fix_high</span>
-                                      <span>Melhorar com IA</span>
-                                    </>
-                                  )}
-                                </motion.button>
-                              </AnimatePresence>
-                            )}
+
                           </div>
                         )
                       })}
