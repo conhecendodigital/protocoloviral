@@ -11,15 +11,16 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { profile, loading, userId, updateField } = useProfile()
+  const { profile, loading, userId, updateField, getCompletionPercent } = useProfile()
   const [dismissed, setDismissed] = useState(false)
 
   const handleOnboardingComplete = useCallback(() => {
     setDismissed(true)
   }, [])
 
-  // Show onboarding if profile loaded, not completed, and not dismissed
-  const showOnboarding = !loading && profile && !profile.onboarding_completed && !dismissed && userId
+  // Show onboarding when profile is not fully completed
+  const completion = getCompletionPercent()
+  const showOnboarding = !loading && profile && completion < 100 && !dismissed && userId
 
   return (
     <div className="bg-[#000000] text-slate-100 min-h-screen font-sans">
