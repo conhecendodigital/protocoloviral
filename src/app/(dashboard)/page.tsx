@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useProfile } from '@/hooks/use-profile'
 import { getNivelByXP } from '@/data/niveis'
 import { ACHIEVEMENTS } from '@/data/achievements'
+import { ExecutionMap } from '@/components/shared/ExecutionMap'
 
 export default function HomePage() {
   const { profile, loading, getCompletionPercent } = useProfile()
@@ -94,6 +95,14 @@ export default function HomePage() {
         </div>
 
       </motion.section>
+
+      {/* Execution Map */}
+      {!loading && (
+        <ExecutionMap
+          completion={completion}
+          isRecurring={!!profile?.onboarding_completed}
+        />
+      )}
 
       {/* Row 2: Grid of Tools */}
       <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-12">
