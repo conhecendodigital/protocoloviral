@@ -107,19 +107,28 @@ export default function PerfilPage() {
         body: JSON.stringify({ fields: filledFields }),
       })
       const data = await res.json()
-      if (data.enhanced && data.used_ai) {
+      console.log('[AI Enhance] Response:', JSON.stringify(data).substring(0, 500))
+
+      if (data.enhanced && typeof data.enhanced === 'object') {
         let updated = 0
         for (const [fieldId, value] of Object.entries(data.enhanced)) {
-          if (typeof value === 'string' && value.trim()) {
-            handleFieldChange(fieldId, value)
-            updated++
+          if (typeof value === 'string' && value.trim().length > 0) {
+            const original = filledFields.find(f => f.id === fieldId)?.value
+            // Only update if value actually changed
+            if (original !== value) {
+              handleFieldChange(fieldId, value)
+              updated++
+            }
           }
         }
-        setEnhanceResult(updated > 0 ? 'success' : 'error')
+        console.log('[AI Enhance] Updated fields:', updated, 'used_ai:', data.used_ai)
+        setEnhanceResult(updated > 0 ? 'success' : data.used_ai ? 'success' : 'error')
       } else {
+        console.error('[AI Enhance] No enhanced data in response:', data)
         setEnhanceResult('error')
       }
-    } catch {
+    } catch (err) {
+      console.error('[AI Enhance] Fetch error:', err)
       setEnhanceResult('error')
     }
     setEnhancingAll(false)
