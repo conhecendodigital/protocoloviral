@@ -20,31 +20,40 @@ export async function POST(req: NextRequest) {
 
     const fieldIds = fields.map(f => `"${f.id}": "resposta melhorada aqui"`).join(',\n  ')
 
-    const prompt = `Você é um assistente especializado em ajudar criadores de conteúdo a preencher perfis de forma estratégica.
+    const prompt = `Você é um estrategista de posicionamento digital especialista em criadores de conteúdo. Sua missão é transformar respostas genéricas e curtas em respostas ricas, específicas e estratégicas.
 
-Este perfil é usado por um sistema de IA que gera:
-- Prompts de posicionamento e clareza de nicho
-- Definição de persona e público-alvo
-- Ideias de conteúdo para Instagram
-- Roteiros completos para Reels
-- Estratégias de vendas
+CONTEXTO: Este perfil alimenta 5 geradores de IA que criam:
+1. Posicionamento e clareza de nicho
+2. Persona detalhada do público-alvo
+3. 20 ideias de conteúdo para Instagram
+4. Roteiros completos para Reels
+5. Estratégias de vendas de 14 dias
 
-As respostas do perfil alimentam diretamente esses geradores como contexto. Quanto mais completas e bem escritas, melhores serão os prompts gerados.
+Quanto mais detalhadas e específicas as respostas, MELHORES serão os prompts gerados. Respostas genéricas = prompts genéricos.
 
-Aqui estão as respostas atuais da pessoa:
+RESPOSTAS ATUAIS DA PESSOA:
 
 ${fieldsText}
 
-REGRAS OBRIGATÓRIAS:
-1. Mantenha 100% a VOZ e o TOM da pessoa
-2. NÃO invente informações que a pessoa não mencionou
-3. Apenas ORGANIZE melhor, COMPLETE frases incompletas e ENRIQUEÇA com base no que ela já escreveu
-4. Se uma resposta já estiver boa, mantenha como está
-5. O resultado deve parecer que a PRÓPRIA PESSOA escreveu com mais calma
-6. NÃO use bullet points, emojis, hashtags ou formatação especial
-7. Mantenha respostas curtas se o campo era curto
+SUA TAREFA — ENRIQUEÇA CADA RESPOSTA:
 
-Retorne EXATAMENTE neste formato JSON, sem nenhum texto extra, sem markdown:
+1. **CRUZE as informações**: Use TODOS os campos como contexto. Se a pessoa disse que o nicho é "Finanças" e o público é "20 a 45 anos", ao melhorar a "dor" inclua dores ESPECÍFICAS desse público nesse nicho (ex: "não conseguem juntar dinheiro no fim do mês", "gastam por impulso").
+
+2. **EXPANDA respostas curtas**: Se a pessoa escreveu "Finanças", transforme em algo como "Educação financeira para pessoas comuns que querem sair das dívidas e construir uma reserva de emergência". Adicione contexto que faça sentido com os outros campos.
+
+3. **ESPECIFIQUE o público**: Se escreveu "20 a 45 anos homens e mulheres", expanda com comportamentos, dores e desejos desse público no nicho da pessoa.
+
+4. **DETALHE as dores**: Transforme dores genéricas em frases que a pessoa do público falaria. "Falta de dinheiro" vira "Não consigo pagar as contas no fim do mês, sempre fico no vermelho e não sei por onde começar a organizar minhas finanças."
+
+5. **ENRIQUEÇA resultados**: Se "sai do 0 a 425 seguidores", expanda com o que isso significou: "Saí do zero absoluto e alcancei 425 seguidores orgânicos em X tempo, provando que é possível crescer mesmo começando do nada."
+
+6. **MANTENHA A VOZ**: Escreva como se fosse a pessoa explicando para um amigo. Nada robótico, nada formal demais. Use a linguagem que a pessoa já demonstrou.
+
+7. **NÃO use**: bullet points, emojis, hashtags, markdown. Apenas texto corrido natural.
+
+8. **CADA CAMPO deve ter pelo menos 2-3 frases** (exceto campos naturalmente curtos como "nicho" ou "tempo").
+
+Retorne EXATAMENTE neste formato JSON, sem texto extra:
 {
   ${fieldIds}
 }`
@@ -55,8 +64,8 @@ Retorne EXATAMENTE neste formato JSON, sem nenhum texto extra, sem markdown:
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 2000,
+          temperature: 0.5,
+          maxOutputTokens: 3000,
         },
       }),
     })
