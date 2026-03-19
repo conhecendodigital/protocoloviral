@@ -1,27 +1,13 @@
 'use client'
 
-import { useState, useCallback } from 'react'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
-import { OnboardingModal } from '@/components/shared/OnboardingModal'
-import { useProfile } from '@/hooks/use-profile'
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { profile, loading, userId, updateField, getCompletionPercent } = useProfile()
-  const [dismissed, setDismissed] = useState(false)
-
-  const handleOnboardingComplete = useCallback(() => {
-    setDismissed(true)
-  }, [])
-
-  // Show onboarding when profile is not fully completed
-  const completion = getCompletionPercent()
-  const showOnboarding = !loading && profile && completion < 100 && !dismissed && userId
-
   return (
     <div className="bg-[#000000] text-slate-100 min-h-screen font-sans">
       {/* Background Elements */}
@@ -39,15 +25,7 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
-
-      {/* Onboarding Modal — First Access */}
-      {showOnboarding && (
-        <OnboardingModal
-          userId={userId}
-          onComplete={handleOnboardingComplete}
-          updateField={updateField}
-        />
-      )}
     </div>
   )
 }
+

@@ -5,6 +5,7 @@ import { FASES } from '@/types/jornada'
 import { CopyButton } from '@/components/shared/copy-button'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 
 const STORAGE_KEY = 'jornada-completed'
 
@@ -191,20 +192,29 @@ export default function JornadaPage() {
                               </div>
                             </div>
 
-                            {/* ✅ Tarefa Concluída Button */}
-                            <button
-                              onClick={() => toggleCompleted(est.id)}
-                              className={`w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all active:scale-[0.98] ${
-                                isDone 
-                                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20' 
-                                  : 'bg-gradient-to-r from-[#0ea5e9] to-blue-600 text-white shadow-lg shadow-[#0ea5e9]/20 hover:shadow-[#0ea5e9]/40'
-                              }`}
-                            >
-                              <span className="material-symbols-outlined text-xl">
-                                {isDone ? 'undo' : 'check_circle'}
-                              </span>
-                              <span>{isDone ? 'Desfazer Conclusão' : 'Tarefa Concluída'}</span>
-                            </button>
+                            {/* Action Buttons */}
+                            <div className="flex flex-col sm:flex-row gap-3">
+                              <Link
+                                href="/prompts"
+                                className="flex-1 flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-sm uppercase tracking-widest bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 transition-all active:scale-[0.98]"
+                              >
+                                <span className="material-symbols-outlined text-xl">magic_button</span>
+                                <span>Abrir Gerador de Prompts</span>
+                              </Link>
+                              <button
+                                onClick={() => toggleCompleted(est.id)}
+                                className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all active:scale-[0.98] ${
+                                  isDone 
+                                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20' 
+                                    : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'
+                                }`}
+                              >
+                                <span className="material-symbols-outlined text-xl">
+                                  {isDone ? 'undo' : 'check_circle'}
+                                </span>
+                                <span>{isDone ? 'Desfazer' : 'Concluída'}</span>
+                              </button>
+                            </div>
 
                           </div>
                         </motion.div>

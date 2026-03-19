@@ -84,13 +84,13 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
       },
       {
         icon: 'play_circle',
-        title: 'Assistir as Aulas',
+        title: 'Entender o Método',
         description: step1Done
-          ? 'Assista as aulas do método para aprender a estratégia completa de conteúdo.'
+          ? 'Veja a visão geral rápida de como usar a plataforma para criar conteúdo.'
           : 'Desbloqueie ao completar o treinamento da IA.',
         status: step1Done ? 'current' : 'locked',
         href: HOTMART_AULAS_URL,
-        btnLabel: 'Assistir Aulas',
+        btnLabel: 'Ver Visão Geral',
         color: '#ef4444',
         external: true,
       },
