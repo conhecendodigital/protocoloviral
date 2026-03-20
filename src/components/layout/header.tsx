@@ -5,7 +5,6 @@ import { useProfile } from '@/hooks/use-profile'
 import { getNivelByXP, getProgressoNivel } from '@/data/niveis'
 import { useNotifications } from '@/hooks/use-notifications'
 import { NotificationPanel } from '@/components/shared/NotificationPanel'
-import { ACHIEVEMENTS } from '@/data/achievements'
 import Link from 'next/link'
 
 interface HeaderProps {
@@ -16,7 +15,7 @@ interface HeaderProps {
 }
 
 export function Header({ title, subtitle, hideOnDesktop = false, className = '' }: HeaderProps) {
-  const { profile, loading, getCompletionPercent } = useProfile()
+  const { profile, loading, getCompletionPercent, userId } = useProfile()
   
   const xp = profile?.xp || 0
   const nivel = getNivelByXP(xp)
@@ -31,6 +30,7 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
     xp,
     level: nivel.nivel,
     conquistasCount: profile?.conquistas?.length || 0,
+    userId,
   })
 
   return (

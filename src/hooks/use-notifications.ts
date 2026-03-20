@@ -1,27 +1,25 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { 
   Notification, 
   NotificationContext, 
   NOTIFICATION_TEMPLATES 
 } from '@/data/notifications'
 
-const STORAGE_KEY = 'platform-notifications-read'
+interface UseNotificationsProps {
+  completion: number
+  hasAvatar: boolean
+  userName: string
+  onboardingCompleted: boolean
+  xp: number
+  level: number
+  conquistasCount: number
+  userId?: string
+}
+
 const JORNADA_KEY = 'jornada-completed'
-
-function loadReadIds(): Set<string> {
-  if (typeof window === 'undefined') return new Set()
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return new Set(JSON.parse(raw))
-  } catch { /* ignore */ }
-  return new Set()
-}
-
-function saveReadIds(ids: Set<string>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]))
-}
 
 function loadJornadaDone(): number {
   if (typeof window === 'undefined') return 0
@@ -32,16 +30,6 @@ function loadJornadaDone(): number {
   return 0
 }
 
-interface UseNotificationsProps {
-  completion: number
-  hasAvatar: boolean
-  userName: string
-  onboardingCompleted: boolean
-  xp: number
-  level: number
-  conquistasCount: number
-}
-
 export function useNotifications({
   completion,
   hasAvatar,
@@ -50,14 +38,42 @@ export function useNotifications({
   xp,
   level,
   conquistasCount,
+  userId,
 }: UseNotificationsProps) {
   const [readIds, setReadIds] = useState<Set<string>>(new Set())
   const [jornadaDone, setJornadaDone] = useState(0)
+  const [loaded, setLoaded] = useState(false)
+  const supabase = useMemo(() => createClient(), [])
 
+  // Load read IDs from Supabase
   useEffect(() => {
-    setReadIds(loadReadIds())
+    if (!userId) return
+    
+    async function loadFromSupabase() {
+      const { data } = await supabase
+        .from('profiles')
+        .select('notifications_read')
+        .eq('id', userId)
+        .single()
+
+      if (data?.notifications_read) {
+        setReadIds(new Set(data.notifications_read))
+      }
+      setLoaded(true)
+    }
+
+    loadFromSupabase()
     setJornadaDone(loadJornadaDone())
-  }, [])
+  }, [userId, supabase])
+
+  // Save read IDs to Supabase
+  const saveToSupabase = useCallback(async (ids: Set<string>) => {
+    if (!userId) return
+    await supabase
+      .from('profiles')
+      .update({ notifications_read: [...ids] })
+      .eq('id', userId)
+  }, [userId, supabase])
 
   const now = new Date()
   const ctx: NotificationContext = useMemo(() => ({
@@ -72,7 +88,8 @@ export function useNotifications({
     xp,
     level,
     conquistasCount,
-  }), [completion, jornadaDone, hasAvatar, userName, onboardingCompleted, xp, level, conquistasCount, now.getDay(), now.getHours()])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [completion, jornadaDone, hasAvatar, userName, onboardingCompleted, xp, level, conquistasCount])
 
   // Generate notifications from templates based on current context
   const notifications: Notification[] = useMemo(() => {
@@ -87,7 +104,7 @@ export function useNotifications({
         message: t.message,
         href: t.href,
         read: readIds.has(`${t.type}-${t.title.replace(/\s+/g, '-').toLowerCase()}`),
-        timestamp: Date.now() - (i * 60000 * 5), // stagger timestamps
+        timestamp: Date.now() - (i * 60000 * 5),
       }))
   }, [ctx, readIds])
 
@@ -97,24 +114,25 @@ export function useNotifications({
     setReadIds(prev => {
       const next = new Set(prev)
       next.add(id)
-      saveReadIds(next)
+      saveToSupabase(next)
       return next
     })
-  }, [])
+  }, [saveToSupabase])
 
   const markAllAsRead = useCallback(() => {
     setReadIds(prev => {
       const next = new Set(prev)
       notifications.forEach(n => next.add(n.id))
-      saveReadIds(next)
+      saveToSupabase(next)
       return next
     })
-  }, [notifications])
+  }, [notifications, saveToSupabase])
 
   return {
     notifications,
     unreadCount,
     markAsRead,
     markAllAsRead,
+    loaded,
   }
 }
