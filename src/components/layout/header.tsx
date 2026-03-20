@@ -3,6 +3,9 @@
 import { MobileNav } from './mobile-nav'
 import { useProfile } from '@/hooks/use-profile'
 import { getNivelByXP, getProgressoNivel } from '@/data/niveis'
+import { useNotifications } from '@/hooks/use-notifications'
+import { NotificationPanel } from '@/components/shared/NotificationPanel'
+import { ACHIEVEMENTS } from '@/data/achievements'
 import Link from 'next/link'
 
 interface HeaderProps {
@@ -19,6 +22,16 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
   const nivel = getNivelByXP(xp)
   const progresso = getProgressoNivel(xp)
   const completion = getCompletionPercent()
+
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications({
+    completion,
+    hasAvatar: !!profile?.avatar_url,
+    userName: profile?.nome_completo || '',
+    onboardingCompleted: !!profile?.onboarding_completed,
+    xp,
+    level: nivel.nivel,
+    conquistasCount: profile?.conquistas?.length || 0,
+  })
 
   return (
     <header className={`glass-header px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between ${hideOnDesktop ? 'lg:hidden' : ''} ${className}`}>
@@ -74,10 +87,13 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
           </div>
         </Link>
 
-        {/* Bell */}
-        <button className="size-9 sm:size-10 rounded-full bg-white/5 flex items-center justify-center text-slate-300 hover:text-white transition-colors border border-white/10">
-          <span className="material-symbols-outlined text-xl">notifications</span>
-        </button>
+        {/* Notification Bell + Panel */}
+        <NotificationPanel 
+          notifications={notifications}
+          unreadCount={unreadCount}
+          onRead={markAsRead}
+          onReadAll={markAllAsRead}
+        />
 
         {/* Ver Perfil Button (desktop only) */}
         <Link href="/perfil" className="hidden sm:block px-5 py-2 rounded-full shimmer-btn text-white text-sm font-bold tracking-tight shadow-lg shadow-[#0ea5e9]/20">
