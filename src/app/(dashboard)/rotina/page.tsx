@@ -5,11 +5,14 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Checkbox } from '@/components/ui/checkbox'
 
+const HOTMART_AULAS_URL = 'https://go.hotmart.com/I99444830U'
+
 interface RotinaItem {
   id: string
   label: string
   noeixo: string
   tempo: string
+  href?: string
 }
 
 const ROTINA_SEMANAL: { dia: string; emoji: string; items: RotinaItem[] }[] = [
@@ -17,6 +20,7 @@ const ROTINA_SEMANAL: { dia: string; emoji: string; items: RotinaItem[] }[] = [
     dia: 'Segunda-feira',
     emoji: '🎯',
     items: [
+      { id: 'seg-0', label: '📚 Assistir uma aula do treinamento', noeixo: '-', tempo: '15 min', href: HOTMART_AULAS_URL },
       { id: 'seg-1', label: 'Rever dados do perfil no Dashboard', noeixo: 'N', tempo: '10 min' },
       { id: 'seg-2', label: 'Gerar Prompt 1 (Clareza) ou revisitar posicionamento', noeixo: 'N', tempo: '15 min' },
       { id: 'seg-3', label: 'Planejar conteúdo da semana com Prompt 3 (Ideias)', noeixo: 'E', tempo: '20 min' },
@@ -26,6 +30,7 @@ const ROTINA_SEMANAL: { dia: string; emoji: string; items: RotinaItem[] }[] = [
     dia: 'Terça-feira',
     emoji: '👥',
     items: [
+      { id: 'ter-0', label: '📚 Assistir uma aula do treinamento', noeixo: '-', tempo: '15 min', href: HOTMART_AULAS_URL },
       { id: 'ter-1', label: 'Revisar Persona (Prompt 2) e atualizar se necessário', noeixo: 'O', tempo: '15 min' },
       { id: 'ter-2', label: 'Criar conteúdo de ALCANCE usando ideia da semana', noeixo: 'I', tempo: '30 min' },
       { id: 'ter-3', label: 'Interagir com 10 perfis do nicho', noeixo: 'O', tempo: '15 min' },
@@ -35,6 +40,7 @@ const ROTINA_SEMANAL: { dia: string; emoji: string; items: RotinaItem[] }[] = [
     dia: 'Quarta-feira',
     emoji: '📝',
     items: [
+      { id: 'qua-0', label: '📚 Assistir uma aula do treinamento', noeixo: '-', tempo: '15 min', href: HOTMART_AULAS_URL },
       { id: 'qua-1', label: 'Gerar Roteiro (Prompt 4) para conteúdo principal', noeixo: 'X', tempo: '15 min' },
       { id: 'qua-2', label: 'Gravar/criar conteúdo usando o roteiro', noeixo: 'X', tempo: '30 min' },
       { id: 'qua-3', label: 'Usar 2 ganchos virais da biblioteca', noeixo: 'E', tempo: '10 min' },
@@ -44,6 +50,7 @@ const ROTINA_SEMANAL: { dia: string; emoji: string; items: RotinaItem[] }[] = [
     dia: 'Quinta-feira',
     emoji: '💬',
     items: [
+      { id: 'qui-0', label: '📚 Assistir uma aula do treinamento', noeixo: '-', tempo: '15 min', href: HOTMART_AULAS_URL },
       { id: 'qui-1', label: 'Criar sequência de Stories usando frameworks', noeixo: 'O', tempo: '20 min' },
       { id: 'qui-2', label: 'Conteúdo de CONEXÃO (história, bastidores)', noeixo: 'I', tempo: '20 min' },
       { id: 'qui-3', label: 'Responder todos os comentários e DMs', noeixo: 'O', tempo: '15 min' },
@@ -53,6 +60,7 @@ const ROTINA_SEMANAL: { dia: string; emoji: string; items: RotinaItem[] }[] = [
     dia: 'Sexta-feira',
     emoji: '💰',
     items: [
+      { id: 'sex-0', label: '📚 Assistir uma aula do treinamento', noeixo: '-', tempo: '15 min', href: HOTMART_AULAS_URL },
       { id: 'sex-1', label: 'Conteúdo de VENDA sutil (preparação)', noeixo: 'I', tempo: '25 min' },
       { id: 'sex-2', label: 'Revisar estratégia de vendas (Prompt 5 se aplicável)', noeixo: 'X', tempo: '15 min' },
       { id: 'sex-3', label: 'Analisar métricas da semana', noeixo: 'O', tempo: '10 min' },
@@ -62,6 +70,7 @@ const ROTINA_SEMANAL: { dia: string; emoji: string; items: RotinaItem[] }[] = [
     dia: 'Sábado',
     emoji: '🎬',
     items: [
+      { id: 'sab-0', label: '📚 Assistir uma aula do treinamento', noeixo: '-', tempo: '15 min', href: HOTMART_AULAS_URL },
       { id: 'sab-1', label: 'Gravar batch de conteúdo para próxima semana', noeixo: 'X', tempo: '45 min' },
       { id: 'sab-2', label: 'Explorar tendências e adaptar ao nicho', noeixo: 'E', tempo: '15 min' },
     ],
@@ -70,6 +79,7 @@ const ROTINA_SEMANAL: { dia: string; emoji: string; items: RotinaItem[] }[] = [
     dia: 'Domingo',
     emoji: '🧠',
     items: [
+      { id: 'dom-0', label: '📚 Assistir uma aula do treinamento', noeixo: '-', tempo: '15 min', href: HOTMART_AULAS_URL },
       { id: 'dom-1', label: 'Revisar conquistas da semana na Jornada', noeixo: 'N', tempo: '10 min' },
       { id: 'dom-2', label: 'Planejar temas da próxima semana', noeixo: 'E', tempo: '15 min' },
       { id: 'dom-3', label: 'Descansar e consumir conteúdo de referência', noeixo: '-', tempo: 'Livre' },
@@ -167,7 +177,7 @@ export default function RotinaPage() {
                   {dia.items.map(item => {
                     const isChecked = checked[item.id] || false;
                     return (
-                      <label key={item.id} className="flex items-start gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-white/5">
+                      <label key={item.id} className={`flex items-start gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-white/5 ${item.href ? 'bg-violet-500/[0.03] border-violet-500/10' : ''}`}>
                         <div className="mt-0.5 shrink-0 relative">
                           <Checkbox
                             checked={isChecked}
@@ -196,6 +206,19 @@ export default function RotinaPage() {
                               <span className="material-symbols-outlined text-[14px]">timer</span>
                               {item.tempo}
                             </span>
+                            {item.href && !isChecked && (
+                              <a
+                                href={item.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-1 text-[11px] font-bold text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2.5 py-1 rounded-full border border-violet-500/20 transition-all"
+                              >
+                                <span className="material-symbols-outlined text-[13px]">play_circle</span>
+                                Acessar Aula
+                                <span className="material-symbols-outlined text-[11px]">open_in_new</span>
+                              </a>
+                            )}
                           </div>
                         </div>
                       </label>
