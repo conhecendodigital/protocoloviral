@@ -2,9 +2,11 @@
 
 import { ESTACOES_JORNADA } from '@/data/jornada-estacoes'
 import { FASES } from '@/types/jornada'
+import { PROMPT_CONFIGS, type PromptType } from '@/types/prompt'
 import { CopyButton } from '@/components/shared/copy-button'
+import { useProfile } from '@/hooks/use-profile'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 
 const STORAGE_KEY = 'jornada-completed'
@@ -22,13 +24,39 @@ function saveCompleted(set: Set<number>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]))
 }
 
+/** Map promptTipo to the profile response field */
+const PROMPT_RESPONSE_MAP: Record<PromptType, string> = {
+  clareza: 'resposta1',
+  persona: 'resposta2',
+  ideias: 'resposta3',
+  roteiro: 'resposta4',
+  vendas: 'resposta5',
+}
+
 export default function JornadaPage() {
   const [expanded, setExpanded] = useState<number | null>(null)
   const [completed, setCompleted] = useState<Set<number>>(new Set())
+  const { profile } = useProfile()
 
   useEffect(() => {
     setCompleted(loadCompleted())
   }, [])
+
+  // Auto-completed stations based on prompt responses
+  const autoCompleted = useMemo(() => {
+    if (!profile) return new Set<number>()
+    const auto = new Set<number>()
+    ESTACOES_JORNADA.forEach(est => {
+      if (est.promptTipo) {
+        const field = PROMPT_RESPONSE_MAP[est.promptTipo]
+        const value = (profile as Record<string, string | null>)?.[field]
+        if (value && value.trim().length > 0) {
+          auto.add(est.id)
+        }
+      }
+    })
+    return auto
+  }, [profile])
 
   const toggleCompleted = (id: number) => {
     setCompleted(prev => {
@@ -41,7 +69,8 @@ export default function JornadaPage() {
   }
 
   const total = ESTACOES_JORNADA.length
-  const done = completed.size
+  const allDone = new Set([...completed, ...autoCompleted])
+  const done = allDone.size
   const progress = total > 0 ? Math.round((done / total) * 100) : 0
 
   return (
@@ -55,7 +84,7 @@ export default function JornadaPage() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">JORNADA DE</span> CONTEÚDO
             </motion.h1>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
-              Siga o mapa metodológico. Cada estação contém um framework pronto para cópia e aplicação imediata na sua estratégia de conteúdo.
+              Siga o mapa metodológico. Cada estação contém uma dica prática para aplicar imediatamente e um prompt para usar com o Gerador.
             </motion.p>
 
             {/* Progress Bar */}
@@ -94,7 +123,9 @@ export default function JornadaPage() {
             {ESTACOES_JORNADA.map((est, i) => {
               const isExpanded = expanded === est.id
               const fase = FASES.find(f => f.numero === est.fase)
-              const isDone = completed.has(est.id)
+              const isManualDone = completed.has(est.id)
+              const isAutoDone = autoCompleted.has(est.id)
+              const isDone = isManualDone || isAutoDone
 
               return (
                 <motion.div
@@ -128,7 +159,13 @@ export default function JornadaPage() {
                             #{est.id.toString().padStart(2, '0')}
                           </span>
                           <h3 className={`font-bold text-xl truncate tracking-tight ${isDone ? 'text-emerald-400 line-through decoration-emerald-400/30' : 'text-white'}`}>{est.nome}</h3>
-                          {isDone && (
+                          {isAutoDone && !isManualDone && (
+                            <span className="bg-violet-500/20 text-violet-400 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px]">auto_awesome</span>
+                              Via Gerador
+                            </span>
+                          )}
+                          {isManualDone && (
                             <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded flex items-center gap-1">
                               <span className="material-symbols-outlined text-[12px]">done</span>
                               Concluída
@@ -168,9 +205,17 @@ export default function JornadaPage() {
                               <span className="material-symbols-outlined text-[14px] text-[#0ea5e9]">trip_origin</span>
                               <span className="font-medium uppercase tracking-widest">Fase {est.fase}: <span className="text-white font-bold">{fase?.nome}</span></span>
                             </div>
-                            
-                            {/* Station Description */}
-                            <p className="text-[15px] leading-relaxed text-slate-300">{est.descricao}</p>
+
+                            {/* Practical Tip Card */}
+                            <div className="rounded-xl bg-gradient-to-br from-[#0ea5e9]/5 to-violet-500/5 border border-[#0ea5e9]/20 p-6">
+                              <div className="flex items-center gap-2 mb-4">
+                                <span className="material-symbols-outlined text-[#0ea5e9] text-xl">lightbulb</span>
+                                <h4 className="text-sm font-black text-[#0ea5e9] uppercase tracking-widest">Dica Prática</h4>
+                              </div>
+                              <pre className="text-[14px] text-slate-300 whitespace-pre-wrap leading-relaxed font-sans">
+                                {est.dica}
+                              </pre>
+                            </div>
                             
                             {/* Terminal Sandbox */}
                             <div className="rounded-xl overflow-hidden border border-white/10 bg-[#000000] shadow-2xl relative group/terminal">
@@ -194,13 +239,13 @@ export default function JornadaPage() {
 
                             {/* Action Buttons */}
                             <div className="flex flex-col sm:flex-row gap-3">
-                              {est.useGerador && (
+                              {est.promptTipo && (
                                 <Link
-                                  href="/prompts"
+                                  href={`/prompts/${est.promptTipo}`}
                                   className="flex-1 flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-sm uppercase tracking-widest bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 transition-all active:scale-[0.98]"
                                 >
                                   <span className="material-symbols-outlined text-xl">magic_button</span>
-                                  <span>Abrir Gerador de Prompts</span>
+                                  <span>Abrir {PROMPT_CONFIGS[est.promptTipo].titulo}</span>
                                 </Link>
                               )}
                               <button
@@ -233,3 +278,4 @@ export default function JornadaPage() {
     </>
   )
 }
+

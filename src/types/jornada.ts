@@ -1,3 +1,5 @@
+import type { PromptType } from './prompt'
+
 export interface Estacao {
   id: number
   nome: string
@@ -5,8 +7,9 @@ export interface Estacao {
   fase: number
   marco: boolean
   descricao: string
+  dica: string
   prompt: string
-  useGerador?: boolean
+  promptTipo?: PromptType
 }
 
 export interface Fase {
