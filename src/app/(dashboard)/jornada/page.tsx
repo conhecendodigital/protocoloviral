@@ -194,13 +194,15 @@ export default function JornadaPage() {
 
                             {/* Action Buttons */}
                             <div className="flex flex-col sm:flex-row gap-3">
-                              <Link
-                                href="/prompts"
-                                className="flex-1 flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-sm uppercase tracking-widest bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 transition-all active:scale-[0.98]"
-                              >
-                                <span className="material-symbols-outlined text-xl">magic_button</span>
-                                <span>Abrir Gerador de Prompts</span>
-                              </Link>
+                              {est.useGerador && (
+                                <Link
+                                  href="/prompts"
+                                  className="flex-1 flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-sm uppercase tracking-widest bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 transition-all active:scale-[0.98]"
+                                >
+                                  <span className="material-symbols-outlined text-xl">magic_button</span>
+                                  <span>Abrir Gerador de Prompts</span>
+                                </Link>
+                              )}
                               <button
                                 onClick={() => toggleCompleted(est.id)}
                                 className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all active:scale-[0.98] ${

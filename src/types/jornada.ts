@@ -6,6 +6,7 @@ export interface Estacao {
   marco: boolean
   descricao: string
   prompt: string
+  useGerador?: boolean
 }
 
 export interface Fase {
