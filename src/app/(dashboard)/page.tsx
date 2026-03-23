@@ -1,13 +1,26 @@
 'use client'
 
+import { useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useProfile } from '@/hooks/use-profile'
 import { ExecutionMap } from '@/components/shared/ExecutionMap'
+import { createClient } from '@/lib/supabase/client'
 
 export default function HomePage() {
-  const { profile, loading, getCompletionPercent } = useProfile()
+  const { profile, loading, userId, fetchProfile, getCompletionPercent } = useProfile()
   const completion = getCompletionPercent()
+  const supabase = useMemo(() => createClient(), [])
+
+  const handleConfirmMetodo = useCallback(async () => {
+    if (!userId) return
+    await supabase
+      .from('profiles')
+      .update({ metodo_concluido: true })
+      .eq('id', userId)
+    // Re-fetch profile to update UI
+    fetchProfile()
+  }, [userId, supabase, fetchProfile])
 
   // Helper to extract name from email or use default
   const getFirstName = () => {
@@ -39,6 +52,8 @@ export default function HomePage() {
         <ExecutionMap
           completion={completion}
           isRecurring={!!profile?.onboarding_completed}
+          metodoConcluido={!!profile?.metodo_concluido}
+          onConfirmMetodo={handleConfirmMetodo}
         />
       )}
 

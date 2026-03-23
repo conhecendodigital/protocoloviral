@@ -25,6 +25,7 @@ export interface Profile {
   produto_venda: string | null
   xp: number
   nivel: number
+  metodo_concluido: boolean
   onboarding_completed: boolean
   conquistas: string[]
   created_at: string

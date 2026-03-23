@@ -1,6 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 
 type StepStatus = 'done' | 'current' | 'locked'
@@ -12,8 +13,10 @@ interface Step {
   status: StepStatus
   href: string
   btnLabel: string
+  doneBtnLabel: string
   color: string
   external?: boolean
+  showConfirm?: boolean
 }
 
 const HOTMART_AULAS_URL = 'https://go.hotmart.com/I99444830U' // URL das aulas na Hotmart
@@ -21,9 +24,18 @@ const HOTMART_AULAS_URL = 'https://go.hotmart.com/I99444830U' // URL das aulas n
 interface ExecutionMapProps {
   completion: number
   isRecurring?: boolean
+  metodoConcluido?: boolean
+  onConfirmMetodo?: () => void
 }
 
-export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapProps) {
+export function ExecutionMap({ completion, isRecurring = false, metodoConcluido = false, onConfirmMetodo }: ExecutionMapProps) {
+  const [confirming, setConfirming] = useState(false)
+
+  const handleConfirmMetodo = async () => {
+    setConfirming(true)
+    onConfirmMetodo?.()
+  }
+
   const getSteps = (): Step[] => {
     // State 3: Recurring user (daily routine)
     if (isRecurring && completion === 100) {
@@ -35,6 +47,7 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
           status: 'current',
           href: '/ganchos',
           btnLabel: 'Ver Ganchos',
+          doneBtnLabel: 'Ver Ganchos',
           color: '#06b6d4',
         },
         {
@@ -44,6 +57,7 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
           status: 'locked',
           href: '/prompts',
           btnLabel: 'Abrir Gerador',
+          doneBtnLabel: 'Abrir Gerador',
           color: '#8b5cf6',
         },
         {
@@ -53,6 +67,7 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
           status: 'locked',
           href: '/rotina',
           btnLabel: 'Ver Rotina',
+          doneBtnLabel: 'Ver Rotina',
           color: '#10b981',
         },
         {
@@ -62,6 +77,7 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
           status: 'locked',
           href: '/rotina',
           btnLabel: 'Ver Checklist',
+          doneBtnLabel: 'Ver Checklist',
           color: '#f59e0b',
         },
       ]
@@ -69,6 +85,7 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
 
     // State 1 & 2: New user flow (4 steps)
     const step1Done = completion === 100
+    const step2Done = step1Done && metodoConcluido
 
     return [
       {
@@ -80,27 +97,33 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
         status: step1Done ? 'done' : 'current',
         href: '/perfil',
         btnLabel: 'Completar Perfil',
+        doneBtnLabel: 'Ver Perfil',
         color: '#f59e0b',
       },
       {
         icon: 'play_circle',
         title: 'Entender o Método',
-        description: step1Done
-          ? 'Veja a visão geral rápida de como usar a plataforma para criar conteúdo.'
-          : 'Desbloqueie ao completar o treinamento da IA.',
-        status: step1Done ? 'current' : 'locked',
+        description: step2Done
+          ? 'Você já viu a visão geral do método.'
+          : step1Done
+            ? 'Veja a visão geral rápida de como usar a plataforma para criar conteúdo.'
+            : 'Desbloqueie ao completar o treinamento da IA.',
+        status: step2Done ? 'done' : step1Done ? 'current' : 'locked',
         href: HOTMART_AULAS_URL,
         btnLabel: 'Ver Visão Geral',
+        doneBtnLabel: 'Ver Novamente',
         color: '#ef4444',
         external: true,
+        showConfirm: step1Done && !step2Done,
       },
       {
         icon: 'explore',
         title: 'Jornada de Conteúdo',
         description: 'Siga o mapa metodológico com 30 estações e frameworks prontos.',
-        status: 'locked',
+        status: step2Done ? 'current' : 'locked',
         href: '/jornada',
         btnLabel: 'Abrir Jornada',
+        doneBtnLabel: 'Abrir Jornada',
         color: '#0ea5e9',
       },
       {
@@ -110,6 +133,7 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
         status: 'locked',
         href: '/prompts',
         btnLabel: 'Definir Agora',
+        doneBtnLabel: 'Definir Agora',
         color: '#8b5cf6',
       },
     ]
@@ -217,39 +241,72 @@ export function ExecutionMap({ completion, isRecurring = false }: ExecutionMapPr
                 {step.description}
               </p>
 
-              {/* Action Button */}
+              {/* Action Buttons */}
               {step.status === 'current' && (
+                <div className="flex flex-col gap-2">
+                  {step.external ? (
+                    <a
+                      href={step.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
+                      style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
+                    >
+                      <span className="material-symbols-outlined text-base">open_in_new</span>
+                      {step.btnLabel}
+                    </a>
+                  ) : (
+                    <Link
+                      href={step.href}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
+                      style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
+                    >
+                      <span className="material-symbols-outlined text-base">arrow_forward</span>
+                      {step.btnLabel}
+                    </Link>
+                  )}
+
+                  {/* Confirm button for step 2 */}
+                  {step.showConfirm && (
+                    <AnimatePresence>
+                      <motion.button
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        onClick={handleConfirmMetodo}
+                        disabled={confirming}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition-all hover:bg-emerald-500/20 active:scale-[0.97] disabled:opacity-60"
+                      >
+                        <span className="material-symbols-outlined text-base">
+                          {confirming ? 'sync' : 'check_circle'}
+                        </span>
+                        {confirming ? 'Salvando...' : 'Já concluí esta etapa'}
+                      </motion.button>
+                    </AnimatePresence>
+                  )}
+                </div>
+              )}
+
+              {step.status === 'done' && (
                 step.external ? (
                   <a
                     href={step.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
-                    style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition-all hover:bg-emerald-500/20"
                   >
-                    <span className="material-symbols-outlined text-base">open_in_new</span>
-                    {step.btnLabel}
+                    <span className="material-symbols-outlined text-base">visibility</span>
+                    {step.doneBtnLabel}
                   </a>
                 ) : (
                   <Link
                     href={step.href}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
-                    style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition-all hover:bg-emerald-500/20"
                   >
-                    <span className="material-symbols-outlined text-base">arrow_forward</span>
-                    {step.btnLabel}
+                    <span className="material-symbols-outlined text-base">visibility</span>
+                    {step.doneBtnLabel}
                   </Link>
                 )
-              )}
-
-              {step.status === 'done' && (
-                <Link
-                  href={step.href}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition-all hover:bg-emerald-500/20"
-                >
-                  <span className="material-symbols-outlined text-base">visibility</span>
-                  Ver Perfil
-                </Link>
               )}
 
               {step.status === 'locked' && (
