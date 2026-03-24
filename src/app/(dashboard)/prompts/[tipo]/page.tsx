@@ -110,7 +110,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
             <div className="flex items-center gap-4 mb-2">
               <span className="text-4xl">{config.icone}</span>
               <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                Prompt {config.numero}: {config.titulo}
+                Passo {config.numero}: {config.titulo}
               </h1>
             </div>
             <p className="text-slate-400">{config.descricao}</p>
@@ -125,10 +125,10 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                   <span className="material-symbols-outlined text-amber-500 shrink-0">warning</span>
                   <div>
                     <p className="text-sm font-bold text-amber-400">
-                      Complete o Prompt {PROMPT_CONFIGS[deps.missing].numero} ({PROMPT_CONFIGS[deps.missing].titulo}) primeiro
+                      Faça o Passo {PROMPT_CONFIGS[deps.missing].numero} ({PROMPT_CONFIGS[deps.missing].titulo}) antes
                     </p>
                     <p className="text-xs text-slate-400 mt-1 mb-3">
-                      Cole a resposta do ChatGPT no campo abaixo após gerar o prompt anterior.
+                      Cole a resposta que o ChatGPT te deu no campo abaixo.
                     </p>
                     <Link href={`/prompts/${deps.missing}`} className="text-xs text-[#0ea5e9] font-bold hover:underline flex items-center gap-1 w-max">
                       Ir para Prompt {PROMPT_CONFIGS[deps.missing].numero} <span className="material-symbols-outlined text-[14px]">arrow_right_alt</span>
@@ -150,10 +150,10 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                   <div key={dep}>
                     <label className="text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2 uppercase tracking-wider">
                       {isSatisfied ? <span className="material-symbols-outlined text-emerald-500 text-[18px]">check_circle</span> : <span className="material-symbols-outlined text-amber-500 text-[18px]">error</span>}
-                      Resposta: Prompt {depConfig.numero} ({depConfig.titulo})
+                      Resposta do Passo {depConfig.numero} ({depConfig.titulo})
                     </label>
                     <Textarea
-                      placeholder={`Cole aqui a resposta do ChatGPT para o Prompt ${depConfig.numero}...`}
+                      placeholder={`Cole aqui a resposta do ChatGPT do Passo ${depConfig.numero}...`}
                       value={value}
                       onChange={e => updateField(fieldKey, e.target.value)}
                       className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all shadow-inner min-h-[100px]"
@@ -184,7 +184,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
               className="shimmer-btn w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed group transition-transform hover:scale-[1.02] active:scale-95"
             >
               <span className="material-symbols-outlined group-hover:scale-110 transition-transform">auto_awesome</span>
-              {generated ? 'Gerar Novamente' : `Gerar Prompt ${config.numero}`}
+              {generated ? 'Gerar de Novo' : `Gerar Meu Texto`}
             </button>
           </motion.div>
 
@@ -196,7 +196,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                 Resposta do ChatGPT
               </label>
               <p className="text-xs text-slate-400 mb-4">
-                Cole abaixo a resposta que a IA te der para salvar seu progresso.
+                Copie o texto acima, cole no ChatGPT, e depois cole aqui a resposta que ele te der.
               </p>
               <Textarea
                 placeholder="Cole a resposta final aqui..."
@@ -218,7 +218,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                       href={`/prompts/${NEXT_PROMPT[tipo]}`}
                       className="shimmer-btn w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg group transition-transform hover:scale-[1.02] active:scale-95"
                     >
-                      <span>Próximo Prompt: {PROMPT_CONFIGS[NEXT_PROMPT[tipo]!].titulo}</span>
+                      <span>Próximo Passo: {PROMPT_CONFIGS[NEXT_PROMPT[tipo]!].titulo}</span>
                       <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
                     </Link>
                   ) : (
@@ -227,7 +227,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                       className="w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg bg-gradient-to-r from-emerald-500 to-green-400 transition-transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-500/20"
                     >
                       <span className="material-symbols-outlined text-xl">check_circle</span>
-                      <span>Todos os Prompts Concluídos!</span>
+                      <span>Tudo Pronto! 🎉</span>
                     </Link>
                   )}
                 </motion.div>
@@ -240,13 +240,13 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
         {/* Right Column: Terminal Result */}
         <div className="flex flex-col h-full min-h-[600px] xl:max-h-[calc(100vh-120px)] xl:sticky xl:top-[100px]">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Output Gerado via IA</span>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Seu Texto Gerado</span>
             <div className="flex gap-2">
               <span className={cn(
                 "px-2 py-1 text-[10px] font-bold rounded border transition-colors",
                 generated ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-amber-500/10 text-amber-500 border-amber-500/20"
               )}>
-                {generated ? 'READY' : 'WAITING'}
+                {generated ? 'PRONTO' : 'ESPERANDO'}
               </span>
               <span className="px-2 py-1 bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-bold rounded border border-[#0ea5e9]/20">V2.4.0</span>
             </div>
@@ -260,7 +260,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                 <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
                 <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
               </div>
-              <div className="text-[10px] text-slate-500 font-mono">noeixo_generator --prompt_{config.tipo}.json</div>
+              <div className="text-[10px] text-slate-500 font-mono">gerador_texto_{config.tipo}</div>
               <button onClick={handleCopy} disabled={!generated} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors disabled:opacity-50">
                 <span className="material-symbols-outlined text-sm">{copied ? 'check' : 'content_copy'}</span>
                 <span className="text-[10px] font-bold uppercase">{copied ? 'Copiado' : 'Copiar'}</span>
@@ -271,14 +271,14 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
             <div className="p-6 font-mono text-sm leading-relaxed overflow-y-auto flex-1 text-slate-300">
               {generated ? (
                  <div className="space-y-4">
-                   <p className="text-[#0ea5e9]">$ initializing noeixo_engine... done.</p>
-                   <p className="text-emerald-400"># Prompt {config.numero} ({config.titulo}) gerado com sucesso!</p>
+                   <p className="text-[#0ea5e9]">✅ Texto gerado!</p>
+                   <p className="text-emerald-400"># Passo {config.numero} ({config.titulo}) — copie e cole no ChatGPT</p>
                    <pre className="whitespace-pre-wrap break-words mt-4 font-sans text-base">{prompt}</pre>
                  </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full opacity-50 space-y-4 text-center">
-                   <span className="material-symbols-outlined text-4xl">terminal</span>
-                   <p>Aguardando parâmetros para geração...</p>
+                   <span className="material-symbols-outlined text-4xl">edit_note</span>
+                   <p>Clique em "Gerar Meu Texto" para começar</p>
                 </div>
               )}
             </div>
@@ -286,7 +286,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
             <div className="p-4 border-t border-white/5 bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <span className="text-[#0ea5e9] font-bold">➜</span>
-                <span className="text-slate-500 text-xs">Aguardando comando ou copie o output acima...</span>
+                <span className="text-slate-500 text-xs">Copie o texto acima e cole no ChatGPT</span>
               </div>
             </div>
           </div>

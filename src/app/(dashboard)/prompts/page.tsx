@@ -45,14 +45,14 @@ export default function PromptsIndexPage() {
                 <span className="material-symbols-outlined text-white text-3xl">auto_awesome</span>
               </div>
               <div>
-                <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Geradores de Prompt</h1>
-                <p className="text-[#0ea5e9] font-medium mt-1">Escolha o gerador que deseja utilizar</p>
+                <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Geradores de Texto</h1>
+                <p className="text-[#0ea5e9] font-medium mt-1">Escolha o que você quer criar</p>
               </div>
             </div>
             <p className="text-slate-400 max-w-2xl leading-relaxed mt-4">
-              Os 5 geradores funcionam em sequência — comece pelo <strong className="text-white">Prompt 1 (Clareza)</strong> para definir 
-              seu posicionamento, depois avance para os próximos. Cada gerador usa os dados do seu perfil para 
-              criar prompts totalmente personalizados.
+              Comece pelo <strong className="text-white">Passo 1 (Clareza)</strong> para saber 
+              sobre o que falar. Depois siga para os próximos. Cada um usa as informações do seu perfil para 
+              criar textos feitos sob medida para você.
             </p>
           </motion.div>
 
@@ -83,7 +83,7 @@ export default function PromptsIndexPage() {
                           <span className="text-2xl">{config.icone}</span>
                         </div>
                         <span className="text-xs font-black text-slate-500 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                          Prompt {config.numero}
+                          Passo {config.numero}
                         </span>
                       </div>
 
@@ -103,14 +103,14 @@ export default function PromptsIndexPage() {
                         <div className="flex items-center gap-2 mb-4">
                           <span className="material-symbols-outlined text-slate-600 text-sm">link</span>
                           <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-                            Requer: {config.dependencias.map(d => PROMPT_CONFIGS[d].titulo).join(', ')}
+                            Precisa fazer antes: {config.dependencias.map(d => PROMPT_CONFIGS[d].titulo).join(', ')}
                           </span>
                         </div>
                       )}
 
                       {/* CTA */}
                       <div className={`flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r ${COLORS[tipo]} opacity-80 group-hover:opacity-100 transition-opacity`}>
-                        <span className="text-sm font-bold text-white">Abrir Gerador</span>
+                        <span className="text-sm font-bold text-white">Começar</span>
                         <span className="material-symbols-outlined text-white text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
                       </div>
                     </div>

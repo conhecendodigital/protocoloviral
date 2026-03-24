@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef } from 'react'
 
@@ -12,9 +12,9 @@ import { CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 const SECTION_META = {
-  sobre: { icon: 'person', title: 'Sobre Você', desc: 'Seu nicho, experiência e diferencial' },
-  publico: { icon: 'groups', title: 'Seu Público', desc: 'Quem você quer alcançar e ajudar' },
-  objetivos: { icon: 'rocket_launch', title: 'Seus Objetivos', desc: 'O que você quer construir' },
+  sobre: { icon: 'person', title: 'Sobre Você', desc: 'Conta um pouco sobre o que você faz' },
+  publico: { icon: 'groups', title: 'Seu Público', desc: 'Quem são as pessoas que você quer alcançar' },
+  objetivos: { icon: 'rocket_launch', title: 'Seus Objetivos', desc: 'O que você quer conseguir' },
 }
 
 export default function PerfilPage() {
@@ -235,11 +235,11 @@ export default function PerfilPage() {
                  </div>
                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-2">Treinando a sua Inteligência Artificial</h3>
+                      <h3 className="text-xl font-bold text-white mb-2">Suas Informações</h3>
                       <p className="text-sm text-slate-400 max-w-md">
-                        {completion < 50 ? 'Responda as perguntas abaixo para ensinar a IA sobre o seu negócio. É com base nisso que ela vai escrever todos os seus roteiros e ganchos daqui pra frente.' :
-                         completion < 100 ? 'Quase lá! Faltam alguns detalhes para a IA entender completamente o seu negócio e gerar conteúdos precisos.' :
-                         'Sua IA está treinada! Ela agora conhece seu negócio, público e objetivos. Todos os roteiros e ganchos serão personalizados para você.'}
+                        {completion < 50 ? 'Responda as perguntas abaixo para a gente te conhecer melhor. É com base nisso que vamos criar todos os seus textos e roteiros.' :
+                         completion < 100 ? 'Quase lá! Faltam só alguns detalhes para a gente te ajudar melhor.' :
+                         'Tudo preenchido! Agora seus textos e roteiros vão ser feitos sob medida para você.'}
                       </p>
                     </div>
                     <div className="flex items-center gap-4 shrink-0">
@@ -279,7 +279,7 @@ export default function PerfilPage() {
                      ) : enhanceResult === 'success' ? (
                        <>
                          <CheckCircle2 className="w-4 h-4" />
-                         <span>Sua IA agora entende seu negócio!</span>
+                         <span>Suas respostas foram melhoradas!</span>
                        </>
                      ) : enhanceResult === 'error' ? (
                        <>
@@ -305,7 +305,7 @@ export default function PerfilPage() {
                        className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 relative z-10"
                      >
                        <p className="text-sm text-emerald-300 text-center font-medium">
-                         Pronto! Sua IA agora entende seu negócio como um especialista. Seus próximos roteiros serão baseados nestas informações.
+                         Pronto! Suas respostas foram melhoradas. Seus pr\u00f3ximos textos e roteiros v\u00e3o ficar ainda melhores.
                        </p>
                      </motion.div>
                    )}
@@ -320,9 +320,9 @@ export default function PerfilPage() {
                      className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-[#0ea5e9]/10 border border-emerald-500/20 text-center relative z-10"
                    >
                      <span className="material-symbols-outlined text-[32px] text-emerald-400 mb-2 block">rocket_launch</span>
-                     <h4 className="text-lg font-black text-white mb-1">IA Treinada com Sucesso! 🚀</h4>
+                     <h4 className="text-lg font-black text-white mb-1">Perfil Completo! 🚀</h4>
                      <p className="text-sm text-slate-400 mb-5">
-                       Agora que a IA conhece seu negócio, vamos criar seu primeiro conteúdo.
+                       Agora que temos todas as suas informa\u00e7\u00f5es, vamos criar seu primeiro conte\u00fado.
                      </p>
                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
                        <Link
@@ -428,14 +428,14 @@ export default function PerfilPage() {
                        Como preencher?
                     </h4>
                     <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                       A Inteligência Artificial usa estas informações como contexto base (System Prompt).
-                       Escreva da forma mais natural possível, como se estivesse explicando seu negócio para um amigo.
+                       Essas informa\u00e7\u00f5es s\u00e3o usadas para criar textos feitos sob medida para voc\u00ea.
+                       Escreva do jeito mais natural poss\u00edvel, como se estivesse explicando pra um amigo.
                     </p>
                     <ul className="space-y-3 text-sm text-slate-400">
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Pense nessas respostas como se estivesse treinando um funcionário novo sobre seu negócio.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Seja específico na dor do seu público — quanto mais detalhes, mais preciso o roteiro.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-violet-400">"Melhorar Tudo com IA"</strong> para a IA organizar e enriquecer suas respostas.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Você pode alterar estes dados a qualquer momento — os roteiros se atualizam automaticamente!</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Imagine que est\u00e1 contando sobre seu trabalho para algu\u00e9m que acabou de conhecer.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Quanto mais detalhes sobre o seu p\u00fablico, melhores ficam os textos.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-violet-400">"Melhorar Tudo com IA"</strong> para deixar suas respostas mais completas.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Voc\u00ea pode mudar essas informa\u00e7\u00f5es quando quiser \u2014 seus textos se atualizam sozinhos!</li>
                     </ul>
                  </div>
               </motion.div>
@@ -443,14 +443,14 @@ export default function PerfilPage() {
               {/* Status Indicator */}
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className="glass-card rounded-3xl p-8 border border-white/5">
                  <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-widest flex items-center gap-2">
-                    <span className="material-symbols-outlined text-slate-500">settings</span>
-                    Status do Sistema
+                    <span className="material-symbols-outlined text-slate-500">cloud_done</span>
+                    Salvamento
                  </h4>
                  
                  <div className="space-y-4">
                     <div>
                        <div className="flex justify-between text-xs font-medium text-slate-400 mb-1">
-                          <span>Sincronização em Nuvem</span>
+                          <span>Suas informa\u00e7\u00f5es</span>
                           <span className="text-[#0ea5e9]">Ativo</span>
                        </div>
                        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -458,7 +458,7 @@ export default function PerfilPage() {
                        </div>
                     </div>
                     <p className="text-xs text-slate-500">
-                       Seus dados são salvos automaticamente no banco de dados enquanto você digita.
+                       Tudo \u00e9 salvo automaticamente enquanto voc\u00ea digita. N\u00e3o precisa se preocupar em perder nada.
                     </p>
                  </div>
               </motion.div>
@@ -470,3 +470,4 @@ export default function PerfilPage() {
     </>
   )
 }
+

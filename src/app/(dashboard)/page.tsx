@@ -41,8 +41,8 @@ export default function HomePage() {
           </h1>
           <p className="text-slate-400 text-base sm:text-lg">
             {completion < 100
-              ? 'Complete seu perfil para ativar todos os geradores de conteúdo.'
-              : 'Sua IA está pronta. Siga o mapa abaixo para criar conteúdo hoje.'}
+              ? 'Preencha seu perfil para a gente poder te ajudar melhor.'
+              : 'Tudo pronto! Siga os passos abaixo para criar seu conteúdo.'}
           </p>
         </motion.div>
       </section>
@@ -72,7 +72,7 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-[24px]">map</span>
             </div>
             <h4 className="font-bold text-lg mb-2 text-white group-hover:text-sky-400 transition-colors">Jornada de Conteúdo</h4>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6">Siga o mapa metodológico. 30 estações com frameworks prontos para aplicação.</p>
+            <p className="text-sm text-slate-400 leading-relaxed mb-6">Passo a passo completo com 30 etapas e dicas prontas para usar.</p>
             <div className="flex items-center gap-2 text-[10px] font-bold text-sky-400 uppercase tracking-widest">
               <span>Acessar</span>
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -84,7 +84,7 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-[24px]">magic_button</span>
             </div>
             <h4 className="font-bold text-lg mb-2 text-white group-hover:text-violet-400 transition-colors">Gerador de Prompts</h4>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6">Crie textos persuasivos, defina seu nicho e gere roteiros usando o método NOEIXO.</p>
+            <p className="text-sm text-slate-400 leading-relaxed mb-6">Crie textos para posts, defina seu nicho e monte roteiros prontos para gravar.</p>
             <div className="flex items-center gap-2 text-[10px] font-bold text-violet-400 uppercase tracking-widest">
               <span>Acessar</span>
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -96,7 +96,7 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-[24px]">anchor</span>
             </div>
             <h4 className="font-bold text-lg mb-2 text-white group-hover:text-cyan-400 transition-colors">Ganchos Virais</h4>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6">Biblioteca com as melhores frases de abertura para prender atenção nos Reels.</p>
+            <p className="text-sm text-slate-400 leading-relaxed mb-6">Frases prontas para começar seus Reels e prender a atenção nos 3 primeiros segundos.</p>
             <div className="flex items-center gap-2 text-[10px] font-bold text-cyan-400 uppercase tracking-widest">
               <span>Acessar</span>
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -108,7 +108,7 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-[24px]">monitoring</span>
             </div>
             <h4 className="font-bold text-lg mb-2 text-white group-hover:text-[#0ea5e9] transition-colors">Analisador de Bio</h4>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6">Otimize a descrição do seu perfil no Instagram para converter mais visitantes.</p>
+            <p className="text-sm text-slate-400 leading-relaxed mb-6">Melhore a descrição do seu perfil no Instagram para atrair mais seguidores.</p>
             <div className="flex items-center gap-2 text-[10px] font-bold text-[#0ea5e9] uppercase tracking-widest">
               <span>Acessar</span>
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -120,7 +120,7 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-[24px]">calendar_today</span>
             </div>
             <h4 className="font-bold text-lg mb-2 text-white group-hover:text-emerald-400 transition-colors">Rotina Semanal</h4>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6">Sua checklist de criação de conteúdo distribuída estrategicamente durante a semana.</p>
+            <p className="text-sm text-slate-400 leading-relaxed mb-6">O que fazer em cada dia da semana para manter seu conteúdo em dia.</p>
             <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
               <span>Acessar</span>
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -132,7 +132,7 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-[24px]">video_camera_front</span>
             </div>
             <h4 className="font-bold text-lg mb-2 text-white group-hover:text-rose-400 transition-colors">Roteiros para Stories</h4>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6">Frameworks focados em gerar conexão real e preparar a audiência para vender.</p>
+            <p className="text-sm text-slate-400 leading-relaxed mb-6">Modelos prontos de Stories para se conectar com seu público e vender.</p>
             <div className="flex items-center gap-2 text-[10px] font-bold text-rose-400 uppercase tracking-widest">
               <span>Acessar</span>
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

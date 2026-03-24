@@ -43,7 +43,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
         {
           icon: 'anchor',
           title: 'Pegar um Gancho Viral',
-          description: 'Escolha uma frase de abertura que prende atenção nos primeiros 3 segundos.',
+          description: 'Escolha uma frase para começar seu vídeo e prender a atenção.',
           status: 'current',
           href: '/ganchos',
           btnLabel: 'Ver Ganchos',
@@ -53,7 +53,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
         {
           icon: 'auto_awesome',
           title: 'Gerar Roteiro com IA',
-          description: 'Use o gerador de prompts para criar o texto completo do seu conteúdo.',
+          description: 'Crie o texto completo do seu conteúdo com ajuda da IA.',
           status: 'locked',
           href: '/prompts',
           btnLabel: 'Abrir Gerador',
@@ -63,7 +63,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
         {
           icon: 'calendar_today',
           title: 'Seguir a Rotina',
-          description: 'Siga a rotina semanal para manter a consistência e engajamento.',
+          description: 'Veja o que fazer em cada dia da semana para não perder o ritmo.',
           status: 'locked',
           href: '/rotina',
           btnLabel: 'Ver Rotina',
@@ -73,7 +73,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
         {
           icon: 'trending_up',
           title: 'Postar e Interagir',
-          description: 'Publique o conteúdo e interaja com seus seguidores para crescer.',
+          description: 'Publique e responda comentários para crescer seu perfil.',
           status: 'locked',
           href: '/rotina',
           btnLabel: 'Ver Checklist',
@@ -92,8 +92,8 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
         icon: 'psychology',
         title: 'Treinar a IA',
         description: step1Done 
-          ? 'Você já ensinou a IA sobre o seu negócio.'
-          : 'Preencha seu perfil para ensinar a IA sobre seu negócio, público e objetivos.',
+          ? 'Você já preencheu suas informações.'
+          : 'Preencha seu perfil com informações sobre você, seu público e seus objetivos.',
         status: step1Done ? 'done' : 'current',
         href: '/perfil',
         btnLabel: 'Completar Perfil',
@@ -104,10 +104,10 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
         icon: 'play_circle',
         title: 'Entender o Método',
         description: step2Done
-          ? 'Você já viu a visão geral do método.'
+          ? 'Você já viu como funciona.'
           : step1Done
-            ? 'Veja a visão geral rápida de como usar a plataforma para criar conteúdo.'
-            : 'Desbloqueie ao completar o treinamento da IA.',
+            ? 'Veja um resumo rápido de como usar a plataforma para criar conteúdo.'
+            : 'Preencha seu perfil primeiro para liberar esta etapa.',
         status: step2Done ? 'done' : step1Done ? 'current' : 'locked',
         href: HOTMART_AULAS_URL,
         btnLabel: 'Ver Visão Geral',
@@ -119,7 +119,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
       {
         icon: 'target',
         title: 'Definir Posicionamento',
-        description: 'Use o Gerador de Prompts para definir seu nicho, persona e posicionamento.',
+        description: 'Defina quem é você, quem é seu público e o que te diferencia.',
         status: step2Done ? 'current' : 'locked',
         href: '/prompts',
         btnLabel: 'Definir Agora',
@@ -129,7 +129,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
       {
         icon: 'explore',
         title: 'Jornada de Conteúdo',
-        description: 'Siga o mapa metodológico com 30 estações e frameworks prontos.',
+        description: 'Siga o passo a passo com 30 etapas e dicas prontas para usar.',
         status: 'locked',
         href: '/jornada',
         btnLabel: 'Abrir Jornada',
@@ -151,7 +151,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
     },
     current: {
       badge: '📍',
-      badgeText: 'Ação Atual',
+      badgeText: 'Fazer Agora',
       badgeClass: 'bg-[#0ea5e9]/15 text-[#0ea5e9] border-[#0ea5e9]/30',
       cardClass: 'border-[#0ea5e9]/30 bg-[#0ea5e9]/5 ring-1 ring-[#0ea5e9]/20',
       lineClass: 'bg-white/10',
@@ -183,8 +183,8 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
       </div>
       <p className="text-sm text-slate-500 mb-6 ml-9">
         {isRecurring && completion === 100
-          ? 'Siga estes 4 passos para criar conteúdo consistente todos os dias.'
-          : 'Complete estes 4 passos para ter seu conteúdo pronto.'}
+          ? 'Siga estes 4 passos para criar conteúdo todos os dias.'
+          : 'Siga estes 4 passos para começar a criar seu conteúdo.'}
       </p>
 
       {/* Steps */}
@@ -280,7 +280,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                         <span className="material-symbols-outlined text-base">
                           {confirming ? 'sync' : 'check_circle'}
                         </span>
-                        {confirming ? 'Salvando...' : 'Já concluí esta etapa'}
+                        {confirming ? 'Salvando...' : 'Já vi, pode marcar como feito'}
                       </motion.button>
                     </AnimatePresence>
                   )}
