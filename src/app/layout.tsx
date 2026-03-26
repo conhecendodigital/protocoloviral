@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "Mapa do Engajamento — Crie conteúdo com direção",
   description: "Gere prompts personalizados, use IA como apoio estratégico e crie conteúdo que conecta e vende. Por @omatheus.ai",
   keywords: ["instagram", "conteúdo", "engajamento", "prompts", "IA", "marketing digital"],
+  icons: {
+    icon: '/icon.svg',
+  },
 }
 
 export default function RootLayout({
