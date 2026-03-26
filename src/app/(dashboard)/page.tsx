@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useProfile } from '@/hooks/use-profile'
@@ -13,9 +13,16 @@ export default function HomePage() {
   const completion = getCompletionPercent()
   const supabase = useMemo(() => createClient(), [])
   const [onboardingDismissed, setOnboardingDismissed] = useState(false)
+  const [startedOnboarding, setStartedOnboarding] = useState(false)
 
   // Show onboarding when profile is empty
-  const showOnboarding = !loading && userId && completion === 0 && !onboardingDismissed
+  useEffect(() => {
+    if (!loading && userId && completion === 0 && !onboardingDismissed && !startedOnboarding) {
+      setStartedOnboarding(true)
+    }
+  }, [loading, userId, completion, onboardingDismissed, startedOnboarding])
+
+  const showOnboarding = startedOnboarding && !onboardingDismissed
 
   const handleConfirmMetodo = useCallback(async () => {
     if (!userId) return
