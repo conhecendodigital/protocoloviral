@@ -17,10 +17,13 @@ export default function HomePage() {
 
   // Show onboarding when profile is empty
   useEffect(() => {
-    if (!loading && userId && completion === 0 && !onboardingDismissed && !startedOnboarding) {
-      setStartedOnboarding(true)
+    if (!loading && userId && completion === 0 && !onboardingDismissed) {
+      setStartedOnboarding(prev => {
+        if (!prev) return true
+        return prev
+      })
     }
-  }, [loading, userId, completion, onboardingDismissed, startedOnboarding])
+  }, [loading, userId, completion, onboardingDismissed])
 
   const showOnboarding = startedOnboarding && !onboardingDismissed
 

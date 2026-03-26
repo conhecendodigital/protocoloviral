@@ -240,10 +240,10 @@ link.me/seu-link`
                   </div>
                   
                   <div className="mt-8 bg-black/60 p-6 rounded-xl border border-white/5 italic text-slate-200 leading-relaxed text-lg shadow-inner">
-                    "🚀 [Seu Posicionamento/Especialidade]<br/>
+                    &quot;🚀 [Seu Posicionamento/Especialidade]<br/>
                     🏆 [Prova Social Clara ou Resultado]<br/>
                     👇 [Chamada para Ação Forte]<br/>
-                    [Seu Link]"
+                    [Seu Link]&quot;
                   </div>
                 </section>
               )}

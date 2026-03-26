@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Notification, TYPE_COLORS, TYPE_LABELS } from '@/data/notifications'
@@ -45,13 +45,15 @@ export function NotificationPanel({
     }
   }, [isOpen])
 
+  const now = useMemo(() => Date.now(), [notifications])
+
   const handleNotificationClick = (n: Notification) => {
     onRead(n.id)
     setIsOpen(false)
   }
 
   const formatTime = (timestamp: number) => {
-    const diff = Date.now() - timestamp
+    const diff = now - timestamp
     const mins = Math.floor(diff / 60000)
     if (mins < 1) return 'Agora'
     if (mins < 60) return `${mins}min`

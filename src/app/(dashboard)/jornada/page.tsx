@@ -35,12 +35,8 @@ const PROMPT_RESPONSE_MAP: Record<PromptType, string> = {
 
 export default function JornadaPage() {
   const [expanded, setExpanded] = useState<number | null>(null)
-  const [completed, setCompleted] = useState<Set<number>>(new Set())
+  const [completed, setCompleted] = useState<Set<number>>(loadCompleted)
   const { profile } = useProfile()
-
-  useEffect(() => {
-    setCompleted(loadCompleted())
-  }, [])
 
   // Auto-completed stations based on prompt responses
   const autoCompleted = useMemo(() => {

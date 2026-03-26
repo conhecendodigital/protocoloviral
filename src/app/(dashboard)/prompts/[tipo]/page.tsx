@@ -140,7 +140,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
 
             <div className="space-y-6">
               {/* Previous Response Fields */}
-              {config.dependencias.map((dep, index) => {
+              {config.dependencias.map((dep) => {
                 const depConfig = PROMPT_CONFIGS[dep]
                 const fieldKey = `resposta${depConfig.numero}`
                 const value = (profile as Record<string, string | null>)?.[fieldKey] || ''
@@ -278,7 +278,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
               ) : (
                 <div className="flex flex-col items-center justify-center h-full opacity-50 space-y-4 text-center">
                    <span className="material-symbols-outlined text-4xl">edit_note</span>
-                   <p>Clique em "Gerar Meu Texto" para começar</p>
+                   <p>Clique em &quot;Gerar Meu Texto&quot; para começar</p>
                 </div>
               )}
             </div>

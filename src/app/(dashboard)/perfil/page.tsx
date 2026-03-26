@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const SECTION_META = {
   sobre: { icon: 'person', title: 'Sobre Você', desc: 'Conta um pouco sobre o que você faz' },
@@ -163,9 +164,11 @@ export default function PerfilPage() {
                   onClick={handleAvatarClick}
                 >
                   {profile?.avatar_url ? (
-                    <img 
+                    <Image 
                       src={profile.avatar_url} 
                       alt="Avatar" 
+                      width={112}
+                      height={112}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
@@ -434,7 +437,7 @@ export default function PerfilPage() {
                     <ul className="space-y-3 text-sm text-slate-400">
                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Imagine que está contando sobre seu trabalho para alguém que acabou de conhecer.</li>
                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Quanto mais detalhes sobre o seu público, melhores ficam os textos.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-violet-400">"Melhorar Tudo com IA"</strong> para deixar suas respostas mais completas.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-violet-400">&quot;Melhorar Tudo com IA&quot;</strong> para deixar suas respostas mais completas.</li>
                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Você pode mudar essas informações quando quiser — seus textos se atualizam sozinhos!</li>
                     </ul>
                  </div>

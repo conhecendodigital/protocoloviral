@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { Menu, Home, User, Map, BookOpen, CalendarDays, Mic2, BarChart3, LogOut } from 'lucide-react'
+import { Menu, LogOut } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
