@@ -138,6 +138,18 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
             </div>
           </Link>
+          {/* Tool 7 */}
+          <Link href="/calculadora" className="glass-card hover-physics p-6 rounded-xl transition-all duration-300 cursor-pointer block border border-white/5 hover:border-amber-500/30 group">
+            <div className="size-12 rounded-xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 flex items-center justify-center text-amber-400 mb-4 border border-amber-400/20 group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-[24px]">calculate</span>
+            </div>
+            <h4 className="font-bold text-lg mb-2 text-white group-hover:text-amber-400 transition-colors">Calculadora de Métricas</h4>
+            <p className="text-sm text-slate-400 leading-relaxed mb-6">Descubra se seu post foi bem analisando curtidas, salvamentos e alcance.</p>
+            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-400 uppercase tracking-widest">
+              <span>Acessar</span>
+              <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </div>
+          </Link>
         </div>
       </motion.section>
     </>

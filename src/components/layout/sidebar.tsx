@@ -25,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Stories', href: '/stories', icon: 'video_camera_front', badge: '🔥', badgeHot: true, section: 'Ferramentas' },
   { label: 'Rotina', href: '/rotina', icon: 'calendar_today', section: 'Ferramentas' },
   { label: 'Analisador', href: '/bio-analyzer', icon: 'monitoring', badge: 'Novo', section: 'Ferramentas' },
+  { label: 'Calculadora', href: '/calculadora', icon: 'calculate', badge: 'Novo', section: 'Ferramentas' },
 ]
 
 interface SidebarProps {
