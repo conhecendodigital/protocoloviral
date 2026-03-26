@@ -33,7 +33,8 @@ export function useProfile() {
       .single()
 
     if (error) {
-      await supabase.from('profiles').insert({ id: user.id, email: user.email })
+      // Use upsert to avoid 409 Conflict if multiple components try to create the profile at the exact same time
+      await supabase.from('profiles').upsert({ id: user.id, email: user.email }, { onConflict: 'id' })
       setProfile({ id: user.id, email: user.email || '' })
     } else {
       setProfile(data)
