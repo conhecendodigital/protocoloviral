@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useRef } from 'react'
 
@@ -305,7 +305,7 @@ export default function PerfilPage() {
                        className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 relative z-10"
                      >
                        <p className="text-sm text-emerald-300 text-center font-medium">
-                         Pronto! Suas respostas foram melhoradas. Seus pr\u00f3ximos textos e roteiros v\u00e3o ficar ainda melhores.
+                         Pronto! Suas respostas foram melhoradas. Seus próximos textos e roteiros vão ficar ainda melhores.
                        </p>
                      </motion.div>
                    )}
@@ -322,7 +322,7 @@ export default function PerfilPage() {
                      <span className="material-symbols-outlined text-[32px] text-emerald-400 mb-2 block">rocket_launch</span>
                      <h4 className="text-lg font-black text-white mb-1">Perfil Completo! 🚀</h4>
                      <p className="text-sm text-slate-400 mb-5">
-                       Agora que temos todas as suas informa\u00e7\u00f5es, vamos criar seu primeiro conte\u00fado.
+                       Agora que temos todas as suas informações, vamos criar seu primeiro conteúdo.
                      </p>
                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
                        <Link
@@ -428,14 +428,14 @@ export default function PerfilPage() {
                        Como preencher?
                     </h4>
                     <p className="text-sm text-slate-300 leading-relaxed mb-6">
-                       Essas informa\u00e7\u00f5es s\u00e3o usadas para criar textos feitos sob medida para voc\u00ea.
-                       Escreva do jeito mais natural poss\u00edvel, como se estivesse explicando pra um amigo.
+                       Essas informações são usadas para criar textos feitos sob medida para você.
+                       Escreva do jeito mais natural possível, como se estivesse explicando pra um amigo.
                     </p>
                     <ul className="space-y-3 text-sm text-slate-400">
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Imagine que est\u00e1 contando sobre seu trabalho para algu\u00e9m que acabou de conhecer.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Quanto mais detalhes sobre o seu p\u00fablico, melhores ficam os textos.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Imagine que está contando sobre seu trabalho para alguém que acabou de conhecer.</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Quanto mais detalhes sobre o seu público, melhores ficam os textos.</li>
                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-violet-400">"Melhorar Tudo com IA"</strong> para deixar suas respostas mais completas.</li>
-                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Voc\u00ea pode mudar essas informa\u00e7\u00f5es quando quiser \u2014 seus textos se atualizam sozinhos!</li>
+                       <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Você pode mudar essas informações quando quiser — seus textos se atualizam sozinhos!</li>
                     </ul>
                  </div>
               </motion.div>
@@ -450,7 +450,7 @@ export default function PerfilPage() {
                  <div className="space-y-4">
                     <div>
                        <div className="flex justify-between text-xs font-medium text-slate-400 mb-1">
-                          <span>Suas informa\u00e7\u00f5es</span>
+                          <span>Suas informações</span>
                           <span className="text-[#0ea5e9]">Ativo</span>
                        </div>
                        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -458,7 +458,7 @@ export default function PerfilPage() {
                        </div>
                     </div>
                     <p className="text-xs text-slate-500">
-                       Tudo \u00e9 salvo automaticamente enquanto voc\u00ea digita. N\u00e3o precisa se preocupar em perder nada.
+                       Tudo é salvo automaticamente enquanto você digita. Não precisa se preocupar em perder nada.
                     </p>
                  </div>
               </motion.div>

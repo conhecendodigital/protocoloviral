@@ -1,4 +1,4 @@
-﻿import type { Estacao } from '@/types/jornada'
+import type { Estacao } from '@/types/jornada'
 
 export const ESTACOES_JORNADA: Estacao[] = [
   {
@@ -16,7 +16,7 @@ export const ESTACOES_JORNADA: Estacao[] = [
   {
     id: 3, nome: 'Primeiras 10 Publicações', icone: '📍', fase: 1, marco: false, promptTipo: 'ideias',
     descricao: 'Consistência desde o início define seu posicionamento.',
-    dica: '📌 Plano de ação:\n1. Defina 3 pilares de conteúdo (ex: Dicas, Bastidores, Resultados)\n2. Crie 10 posts distribuindo entre seus pilares\n3. Foque em Reels! No come\u00e7o, 70% Reels + 30% Stories. Carross\u00e9is s\u00f3 depois de 1.000 seguidores\n4. Cada post deve ter: gancho forte na 1ª linha, conteúdo útil, CTA no final\n\n⏱ Meta: publique 1 por dia durante 10 dias seguidos. Consistência > perfeição.',
+    dica: '📌 Plano de ação:\n1. Defina 3 pilares de conteúdo (ex: Dicas, Bastidores, Resultados)\n2. Crie 10 posts distribuindo entre seus pilares\n3. Foque em Reels! No começo, 70% Reels + 30% Stories. Carrosséis só depois de 1.000 seguidores\n4. Cada post deve ter: gancho forte na 1ª linha, conteúdo útil, CTA no final\n\n⏱ Meta: publique 1 por dia durante 10 dias seguidos. Consistência > perfeição.',
     prompt: 'Crie um calendário com 10 ideias de conteúdo para [SEU NICHO] no Instagram. Para cada ideia inclua: título chamativo, formato (carrossel/reels/post), gancho e call-to-action. Foque em conteúdo que gera engajamento.',
   },
   {
@@ -33,13 +33,13 @@ export const ESTACOES_JORNADA: Estacao[] = [
   },
   {
     id: 6, nome: 'Testar Formatos', icone: '🧪', fase: 1, marco: false, promptTipo: 'ideias',
-    descricao: 'Teste Reels primeiro! S\u00f3 comece carross\u00e9is depois de 1.000 seguidores.',
-    dica: '📌 Teste científico de formatos:\n1. Comece postando S\u00d3 Reels (at\u00e9 atingir 1.000 seguidores)\n2. Poste APENAS nesse formato por 7-15 dias\n3. Anote em uma planilha: alcance, curtidas, salvamentos, comentários\n4. Repita com outro formato por mais 7-15 dias\n5. Compare os resultados — o formato com mais SALVAMENTOS é seu vencedor\n\n📊 Por que salvamentos? Porque o Instagram entende que o conteúdo é valioso e mostra para mais pessoas.',
+    descricao: 'Teste Reels primeiro! Só comece carrosséis depois de 1.000 seguidores.',
+    dica: '📌 Teste científico de formatos:\n1. Comece postando SÓ Reels (até atingir 1.000 seguidores)\n2. Poste APENAS nesse formato por 7-15 dias\n3. Anote em uma planilha: alcance, curtidas, salvamentos, comentários\n4. Repita com outro formato por mais 7-15 dias\n5. Compare os resultados — o formato com mais SALVAMENTOS é seu vencedor\n\n📊 Por que salvamentos? Porque o Instagram entende que o conteúdo é valioso e mostra para mais pessoas.',
     prompt: 'Sugira 5 formatos diferentes de conteúdo para testar em [SEU NICHO]: Reels, Carrossel, Stories, Post único e Live. Para cada formato, dê uma ideia específica com roteiro resumido.',
   },
   {
     id: 7, nome: 'Primeiro Reels', icone: '🎬', fase: 1, marco: false, promptTipo: 'roteiro',
-    descricao: 'Reels \u00e9 o formato mais importante para quem est\u00e1 come\u00e7ando. Foco total aqui at\u00e9 1K seguidores.',
+    descricao: 'Reels é o formato mais importante para quem está começando. Foco total aqui até 1K seguidores.',
     dica: '📌 Fórmula do Reels que funciona:\n1. Gancho nos primeiros 3 segundos (frase ou ação impactante)\n2. Conteúdo em tópicos curtos (3-5 pontos)\n3. CTA no final ("Salva pra não esquecer" ou "Comenta SIM se concorda")\n\n🎥 Dicas técnicas:\n• Grave com luz natural de frente\n• Use legendas (80% assistem sem som)\n• Duração ideal: 15-30 segundos para começar\n• Poste entre 19h-21h nos dias úteis',
     prompt: 'Crie 5 roteiros completos para Reels virais sobre [SEU TEMA]. Cada roteiro deve ter: hook dos primeiros 3 segundos, desenvolvimento, CTA e sugestão de música/tendência. Formato fácil de gravar no celular.',
   },
@@ -51,8 +51,8 @@ export const ESTACOES_JORNADA: Estacao[] = [
   },
   {
     id: 9, nome: 'Rotina de Postagem', icone: '📅', fase: 1, marco: false,
-    descricao: 'Monte uma rotina focada em Reels at\u00e9 1K seguidores.',
-    dica: '📌 Rotina mínima viável:\n• 3-5 Reels por semana (foco total at\u00e9 1K seguidores)\n• Stories todos os dias (mínimo 3)\n• 15 min/dia interagindo com outros perfis\n\n📅 Organize assim:\n- Domingo: planeje a semana inteira\n- Segunda e Quarta: poste Reels\n- Terça e Quinta: poste Carrossel educativo\n- Sexta: conteúdo leve/bastidores\n\n⚠️ É melhor postar 3x/semana por 6 meses do que 7x/semana por 2 semanas.',
+    descricao: 'Monte uma rotina focada em Reels até 1K seguidores.',
+    dica: '📌 Rotina mínima viável:\n• 3-5 Reels por semana (foco total até 1K seguidores)\n• Stories todos os dias (mínimo 3)\n• 15 min/dia interagindo com outros perfis\n\n📅 Organize assim:\n- Domingo: planeje a semana inteira\n- Segunda e Quarta: poste Reels\n- Terça e Quinta: poste Carrossel educativo\n- Sexta: conteúdo leve/bastidores\n\n⚠️ É melhor postar 3x/semana por 6 meses do que 7x/semana por 2 semanas.',
     prompt: 'Crie uma rotina semanal de postagem para [SEU NICHO] considerando que tenho [X] horas por dia. Inclua: frequência ideal, melhores horários, distribuição de formatos e checklist diário.',
   },
   {
