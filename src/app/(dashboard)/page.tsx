@@ -1,16 +1,21 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useProfile } from '@/hooks/use-profile'
 import { ExecutionMap } from '@/components/shared/ExecutionMap'
+import { OnboardingModal } from '@/components/shared/OnboardingModal'
 import { createClient } from '@/lib/supabase/client'
 
 export default function HomePage() {
-  const { profile, loading, userId, fetchProfile, getCompletionPercent } = useProfile()
+  const { profile, loading, userId, updateField, fetchProfile, getCompletionPercent } = useProfile()
   const completion = getCompletionPercent()
   const supabase = useMemo(() => createClient(), [])
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false)
+
+  // Show onboarding when profile is empty and not yet completed
+  const showOnboarding = !loading && userId && completion === 0 && !profile?.onboarding_completed && !onboardingDismissed
 
   const handleConfirmMetodo = useCallback(async () => {
     if (!userId) return
@@ -33,6 +38,18 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Onboarding Modal when profile is empty */}
+      {showOnboarding && userId && (
+        <OnboardingModal
+          userId={userId}
+          updateField={updateField}
+          onComplete={() => {
+            setOnboardingDismissed(true)
+            fetchProfile()
+          }}
+        />
+      )}
+
       {/* Welcome Banner */}
       <section className="mb-8 relative z-10">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
