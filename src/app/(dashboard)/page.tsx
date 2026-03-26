@@ -14,8 +14,8 @@ export default function HomePage() {
   const supabase = useMemo(() => createClient(), [])
   const [onboardingDismissed, setOnboardingDismissed] = useState(false)
 
-  // Show onboarding when profile is empty and not yet completed
-  const showOnboarding = !loading && userId && completion === 0 && !profile?.onboarding_completed && !onboardingDismissed
+  // Show onboarding when profile is empty
+  const showOnboarding = !loading && userId && completion === 0 && !onboardingDismissed
 
   const handleConfirmMetodo = useCallback(async () => {
     if (!userId) return
