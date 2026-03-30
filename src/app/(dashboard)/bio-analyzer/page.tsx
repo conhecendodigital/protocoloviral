@@ -140,7 +140,7 @@ link.me/seu-link`
                 
                 <div className="relative flex items-center justify-center z-10">
                   <svg className="size-56" style={{ transform: "rotate(-90deg)" }}>
-                    <circle className="text-white/5" cx="112" cy="112" fill="transparent" r="90" stroke="currentColor" strokeWidth="12"></circle>
+                    <circle className="text-slate-200 dark:text-white/5" cx="112" cy="112" fill="transparent" r="90" stroke="currentColor" strokeWidth="12"></circle>
                     <circle 
                       className="text-[#0ea5e9] drop-shadow-[0_0_15px_rgba(14,165,233,0.5)] transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" 
                       cx="112" cy="112" fill="transparent" r="90" stroke="currentColor" 
@@ -239,7 +239,7 @@ link.me/seu-link`
                     </button>
                   </div>
                   
-                  <div className="mt-8 bg-black/60 p-6 rounded-xl border border-slate-200 dark:border-slate-200 dark:border-white/10 italic text-slate-800 dark:text-slate-200 leading-relaxed text-lg shadow-inner">
+                  <div className="mt-8 bg-slate-100 dark:bg-black/60 p-6 rounded-xl border border-slate-200 dark:border-white/10 italic text-slate-700 dark:text-slate-200 leading-relaxed text-lg shadow-inner">
                     &quot;🚀 [Seu Posicionamento/Especialidade]<br/>
                     🏆 [Prova Social Clara ou Resultado]<br/>
                     👇 [Chamada para Ação Forte]<br/>
