@@ -44,8 +44,12 @@ Antes de escrever qualquer coisa, extraia do estudo fornecido:
    O roteiro novo deve usar a mesma pessoa.
 
 3. RITMO E CONSTRUÇÃO DAS FRASES
-   As frases são curtas e cortadas? Longas e acumulativas? Têm pausas dramáticas?
-   Replique o mesmo ritmo.
+   Leia o roteiro original em voz alta mentalmente e responda:
+   - As frases são curtas e cortadas com pausas dramáticas? Ou longas e acumulativas sem respiro?
+   - O problema é dito de uma vez ou vai sendo empilhado detalhe por detalhe?
+   - Tem vírgulas que acumulam ou pontos que cortam?
+   - Qual é a velocidade da fala — acelerada, calma, crescente?
+   Replique EXATAMENTE esse ritmo sintático. Se o original é uma frase longa que acumula problema em cima de problema sem parar, o roteiro novo também deve ser. Se o original tem frases curtas e cortadas, o novo também.
 
 4. TIPO DE GANCHO
    Como o original prende nos primeiros 2 segundos? É uma cena? Uma pergunta? Uma afirmação polêmica? Uma confissão?
@@ -70,22 +74,45 @@ Com os elementos extraídos acima, escreva o roteiro novo:
 
 - Use o MESMO mecanismo narrativo
 - Use a MESMA pessoa gramatical
-- Use o MESMO ritmo de frases
+- Use o MESMO ritmo sintático de frases
 - Use o MESMO tipo de gancho
 - Ative a MESMA emoção central
 - Siga o MESMO arco narrativo
 - Termine com o MESMO tipo de encerramento
 
-Mas substitua TODO o conteúdo:
-- O problema/situação vem da PERSONA do criador (vida real, rotina, dores concretas)
-- A solução/transformação vem da CLAREZA do criador (o que ele entrega, seu diferencial)
-- Os detalhes são específicos do nicho — nunca genéricos
+Substitua TODO o conteúdo assim:
+
+O ROTEIRO É SOBRE O PROBLEMA QUE O CRIADOR RESOLVE — não sobre a vida pessoal da persona.
+
+Use a CLAREZA para identificar:
+- Qual é o problema central que o criador resolve?
+- Qual é a transformação que ele entrega?
+- Qual é o nicho específico dele?
+
+Use a PERSONA para identificar:
+- Qual é a dor concreta que essa pessoa sente em relação ao problema do nicho?
+- Qual comportamento ela repete que mostra essa dor?
+- Qual pensamento interno ela tem que o criador reconhece?
+
+O roteiro encarna ESSE comportamento e ESSA dor — as que estão diretamente ligadas ao nicho do criador. Não detalhes da vida pessoal da persona (profissão, filhos, cidade) a menos que sejam diretamente relevantes pra dor do nicho.
+
+EXEMPLO:
+Criador: ensina a criar conteúdo com IA
+Persona: pessoa que quer criar conteúdo mas trava
+Dor do nicho: salva mil posts, assiste tutorial, mas não posta nada
+
+✅ CERTO — encarna a dor do nicho:
+"Desculpa a demora. É que eu tava salvando mais um post de 'como crescer no Instagram', abrindo mais um tutorial de IA, colocando mais uma ideia no Notion — sem postar nada. De novo."
+
+❌ ERRADO — detalhes pessoais que não servem:
+"Desculpa a demora. É que eu tava às 22h30, filho dormindo, marido falando que internet não sustenta ninguém..."
 
 REGRAS INVIOLÁVEIS:
 ❌ Zero plágio — nenhuma frase do original entra no novo
 ❌ Zero genérico — nada que qualquer criador de qualquer nicho poderia falar
 ❌ Zero linguagem de IA — sem "mergulhe", "jornada", "transforme sua vida"
 ❌ Zero dados inventados — só o que está nos dados do criador
+❌ Zero indicações visuais — só o texto falado
 ❌ Zero explicações após o roteiro — entregue só o roteiro
 
 FORMATO DE ENTREGA:
