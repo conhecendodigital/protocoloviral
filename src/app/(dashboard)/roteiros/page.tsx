@@ -18,6 +18,9 @@ export default function RoteirosPage() {
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [editedTexts, setEditedTexts] = useState<Record<string, string>>({})
+  const [savingId, setSavingId] = useState<string | null>(null)
+  const [savedId, setSavedId] = useState<string | null>(null)
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
@@ -58,6 +61,22 @@ export default function RoteirosPage() {
     await supabase.from('roteiros').delete().eq('id', id)
     setRoteiros(prev => prev.filter(r => r.id !== id))
   }
+
+  const handleSave = async (id: string) => {
+    const texto = editedTexts[id]
+    if (texto === undefined) return
+    setSavingId(id)
+    const primeiraLinha = texto.split('\n')[0]
+    const titulo = primeiraLinha.replace(/\*\*/g, '').trim() || 'Roteiro sem título'
+    await supabase.from('roteiros').update({ roteiro: texto, titulo }).eq('id', id)
+    setRoteiros(prev => prev.map(r => r.id === id ? { ...r, roteiro: texto, titulo } : r))
+    setSavingId(null)
+    setSavedId(id)
+    setTimeout(() => setSavedId(null), 2000)
+  }
+
+  const getEditedText = (r: Roteiro) => editedTexts[r.id] !== undefined ? editedTexts[r.id] : r.roteiro
+  const isEdited = (r: Roteiro) => editedTexts[r.id] !== undefined && editedTexts[r.id] !== r.roteiro
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr)
@@ -181,12 +200,37 @@ export default function RoteirosPage() {
                             </button>
                           </div>
 
-                          {/* Roteiro text */}
-                          <div className="bg-slate-50 dark:bg-white/[0.02] rounded-xl p-5 border border-slate-100 dark:border-white/5">
-                            <pre className="whitespace-pre-wrap break-words font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90">
-                              {r.roteiro}
-                            </pre>
+                          {/* Roteiro text — editável */}
+                          <div className="bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-slate-100 dark:border-white/5 overflow-hidden">
+                            <textarea
+                              value={getEditedText(r)}
+                              onChange={e => setEditedTexts(prev => ({ ...prev, [r.id]: e.target.value }))}
+                              className="w-full bg-transparent p-5 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[200px] focus:ring-2 focus:ring-emerald-500/30 rounded-xl transition-shadow"
+                              style={{ height: 'auto', minHeight: `${Math.max(200, getEditedText(r).split('\n').length * 26)}px` }}
+                            />
                           </div>
+                          
+                          {/* Salvar — aparece quando editado */}
+                          {isEdited(r) && (
+                            <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mt-3 flex items-center gap-3">
+                              <button
+                                onClick={() => handleSave(r.id)}
+                                disabled={savingId === r.id}
+                                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+                              >
+                                <span className="material-symbols-outlined text-[14px]">
+                                  {savingId === r.id ? 'autorenew' : savedId === r.id ? 'check' : 'save'}
+                                </span>
+                                {savingId === r.id ? 'Salvando...' : savedId === r.id ? 'Salvo!' : 'Salvar alterações'}
+                              </button>
+                              <button
+                                onClick={() => setEditedTexts(prev => { const next = { ...prev }; delete next[r.id]; return next })}
+                                className="text-[10px] font-bold uppercase tracking-widest px-3 py-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white/70 transition-colors"
+                              >
+                                Desfazer
+                              </button>
+                            </motion.div>
+                          )}
                         </div>
                       </motion.div>
                     )}
