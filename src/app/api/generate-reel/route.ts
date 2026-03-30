@@ -135,7 +135,16 @@ EXEMPLO DE FORMATO ERRADO:
 texto do gancho
 **[DESENVOLVIMENTO]**
 texto
-*(Visual: indicação visual)*`
+*(Visual: indicação visual)*
+
+═══════════════════════════════════
+REGRA FINAL — TEXTO OBRIGATÓRIO APÓS O ROTEIRO
+═══════════════════════════════════
+APÓS o roteiro, adicione exatamente este texto (sem alterar nenhuma palavra):
+
+---
+
+⚠️ Este roteiro foi gerado com nossa IA, a base usada foi seu nicho e persona. Leia com atenção, edite se precisar à vontade e grave com a sua voz e seu tom.`
 
     const userPrompt = `Você vai gerar um roteiro de Reels. Siga os passos na ordem abaixo.
 
@@ -162,12 +171,12 @@ ${nicho}
 ═══════════════════════════
 PASSO 2.5 — IDEIA DO CRIADOR
 ═══════════════════════════
-${ideia 
-  ? `O criador quer abordar essa situação/ideia específica: "${ideia}". 
+${ideia
+        ? `O criador quer abordar essa situação/ideia específica: "${ideia}". 
 Molde essa ideia dentro da estrutura do formato viral.`
-  : `O criador não forneceu ideia. Use as dores mais comuns do nicho "${nicho}" 
+        : `O criador não forneceu ideia. Use as dores mais comuns do nicho "${nicho}" 
 e da persona para definir o conteúdo. Escolha a dor mais específica e concreta.`
-}
+      }
 
 ═══════════════════════════
 PASSO 3 — DOR DA PERSONA
@@ -199,7 +208,7 @@ Duração equivalente a: ${duracao}`
         ],
         generationConfig: {
           temperature: 0.85,
-          maxOutputTokens: 3000,
+          maxOutputTokens: 8192,
         }
       })
     })
