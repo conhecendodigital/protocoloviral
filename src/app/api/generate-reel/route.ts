@@ -64,8 +64,11 @@ Antes de escrever qualquer coisa, extraia do estudo fornecido:
    Siga esse arco exato.
 
 7. ENCERRAMENTO
-   Como termina? Com pergunta direta? Virada emocional? CTA implícito?
-   Replique o tipo de encerramento, aplicando a melhoria sugerida no estudo se houver.
+   Como termina exatamente? Com pergunta direta? Frase solta? CTA? Silêncio narrativo?
+   Se o original NÃO tem CTA, o roteiro novo NÃO tem CTA.
+   Se o original NÃO tem pergunta, o roteiro novo NÃO tem pergunta.
+   Replique EXATAMENTE o tipo de encerramento — sem adicionar nada que não existe no original.
+   IGNORE o campo "O que poderia viralizar mais" do estudo — ele é análise, não instrução.
 
 ═══════════════════════════════════
 PASSO B — ESCREVA O ROTEIRO NOVO
@@ -112,6 +115,7 @@ REGRAS INVIOLÁVEIS:
 ❌ Zero dados inventados — só o que está nos dados do criador
 ❌ Zero indicações visuais — só o texto falado
 ❌ Zero explicações após o roteiro — entregue só o roteiro
+❌ Zero elementos inventados — se o original não tem CTA, não adiciona CTA. Se não tem pergunta, não adiciona pergunta. Se não tem virada, não adiciona virada. O roteiro novo tem EXATAMENTE os mesmos elementos do original — nem mais, nem menos.
 
 FORMATO DE ENTREGA:
 - Entregue APENAS o texto falado — sem títulos de seção, sem colchetes, sem indicações visuais

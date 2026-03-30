@@ -135,6 +135,22 @@ export default function FormatosPage() {
 
       setGeneratedReel(data.result)
 
+      // Salva o roteiro no Supabase
+      const primeiraLinha = data.result.split('\n')[0]
+      const titulo = primeiraLinha.replace(/\*\*/g, '').trim() || 'Roteiro sem título'
+
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from('roteiros').insert({
+          user_id: user.id,
+          titulo,
+          roteiro: data.result,
+          nicho: nicho,
+          formato_nome: modalFormato.titulo || '',
+        })
+        console.log('✅ Roteiro salvo:', titulo)
+      }
+
     } catch (err: any) {
       setGenerateError(err.message)
     } finally {

@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { label: 'Minha Jornada', href: '/jornada', msIcon: 'explore' },
   { label: 'Geradores', href: '/prompts', msIcon: 'auto_awesome' },
   { label: 'Formatos', href: '/formatos', msIcon: 'movie_filter' },
+  { label: 'Meus Roteiros', href: '/roteiros', msIcon: 'description' },
   { label: 'Ganchos Virais', href: '/ganchos', msIcon: 'anchor' },
   { label: 'Rotina Semanal', href: '/rotina', msIcon: 'calendar_today' },
   { label: 'Stories', href: '/stories', msIcon: 'video_camera_front' },

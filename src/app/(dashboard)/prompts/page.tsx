@@ -5,7 +5,7 @@ import { PROMPT_CONFIGS, type PromptType } from '@/types/prompt'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
-const PROMPT_ORDER: PromptType[] = ['clareza', 'persona', 'ideias', 'roteiro', 'vendas']
+const PROMPT_ORDER: PromptType[] = ['clareza', 'persona', 'ideias', 'vendas']
 
 const COLORS: Record<PromptType, string> = {
   clareza: 'from-sky-500 to-cyan-400',
