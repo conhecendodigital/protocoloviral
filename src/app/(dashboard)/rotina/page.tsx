@@ -103,8 +103,8 @@ export default function RotinaPage() {
         <div className="w-full max-w-7xl px-6 lg:px-8 py-8 md:py-12 space-y-8">
           
           <div className="mb-2">
-            <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white flex flex-col sm:flex-row sm:items-center gap-2 mb-2 uppercase italic leading-none">
-              ROTINA SEMANAL <span className="text-[#0ea5e9]">NOEIXO</span>
+            <h1 className="text-3xl lg:text-4xl font-black tracking-tighter text-slate-900 dark:text-white flex flex-col sm:flex-row sm:items-center gap-2 mb-2 uppercase italic leading-none">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">ROTINA SEMANAL</span> NOEIXO
             </h1>
             <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg">Gerencie seu progresso e mantenha o foco na estratégia de conteúdo.</p>
           </div>

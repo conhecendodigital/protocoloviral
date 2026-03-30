@@ -109,8 +109,8 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex items-center gap-4 mb-2">
               <span className="text-4xl">{config.icone}</span>
-              <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400">
-                Passo {config.numero}: {config.titulo}
+              <h1 className="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">PASSO {config.numero}:</span> {config.titulo}
               </h1>
             </div>
             <p className="text-slate-800 dark:text-white/90 dark:text-white/90">{config.descricao}</p>

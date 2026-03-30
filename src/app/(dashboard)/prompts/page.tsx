@@ -45,7 +45,7 @@ export default function PromptsIndexPage() {
                 <span className="material-symbols-outlined text-slate-900 dark:text-white text-3xl">auto_awesome</span>
               </div>
               <div>
-                <h1 className="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">Geradores de Texto</h1>
+                <h1 className="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] to-indigo-600">GERADORES DE</span> TEXTO</h1>
                 <p className="text-[#0ea5e9] font-medium mt-1">Escolha o que você quer criar</p>
               </div>
             </div>

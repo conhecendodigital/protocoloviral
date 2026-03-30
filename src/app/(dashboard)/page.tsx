@@ -63,8 +63,8 @@ export default function HomePage() {
       {/* Welcome Banner */}
       <section className="mb-8 relative z-10">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter mb-2 text-slate-900 dark:text-white">
-            Olá, <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">{loading ? '...' : getFirstName()}</span>!
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter mb-2 text-slate-900 dark:text-white uppercase italic">
+            OLÁ, <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">{loading ? '...' : getFirstName()}</span>!
           </h1>
           <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-base sm:text-lg">
             {completion < 100
