@@ -88,20 +88,25 @@ REGRAS INVIOLÁVEIS:
 ❌ Zero dados inventados — só o que está nos dados do criador
 ❌ Zero explicações após o roteiro — entregue só o roteiro
 
-FORMATO DE ENTREGA (sem nenhum texto antes ou depois):
+FORMATO DE ENTREGA:
+- Entregue APENAS o texto falado — sem títulos, sem seções, sem colchetes, sem indicações visuais, sem marcações
+- O roteiro é um bloco corrido de fala natural, exatamente como o criador vai falar na frente da câmera
+- A única coisa permitida antes do texto é o título do vídeo em negrito
+- Nada mais depois do roteiro — sem "duração estimada", sem comentários, sem notas
+
+EXEMPLO DE FORMATO CORRETO:
+**A Culpa do Feed**
+Oi, desculpa a demora. É que eu tava às 22h30, filho dormindo, abrindo o Instagram pela décima vez, salvando mais um tutorial de como criar conteúdo com IA, fechando o app — e não postando nada. De novo. Como se salvar fosse o mesmo que fazer. Mas agora chega. Você também fica nesse ciclo? Me conta aqui.
+
+EXEMPLO DE FORMATO ERRADO (nunca faça isso):
 🎬 [TÍTULO]
-
 **[GANCHO]**
-[replique o tipo de gancho do original, com conteúdo do nicho]
-
+texto do gancho
 **[DESENVOLVIMENTO]**
-[replique o ritmo e mecanismo do original, com situações reais da persona]
-
+texto do desenvolvimento
+*(Visual: indicação visual)*
 **[ENCERRAMENTO]**
-[replique o tipo de encerramento do original, com melhoria aplicada]
-
----
-Duração estimada: ${duracao}`
+texto do encerramento`
 
     // Extrai cada campo do estudo via regex para passar estruturado pra IA
     const extrairCampo = (texto: string, label: string): string => {
