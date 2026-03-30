@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 
@@ -30,6 +30,21 @@ interface ExecutionMapProps {
 
 export function ExecutionMap({ completion, isRecurring = false, metodoConcluido = false, onConfirmMetodo }: ExecutionMapProps) {
   const [confirming, setConfirming] = useState(false)
+  const [ganchoFeitoHoje, setGanchoFeitoHoje] = useState(false)
+
+  useEffect(() => {
+    const checkStatus = () => {
+      const today = new Date().toISOString().split('T')[0]
+      if (typeof window !== 'undefined') {
+        setGanchoFeitoHoje(localStorage.getItem('gancho_feito_hoje') === today)
+      }
+    }
+    checkStatus()
+    if (typeof window !== 'undefined') {
+      window.addEventListener('task_atualizada', checkStatus)
+      return () => window.removeEventListener('task_atualizada', checkStatus)
+    }
+  }, [])
 
   const handleConfirmMetodo = async () => {
     setConfirming(true)
@@ -59,7 +74,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
         icon: 'anchor',
         title: 'Pegar um Gancho Viral',
         description: 'Escolha uma frase para começar seu vídeo e prender a atenção.',
-        status: isRotinaWeek ? 'locked' : 'current',
+        status: isRotinaWeek ? 'locked' : (ganchoFeitoHoje ? 'done' : 'current'),
         href: '/ganchos',
         btnLabel: 'Ver Ganchos',
         doneBtnLabel: 'Ver Ganchos',

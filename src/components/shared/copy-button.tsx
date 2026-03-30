@@ -10,14 +10,20 @@ interface CopyButtonProps {
   variant?: 'default' | 'icon'
   label?: string
   copiedLabel?: string
+  onCopy?: () => void
 }
 
-export function CopyButton({ text, className, variant = 'default', label = 'Copiar', copiedLabel = 'Copiado!' }: CopyButtonProps) {
+export function CopyButton({ text, className, variant = 'default', label = 'Copiar', copiedLabel = 'Copiado!', onCopy }: CopyButtonProps) {
   const { copy, copied } = useCopy()
+
+  const handleCopy = () => {
+    copy(text)
+    onCopy?.()
+  }
 
   return (
     <button
-      onClick={() => copy(text)}
+      onClick={handleCopy}
       className={cn(
         "inline-flex items-center gap-2 rounded-lg font-medium transition-all",
         variant === 'icon'

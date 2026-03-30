@@ -96,7 +96,10 @@ export default function GanchosPage() {
                     <span className="px-4 py-1.5 rounded-lg bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-black uppercase tracking-[0.15em]">
                       {gancho.cat}
                     </span>
-                    <CopyButton text={gancho.txt} variant="icon" className="shrink-0 text-slate-800 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors p-1" />
+                    <CopyButton text={gancho.txt} onCopy={() => {
+                      localStorage.setItem('gancho_feito_hoje', new Date().toISOString().split('T')[0]);
+                      window.dispatchEvent(new Event('task_atualizada'));
+                    }} variant="icon" className="shrink-0 text-slate-800 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors p-1" />
                   </div>
                   
                   <h3 className="text-xl lg:text-2xl font-bold leading-snug text-slate-900 dark:text-white tracking-tight">
@@ -107,10 +110,18 @@ export default function GanchosPage() {
                 <div className="relative z-10 w-full flex items-center justify-between mt-12 pt-6 border-t border-slate-200 dark:border-slate-200 dark:border-white/10">
                   <span className="text-slate-700 dark:text-white/90 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
                      <span className="material-symbols-outlined text-[16px] text-[#0ea5e9]/50">visibility</span>
-                     Usado 1.2k+
+                     Usado {(() => {
+                        let h = 0;
+                        for(let i=0; i<gancho.txt.length; i++) h = Math.imul(31, h) + gancho.txt.charCodeAt(i) | 0;
+                        return (1 + ((Math.abs(h) % 90) / 10)).toFixed(1) + 'k+'
+                     })()}
                   </span>
                   
-                  <button onClick={() => { navigator.clipboard.writeText(gancho.txt) }} className="text-[#0ea5e9] text-[11px] font-black uppercase tracking-[0.15em] flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 outline-none">
+                  <button onClick={() => { 
+                    navigator.clipboard.writeText(gancho.txt);
+                    localStorage.setItem('gancho_feito_hoje', new Date().toISOString().split('T')[0]);
+                    window.dispatchEvent(new Event('task_atualizada'));
+                  }} className="text-[#0ea5e9] text-[11px] font-black uppercase tracking-[0.15em] flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 outline-none">
                      Copiar <span className="material-symbols-outlined text-[16px]">content_copy</span>
                   </button>
                 </div>
