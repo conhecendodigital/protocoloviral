@@ -644,8 +644,8 @@ export default function FormatosPage() {
                 {/* AI Generator Section */}
                 <div className="mt-8 pt-8 border-t border-slate-200 dark:border-white/10">
                   <h3 className="text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white mb-2">
-                    <span className="material-symbols-outlined text-[#0ea5e9]">magic_button</span>
-                    Copiar e Adaptar
+                    <span className="material-symbols-outlined text-[#0ea5e9]">map</span>
+                    Adapte esse formato
                   </h3>
                   <p className="text-sm text-slate-800 dark:text-white/90 dark:text-white/90 mb-4 leading-relaxed">
                     A IA vai ler toda a inteligência viral desse <strong className="text-slate-900 dark:text-white">estudo.md</strong> acima e cruzar com os seus dados de <strong className="text-slate-900 dark:text-white">Clareza</strong> e <strong className="text-slate-900 dark:text-white">Persona</strong> para escrever um roteiro inédito já moldado para o seu perfil falar OBRIGATORIAMENTE no modelo estrutural deste vídeo que viralizou.
@@ -665,7 +665,7 @@ export default function FormatosPage() {
                         </>
                       ) : (
                         <>
-                          <span className="material-symbols-outlined group-hover:scale-110 transition-transform">auto_awesome</span>
+                          <span className="material-symbols-outlined group-hover:scale-110 transition-transform">map</span>
                           Gerar Meu Roteiro com a IA
                         </>
                       )}

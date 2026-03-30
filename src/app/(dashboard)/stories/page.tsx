@@ -91,7 +91,7 @@ export default function StoriesPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="secondary" className="text-[10px] bg-slate-800 text-slate-800 dark:text-slate-300 hover:bg-slate-700 font-bold uppercase tracking-wider border-0">
+                                <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/20 font-bold uppercase tracking-wider border-0">
                                   {story.tipo}
                                 </Badge>
                               </div>
