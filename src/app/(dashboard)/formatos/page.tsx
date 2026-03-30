@@ -88,27 +88,46 @@ export default function FormatosPage() {
 
     setGeneratingReel(true)
     setGenerateError(null)
-    setGeneratedReel(null)
 
     try {
+      // Gemini 2.5 Flash suporta 1M de tokens de contexto
+      // O estudo completo de Clareza + Persona cabe tranquilamente
+      // Limite seguro: 8000 chars cada (~2000 tokens) — mais que suficiente, sem cortar dado crítico
+      const clareza = profile.resposta1.substring(0, 8000)
+      const persona = profile.resposta2.substring(0, 8000)
+
+      // Log pra debugar o que está sendo enviado (remover em produção)
+      console.log('📤 Enviando pra IA:')
+      console.log('clareza length:', clareza.length)
+      console.log('persona length:', persona.length)
+      console.log('estudo length:', modalFormato.estudo?.length)
+
       const res = await fetch('/api/generate-reel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          clareza: profile.resposta1.substring(0, 2000), // Proteção extra pro tamanho do payload
-          persona: profile.resposta2.substring(0, 2000),
+          clareza,
+          persona,
           estudo: modalFormato.estudo,
-          duracaoStr: modalFormato.duracao ? formatDuration(modalFormato.duracao) + ' minutos de fala' : '30 segundos'
+          duracaoStr: modalFormato.duracao
+            ? `${formatDuration(modalFormato.duracao)} segundos`
+            : '30 segundos'
         })
       })
 
+      if (!res.ok) {
+        const errData = await res.json()
+        throw new Error(errData.error || 'Erro desconhecido na geração.')
+      }
+
       const data = await res.json()
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Erro inesperado da API.')
+      if (!data.result) {
+        throw new Error('A IA retornou vazio. Tente novamente.')
       }
 
       setGeneratedReel(data.result)
+
     } catch (err: any) {
       setGenerateError(err.message)
     } finally {

@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
 
     const apiKey = process.env.GEMINI_API_KEY
-    
+
     if (!apiKey) {
       return NextResponse.json(
         { error: 'Chave da API do Google Gemini (GEMINI_API_KEY) não encontrada no servidor.' },
@@ -20,96 +20,92 @@ export async function POST(req: Request) {
       )
     }
 
-    const systemPrompt = `Prompt do Sistema — Gerador de Roteiro de Reels v3
-IDENTIDADE
-Você é um roteirista especialista em Instagram Reels. Você escreve roteiros na voz do criador, usando as dores e cenas reais da persona do público para gerar identificação imediata — sem genérico, sem texto de IA.
+    const duracao = duracaoStr || '30 segundos'
 
-PASSO 1 — ENTENDA O CRIADOR (quem fala no vídeo)
-Leia a Clareza abaixo e extraia:
-- Qual é o nicho dele?
-- Qual transformação ele entrega?
-- Qual é o tom de voz dele? (direto, técnico, humano, irreverente?)
-- Qual diferencial ele tem que ninguém mais tem?
+    // SYSTEM PROMPT separado do conteúdo do usuário
+    const systemInstruction = `Você é um roteirista especialista em Instagram Reels. 
+Você escreve roteiros na voz do criador, usando as dores e cenas reais da persona do público para gerar identificação imediata — sem genérico, sem texto de IA.
 
-Clareza do criador:
-${clareza}
+REGRA FUNDAMENTAL: O criador fala. A persona se reconhece.
 
-PASSO 2 — ENTENDA A PERSONA (quem assiste)
-Leia a Persona abaixo e extraia:
-- Qual cena do dia a dia dela representa melhor a dor principal?
-- Qual comportamento concreto ela repete sem perceber?
-- Qual frase ela fala em voz alta (dor superficial)?
-- Qual é o desejo que ela não admite nem pra si mesma?
-- Qual detalhe específico (hora, situação, objeto) faria ela pensar "isso sou eu"?
-
-Persona do público:
-${persona}
-
-PASSO 3 — ENTENDA O FORMATO VIRAL
-As anotações estruturais deste formato são:
-${estudo}
-
-PASSO 4 — ESCREVA O ROTEIRO
-REGRA FUNDAMENTAL
-O criador fala. A persona se reconhece.
-O roteiro é escrito na voz do criador — mas cada frase deve fazer a persona pensar "isso sou eu". Para isso, use as cenas concretas, os comportamentos específicos e o vocabulário real do público. Nunca use descrições genéricas.
-
-REGRAS DE ESCRITA
-- Gancho com cena real — abra com uma situação específica da rotina da persona, não com uma declaração genérica
-- Dor profunda, não superficial — não escreva o que ela fala, escreva o que ela sente mas não admite
+REGRAS DE ESCRITA:
+- Gancho com cena real — abra com uma situação específica da rotina da persona, não uma declaração genérica
+- Dor profunda, não superficial — escreva o que ela sente mas não admite, não o que ela fala em voz alta
 - Detalhes concretos — hora do dia, objeto, comportamento, frase interna. Quanto mais específico, mais identificação
 - Voz natural do criador — sem "mergulhe nessa jornada", sem "é isso mesmo que você leu", sem linguagem de IA
-- Estrutura do formato — siga o arco narrativo do viral (ex: problema→solução implícita), não invente outro
-- Aplique as melhorias — se a análise sugere pergunta direta ou desfecho concreto, já inclua
-- Tamanho proporcional ao original — se o roteiro viral tem ${duracaoStr || '30 segundos'}, o novo DEVE ter tamanho e tempo equivalentes ou maiores.
+- Estrutura do formato — siga o arco narrativo exato do viral fornecido, não invente outro
+- Aplique as melhorias sugeridas no estudo — se sugere pergunta direta ou desfecho concreto, já inclua
+- Tamanho proporcional ao original — o roteiro deve ter duração equivalente a ${duracao}
 
-O QUE NUNCA ESCREVER
+O QUE NUNCA ESCREVER:
 ❌ "você que está travado/a" — genérico
-❌ "no mundo de hoje" — genérico
+❌ "no mundo de hoje" — genérico  
 ❌ "muitas pessoas sentem" — genérico
 ❌ Qualquer frase que qualquer criador de qualquer nicho poderia usar
 ❌ Dados, resultados ou depoimentos inventados
-❌ Explicações após o roteiro
+❌ Explicações ou comentários após o roteiro
 
-FORMATO DE ENTREGA
+FORMATO DE ENTREGA (use exatamente esse formato, sem texto antes ou depois):
 🎬 [TÍTULO]
-[GANCHO]
+
+**[GANCHO]**
 [cena concreta — para o scroll nos primeiros 2 segundos]
-[DESENVOLVIMENTO]
+
+**[DESENVOLVIMENTO]**
 [dores específicas da persona, na voz do criador, com detalhes reais]
-[ENCERRAMENTO]
+
+**[ENCERRAMENTO]**
 [pergunta direta ou CTA que gera comentário ou salvamento]
 
-Duração estimada: ${duracaoStr || '30 segundos'}
+---
+Duração estimada: ${duracao}
 
-EXEMPLO — diferença entre genérico e concreto
-Persona: Camila, 34 anos, técnica de enfermagem, acorda 6h rolando feed, 22h30 no celular com filho dormido, já comprou 2 cursos e não terminou, marido que diz "internet não sustenta"
-❌ Genérico:
-"Você que fica travada sem saber o que postar, saiba que não está sozinha..."
-✅ Concreto:
-"22h30. Filho dormindo. Você abre o Instagram, salva mais um post de 'como crescer no digital', fecha o app — e não posta nada. De novo. Esse ciclo tem nome, e eu vou te mostrar como sair dele."
-A diferença: o segundo descreve o dia real da Camila. Ela para o scroll porque reconhece a própria noite.`
+EXEMPLO do que é concreto vs genérico:
+❌ Genérico: "Você que fica travada sem saber o que postar, saiba que não está sozinha..."
+✅ Concreto: "22h30. Filho dormindo. Você abre o Instagram, salva mais um post de 'como crescer no digital', fecha o app — e não posta nada. De novo. Esse ciclo tem nome, e eu vou te mostrar como sair dele."
+O concreto descreve o dia real da persona. Ela para o scroll porque reconhece a própria noite.`
 
-    // O usuário solicitou explicitamente o Gemini 2.5 Flash
-    // Caso a Google mude a string no futuro, poderíamos ter um fallback aqui, 
-    // mas "gemini-2.5-flash" é o nome padrão esperado em 2024/2025 para a última gen.
-    const modelName = 'gemini-2.5-flash'
+    // Prompt do usuário com os dados — separado do system
+    const userPrompt = `Gere um roteiro de Reels com base nos dados abaixo.
+
+## PASSO 1 — CRIADOR (quem fala no vídeo)
+Leia e extraia: nicho, transformação entregue, tom de voz, diferencial único.
+
+${clareza}
+
+## PASSO 2 — PERSONA (quem assiste)
+Leia e extraia: cena do dia a dia que representa a dor principal, comportamento concreto que ela repete, desejo que ela não admite, detalhe específico (hora, situação, objeto) que faria ela pensar "isso sou eu".
+
+${persona}
+
+## PASSO 3 — FORMATO VIRAL (estrutura a seguir)
+Adapte a estrutura narrativa abaixo para o nicho e persona do criador. Zero plágio do conteúdo original — use apenas o arco narrativo.
+
+${estudo}
+
+Agora escreva o roteiro.`
+
+    // gemini-2.5-flash-preview-04-17 é o model string correto em 2025
+    // "gemini-2.5-flash" sem versão pode retornar 404 dependendo da região
+    const modelName = 'gemini-2.5-flash-preview-04-17'
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`
 
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        system_instruction: {
+          parts: [{ text: systemInstruction }]
+        },
         contents: [
           {
-            parts: [{ text: systemPrompt }],
-            role: 'user'
+            role: 'user',
+            parts: [{ text: userPrompt }]
           }
         ],
         generationConfig: {
-          temperature: 0.7,
+          temperature: 0.85, // um pouco mais alto pra sair do padrão seguro/genérico
+          maxOutputTokens: 1024,
         }
       })
     })
@@ -118,7 +114,7 @@ A diferença: o segundo descreve o dia real da Camila. Ela para o scroll porque 
       const errorText = await response.text()
       console.error('Gemini API Error:', errorText)
       return NextResponse.json(
-        { error: `Erro na IA do Google: ${response.statusText}` },
+        { error: `Erro na IA do Google: ${response.statusText}. Detalhes: ${errorText}` },
         { status: response.status }
       )
     }
@@ -127,10 +123,12 @@ A diferença: o segundo descreve o dia real da Camila. Ela para o scroll porque 
     const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text
 
     if (!resultText) {
+      console.error('Retorno vazio. Payload completo:', JSON.stringify(data))
       throw new Error('Retorno vazio da API do Gemini.')
     }
 
     return NextResponse.json({ result: resultText })
+
   } catch (error: any) {
     console.error('Erro Route generate-reel:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
