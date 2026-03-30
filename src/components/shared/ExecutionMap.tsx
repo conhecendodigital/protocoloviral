@@ -37,38 +37,51 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
   }
 
   const getSteps = (): Step[] => {
-    // State 3: Recurring user (daily routine)
+    // State 3: Recurring user (daily routine) — rotação semanal
     if (isRecurring && completion === 100) {
+      // Calcula semana do ano para alternar automaticamente
+      const now = new Date()
+      const startOfYear = new Date(now.getFullYear(), 0, 1)
+      const weekNumber = Math.ceil(((now.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7)
+      const isRotinaWeek = weekNumber % 2 === 0 // par = rotina, ímpar = ganchos
+
+      const rotinaStep: Step = {
+        icon: 'calendar_today',
+        title: 'Seguir a Rotina',
+        description: 'Veja o que fazer em cada dia da semana para não perder o ritmo.',
+        status: isRotinaWeek ? 'current' : 'locked',
+        href: '/rotina',
+        btnLabel: 'Ver Rotina',
+        doneBtnLabel: 'Ver Rotina',
+        color: '#10b981',
+      }
+      const ganchoStep: Step = {
+        icon: 'anchor',
+        title: 'Pegar um Gancho Viral',
+        description: 'Escolha uma frase para começar seu vídeo e prender a atenção.',
+        status: isRotinaWeek ? 'locked' : 'current',
+        href: '/ganchos',
+        btnLabel: 'Ver Ganchos',
+        doneBtnLabel: 'Ver Ganchos',
+        color: '#06b6d4',
+      }
+
+      // Step 1 e 2 alternam conforme a semana
+      const first = isRotinaWeek ? rotinaStep : ganchoStep
+      const second = isRotinaWeek ? ganchoStep : rotinaStep
+
       return [
-        {
-          icon: 'anchor',
-          title: 'Pegar um Gancho Viral',
-          description: 'Escolha uma frase para começar seu vídeo e prender a atenção.',
-          status: 'current',
-          href: '/ganchos',
-          btnLabel: 'Ver Ganchos',
-          doneBtnLabel: 'Ver Ganchos',
-          color: '#06b6d4',
-        },
+        first,
+        second,
         {
           icon: 'auto_awesome',
           title: 'Gerar Roteiro com IA',
           description: 'Crie o texto completo do seu conteúdo com ajuda da IA.',
           status: 'locked',
-          href: '/prompts',
+          href: '/formatos',
           btnLabel: 'Abrir Gerador',
           doneBtnLabel: 'Abrir Gerador',
           color: '#8b5cf6',
-        },
-        {
-          icon: 'calendar_today',
-          title: 'Seguir a Rotina',
-          description: 'Veja o que fazer em cada dia da semana para não perder o ritmo.',
-          status: 'locked',
-          href: '/rotina',
-          btnLabel: 'Ver Rotina',
-          doneBtnLabel: 'Ver Rotina',
-          color: '#10b981',
         },
         {
           icon: 'trending_up',
