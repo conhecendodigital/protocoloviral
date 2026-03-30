@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
-    const { persona, estudo, duracaoStr, nicho, ideia } = await req.json()
+    const { persona, estudo, duracaoStr, nicho } = await req.json()
 
     if (!persona || !estudo || !nicho) {
       return NextResponse.json(
@@ -120,6 +120,50 @@ REGRAS INVIOLÁVEIS:
 ❌ Zero explicações após o roteiro — entregue só o roteiro
 ❌ Zero elementos inventados — se o original não tem CTA, não adiciona CTA. Se não tem pergunta, não adiciona pergunta. Se não tem virada, não adiciona virada. O roteiro novo tem EXATAMENTE os mesmos elementos do original — nem mais, nem menos.
 
+═══════════════════════════════════
+CHECKLIST DE QUALIDADE (validar antes de entregar)
+═══════════════════════════════════
+Use esta checklist como filtro final. Se algum item falhar, reescreva:
+1. Gancho ≤ 2 linhas — deve funcionar lido em voz alta em 3 segundos
+2. Primeiro frame = conflito ou pergunta — nunca comece com apresentação
+3. Nunca explique o tema antes de criar o gancho — o gancho é a abertura
+4. Tira a culpa do público — o problema é da falta de informação, não da pessoa
+5. Entrega valor antes do CTA (se houver CTA no original) — mínimo 3 itens/pontos
+6. CTA embutido na última dica (se houver CTA) — integrar na conclusão natural
+7. Ritmo de lista: 3-7 itens — nem raso, nem cansativo
+8. Uma emoção âncora — todo o roteiro em torno de uma única emoção dominante
+9. Linguagem do público — termos que o nicho usa, não linguagem acadêmica
+10. Última frase coerente com o original — se termina com pergunta, termina com pergunta
+
+═══════════════════════════════════
+FÓRMULAS DE GANCHO (referência)
+═══════════════════════════════════
+Se o gancho original for fraco ou genérico, use estas fórmulas testadas para criar um gancho melhor no mesmo estilo:
+- "[N] [coisas] que você [erro] e [consequência]"
+- "PROVANDO QUE [PÚBLICO] NÃO É [DEFEITO], É [CAUSA]"
+- "O que acontece no seu [X] quando você [hábito comum]?"
+- "[Título], é verdade que [crença]? Ou [medo]?"
+- "Esse é o [X] da concorrência. Esse é o nosso."
+- "[frase inocente que esconde crítica interna]"
+- "Se sentindo [sintoma], faz [solução rápida]."
+- "Você ainda [faz X] assim ou assim?"
+- "Eu faço X. / Eu faço Y." (dois personagens contrastantes)
+ATENÇÃO: Use estas fórmulas APENAS para reforçar o gancho — não para mudar o estilo do original.
+
+═══════════════════════════════════
+IDENTIFICAÇÃO DE ARQUÉTIPO
+═══════════════════════════════════
+Identifique qual destes arquétipos o formato viral se encaixa e use a lógica correspondente:
+- LIGAÇÃO OCULTA → frase inocente que esconde comportamento problemático
+- BASTIDORES COM COMPARAÇÃO → comparação visual + diferenciais empilhados
+- REACT / EXPERIMENTO MENTAL → desafio interativo + revelação + aplicação
+- LISTA PROBLEMA/SOLUÇÃO → número no gancho + itens com problema e solução
+- CERTO/ERRADO → tira culpa do público + demonstração visual
+- ANCORAGEM / PERGUNTA IMPACTANTE → pergunta que revela risco em hábito comum
+- PERGUNTA E RESPOSTA → leigo pergunta + especialista responde em cascata
+- COMPARAÇÃO RICO/POBRE → dois personagens + comparações práticas
+- TUTORIAL RÁPIDO → jeito errado vs jeito certo + passo a passo
+
 FORMATO DE ENTREGA:
 - Entregue APENAS o texto falado — sem títulos de seção, sem colchetes, sem indicações visuais
 - Apenas o título do vídeo em negrito na primeira linha, depois o texto corrido
@@ -135,16 +179,7 @@ EXEMPLO DE FORMATO ERRADO:
 texto do gancho
 **[DESENVOLVIMENTO]**
 texto
-*(Visual: indicação visual)*
-
-═══════════════════════════════════
-REGRA FINAL — TEXTO OBRIGATÓRIO APÓS O ROTEIRO
-═══════════════════════════════════
-APÓS o roteiro, adicione exatamente este texto (sem alterar nenhuma palavra):
-
----
-
-⚠️ Este roteiro foi gerado com nossa IA, a base usada foi seu nicho e persona. Leia com atenção, edite se precisar à vontade e grave com a sua voz e seu tom.`
+*(Visual: indicação visual)*`
 
     const userPrompt = `Você vai gerar um roteiro de Reels. Siga os passos na ordem abaixo.
 
@@ -167,16 +202,6 @@ ${estudo}
 PASSO 2 — NICHO DO CRIADOR
 ═══════════════════════════
 ${nicho}
-
-═══════════════════════════
-PASSO 2.5 — IDEIA DO CRIADOR
-═══════════════════════════
-${ideia
-        ? `O criador quer abordar essa situação/ideia específica: "${ideia}". 
-Molde essa ideia dentro da estrutura do formato viral.`
-        : `O criador não forneceu ideia. Use as dores mais comuns do nicho "${nicho}" 
-e da persona para definir o conteúdo. Escolha a dor mais específica e concreta.`
-      }
 
 ═══════════════════════════
 PASSO 3 — DOR DA PERSONA
