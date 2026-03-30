@@ -23,47 +23,50 @@ export async function POST(req: Request) {
     const duracao = duracaoStr || '30 segundos'
 
     // SYSTEM PROMPT separado do conteúdo do usuário
-    const systemInstruction = `Você é um roteirista especialista em Instagram Reels. 
-Você escreve roteiros na voz do criador, usando as dores e cenas reais da persona do público para gerar identificação imediata — sem genérico, sem texto de IA.
+    const systemInstruction = `Você é um roteirista especialista em Instagram Reels.
 
-REGRA FUNDAMENTAL: O criador fala. A persona se reconhece.
+REGRA FUNDAMENTAL — LEIA COM ATENÇÃO:
+O criador não fala SOBRE a persona. O criador SE TORNA a persona.
+
+O roteiro é escrito em PRIMEIRA PESSOA, como se o criador estivesse vivendo a situação da persona — encarnando a dor dela, o comportamento dela, o pensamento interno dela. Quem assiste pensa "é exatamente isso que eu faço/sinto."
+
+EXEMPLO DO MECANISMO:
+O formato viral original faz isso:
+"Oi, desculpa não ter te respondido antes. É que eu tava rolando infinitamente o feed das redes sociais, vendo vídeos repetidos de pessoas desconhecidas, com ganchos de dois segundos pra prender minha atenção..."
+A criadora não diz "você que fica viciada no feed." Ela VIVE o vício na frente da câmera. O público se reconhece porque a cena é real e específica.
 
 REGRAS DE ESCRITA:
-- Gancho com cena real — abra com uma situação específica da rotina da persona, não uma declaração genérica
-- Dor profunda, não superficial — escreva o que ela sente mas não admite, não o que ela fala em voz alta
-- Detalhes concretos — hora do dia, objeto, comportamento, frase interna. Quanto mais específico, mais identificação
-- Voz natural do criador — sem "mergulhe nessa jornada", sem "é isso mesmo que você leu", sem linguagem de IA
-- Estrutura do formato — siga o arco narrativo exato do viral fornecido, não invente outro
-- Aplique as melhorias sugeridas no estudo — se sugere pergunta direta ou desfecho concreto, já inclua
-- Tamanho proporcional ao original — o roteiro deve ter duração equivalente a ${duracao}
+- Primeira pessoa — o criador encarna a situação, não explica ela
+- Cena real e específica — hora do dia, objeto, comportamento, pensamento interno concreto da persona
+- Dor profunda — o que a persona sente mas não admite, não o que ela fala em voz alta
+- Ritmo natural — frases curtas, pausas, acúmulo de detalhes como no original
+- Sem "você que..." — nunca saia da primeira pessoa pra apontar o dedo pro público
+- Estrutura do formato — siga o arco narrativo exato do viral, não invente outro
+- Aplique as melhorias sugeridas — se indica pergunta direta ou desfecho concreto, já inclua
+- Tamanho equivalente ao original — ${duracao}
 
 O QUE NUNCA ESCREVER:
-❌ "você que está travado/a" — genérico
-❌ "no mundo de hoje" — genérico  
+❌ "você que está travado/a" — quebra a primeira pessoa
+❌ "no mundo de hoje" — genérico
 ❌ "muitas pessoas sentem" — genérico
 ❌ Qualquer frase que qualquer criador de qualquer nicho poderia usar
 ❌ Dados, resultados ou depoimentos inventados
 ❌ Explicações ou comentários após o roteiro
 
-FORMATO DE ENTREGA (use exatamente esse formato, sem texto antes ou depois):
+FORMATO DE ENTREGA (sem texto antes ou depois):
 🎬 [TÍTULO]
 
 **[GANCHO]**
-[cena concreta — para o scroll nos primeiros 2 segundos]
+[primeira frase em primeira pessoa — cena concreta que para o scroll]
 
 **[DESENVOLVIMENTO]**
-[dores específicas da persona, na voz do criador, com detalhes reais]
+[acúmulo de detalhes reais da situação, em primeira pessoa, ritmo do original]
 
 **[ENCERRAMENTO]**
-[pergunta direta ou CTA que gera comentário ou salvamento]
+[virada ou pergunta direta que gera comentário]
 
 ---
-Duração estimada: ${duracao}
-
-EXEMPLO do que é concreto vs genérico:
-❌ Genérico: "Você que fica travada sem saber o que postar, saiba que não está sozinha..."
-✅ Concreto: "22h30. Filho dormindo. Você abre o Instagram, salva mais um post de 'como crescer no digital', fecha o app — e não posta nada. De novo. Esse ciclo tem nome, e eu vou te mostrar como sair dele."
-O concreto descreve o dia real da persona. Ela para o scroll porque reconhece a própria noite.`
+Duração estimada: ${duracao}`
 
     // Extrai cada campo do estudo via regex para passar estruturado pra IA
     const extrairCampo = (texto: string, label: string): string => {
@@ -72,17 +75,17 @@ O concreto descreve o dia real da persona. Ela para o scroll porque reconhece a 
       return match ? match[1].trim() : ''
     }
 
-    const gancho         = extrairCampo(estudo, 'Gancho')
+    const gancho = extrairCampo(estudo, 'Gancho')
     const roteirOriginal = extrairCampo(estudo, 'Roteiro Completo')
-    const estrutura      = extrairCampo(estudo, 'Estrutura')
-    const porQueF        = extrairCampo(estudo, 'Por que funcionou')
-    const emocao         = extrairCampo(estudo, 'Emoção Principal')
-    const melhorias      = extrairCampo(estudo, 'O que poderia viralizar mais')
+    const estrutura = extrairCampo(estudo, 'Estrutura')
+    const porQueF = extrairCampo(estudo, 'Por que funcionou')
+    const emocao = extrairCampo(estudo, 'Emoção Principal')
+    const melhorias = extrairCampo(estudo, 'O que poderia viralizar mais')
 
     const userPrompt = `Gere um roteiro de Reels com base nos dados abaixo.
 
 ## PASSO 1 — CRIADOR (quem fala no vídeo)
-Extraia: nicho, transformation entregue, tom de voz, diferencial único.
+Extraia: nicho, transformação entregue, tom de voz, diferencial único.
 ${clareza}
 
 ## PASSO 2 — PERSONA (quem assiste)
@@ -118,7 +121,8 @@ ${melhorias}
 
 Agora escreva o roteiro.`
 
-    // Use o modelo estável "gemini-2.5-flash" pois a versão preview-04-17 não existe neste endpoint
+    // O formato gemini-2.5-flash-preview-04-17 vai resultar em 404
+    // Manteremos APENAS o gemini-2.5-flash 
     const modelName = 'gemini-2.5-flash'
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`
 
@@ -136,8 +140,8 @@ Agora escreva o roteiro.`
           }
         ],
         generationConfig: {
-          temperature: 0.85, // um pouco mais alto pra sair do padrão seguro/genérico
-          maxOutputTokens: 1024,
+          temperature: 0.85,
+          maxOutputTokens: 3000,
         }
       })
     })
