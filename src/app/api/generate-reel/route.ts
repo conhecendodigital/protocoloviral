@@ -65,23 +65,56 @@ EXEMPLO do que é concreto vs genérico:
 ✅ Concreto: "22h30. Filho dormindo. Você abre o Instagram, salva mais um post de 'como crescer no digital', fecha o app — e não posta nada. De novo. Esse ciclo tem nome, e eu vou te mostrar como sair dele."
 O concreto descreve o dia real da persona. Ela para o scroll porque reconhece a própria noite.`
 
-    // Prompt do usuário com os dados — separado do system
+    // Extrai cada campo do estudo via regex para passar estruturado pra IA
+    const extrairCampo = (texto: string, label: string): string => {
+      const regex = new RegExp(`\\*\\*${label}:\\*\\*\\s*([\\s\\S]*?)(?=\\n\\n\\*\\*|$)`, 'i')
+      const match = texto.match(regex)
+      return match ? match[1].trim() : ''
+    }
+
+    const gancho         = extrairCampo(estudo, 'Gancho')
+    const roteirOriginal = extrairCampo(estudo, 'Roteiro Completo')
+    const estrutura      = extrairCampo(estudo, 'Estrutura')
+    const porQueF        = extrairCampo(estudo, 'Por que funcionou')
+    const emocao         = extrairCampo(estudo, 'Emoção Principal')
+    const melhorias      = extrairCampo(estudo, 'O que poderia viralizar mais')
+
     const userPrompt = `Gere um roteiro de Reels com base nos dados abaixo.
 
 ## PASSO 1 — CRIADOR (quem fala no vídeo)
-Leia e extraia: nicho, transformação entregue, tom de voz, diferencial único.
-
+Extraia: nicho, transformation entregue, tom de voz, diferencial único.
 ${clareza}
 
 ## PASSO 2 — PERSONA (quem assiste)
-Leia e extraia: cena do dia a dia que representa a dor principal, comportamento concreto que ela repete, desejo que ela não admite, detalhe específico (hora, situação, objeto) que faria ela pensar "isso sou eu".
-
+Extraia: cena do dia a dia que representa a dor principal, comportamento concreto que ela repete sem perceber, desejo que ela não admite, detalhe específico (hora, situação, objeto) que faria ela pensar "isso sou eu".
 ${persona}
 
-## PASSO 3 — FORMATO VIRAL (estrutura a seguir)
-Adapte a estrutura narrativa abaixo para o nicho e persona do criador. Zero plágio do conteúdo original — use apenas o arco narrativo.
+## PASSO 3 — FORMATO VIRAL
 
-${estudo}
+**Gancho original:**
+${gancho}
+
+**Roteiro original (NÃO copie — use só como referência de ritmo e naturalidade):**
+${roteirOriginal}
+
+**Estrutura narrativa a seguir obrigatoriamente:**
+${estrutura}
+
+**Por que esse formato funcionou:**
+${porQueF}
+
+**Emoção que o roteiro novo deve gerar:**
+${emocao}
+
+**Melhorias a aplicar obrigatoriamente no roteiro novo:**
+${melhorias}
+
+## PASSO 4 — ESCREVA O ROTEIRO
+- Siga a estrutura: ${estrutura}
+- Gere a emoção: ${emocao}
+- Aplique as melhorias: ${melhorias}
+- Use cenas concretas da persona, na voz do criador
+- Duração equivalente a: ${duracao}
 
 Agora escreva o roteiro.`
 
