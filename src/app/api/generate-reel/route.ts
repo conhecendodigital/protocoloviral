@@ -118,9 +118,8 @@ ${melhorias}
 
 Agora escreva o roteiro.`
 
-    // gemini-2.5-flash-preview-04-17 é o model string correto em 2025
-    // "gemini-2.5-flash" sem versão pode retornar 404 dependendo da região
-    const modelName = 'gemini-2.5-flash-preview-04-17'
+    // Use o modelo estável "gemini-2.5-flash" pois a versão preview-04-17 não existe neste endpoint
+    const modelName = 'gemini-2.5-flash'
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`
 
     const response = await fetch(endpoint, {
