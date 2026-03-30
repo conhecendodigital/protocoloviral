@@ -148,13 +148,9 @@ ${emocao}
 ${melhorias}
 
 ## PASSO 4 — ESCREVA O ROTEIRO
-- Siga a estrutura: ${estrutura}
-- Gere a emoção: ${emocao}
-- Aplique as melhorias: ${melhorias}
-- Use cenas concretas da persona, na voz do criador
-- Duração equivalente a: ${duracao}
+Adapte esse formato viral obrigatoriamente e faça um roteiro inédito para você mesmo gravar, usando a sua clareza e focando na sua persona.
 
-Agora escreva o roteiro.`
+Duração equivalente a: ${duracao}`
 
     // IMPORTANTE: Mantendo gemini-2.5-flash para não dar erro 404
     const modelName = 'gemini-2.5-flash'
