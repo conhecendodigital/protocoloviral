@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
-    const { clareza, persona, estudo, duracaoStr } = await req.json()
+    const { clareza, persona, estudo, duracaoStr, nicho } = await req.json()
 
     if (!clareza || !persona || !estudo) {
       return NextResponse.json(
@@ -80,8 +80,6 @@ Com os elementos extraídos acima, escreva o roteiro novo:
 - Siga o MESMO arco narrativo
 - Termine com o MESMO tipo de encerramento
 
-Substitua TODO o conteúdo assim:
-
 O ROTEIRO É SOBRE O PROBLEMA QUE O CRIADOR RESOLVE — não sobre a vida pessoal da persona.
 
 Use a CLAREZA para identificar:
@@ -116,75 +114,64 @@ REGRAS INVIOLÁVEIS:
 ❌ Zero explicações após o roteiro — entregue só o roteiro
 
 FORMATO DE ENTREGA:
-- Entregue APENAS o texto falado — sem títulos, sem seções, sem colchetes, sem indicações visuais, sem marcações
-- O roteiro é um bloco corrido de fala natural, exatamente como o criador vai falar na frente da câmera
-- A única coisa permitida antes do texto é o título do vídeo em negrito
-- Nada mais depois do roteiro — sem "duração estimada", sem comentários, sem notas
+- Entregue APENAS o texto falado — sem títulos de seção, sem colchetes, sem indicações visuais
+- Apenas o título do vídeo em negrito na primeira linha, depois o texto corrido
+- Nada depois do roteiro
 
 EXEMPLO DE FORMATO CORRETO:
 **A Culpa do Feed**
-Oi, desculpa a demora. É que eu tava às 22h30, filho dormindo, abrindo o Instagram pela décima vez, salvando mais um tutorial de como criar conteúdo com IA, fechando o app — e não postando nada. De novo. Como se salvar fosse o mesmo que fazer. Mas agora chega. Você também fica nesse ciclo? Me conta aqui.
+Oi, desculpa a demora. É que eu tava salvando mais um post de 'como crescer no Instagram', abrindo mais um tutorial de IA, colocando mais uma ideia no Notion — sem postar nada. De novo. Como se salvar fosse o mesmo que fazer. Mas agora chega. Você também fica nesse ciclo? Me conta aqui.
 
-EXEMPLO DE FORMATO ERRADO (nunca faça isso):
+EXEMPLO DE FORMATO ERRADO:
 🎬 [TÍTULO]
 **[GANCHO]**
 texto do gancho
 **[DESENVOLVIMENTO]**
-texto do desenvolvimento
-*(Visual: indicação visual)*
-**[ENCERRAMENTO]**
-texto do encerramento`
+texto
+*(Visual: indicação visual)*`
 
-    // Extrai cada campo do estudo via regex para passar estruturado pra IA
-    const extrairCampo = (texto: string, label: string): string => {
-      const regex = new RegExp(`\\*\\*${label}:\\*\\*\\s*([\\s\\S]*?)(?=\\n\\n\\*\\*|$)`, 'i')
-      const match = texto.match(regex)
-      return match ? match[1].trim() : ''
-    }
+    const userPrompt = `Você vai gerar um roteiro de Reels. Siga os passos na ordem abaixo.
 
-    const gancho         = extrairCampo(estudo, 'Gancho')
-    const roteirOriginal = extrairCampo(estudo, 'Roteiro Completo')
-    const estrutura      = extrairCampo(estudo, 'Estrutura')
-    const porQueF        = extrairCampo(estudo, 'Por que funcionou')
-    const emocao         = extrairCampo(estudo, 'Emoção Principal')
-    const melhorias      = extrairCampo(estudo, 'O que poderia viralizar mais')
+═══════════════════════════
+PASSO 1 — ESTUDE O FORMATO VIRAL
+═══════════════════════════
+Leia o estudo abaixo e extraia ANTES de escrever qualquer coisa:
+- Mecanismo narrativo
+- Pessoa gramatical
+- Ritmo sintático das frases
+- Tipo de gancho
+- Emoção central
+- Arco narrativo
+- Tipo de encerramento
 
-    const userPrompt = `Gere um roteiro de Reels com base nos dados abaixo.
+ESTUDO DO FORMATO:
+${estudo}
 
-## PASSO 1 — CRIADOR (quem fala no vídeo)
-Extraia: nicho, transformação entregue, tom de voz, diferencial único.
+═══════════════════════════
+PASSO 2 — ENTENDA O CRIADOR
+═══════════════════════════
+Nicho: ${nicho || 'extrair da clareza abaixo'}
+
+Problema central que o criador resolve e transformação que ele entrega:
 ${clareza}
 
-## PASSO 2 — PERSONA (quem assiste)
-Extraia: cena do dia a dia que representa a dor principal, comportamento concreto que ela repete sem perceber, desejo que ela não admite, detalhe específico (hora, situação, objeto) que faria ela pensar "isso sou eu".
+═══════════════════════════
+PASSO 3 — ENTENDA A DOR DO NICHO
+═══════════════════════════
+Qual é o comportamento concreto que a persona repete em relação ao problema do nicho?
+Qual é o pensamento interno dela nesse momento?
+
 ${persona}
 
-## PASSO 3 — FORMATO VIRAL
+═══════════════════════════
+PASSO 4 — ESCREVA O ROTEIRO
+═══════════════════════════
+Agora escreva o roteiro replicando TODOS os elementos do formato viral — mas com o conteúdo do nicho do criador.
 
-**Gancho original:**
-${gancho}
-
-**Roteiro original (NÃO copie — use só como referência de ritmo e naturalidade):**
-${roteirOriginal}
-
-**Estrutura narrativa a seguir obrigatoriamente:**
-${estrutura}
-
-**Por que esse formato funcionou:**
-${porQueF}
-
-**Emoção que o roteiro novo deve gerar:**
-${emocao}
-
-**Melhorias a aplicar obrigatoriamente no roteiro novo:**
-${melhorias}
-
-## PASSO 4 — ESCREVA O ROTEIRO
-Adapte esse formato viral obrigatoriamente e faça um roteiro inédito para você mesmo gravar, usando a sua clareza e focando na sua persona.
+O roteiro encarna a DOR DO NICHO — não detalhes pessoais da persona (profissão, família, cidade) a menos que sejam diretamente ligados ao problema que o criador resolve.
 
 Duração equivalente a: ${duracao}`
 
-    // IMPORTANTE: Mantendo gemini-2.5-flash para não dar erro 404
     const modelName = 'gemini-2.5-flash'
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`
 
@@ -203,7 +190,7 @@ Duração equivalente a: ${duracao}`
         ],
         generationConfig: {
           temperature: 0.85,
-          maxOutputTokens: 2048,
+          maxOutputTokens: 3000,
         }
       })
     })

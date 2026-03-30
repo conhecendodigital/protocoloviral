@@ -89,29 +89,40 @@ export default function FormatosPage() {
     setGeneratingReel(true)
     setGenerateError(null)
 
-    try {
-      // Gemini 2.5 Flash suporta 1M de tokens de contexto
-      // O estudo completo de Clareza + Persona cabe tranquilamente
-      // Limite seguro: 8000 chars cada (~2000 tokens) — mais que suficiente, sem cortar dado crítico
-      const clareza = profile.resposta1.substring(0, 8000)
-      const persona = profile.resposta2.substring(0, 8000)
+    // DEBUG — remove depois de confirmar que os dados chegam certos
+    console.log('📤 Perfil completo:', {
+      nicho: profile.nicho,
+      resposta1_length: profile.resposta1?.length,
+      resposta2_length: profile.resposta2?.length,
+    })
 
-      // Log pra debugar o que está sendo enviado (remover em produção)
-      console.log('📤 Enviando pra IA:')
-      console.log('clareza length:', clareza.length)
-      console.log('persona length:', persona.length)
-      console.log('estudo length:', modalFormato.estudo?.length)
+    try {
+      const clareza  = profile.resposta1.substring(0, 8000)
+      const persona  = profile.resposta2.substring(0, 8000)
+      const nicho    = profile.nicho || ''
+      const estudo   = modalFormato.estudo
+      const duracaoStr = modalFormato.duracao
+        ? `${formatDuration(modalFormato.duracao)} segundos`
+        : '30 segundos'
+
+      // DEBUG — confirma o que vai pro backend
+      console.log('📦 Enviando pra IA:', {
+        nicho,
+        clareza_length: clareza.length,
+        persona_length: persona.length,
+        estudo_length: estudo?.length,
+        duracaoStr,
+      })
 
       const res = await fetch('/api/generate-reel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          nicho,
           clareza,
           persona,
-          estudo: modalFormato.estudo,
-          duracaoStr: modalFormato.duracao
-            ? `${formatDuration(modalFormato.duracao)} segundos`
-            : '30 segundos'
+          estudo,
+          duracaoStr,
         })
       })
 
