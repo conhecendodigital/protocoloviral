@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
-    const { clareza, persona, estudo, duracaoStr, nicho } = await req.json()
+    const { persona, estudo, duracaoStr, nicho } = await req.json()
 
-    if (!clareza || !persona || !estudo) {
+    if (!persona || !estudo || !nicho) {
       return NextResponse.json(
         { error: 'Faltam dados obrigatórios (clareza, persona ou estudo) para gerar o roteiro.' },
         { status: 400 }
@@ -148,28 +148,20 @@ ESTUDO DO FORMATO:
 ${estudo}
 
 ═══════════════════════════
-PASSO 2 — ENTENDA O CRIADOR
+PASSO 2 — NICHO DO CRIADOR
 ═══════════════════════════
-Nicho: ${nicho || 'extrair da clareza abaixo'}
-
-Problema central que o criador resolve e transformação que ele entrega:
-${clareza}
+${nicho}
 
 ═══════════════════════════
-PASSO 3 — ENTENDA A DOR DO NICHO
+PASSO 3 — DOR DA PERSONA
 ═══════════════════════════
-Qual é o comportamento concreto que a persona repete em relação ao problema do nicho?
-Qual é o pensamento interno dela nesse momento?
-
 ${persona}
 
 ═══════════════════════════
 PASSO 4 — ESCREVA O ROTEIRO
 ═══════════════════════════
-Agora escreva o roteiro replicando TODOS os elementos do formato viral — mas com o conteúdo do nicho do criador.
-
-O roteiro encarna a DOR DO NICHO — não detalhes pessoais da persona (profissão, família, cidade) a menos que sejam diretamente ligados ao problema que o criador resolve.
-
+Replique TODOS os elementos do formato viral com o conteúdo do nicho acima.
+O roteiro encarna a dor da persona ligada ao nicho — sem detalhes pessoais irrelevantes.
 Duração equivalente a: ${duracao}`
 
     const modelName = 'gemini-2.5-flash'

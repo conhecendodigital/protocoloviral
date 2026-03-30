@@ -97,18 +97,15 @@ export default function FormatosPage() {
     })
 
     try {
-      const clareza  = profile.resposta1.substring(0, 8000)
-      const persona  = profile.resposta2.substring(0, 8000)
       const nicho    = profile.nicho || ''
+      const persona  = profile.resposta2.substring(0, 8000)
       const estudo   = modalFormato.estudo
       const duracaoStr = modalFormato.duracao
         ? `${formatDuration(modalFormato.duracao)} segundos`
         : '30 segundos'
 
-      // DEBUG — confirma o que vai pro backend
       console.log('📦 Enviando pra IA:', {
         nicho,
-        clareza_length: clareza.length,
         persona_length: persona.length,
         estudo_length: estudo?.length,
         duracaoStr,
@@ -119,7 +116,6 @@ export default function FormatosPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nicho,
-          clareza,
           persona,
           estudo,
           duracaoStr,
