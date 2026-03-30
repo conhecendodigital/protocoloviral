@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
-    const { persona, estudo, duracaoStr, nicho } = await req.json()
+    const { persona, estudo, duracaoStr, nicho, ideia } = await req.json()
 
     if (!persona || !estudo || !nicho) {
       return NextResponse.json(
@@ -48,8 +48,11 @@ Antes de escrever qualquer coisa, extraia do estudo fornecido:
    - As frases são curtas e cortadas com pausas dramáticas? Ou longas e acumulativas sem respiro?
    - O problema é dito de uma vez ou vai sendo empilhado detalhe por detalhe?
    - Tem vírgulas que acumulam ou pontos que cortam?
+   - É uma lista de itens? Uma frase corrida? Um diálogo?
    - Qual é a velocidade da fala — acelerada, calma, crescente?
-   Replique EXATAMENTE esse ritmo sintático. Se o original é uma frase longa que acumula problema em cima de problema sem parar, o roteiro novo também deve ser. Se o original tem frases curtas e cortadas, o novo também.
+   Replique EXATAMENTE esse ritmo sintático.
+
+   ATENÇÃO: Se o roteiro original contém indicações visuais entre parênteses como "(mostra ovos)" ou "(mostra pessoa com cãibra)", ignore essas indicações — elas são direção de vídeo, não texto falado. Analise e replique apenas o texto falado, mantendo o mesmo ritmo e estrutura das frases.
 
 4. TIPO DE GANCHO
    Como o original prende nos primeiros 2 segundos? É uma cena? Uma pergunta? Uma afirmação polêmica? Uma confissão?
@@ -155,6 +158,16 @@ ${estudo}
 PASSO 2 — NICHO DO CRIADOR
 ═══════════════════════════
 ${nicho}
+
+═══════════════════════════
+PASSO 2.5 — IDEIA DO CRIADOR
+═══════════════════════════
+${ideia 
+  ? `O criador quer abordar essa situação/ideia específica: "${ideia}". 
+Molde essa ideia dentro da estrutura do formato viral.`
+  : `O criador não forneceu ideia. Use as dores mais comuns do nicho "${nicho}" 
+e da persona para definir o conteúdo. Escolha a dor mais específica e concreta.`
+}
 
 ═══════════════════════════
 PASSO 3 — DOR DA PERSONA

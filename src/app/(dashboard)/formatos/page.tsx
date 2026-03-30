@@ -72,6 +72,7 @@ export default function FormatosPage() {
   const [generatingReel, setGeneratingReel] = useState(false)
   const [generatedReel, setGeneratedReel] = useState<string | null>(null)
   const [generateError, setGenerateError] = useState<string | null>(null)
+  const [ideia, setIdeia] = useState('')
 
   const handleCloseModal = () => {
     setModalFormato(null)
@@ -119,6 +120,7 @@ export default function FormatosPage() {
           persona,
           estudo,
           duracaoStr,
+          ideia: ideia || '',
         })
       })
 
@@ -650,6 +652,21 @@ export default function FormatosPage() {
                   <p className="text-sm text-slate-800 dark:text-white/90 dark:text-white/90 mb-4 leading-relaxed">
                     A IA vai ler toda a inteligência viral desse <strong className="text-slate-900 dark:text-white">estudo.md</strong> acima e cruzar com os seus dados de <strong className="text-slate-900 dark:text-white">Clareza</strong> e <strong className="text-slate-900 dark:text-white">Persona</strong> para escrever um roteiro inédito já moldado para o seu perfil falar OBRIGATORIAMENTE no modelo estrutural deste vídeo que viralizou.
                   </p>
+
+                  {/* Campo opcional de ideia */}
+                  {!generatedReel && (
+                    <div className="mb-4">
+                      <label className="text-sm font-medium text-slate-700 dark:text-white/70 mb-2 block">
+                        Tem alguma ideia ou situação específica? <span className="text-slate-400 dark:text-white/40">(opcional)</span>
+                      </label>
+                      <textarea
+                        value={ideia}
+                        onChange={e => setIdeia(e.target.value)}
+                        placeholder="Ex: quero falar sobre procrastinação, sobre como parei de ter medo de câmera..."
+                        className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all min-h-[80px] max-h-[120px]"
+                      />
+                    </div>
+                  )}
 
                   {/* Botão Gerar */}
                   {!generatedReel && (
