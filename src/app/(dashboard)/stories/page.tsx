@@ -25,7 +25,9 @@ export default function StoriesPage() {
                   <span className="material-symbols-outlined text-slate-900 dark:text-white text-2xl">amp_stories</span>
                 </div>
                 <div>
-                  <h1 className="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] to-indigo-600">STORIES QUE</span> VENDEM</h1>
+                  <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">STORIES QUE</span> VENDEM
+                  </h1>
                   <p className="text-[#0ea5e9] font-medium mt-1">Frameworks prontos para sequências estratégicas</p>
                 </div>
               </div>

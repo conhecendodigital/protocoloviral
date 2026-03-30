@@ -103,7 +103,9 @@ export default function RoteirosPage() {
                 <span className="material-symbols-outlined text-white text-3xl">description</span>
               </div>
               <div>
-                <h1 className="text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-green-400">MEUS</span> ROTEIROS</h1>
+                <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">MEUS</span> ROTEIROS
+                </h1>
                 <p className="text-emerald-500 font-medium mt-1">Todos os roteiros gerados pela IA</p>
               </div>
             </div>
