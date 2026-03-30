@@ -598,6 +598,100 @@ export default function FormatosPage() {
                     })}
                   </div>
                 </div>
+
+                {/* AI Generator Section */}
+                <div className="mt-8 pt-8 border-t border-slate-200 dark:border-white/10">
+                  <h3 className="text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white mb-2">
+                    <span className="material-symbols-outlined text-[#0ea5e9]">magic_button</span>
+                    Copiar e Adaptar
+                  </h3>
+                  <p className="text-sm text-slate-800 dark:text-white/90 dark:text-white/90 mb-4 leading-relaxed">
+                    A IA vai ler toda a inteligência viral desse <strong className="text-slate-900 dark:text-white">estudo.md</strong> acima e cruzar com os seus dados de <strong className="text-slate-900 dark:text-white">Clareza</strong> e <strong className="text-slate-900 dark:text-white">Persona</strong> para escrever um roteiro inédito já moldado para o seu perfil falar OBRIGATORIAMENTE no modelo estrutural deste vídeo que viralizou.
+                  </p>
+
+                  {/* Botão Gerar */}
+                  {!generatedReel && (
+                    <button
+                      onClick={handleGenerateReel}
+                      disabled={generatingReel}
+                      className="shimmer-btn w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed group transition-transform hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#0ea5e9]/20"
+                    >
+                      {generatingReel ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span>Escrevendo roteiro viral...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined group-hover:scale-110 transition-transform">auto_awesome</span>
+                          Gerar Meu Roteiro com a IA
+                        </>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Mensagem de Erro */}
+                  {generateError && (
+                    <div className="mt-4 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-sm font-medium flex items-center gap-2">
+                      <span className="material-symbols-outlined">error</span>
+                      {generateError}
+                    </div>
+                  )}
+
+                  {/* Resultado Gerado */}
+                  {generatedReel && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-6 glass-card rounded-xl border-l-4 border-l-[#0ea5e9] overflow-hidden"
+                    >
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-slate-100 dark:bg-white/5">
+                        <label className="text-[11px] font-bold text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[#0ea5e9] text-[16px]">edit_document</span>
+                          Seu Roteiro Inédito
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={handleGenerateReel}
+                            disabled={generatingReel}
+                            className="flex items-center gap-1.5 text-[10px] text-slate-800 dark:text-white/90 hover:text-slate-900 dark:text-white bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-slate-300/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold uppercase tracking-widest disabled:opacity-50"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">refresh</span>
+                            {generatingReel ? 'Gerando...' : 'Reescrever'}
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await navigator.clipboard.writeText(generatedReel)
+                              } catch {
+                                const ta = document.createElement('textarea')
+                                ta.value = generatedReel
+                                ta.style.position = 'fixed'
+                                ta.style.opacity = '0'
+                                document.body.appendChild(ta)
+                                ta.select()
+                                document.execCommand('copy')
+                                document.body.removeChild(ta)
+                              }
+                            }}
+                            className="bg-[#0ea5e9] hover:bg-sky-400 text-white flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-lg transition-all font-bold uppercase tracking-widest shadow-lg shadow-[#0ea5e9]/20"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                            Copiar
+                          </button>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <Textarea
+                          value={generatedReel}
+                          onChange={(e) => setGeneratedReel(e.target.value)}
+                          className="w-full bg-transparent border-0 text-slate-900 dark:text-white focus:ring-0 outline-none resize-none min-h-[300px] max-h-[500px] overflow-y-auto custom-scrollbar font-sans text-sm sm:text-base leading-relaxed p-0"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+
               </div>
             </motion.div>
           </motion.div>
