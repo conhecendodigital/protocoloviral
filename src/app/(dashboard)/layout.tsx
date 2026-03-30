@@ -9,7 +9,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="bg-[#000000] text-slate-100 min-h-screen font-sans">
+    <div className="bg-slate-50 dark:bg-[#000000] text-slate-900 dark:text-slate-100 min-h-screen font-sans">
       {/* Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-500/10 rounded-full blur-[120px]"></div>

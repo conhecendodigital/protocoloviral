@@ -86,10 +86,10 @@ link.me/seu-link`
           
           {/* Welcome/Title Banner */}
           <section className="text-center space-y-4">
-            <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-4xl lg:text-5xl font-black text-white tracking-tighter">
+            <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">
               Analise sua Bio com IA
             </motion.h1>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-slate-400 text-lg max-w-2xl mx-auto">
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg max-w-2xl mx-auto">
               Insira sua descrição atual e descubra como aumentar sua conversão de seguidores em até 45%.
             </motion.p>
           </section>
@@ -101,14 +101,14 @@ link.me/seu-link`
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-7">
               <div className="glass-card p-8 rounded-xl h-full flex flex-col space-y-6">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Sua Biografia Atual</label>
-                  <span className={cn("text-xs font-medium uppercase tracking-widest", bio.length > 150 ? "text-red-400" : "text-slate-500")}>
+                  <label className="text-xs font-bold text-slate-700 dark:text-white/90 uppercase tracking-widest">Sua Biografia Atual</label>
+                  <span className={cn("text-xs font-medium uppercase tracking-widest", bio.length > 150 ? "text-red-400" : "text-slate-700 dark:text-white/90")}>
                     {bio.length} / 150 caracteres
                   </span>
                 </div>
-                <div className="flex-1 bg-black/40 border border-white/10 rounded-xl p-6 group focus-within:ring-2 focus-within:ring-[#0ea5e9]/50 transition-all">
+                <div className="flex-1 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-xl p-6 group focus-within:ring-2 focus-within:ring-[#0ea5e9]/50 transition-all shadow-sm">
                   <Textarea 
-                    className="w-full h-full bg-transparent border-none p-0 text-white text-lg focus-visible:ring-0 resize-none placeholder:text-slate-700 leading-relaxed min-h-[160px]" 
+                    className="w-full h-full bg-transparent border-none p-0 text-slate-900 dark:text-white text-lg focus-visible:ring-0 resize-none placeholder:text-slate-400 dark:placeholder:text-slate-500 leading-relaxed min-h-[220px]" 
                     placeholder="Insira sua bio aqui..."
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
@@ -123,7 +123,7 @@ link.me/seu-link`
                     <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">bolt</span>
                     ANALISAR BIO
                   </button>
-                  <button onClick={() => { navigator.clipboard.writeText(bio) }} className="size-14 glass-card rounded-xl flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                  <button onClick={() => { navigator.clipboard.writeText(bio) }} className="size-14 glass-card rounded-xl flex items-center justify-center text-slate-800 dark:text-white/90 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors">
                     <span className="material-symbols-outlined">content_copy</span>
                   </button>
                 </div>
@@ -136,7 +136,7 @@ link.me/seu-link`
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
                   <span className="material-symbols-outlined text-[140px] text-[#0ea5e9]">monitoring</span>
                 </div>
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-10 text-center relative z-10">Score de Engajamento</h3>
+                <h3 className="text-xs font-bold text-slate-700 dark:text-white/90 uppercase tracking-widest mb-10 text-center relative z-10">Score de Engajamento</h3>
                 
                 <div className="relative flex items-center justify-center z-10">
                   <svg className="size-56" style={{ transform: "rotate(-90deg)" }}>
@@ -150,8 +150,8 @@ link.me/seu-link`
                     ></circle>
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-2">
-                    <span className="text-6xl font-black text-white">{result ? result.score : '--'}</span>
-                    <span className="text-slate-500 text-xs font-bold uppercase tracking-widest leading-none">de 100</span>
+                    <span className="text-6xl font-black text-slate-900 dark:text-white">{result ? result.score : '--'}</span>
+                    <span className="text-slate-700 dark:text-white/90 text-xs font-bold uppercase tracking-widest leading-none">de 100</span>
                   </div>
                 </div>
 
@@ -162,12 +162,12 @@ link.me/seu-link`
                         <span className="size-2 rounded-full bg-[#0ea5e9] animate-pulse"></span>
                         <span className="text-[10px] font-bold text-[#0ea5e9] uppercase tracking-widest">{getScoreLabel(result.score)}</span>
                       </div>
-                      <p className="text-slate-400 text-sm leading-relaxed max-w-[280px]">
+                      <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-sm leading-relaxed max-w-[280px]">
                         {getScoreMessage(result.score)}
                       </p>
                     </>
                   ) : (
-                    <p className="text-slate-500 text-sm leading-relaxed">
+                    <p className="text-slate-700 dark:text-white/90 text-sm leading-relaxed">
                       Aguardando texto da biografia para gerar o score.
                     </p>
                   )}
@@ -180,7 +180,7 @@ link.me/seu-link`
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
               {/* Recommendations Section */}
               <section className="space-y-6 mb-12">
-                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
                   <span className="material-symbols-outlined text-[#0ea5e9]">analytics</span>
                   Recomendações de Melhoria
                 </h2>
@@ -191,7 +191,7 @@ link.me/seu-link`
                       key={i} 
                       initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 + (i * 0.1) }}
                       className={cn(
-                        "glass-card p-6 rounded-xl flex gap-4 items-start border-l-4 hover:bg-white/5 transition-colors",
+                        "glass-card p-6 rounded-xl flex gap-4 items-start border-l-4 hover:bg-black/5 dark:bg-white/5 transition-colors",
                         item.status === 'good' ? "border-l-emerald-500/50" : item.status === 'warning' ? "border-l-orange-500/50" : "border-l-rose-500/50"
                       )}
                     >
@@ -207,9 +207,9 @@ link.me/seu-link`
                         </span>
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-white font-bold">{item.label}</h4>
-                        <p className="text-sm text-slate-400 leading-relaxed">
-                          Status atual: <span className="font-semibold text-slate-300 uppercase text-xs">{item.detail}</span>.
+                        <h4 className="text-slate-900 dark:text-white font-bold">{item.label}</h4>
+                        <p className="text-sm text-slate-800 dark:text-white/90 dark:text-white/90 leading-relaxed">
+                          Status atual: <span className="font-semibold text-slate-800 dark:text-slate-300 uppercase text-xs">{item.detail}</span>.
                           {item.status !== 'good' && ' Revise sua bio para otimizar esse requisito.'}
                         </p>
                       </div>
@@ -227,8 +227,8 @@ link.me/seu-link`
                   
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                     <div className="space-y-2">
-                      <h3 className="text-2xl font-bold text-white tracking-tight">Bio Sugerida pela IA</h3>
-                      <p className="text-slate-400">Versão otimizada com foco em autoridade e facilidade de leitura.</p>
+                      <h3 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Bio Sugerida pela IA</h3>
+                      <p className="text-slate-800 dark:text-white/90 dark:text-white/90">Versão otimizada com foco em autoridade e facilidade de leitura.</p>
                     </div>
                     <button 
                       onClick={handleCopySuggestion} 
@@ -239,7 +239,7 @@ link.me/seu-link`
                     </button>
                   </div>
                   
-                  <div className="mt-8 bg-black/60 p-6 rounded-xl border border-white/5 italic text-slate-200 leading-relaxed text-lg shadow-inner">
+                  <div className="mt-8 bg-black/60 p-6 rounded-xl border border-slate-200 dark:border-slate-200 dark:border-white/10 italic text-slate-800 dark:text-slate-200 leading-relaxed text-lg shadow-inner">
                     &quot;🚀 [Seu Posicionamento/Especialidade]<br/>
                     🏆 [Prova Social Clara ou Resultado]<br/>
                     👇 [Chamada para Ação Forte]<br/>

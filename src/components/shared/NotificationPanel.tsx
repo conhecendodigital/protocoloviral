@@ -70,14 +70,14 @@ export function NotificationPanel({
         className={`size-9 sm:size-10 rounded-full flex items-center justify-center transition-all border relative ${
           isOpen 
             ? 'bg-[#0ea5e9]/20 text-[#0ea5e9] border-[#0ea5e9]/30' 
-            : 'bg-white/5 text-slate-300 hover:text-white border-white/10 hover:border-white/20'
+            : 'bg-black/5 dark:bg-white/5 text-slate-800 dark:text-slate-300 hover:text-slate-900 dark:text-white border-slate-300/10 dark:border-slate-200 dark:border-white/10 hover:border-slate-300/20 dark:border-white/20'
         }`}
       >
         <span className="material-symbols-outlined text-xl">notifications</span>
         
         {/* Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 size-5 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center shadow-lg shadow-red-500/30 animate-pulse">
+          <span className="absolute -top-1 -right-1 size-5 rounded-full bg-red-500 text-slate-900 dark:text-white text-[10px] font-black flex items-center justify-center shadow-lg shadow-red-500/30 animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -91,13 +91,13 @@ export function NotificationPanel({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-[340px] sm:w-[380px] max-h-[70vh] rounded-2xl border border-white/10 bg-[#0a0a0a]/95 backdrop-blur-xl shadow-2xl shadow-black/50 overflow-hidden z-50 flex flex-col"
+            className="absolute right-0 top-full mt-2 w-[340px] sm:w-[380px] max-h-[70vh] rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl shadow-2xl shadow-black/10 dark:shadow-black/50 overflow-hidden z-50 flex flex-col"
           >
             {/* Header */}
-            <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between shrink-0">
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[#0ea5e9] text-xl">notifications</span>
-                <h3 className="font-bold text-white text-sm">Notificações</h3>
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm">Notificações</h3>
                 {unreadCount > 0 && (
                   <span className="text-[10px] font-bold bg-[#0ea5e9]/15 text-[#0ea5e9] px-2 py-0.5 rounded-full">
                     {unreadCount} novas
@@ -107,7 +107,7 @@ export function NotificationPanel({
               {unreadCount > 0 && (
                 <button
                   onClick={onReadAll}
-                  className="text-xs text-slate-500 hover:text-[#0ea5e9] transition-colors font-medium"
+                  className="text-xs text-slate-700 dark:text-white/90 hover:text-[#0ea5e9] transition-colors font-medium"
                 >
                   Marcar todas como lidas
                 </button>
@@ -118,11 +118,11 @@ export function NotificationPanel({
             <div className="overflow-y-auto flex-1 custom-scrollbar">
               {notifications.length === 0 ? (
                 <div className="py-12 text-center">
-                  <span className="material-symbols-outlined text-4xl text-slate-600 mb-3 block">notifications_off</span>
-                  <p className="text-sm text-slate-500">Nenhuma notificação no momento.</p>
+                  <span className="material-symbols-outlined text-4xl text-slate-800 dark:text-white/90 mb-3 block">notifications_off</span>
+                  <p className="text-sm text-slate-700 dark:text-white/90">Nenhuma notificação no momento.</p>
                 </div>
               ) : (
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-black/5 dark:divide-white/5">
                   {notifications.map((n) => {
                     const typeColor = TYPE_COLORS[n.type]
                     const typeLabel = TYPE_LABELS[n.type]
@@ -132,7 +132,7 @@ export function NotificationPanel({
                         className={`px-5 py-4 flex gap-3.5 transition-colors cursor-pointer group ${
                           n.read 
                             ? 'opacity-60 hover:opacity-80' 
-                            : 'hover:bg-white/[0.03]'
+                            : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
                         }`}
                         onClick={() => handleNotificationClick(n)}
                       >
@@ -164,14 +164,14 @@ export function NotificationPanel({
                             >
                               {typeLabel}
                             </span>
-                            <span className="text-[10px] text-slate-600 ml-auto shrink-0">
+                            <span className="text-[10px] text-slate-800 dark:text-white/90 ml-auto shrink-0">
                               {formatTime(n.timestamp)}
                             </span>
                           </div>
-                          <h4 className={`text-sm font-bold mb-0.5 truncate ${n.read ? 'text-slate-400' : 'text-white'}`}>
+                          <h4 className={`text-sm font-bold mb-0.5 truncate ${n.read ? 'text-slate-800 dark:text-white/90' : 'text-slate-900 dark:text-white'}`}>
                             {n.title}
                           </h4>
-                          <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                          <p className="text-xs text-slate-700 dark:text-white/90 line-clamp-2 leading-relaxed">
                             {n.message}
                           </p>
                         </div>
@@ -200,8 +200,8 @@ export function NotificationPanel({
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-3 border-t border-white/5 shrink-0">
-              <p className="text-[10px] text-slate-600 text-center">
+            <div className="px-5 py-3 border-t border-slate-200 dark:border-white/10 shrink-0">
+              <p className="text-[10px] text-slate-800 dark:text-white/90 text-center">
                 As notificações são geradas com base no seu progresso na plataforma.
               </p>
             </div>

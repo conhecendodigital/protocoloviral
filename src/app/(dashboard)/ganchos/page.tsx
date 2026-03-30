@@ -23,10 +23,10 @@ export default function GanchosPage() {
           
           {/* Title Section */}
           <section>
-            <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-4xl lg:text-6xl font-black tracking-[-0.04em] mb-4 text-white uppercase italic">
+            <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-4xl lg:text-6xl font-black tracking-[-0.04em] mb-4 text-slate-900 dark:text-white uppercase italic">
               BANCO DE <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">GANCHOS VIRAIS</span>
             </motion.h1>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-slate-400 text-lg max-w-3xl leading-relaxed">
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg max-w-3xl leading-relaxed">
               Acesso instantâneo às melhores estratégias de abertura para prender a atenção do seu público nos primeiros segundos. ({GANCHOS_VIRAIS.length} ganchos prontos)
             </motion.p>
           </section>
@@ -35,12 +35,12 @@ export default function GanchosPage() {
           <section>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="relative group">
               <div className="absolute inset-0 bg-[#0ea5e9]/5 blur-3xl opacity-0 group-focus-within:opacity-100 transition-opacity rounded-3xl pointer-events-none"></div>
-              <div className="relative flex items-center glass-card rounded-2xl border border-white/10 bg-white/[0.02]">
-                <div className="pl-6 text-slate-500">
+              <div className="relative flex items-center glass-card rounded-2xl border border-slate-300/10 dark:border-slate-200 dark:border-white/10 bg-white/[0.02]">
+                <div className="pl-6 text-slate-700 dark:text-white/90">
                   <span className="material-symbols-outlined text-2xl">search</span>
                 </div>
                 <input 
-                  className="w-full bg-transparent border-none h-16 py-6 pl-4 pr-6 text-lg focus:ring-0 outline-none placeholder:text-slate-600 text-white font-medium" 
+                  className="w-full bg-transparent border-none h-16 py-6 pl-4 pr-6 text-lg focus:ring-0 outline-none placeholder:text-slate-800 dark:text-white/90 text-slate-900 dark:text-white font-medium" 
                   placeholder="Pesquise por nichos, temas ou palavras-chave..." 
                   type="text"
                   value={busca}
@@ -57,7 +57,7 @@ export default function GanchosPage() {
                className={`px-8 py-3 rounded-full font-black text-[11px] uppercase tracking-[0.15em] transition-all hover:scale-105 ${
                  categoria === 'all' 
                  ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' 
-                 : 'glass-card text-slate-500 hover:text-white hover:bg-white/5 border border-white/5'
+                 : 'glass-card text-slate-700 dark:text-white/90 hover:text-slate-900 dark:text-white hover:bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-slate-200 dark:border-white/10'
                }`}
              >
                Todos os Ganchos
@@ -69,7 +69,7 @@ export default function GanchosPage() {
                 className={`px-8 py-3 rounded-full font-black text-[11px] uppercase tracking-[0.15em] transition-all hover:scale-105 ${
                  categoria === cat.id 
                  ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' 
-                 : 'glass-card text-slate-500 hover:text-white hover:bg-white/5 border border-white/5'
+                 : 'glass-card text-slate-700 dark:text-white/90 hover:text-slate-900 dark:text-white hover:bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-slate-200 dark:border-white/10'
                 }`}
               >
                 {cat.nome}
@@ -96,16 +96,16 @@ export default function GanchosPage() {
                     <span className="px-4 py-1.5 rounded-lg bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-black uppercase tracking-[0.15em]">
                       {gancho.cat}
                     </span>
-                    <CopyButton text={gancho.txt} variant="icon" className="shrink-0 text-slate-600 hover:text-white transition-colors p-1" />
+                    <CopyButton text={gancho.txt} variant="icon" className="shrink-0 text-slate-800 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors p-1" />
                   </div>
                   
-                  <h3 className="text-xl lg:text-2xl font-bold leading-snug text-white tracking-tight">
+                  <h3 className="text-xl lg:text-2xl font-bold leading-snug text-slate-900 dark:text-white tracking-tight">
                     {gancho.txt}
                   </h3>
                 </div>
                 
-                <div className="relative z-10 w-full flex items-center justify-between mt-12 pt-6 border-t border-white/5">
-                  <span className="text-slate-500 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
+                <div className="relative z-10 w-full flex items-center justify-between mt-12 pt-6 border-t border-slate-200 dark:border-slate-200 dark:border-white/10">
+                  <span className="text-slate-700 dark:text-white/90 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
                      <span className="material-symbols-outlined text-[16px] text-[#0ea5e9]/50">visibility</span>
                      Usado 1.2k+
                   </span>

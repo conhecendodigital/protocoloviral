@@ -154,14 +154,14 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
       badgeText: 'Fazer Agora',
       badgeClass: 'bg-[#0ea5e9]/15 text-[#0ea5e9] border-[#0ea5e9]/30',
       cardClass: 'border-[#0ea5e9]/30 bg-[#0ea5e9]/5 ring-1 ring-[#0ea5e9]/20',
-      lineClass: 'bg-white/10',
+      lineClass: 'bg-black/10 dark:bg-white/10',
     },
     locked: {
       badge: '🔒',
       badgeText: 'Bloqueado',
-      badgeClass: 'bg-white/5 text-slate-500 border-white/10',
-      cardClass: 'border-white/5 bg-white/[0.02] opacity-60',
-      lineClass: 'bg-white/10',
+      badgeClass: 'bg-black/5 dark:bg-white/5 text-slate-700 dark:text-white/90 border-slate-300/10 dark:border-slate-200 dark:border-white/10',
+      cardClass: 'border-slate-200 dark:border-slate-200 dark:border-white/10 bg-white/[0.02] opacity-60',
+      lineClass: 'bg-black/10 dark:bg-white/10',
     },
   }
 
@@ -175,13 +175,13 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <span className="material-symbols-outlined text-[#0ea5e9] text-2xl">pin_drop</span>
-        <h3 className="text-xl font-black tracking-tight text-white">
+        <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
           {isRecurring && completion === 100
             ? 'Sua Rotina de Hoje'
             : 'Seu Mapa de Execução'}
         </h3>
       </div>
-      <p className="text-sm text-slate-500 mb-6 ml-9">
+      <p className="text-sm text-slate-700 dark:text-white/90 mb-6 ml-9">
         {isRecurring && completion === 100
           ? 'Siga estes 4 passos para criar conteúdo todos os dias.'
           : 'Siga estes 4 passos para começar a criar seu conteúdo.'}
@@ -231,13 +231,13 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                 >
                   {step.icon}
                 </span>
-                <h4 className={`font-bold text-base ${step.status === 'locked' ? 'text-slate-500' : 'text-white'}`}>
+                <h4 className={`font-bold text-base ${step.status === 'locked' ? 'text-slate-700 dark:text-white/90' : 'text-slate-900 dark:text-white'}`}>
                   {step.title}
                 </h4>
               </div>
 
               {/* Description */}
-              <p className={`text-sm leading-relaxed mb-5 ${step.status === 'locked' ? 'text-slate-600' : 'text-slate-400'}`}>
+              <p className={`text-sm leading-relaxed mb-5 ${step.status === 'locked' ? 'text-slate-800 dark:text-white/90' : 'text-slate-800 dark:text-white/90 dark:text-white/90'}`}>
                 {step.description}
               </p>
 
@@ -249,7 +249,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                       href={step.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-900 dark:text-white transition-all hover:opacity-90 active:scale-[0.97]"
                       style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
                     >
                       <span className="material-symbols-outlined text-base">open_in_new</span>
@@ -258,7 +258,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                   ) : (
                     <Link
                       href={step.href}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.97]"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-900 dark:text-white transition-all hover:opacity-90 active:scale-[0.97]"
                       style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
                     >
                       <span className="material-symbols-outlined text-base">arrow_forward</span>
@@ -310,7 +310,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
               )}
 
               {step.status === 'locked' && (
-                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 bg-white/[0.03] border border-white/5 cursor-not-allowed">
+                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-slate-800 dark:text-white/90 bg-white/[0.03] border border-slate-200 dark:border-slate-200 dark:border-white/10 cursor-not-allowed">
                   <span className="material-symbols-outlined text-base">lock</span>
                   {step.btnLabel}
                 </div>

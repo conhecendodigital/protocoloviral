@@ -103,10 +103,10 @@ export default function RotinaPage() {
         <div className="w-full max-w-7xl px-6 lg:px-8 py-8 md:py-12 space-y-8">
           
           <div className="mb-2">
-            <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-white flex flex-col sm:flex-row sm:items-center gap-2 mb-2 uppercase italic leading-none">
+            <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white flex flex-col sm:flex-row sm:items-center gap-2 mb-2 uppercase italic leading-none">
               ROTINA SEMANAL <span className="text-[#0ea5e9]">NOEIXO</span>
             </h1>
-            <p className="text-slate-400 text-lg">Gerencie seu progresso e mantenha o foco na estratégia de conteúdo.</p>
+            <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg">Gerencie seu progresso e mantenha o foco na estratégia de conteúdo.</p>
           </div>
 
           {/* Weekly Progress Card */}
@@ -117,9 +117,9 @@ export default function RotinaPage() {
             
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 mb-8 relative z-10">
               <div>
-                <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">Status Geral</span>
-                <h2 className="text-5xl font-black text-white mt-2 tracking-tight">
-                  {progresso}% <span className="text-2xl font-medium text-slate-500 tracking-normal">Concluído</span>
+                <span className="text-slate-800 dark:text-white/90 dark:text-white/90 text-sm font-bold uppercase tracking-widest">Status Geral</span>
+                <h2 className="text-5xl font-black text-slate-900 dark:text-white mt-2 tracking-tight">
+                  {progresso}% <span className="text-2xl font-medium text-slate-700 dark:text-white/90 tracking-normal">Concluído</span>
                 </h2>
                 <p className="text-sm text-[#0ea5e9] mt-2 font-bold tracking-wide uppercase">
                   {completedItems} de {totalItems} tarefas finalizadas
@@ -128,14 +128,14 @@ export default function RotinaPage() {
               
               <button 
                 onClick={resetAll}
-                className="flex items-center gap-2 px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 transition-all text-sm font-bold border border-white/10 shrink-0 shadow-lg"
+                className="flex items-center gap-2 px-8 py-4 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 transition-all text-sm font-bold border border-slate-300/10 dark:border-slate-200 dark:border-white/10 shrink-0 shadow-lg"
               >
                 <span className="material-symbols-outlined text-lg">restart_alt</span>
                 Resetar Semana
               </button>
             </div>
             
-            <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/10 relative z-10">
+            <div className="w-full h-4 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden border border-slate-300/10 dark:border-slate-200 dark:border-white/10 relative z-10">
               <div 
                 className="h-full bg-gradient-to-r from-sky-400 to-[#0ea5e9] shadow-[0_0_20px_rgba(14,165,233,0.5)] transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" 
                 style={{ width: `${Math.max(progresso, 2)}%` }} 
@@ -160,14 +160,14 @@ export default function RotinaPage() {
                 <div className="flex justify-between items-center mb-8 relative z-10">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">{dia.emoji}</span>
-                    <h3 className="text-xl font-bold text-white tracking-tight">{dia.dia}</h3>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{dia.dia}</h3>
                   </div>
                   {dia.dia === 'Domingo' || dia.dia === 'Sábado' ? (
                      <span className="px-3 py-1 bg-[#0ea5e9]/20 border border-[#0ea5e9]/30 rounded-full text-[10px] font-black tracking-widest text-[#0ea5e9] uppercase shadow-lg shadow-[#0ea5e9]/20">
                       DESCANSO
                     </span>
                   ) : (
-                    <span className="px-3 py-1 bg-white/10 border border-white/10 rounded-full text-[10px] font-black tracking-widest text-slate-300 uppercase">
+                    <span className="px-3 py-1 bg-black/10 dark:bg-white/10 border border-slate-300/10 dark:border-slate-200 dark:border-white/10 rounded-full text-[10px] font-black tracking-widest text-slate-800 dark:text-slate-300 uppercase">
                       NOEIXO
                     </span>
                   )}
@@ -177,7 +177,7 @@ export default function RotinaPage() {
                   {dia.items.map(item => {
                     const isChecked = checked[item.id] || false;
                     return (
-                      <label key={item.id} className={`flex items-start gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-white/5 ${item.href ? 'bg-violet-500/[0.03] border-violet-500/10' : ''}`}>
+                      <label key={item.id} className={`flex items-start gap-4 p-4 rounded-xl hover:bg-black/5 dark:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-slate-200 dark:border-slate-200 dark:border-white/10 ${item.href ? 'bg-violet-500/[0.03] border-violet-500/10' : ''}`}>
                         <div className="mt-0.5 shrink-0 relative">
                           <Checkbox
                             checked={isChecked}
@@ -192,17 +192,17 @@ export default function RotinaPage() {
                         </div>
                         
                         <div className="flex-1 min-w-0">
-                          <span className={`block text-sm leading-relaxed transition-all font-medium ${isChecked ? 'text-slate-500 line-through' : 'text-slate-200'}`}>
+                          <span className={`block text-sm leading-relaxed transition-all font-medium ${isChecked ? 'text-slate-700 dark:text-white/90 line-through' : 'text-slate-800 dark:text-slate-200'}`}>
                             {item.label}
                           </span>
                           
                           <div className="flex flex-wrap items-center gap-2 mt-2">
                              {item.noeixo !== '-' && (
-                               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold tracking-widest uppercase border ${isChecked ? 'bg-white/5 text-slate-500 border-white/5' : 'bg-white/10 text-slate-300 border-white/10'}`}>
+                               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold tracking-widest uppercase border ${isChecked ? 'bg-black/5 dark:bg-white/5 text-slate-700 dark:text-white/90 border-slate-200 dark:border-slate-200 dark:border-white/10' : 'bg-black/10 dark:bg-white/10 text-slate-800 dark:text-slate-300 border-slate-300/10 dark:border-slate-200 dark:border-white/10'}`}>
                                  Pilar: {item.noeixo}
                                </span>
                              )}
-                            <span className={`text-[11px] font-medium flex items-center gap-1 ${isChecked ? 'text-slate-600' : 'text-slate-400'}`}>
+                            <span className={`text-[11px] font-medium flex items-center gap-1 ${isChecked ? 'text-slate-800 dark:text-white/90' : 'text-slate-800 dark:text-white/90 dark:text-white/90'}`}>
                               <span className="material-symbols-outlined text-[14px]">timer</span>
                               {item.tempo}
                             </span>

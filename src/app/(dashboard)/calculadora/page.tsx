@@ -115,11 +115,11 @@ export default function CalculadoraPage() {
   return (
     <>
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tighter text-white mb-2 flex items-center gap-3">
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tighter text-slate-900 dark:text-white mb-2 flex items-center gap-3">
           <span className="material-symbols-outlined text-[#0ea5e9] text-4xl">calculate</span>
           Calculadora de Métricas
         </h1>
-        <p className="text-slate-400 text-base">
+        <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-base">
           Cole os números do seu post e descubra como está sua performance no Instagram.
         </p>
       </motion.div>
@@ -133,8 +133,8 @@ export default function CalculadoraPage() {
           className="lg:col-span-5 space-y-6"
         >
           {/* Format Selector */}
-          <div className="glass-card rounded-3xl p-6 border border-white/5">
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Formato do Post</h3>
+          <div className="glass-card rounded-3xl p-6 border border-slate-200 dark:border-slate-200 dark:border-white/10">
+            <h3 className="text-sm font-bold text-slate-800 dark:text-white/90 dark:text-white/90 uppercase tracking-widest mb-4">Formato do Post</h3>
             <div className="grid grid-cols-2 gap-3">
               {(Object.keys(FORMATO_LABELS) as Formato[]).map(f => (
                 <button
@@ -143,7 +143,7 @@ export default function CalculadoraPage() {
                   className={`py-3 px-4 rounded-2xl text-sm font-bold transition-all active:scale-[0.97] border ${
                     formato === f
                       ? 'bg-[#0ea5e9]/20 border-[#0ea5e9]/40 text-[#0ea5e9] shadow-[0_0_20px_rgba(14,165,233,0.15)]'
-                      : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20'
+                      : 'bg-black/5 dark:bg-white/5 border-slate-300/10 dark:border-slate-200 dark:border-white/10 text-slate-800 dark:text-white/90 dark:text-white/90 hover:bg-black/10 dark:bg-white/10 hover:border-slate-300/20 dark:border-white/20'
                   }`}
                 >
                   {FORMATO_LABELS[f]}
@@ -153,21 +153,21 @@ export default function CalculadoraPage() {
           </div>
 
           {/* Number Inputs */}
-          <div className="glass-card rounded-3xl p-6 border border-white/5">
-            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Dados do Post</h3>
+          <div className="glass-card rounded-3xl p-6 border border-slate-200 dark:border-slate-200 dark:border-white/10">
+            <h3 className="text-sm font-bold text-slate-800 dark:text-white/90 dark:text-white/90 uppercase tracking-widest mb-4">Dados do Post</h3>
             <div className="space-y-4">
               {inputFields.map(field => (
                 <div key={field.label}>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5 block ml-1">{field.label}</label>
+                  <label className="text-xs font-bold text-slate-700 dark:text-white/90 uppercase tracking-widest mb-1.5 block ml-1">{field.label}</label>
                   <div className="relative">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 text-lg">{field.icon}</span>
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-800 dark:text-white/90 text-lg">{field.icon}</span>
                     <input
                       type="number"
                       inputMode="numeric"
                       value={field.value}
                       onChange={e => field.setter(e.target.value)}
                       placeholder={field.placeholder}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 text-white text-sm focus:outline-none focus:border-[#0ea5e9] transition-all placeholder:text-slate-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-4 py-3.5 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#0ea5e9] transition-all placeholder:text-slate-800 dark:text-white/90 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
                 </div>
@@ -178,7 +178,7 @@ export default function CalculadoraPage() {
               <button
                 onClick={handleCalculate}
                 disabled={!canCalculate}
-                className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-[#0ea5e9] to-sky-400 text-white font-bold text-sm transition-all active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
+                className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-[#0ea5e9] to-sky-400 text-slate-900 dark:text-white font-bold text-sm transition-all active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
               >
                 <span className="material-symbols-outlined text-lg">calculate</span>
                 Calcular
@@ -186,7 +186,7 @@ export default function CalculadoraPage() {
               {shouldShowResults && (
                 <button
                   onClick={handleReset}
-                  className="py-3.5 px-5 rounded-2xl bg-white/5 border border-white/10 text-slate-400 font-bold text-sm hover:bg-white/10 transition-all active:scale-[0.97]"
+                  className="py-3.5 px-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-slate-200 dark:border-white/10 text-slate-800 dark:text-white/90 dark:text-white/90 font-bold text-sm hover:bg-black/10 dark:bg-white/10 transition-all active:scale-[0.97]"
                 >
                   <span className="material-symbols-outlined text-lg">refresh</span>
                 </button>
@@ -204,11 +204,11 @@ export default function CalculadoraPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="glass-card rounded-3xl p-12 border border-white/5 flex flex-col items-center justify-center min-h-[400px] text-center"
+                className="glass-card rounded-3xl p-12 border border-slate-200 dark:border-slate-200 dark:border-white/10 flex flex-col items-center justify-center min-h-[400px] text-center"
               >
                 <span className="material-symbols-outlined text-[80px] text-slate-700 mb-4">analytics</span>
-                <h3 className="text-xl font-bold text-slate-500 mb-2">Preencha os dados do post</h3>
-                <p className="text-sm text-slate-600 max-w-sm">
+                <h3 className="text-xl font-bold text-slate-700 dark:text-white/90 mb-2">Preencha os dados do post</h3>
+                <p className="text-sm text-slate-800 dark:text-white/90 max-w-sm">
                   Digite os números que aparecem nos Insights do seu post e clique em Calcular para ver sua performance.
                 </p>
               </motion.div>
@@ -227,8 +227,8 @@ export default function CalculadoraPage() {
                   </div>
                   <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                      <h3 className="text-lg font-bold text-white mb-1">Resultado Geral</h3>
-                      <p className="text-sm text-slate-400">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Resultado Geral</h3>
+                      <p className="text-sm text-slate-800 dark:text-white/90 dark:text-white/90">
                         {FORMATO_LABELS[formato]} • {seg.toLocaleString('pt-BR')} seguidores • {alc.toLocaleString('pt-BR')} alcance
                       </p>
                     </div>
@@ -242,8 +242,8 @@ export default function CalculadoraPage() {
                 </div>
 
                 {/* Individual Metrics */}
-                <div className="glass-card rounded-3xl p-6 border border-white/5">
-                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-5">Métricas Detalhadas</h3>
+                <div className="glass-card rounded-3xl p-6 border border-slate-200 dark:border-slate-200 dark:border-white/10">
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-white/90 dark:text-white/90 uppercase tracking-widest mb-5">Métricas Detalhadas</h3>
                   <div className="space-y-4">
                     {resultMetrics.map((metric, i) => (
                       <motion.div
@@ -254,8 +254,8 @@ export default function CalculadoraPage() {
                         className={`p-4 rounded-2xl ${metric.classification.bg} border ${metric.classification.border} flex flex-col sm:flex-row sm:items-center justify-between gap-2`}
                       >
                         <div>
-                          <p className="text-sm font-bold text-white">{metric.label}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{metric.desc}</p>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">{metric.label}</p>
+                          <p className="text-xs text-slate-700 dark:text-white/90 mt-0.5">{metric.desc}</p>
                         </div>
                         <div className="flex items-center gap-3 shrink-0">
                           <span className={`text-2xl font-black ${metric.classification.color}`}>{metric.value.toFixed(1)}%</span>
@@ -270,7 +270,7 @@ export default function CalculadoraPage() {
 
                 {/* Tips */}
                 <div className="bg-gradient-to-br from-[#0ea5e9]/15 to-indigo-900/10 rounded-3xl p-6 border border-[#0ea5e9]/20">
-                  <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
                     <span className="material-symbols-outlined text-[#0ea5e9]">lightbulb</span>
                     Dicas para melhorar
                   </h3>
@@ -281,7 +281,7 @@ export default function CalculadoraPage() {
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 + (i * 0.1) }}
-                        className="text-sm text-slate-300 leading-relaxed"
+                        className="text-sm text-slate-800 dark:text-slate-300 leading-relaxed"
                       >
                         {dica}
                       </motion.li>
@@ -290,15 +290,15 @@ export default function CalculadoraPage() {
                 </div>
 
                 {/* Reference Table */}
-                <div className="glass-card rounded-3xl p-6 border border-white/5">
-                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
+                <div className="glass-card rounded-3xl p-6 border border-slate-200 dark:border-slate-200 dark:border-white/10">
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-white/90 dark:text-white/90 uppercase tracking-widest mb-4">
                     Referência para {FORMATO_LABELS[formato]}
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-white/10">
-                          <th className="text-left py-2 text-slate-500 font-bold">Métrica</th>
+                        <tr className="border-b border-slate-300/10 dark:border-slate-200 dark:border-white/10">
+                          <th className="text-left py-2 text-slate-700 dark:text-white/90 font-bold">Métrica</th>
                           <th className="text-center py-2 text-red-400 font-bold">🔴 Baixo</th>
                           <th className="text-center py-2 text-amber-400 font-bold">🟡 Médio</th>
                           <th className="text-center py-2 text-sky-400 font-bold">🔵 Bom</th>
@@ -306,26 +306,26 @@ export default function CalculadoraPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr className="border-b border-white/5">
-                          <td className="py-2.5 text-slate-300">Engajamento</td>
-                          <td className="py-2.5 text-center text-slate-400">&lt;{bench.engajamento[0]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">{bench.engajamento[0]}-{bench.engajamento[1]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">{bench.engajamento[1]}-{bench.engajamento[2]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">&gt;{bench.engajamento[2]}%</td>
+                        <tr className="border-b border-slate-200 dark:border-slate-200 dark:border-white/10">
+                          <td className="py-2.5 text-slate-800 dark:text-slate-300">Engajamento</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">&lt;{bench.engajamento[0]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">{bench.engajamento[0]}-{bench.engajamento[1]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">{bench.engajamento[1]}-{bench.engajamento[2]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">&gt;{bench.engajamento[2]}%</td>
                         </tr>
-                        <tr className="border-b border-white/5">
-                          <td className="py-2.5 text-slate-300">Salvamento</td>
-                          <td className="py-2.5 text-center text-slate-400">&lt;{bench.salvamento[0]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">{bench.salvamento[0]}-{bench.salvamento[1]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">{bench.salvamento[1]}-{bench.salvamento[2]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">&gt;{bench.salvamento[2]}%</td>
+                        <tr className="border-b border-slate-200 dark:border-slate-200 dark:border-white/10">
+                          <td className="py-2.5 text-slate-800 dark:text-slate-300">Salvamento</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">&lt;{bench.salvamento[0]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">{bench.salvamento[0]}-{bench.salvamento[1]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">{bench.salvamento[1]}-{bench.salvamento[2]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">&gt;{bench.salvamento[2]}%</td>
                         </tr>
                         <tr>
-                          <td className="py-2.5 text-slate-300">Compartilhamento</td>
-                          <td className="py-2.5 text-center text-slate-400">&lt;{bench.compartilhamento[0]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">{bench.compartilhamento[0]}-{bench.compartilhamento[1]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">{bench.compartilhamento[1]}-{bench.compartilhamento[2]}%</td>
-                          <td className="py-2.5 text-center text-slate-400">&gt;{bench.compartilhamento[2]}%</td>
+                          <td className="py-2.5 text-slate-800 dark:text-slate-300">Compartilhamento</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">&lt;{bench.compartilhamento[0]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">{bench.compartilhamento[0]}-{bench.compartilhamento[1]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">{bench.compartilhamento[1]}-{bench.compartilhamento[2]}%</td>
+                          <td className="py-2.5 text-center text-slate-800 dark:text-white/90 dark:text-white/90">&gt;{bench.compartilhamento[2]}%</td>
                         </tr>
                       </tbody>
                     </table>

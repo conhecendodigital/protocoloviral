@@ -5,6 +5,7 @@ import { useProfile } from '@/hooks/use-profile'
 import { getNivelByXP, getProgressoNivel } from '@/data/niveis'
 import { useNotifications } from '@/hooks/use-notifications'
 import { NotificationPanel } from '@/components/shared/NotificationPanel'
+import { ThemeToggle } from '@/components/theme-toggle'
 import Link from 'next/link'
 
 interface HeaderProps {
@@ -44,11 +45,11 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
             <span className="text-xs font-bold uppercase tracking-widest text-[#0ea5e9]">
               {loading ? '...' : `Nível ${nivel.nivel}`}
             </span>
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-xs font-medium text-slate-800 dark:text-white/90 dark:text-white/90">
               {loading ? '' : `${xp} / ${nivel.xp_max} XP`}
             </span>
           </div>
-          <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
             <div 
               className="h-full bg-gradient-to-r from-sky-400 to-[#0ea5e9] rounded-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" 
               style={{ width: `${Math.max(progresso, 2)}%` }}
@@ -59,13 +60,15 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
         {/* Optional Page Title */}
         {title && (
           <div className="ml-2 sm:ml-4 min-w-0">
-            <h1 className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-white truncate">{title}</h1>
-            {subtitle && <p className="text-xs sm:text-sm text-slate-400 truncate">{subtitle}</p>}
+            <h1 className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate">{title}</h1>
+            {subtitle && <p className="text-xs sm:text-sm text-slate-800 dark:text-white/90 dark:text-white/90 truncate">{subtitle}</p>}
           </div>
         )}
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <ThemeToggle className="hidden sm:flex" />
+
         {/* Compact Profile Completion Ring */}
         <Link href="/perfil" className="flex items-center gap-2 group" title={`Perfil ${completion}% completo`}>
           <div className="relative size-9 sm:size-10">
@@ -81,7 +84,7 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
                 strokeLinecap="round"
               ></circle>
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white group-hover:text-[#0ea5e9] transition-colors">
+            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-slate-900 dark:text-white group-hover:text-[#0ea5e9] transition-colors">
               {completion}%
             </span>
           </div>

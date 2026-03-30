@@ -16,7 +16,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         glass: 
-          "glass-card text-foreground hover:bg-white/20 dark:hover:bg-white/10",
+          "glass-card text-foreground hover:bg-black/20 dark:bg-white/20 dark:hover:bg-black/10 dark:bg-white/10",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive:

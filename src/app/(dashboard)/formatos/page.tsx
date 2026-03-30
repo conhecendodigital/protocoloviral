@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
+import { useProfile } from '@/hooks/use-profile'
+import { Textarea } from '@/components/ui/textarea'
 
 interface Formato {
   id: string
@@ -65,6 +67,55 @@ export default function FormatosPage() {
   const [modalFormato, setModalFormato] = useState<Formato | null>(null)
   const supabase = useMemo(() => createClient(), [])
 
+  // AI Generator States
+  const { profile } = useProfile()
+  const [generatingReel, setGeneratingReel] = useState(false)
+  const [generatedReel, setGeneratedReel] = useState<string | null>(null)
+  const [generateError, setGenerateError] = useState<string | null>(null)
+
+  const handleCloseModal = () => {
+    setModalFormato(null)
+    setGeneratedReel(null)
+    setGenerateError(null)
+  }
+
+  const handleGenerateReel = async () => {
+    if (!profile?.resposta1 || !profile?.resposta2) {
+      setGenerateError('⚠️ Preencha sua Clareza e Persona na aba "Perfil" no menu esquerdo para a IA saber quem é você antes de gerar.')
+      return
+    }
+    if (!modalFormato) return
+
+    setGeneratingReel(true)
+    setGenerateError(null)
+    setGeneratedReel(null)
+
+    try {
+      const res = await fetch('/api/generate-reel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clareza: profile.resposta1.substring(0, 2000), // Proteção extra pro tamanho do payload
+          persona: profile.resposta2.substring(0, 2000),
+          estudo: modalFormato.estudo,
+          duracaoStr: modalFormato.duracao ? formatDuration(modalFormato.duracao) + ' minutos de fala' : '30 segundos'
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Erro inesperado da API.')
+      }
+
+      setGeneratedReel(data.result)
+    } catch (err: any) {
+      setGenerateError(err.message)
+    } finally {
+      setGeneratingReel(false)
+    }
+  }
+
   useEffect(() => {
     async function fetchFormatos() {
       const { data, error } = await supabase
@@ -107,7 +158,7 @@ export default function FormatosPage() {
   }
 
   // Render video — autoplay param for modal
-  const renderVideo = (url: string, titulo: string, autoplay = false) => {
+  const renderVideo = (url: string, titulo: string, autoplay = false, isCover = false) => {
     const type = getVideoType(url)
     
     if (type === 'drive') {
@@ -117,7 +168,7 @@ export default function FormatosPage() {
       return (
         <iframe
           src={embedUrl}
-          className="absolute inset-0 w-full h-full"
+          className={`absolute inset-0 w-full h-full ${isCover ? 'object-cover scale-150' : ''}`}
           allow="autoplay; encrypted-media"
           allowFullScreen
           title={titulo}
@@ -130,11 +181,12 @@ export default function FormatosPage() {
       return (
         <video
           src={url}
-          controls
+          controls={autoplay}
           autoPlay={autoplay}
           preload="metadata"
           playsInline
-          className="absolute inset-0 w-full h-full object-contain"
+          muted={!autoplay}
+          className={`absolute inset-0 w-full h-full ${isCover ? 'object-cover' : 'object-contain'}`}
         />
       )
     }
@@ -162,7 +214,7 @@ export default function FormatosPage() {
             <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tighter uppercase italic"
+              className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic"
             >
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">FORMATOS</span> QUE VIRALIZAM
             </motion.h1>
@@ -170,7 +222,7 @@ export default function FormatosPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-slate-400 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed"
+              className="text-slate-800 dark:text-white/90 dark:text-white/90 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed"
             >
               Análises semanais dos formatos mais eficientes por nicho.
             </motion.p>
@@ -191,7 +243,7 @@ export default function FormatosPage() {
                   className={`flex items-center gap-1.5 text-[10px] sm:text-xs py-2 px-3 sm:py-2.5 sm:px-5 rounded-full font-bold uppercase tracking-widest transition-all ${
                     filtroAtivo === nicho
                       ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20'
-                      : 'glass-card text-slate-300 hover:text-white hover:border-white/20'
+                      : 'glass-card text-slate-800 dark:text-slate-300 hover:text-slate-900 dark:text-white hover:border-slate-300/20 dark:border-white/20'
                   }`}
                 >
                   <span className="text-sm">{nichoEmojis[nicho] || '📁'}</span>
@@ -205,16 +257,16 @@ export default function FormatosPage() {
           {loading && (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <div className="w-10 h-10 border-2 border-[#0ea5e9]/30 border-t-[#0ea5e9] rounded-full animate-spin" />
-              <p className="text-slate-400 text-sm">Carregando formatos...</p>
+              <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-sm">Carregando formatos...</p>
             </div>
           )}
 
           {/* Empty State */}
           {!loading && formatos.length === 0 && (
             <div className="text-center py-20">
-              <span className="material-symbols-outlined text-6xl text-slate-600 mb-4 block">movie_filter</span>
-              <h3 className="text-xl font-bold text-white mb-2">Em breve!</h3>
-              <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed">
+              <span className="material-symbols-outlined text-6xl text-slate-800 dark:text-white/90 mb-4 block">movie_filter</span>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Em breve!</h3>
+              <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-sm max-w-md mx-auto leading-relaxed">
                 Vamos adicionar novos formatos em breve para você modelar conteúdos virais. 🚀
               </p>
             </div>
@@ -234,19 +286,19 @@ export default function FormatosPage() {
                 >
                   {/* Destaque Badge */}
                   {formato.destaque && (
-                    <div className="absolute top-4 right-4 z-20 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-amber-500/20">
+                    <div className="absolute top-4 right-4 z-20 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-900 dark:text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-amber-500/20">
                       <span className="material-symbols-outlined text-[12px]">star</span>
                       Destaque
                     </div>
                   )}
 
                   {/* Video thumbnail — cropped, click opens modal */}
-                  <div className="relative w-full aspect-video sm:aspect-[9/16] sm:max-h-[350px] bg-black/50 overflow-hidden rounded-t-xl pointer-events-none">
-                    {renderVideo(formato.video_url, formato.titulo)}
+                  <div className="relative w-full aspect-[4/5] sm:aspect-[9/16] sm:max-h-[350px] bg-slate-100 dark:bg-black/50 overflow-hidden rounded-t-xl hover:opacity-90 transition-opacity pointer-events-none">
+                    {renderVideo(formato.video_url, formato.titulo, false, true)}
                     {/* Play overlay */}
                     <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-all group-hover:scale-110">
-                        <span className="material-symbols-outlined text-white text-2xl sm:text-3xl ml-0.5">play_arrow</span>
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-black/20 dark:bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 group-hover:bg-white/30 transition-all group-hover:scale-110">
+                        <span className="material-symbols-outlined text-slate-900 dark:text-white text-2xl sm:text-3xl ml-0.5">play_arrow</span>
                       </div>
                     </div>
                   </div>
@@ -268,27 +320,27 @@ export default function FormatosPage() {
                       <span className="text-[10px] text-[#0ea5e9] bg-[#0ea5e9]/10 px-2.5 py-1 rounded font-black tracking-widest uppercase">
                         {formato.tipo}
                       </span>
-                      <span className="text-[10px] text-slate-500 font-medium ml-auto">
+                      <span className="text-[10px] text-slate-700 dark:text-white/90 font-medium ml-auto">
                         {new Date(formato.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
                       </span>
                     </div>
 
                     {/* Title */}
-                    <h3 className="font-bold text-base sm:text-xl tracking-tight text-white leading-tight line-clamp-2">{formato.titulo}</h3>
+                    <h3 className="font-bold text-base sm:text-xl tracking-tight text-slate-900 dark:text-white leading-tight line-clamp-2">{formato.titulo}</h3>
 
                     {/* Username */}
                     {formato.username && (
-                      <p className="text-xs text-slate-500 font-medium">@{formato.username}</p>
+                      <p className="text-xs text-slate-700 dark:text-white/90 font-medium">@{formato.username}</p>
                     )}
 
                     {/* Description */}
                     {formato.descricao && (
-                      <p className="text-sm text-slate-400 leading-relaxed line-clamp-2">{formato.descricao}</p>
+                      <p className="text-sm text-slate-800 dark:text-white/90 dark:text-white/90 leading-relaxed line-clamp-2">{formato.descricao}</p>
                     )}
 
                     {/* Metrics Bar */}
                     {(formato.curtidas || formato.views || formato.engajamento) && (
-                      <div className="flex items-center flex-wrap gap-3 sm:gap-4 pt-1 text-[10px] sm:text-[11px] text-slate-400">
+                      <div className="flex items-center flex-wrap gap-3 sm:gap-4 pt-1 text-[10px] sm:text-[11px] text-slate-800 dark:text-white/90 dark:text-white/90">
                         {formato.curtidas != null && (
                           <span className="flex items-center gap-1">
                             <span className="material-symbols-outlined text-[14px] text-red-400">favorite</span>
@@ -309,7 +361,7 @@ export default function FormatosPage() {
                         )}
                         {formato.duracao != null && (
                           <span className="flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[14px] text-slate-400">timer</span>
+                            <span className="material-symbols-outlined text-[14px] text-slate-800 dark:text-white/90 dark:text-white/90">timer</span>
                             {formatDuration(formato.duracao)}
                           </span>
                         )}
@@ -336,8 +388,8 @@ export default function FormatosPage() {
           {/* Filtered Empty */}
           {!loading && formatos.length > 0 && formatosFiltrados.length === 0 && (
             <div className="text-center py-20">
-              <span className="material-symbols-outlined text-5xl text-slate-600 mb-4 block">movie_filter</span>
-              <p className="text-slate-400 text-lg">Nenhum formato encontrado para este nicho.</p>
+              <span className="material-symbols-outlined text-5xl text-slate-800 dark:text-white/90 mb-4 block">movie_filter</span>
+              <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg">Nenhum formato encontrado para este nicho.</p>
               <button
                 onClick={() => setFiltroAtivo('Todos')}
                 className="mt-4 text-[#0ea5e9] text-sm font-bold hover:underline"
@@ -361,7 +413,7 @@ export default function FormatosPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6"
-            onClick={() => setModalFormato(null)}
+            onClick={handleCloseModal}
           >
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
@@ -373,7 +425,7 @@ export default function FormatosPage() {
               exit={{ y: 100, opacity: 0, scale: 0.95 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative z-10 w-full sm:max-w-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col bg-[#0a0f1e] border border-white/10 rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-black/50"
+              className="relative z-10 w-full sm:max-w-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col bg-white dark:bg-[#0a0f1e] border border-slate-200 dark:border-white/10 rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-2xl"
             >
               {/* Modal Header */}
               <div className="relative shrink-0">
@@ -381,7 +433,7 @@ export default function FormatosPage() {
 
                 {/* Drag handle (mobile) */}
                 <div className="flex justify-center pt-3 pb-1 sm:hidden">
-                  <div className="w-10 h-1 rounded-full bg-white/20" />
+                  <div className="w-10 h-1 rounded-full bg-black/20 dark:bg-white/20" />
                 </div>
 
                 <div className="px-6 py-4 sm:py-5 flex items-start gap-4">
@@ -401,13 +453,13 @@ export default function FormatosPage() {
                         {modalFormato.tipo}
                       </span>
                     </div>
-                    <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
                       {modalFormato.titulo}
                     </h2>
                   </div>
                   <button
-                    onClick={() => setModalFormato(null)}
-                    className="shrink-0 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    onClick={handleCloseModal}
+                    className="shrink-0 p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 text-slate-800 dark:text-white/90 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors"
                   >
                     <span className="material-symbols-outlined text-[20px]">close</span>
                   </button>
@@ -417,7 +469,7 @@ export default function FormatosPage() {
               {/* Modal Body (scrollable) */}
               <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
                 {/* Video (autoplay in modal) */}
-                <div className="relative w-full max-w-[320px] mx-auto aspect-[9/16] rounded-xl overflow-hidden bg-black/50 mb-6">
+                <div className="relative w-full max-w-[320px] mx-auto aspect-[9/16] rounded-xl overflow-hidden bg-white/80 dark:bg-black/50 mb-6">
                   {renderVideo(modalFormato.video_url, modalFormato.titulo, true)}
                 </div>
 
@@ -427,7 +479,7 @@ export default function FormatosPage() {
                     href={modalFormato.link_original}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs text-slate-300 bg-white/5 py-2.5 px-4 rounded-xl border border-white/10 hover:bg-white/10 hover:text-white transition-all font-semibold mb-6"
+                    className="inline-flex items-center gap-2 text-xs text-slate-800 dark:text-slate-300 bg-black/5 dark:bg-white/5 py-2.5 px-4 rounded-xl border border-slate-300/10 dark:border-slate-200 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 hover:text-slate-900 dark:text-white transition-all font-semibold mb-6"
                   >
                     <span className="material-symbols-outlined text-[16px]">open_in_new</span>
                     Ver Original no {modalFormato.plataforma}
@@ -440,57 +492,57 @@ export default function FormatosPage() {
                     {modalFormato.curtidas != null && (
                       <div className="glass-card rounded-xl p-3 text-center">
                         <span className="material-symbols-outlined text-red-400 text-xl block mb-1">favorite</span>
-                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.curtidas)}</p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Curtidas</p>
+                        <p className="text-slate-900 dark:text-white font-bold text-sm">{formatNumber(modalFormato.curtidas)}</p>
+                        <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Curtidas</p>
                       </div>
                     )}
                     {modalFormato.views != null && (
                       <div className="glass-card rounded-xl p-3 text-center">
                         <span className="material-symbols-outlined text-blue-400 text-xl block mb-1">visibility</span>
-                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.views)}</p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Views</p>
+                        <p className="text-slate-900 dark:text-white font-bold text-sm">{formatNumber(modalFormato.views)}</p>
+                        <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Views</p>
                       </div>
                     )}
                     {modalFormato.reproducoes != null && (
                       <div className="glass-card rounded-xl p-3 text-center">
                         <span className="material-symbols-outlined text-purple-400 text-xl block mb-1">play_circle</span>
-                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.reproducoes)}</p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Plays</p>
+                        <p className="text-slate-900 dark:text-white font-bold text-sm">{formatNumber(modalFormato.reproducoes)}</p>
+                        <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Plays</p>
                       </div>
                     )}
                     {modalFormato.comentarios != null && (
                       <div className="glass-card rounded-xl p-3 text-center">
                         <span className="material-symbols-outlined text-amber-400 text-xl block mb-1">chat_bubble</span>
-                        <p className="text-white font-bold text-sm">{formatNumber(modalFormato.comentarios)}</p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Coment.</p>
+                        <p className="text-slate-900 dark:text-white font-bold text-sm">{formatNumber(modalFormato.comentarios)}</p>
+                        <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Coment.</p>
                       </div>
                     )}
                     {modalFormato.duracao != null && (
                       <div className="glass-card rounded-xl p-3 text-center">
-                        <span className="material-symbols-outlined text-slate-400 text-xl block mb-1">timer</span>
-                        <p className="text-white font-bold text-sm">{formatDuration(modalFormato.duracao)}</p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Duração</p>
+                        <span className="material-symbols-outlined text-slate-800 dark:text-white/90 dark:text-white/90 text-xl block mb-1">timer</span>
+                        <p className="text-slate-900 dark:text-white font-bold text-sm">{formatDuration(modalFormato.duracao)}</p>
+                        <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Duração</p>
                       </div>
                     )}
                     {modalFormato.engajamento != null && (
                       <div className="glass-card rounded-xl p-3 text-center border border-green-500/20">
                         <span className="material-symbols-outlined text-green-400 text-xl block mb-1">trending_up</span>
                         <p className="text-green-400 font-bold text-sm">{modalFormato.engajamento.toFixed(2)}%</p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">Engaj.</p>
+                        <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Engaj.</p>
                       </div>
                     )}
                   </div>
                 )}
 
                 {/* Study Terminal */}
-                <div className="rounded-xl overflow-hidden border border-white/10 bg-[#000000] shadow-2xl">
-                  <div className="flex items-center px-4 py-3 border-b border-white/10 bg-white/[0.02]">
+                <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black shadow-xl">
+                  <div className="flex items-center px-4 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/[0.02]">
                     <div className="flex gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-500/80" />
                       <div className="w-3 h-3 rounded-full bg-amber-500/80" />
                       <div className="w-3 h-3 rounded-full bg-green-500/80" />
                     </div>
-                    <span className="ml-4 text-xs font-mono text-slate-500">
+                    <span className="ml-4 text-xs font-mono text-slate-700 dark:text-white/90">
                       estudo.md
                     </span>
                     <button
@@ -508,7 +560,7 @@ export default function FormatosPage() {
                           document.body.removeChild(ta)
                         }
                       }}
-                      className="ml-auto flex items-center gap-1.5 text-[10px] text-slate-400 hover:text-white bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10 transition-all font-bold uppercase tracking-widest"
+                      className="ml-auto flex items-center gap-1.5 text-[10px] text-slate-800 dark:text-white/90 dark:text-white/90 hover:text-slate-900 dark:text-white bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-slate-300/10 dark:border-slate-200 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold uppercase tracking-widest"
                     >
                       <span className="material-symbols-outlined text-[14px]">content_copy</span>
                       Copiar
@@ -526,7 +578,7 @@ export default function FormatosPage() {
                         const content = rest ? `${rest}\n${lines}` : lines
                         return (
                           <div key={i} className="border-l-2 border-[#0ea5e9]/40 pl-4">
-                            <p className="text-[13px] sm:text-[14px] font-mono font-bold text-white mb-1.5 tracking-wide">
+                            <p className="text-[13px] sm:text-[14px] font-mono font-bold text-slate-900 dark:text-white mb-1.5 tracking-wide">
                               {title}
                             </p>
                             {content.trim() && (
