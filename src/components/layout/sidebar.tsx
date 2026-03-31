@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 // Using Material Icons strings instead of Lucide icons to match Stitch UI
 interface NavItem {
@@ -23,6 +24,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Seus Agentes', href: '/agentes', icon: 'smart_toy', badge: 'IA', badgeHot: true, section: 'Ferramentas' },
   { label: 'Geradores', href: '/prompts', icon: 'auto_awesome', section: 'Ferramentas' },
   { label: 'Formatos', href: '/formatos', icon: 'movie_filter', badge: '🔥', badgeHot: true, section: 'Ferramentas' },
+  { label: 'Meus Roteiros', href: '/roteiros', icon: 'description', badge: 'Novo', section: 'Ferramentas' },
   { label: 'Ganchos Virais', href: '/ganchos', icon: 'anchor', badge: '50', section: 'Ferramentas' },
   { label: 'Stories', href: '/stories', icon: 'video_camera_front', badge: '🔥', badgeHot: true, section: 'Ferramentas' },
   { label: 'Rotina', href: '/rotina', icon: 'calendar_today', section: 'Ferramentas' },
@@ -58,12 +60,12 @@ export function Sidebar({ className = '' }: SidebarProps) {
   }
 
   return (
-    <aside className={cn("hidden lg:flex w-20 lg:w-64 flex-col border-r border-white/5 bg-black/50 backdrop-blur-md shrink-0 transition-all z-40", className)}>
+    <aside className={cn("hidden lg:flex w-20 lg:w-64 flex-col border-r border-slate-200 dark:border-white/10 bg-slate-50/80 dark:bg-gradient-to-b dark:from-[#0B0F19] dark:to-black backdrop-blur-md shrink-0 transition-all z-40", className)}>
       <div className="p-6 flex items-center gap-3">
-        <div className="size-10 bg-[#0ea5e9] rounded-lg flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#0ea5e9]/20">
+        <div className="size-10 bg-[#0ea5e9] rounded-lg flex items-center justify-center text-slate-900 dark:text-white shrink-0 shadow-lg shadow-[#0ea5e9]/20">
           <span className="material-symbols-outlined">map</span>
         </div>
-        <span className="font-bold text-lg tracking-tight hidden lg:block text-white">Mapa do Engajamento</span>
+        <span className="font-bold text-lg tracking-tight hidden lg:block text-slate-900 dark:text-white">Mapa do Engajamento</span>
       </div>
 
       <nav className="flex-1 px-4 space-y-2 py-4 overflow-y-auto">
@@ -78,7 +80,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
                 "flex items-center gap-4 px-3 py-3 rounded-xl transition-all",
                 isActive 
                   ? "bg-[#0ea5e9]/20 text-[#0ea5e9]"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  : "text-slate-800 dark:text-white/90 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
               )}
             >
               <span className={cn("material-symbols-outlined", isActive && "fill-1")}>
@@ -90,8 +92,8 @@ export function Sidebar({ className = '' }: SidebarProps) {
                 <span className={cn(
                   "hidden lg:block px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0",
                   item.badgeHot
-                    ? "bg-gradient-to-r from-amber-500 to-red-500 text-white animate-pulse"
-                    : "bg-white/10 text-white/70"
+                    ? "bg-gradient-to-r from-amber-500 to-red-500 text-slate-900 dark:text-white animate-pulse"
+                    : "bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white/80"
                 )}>
                   {item.badge}
                 </span>
@@ -102,11 +104,16 @@ export function Sidebar({ className = '' }: SidebarProps) {
       </nav>
 
       <div className="p-4 mt-auto space-y-4">
+        {/* Theme Toggle */}
+        <div className="flex justify-center lg:justify-start">
+          <ThemeToggle />
+        </div>
+
         {/* Support Box */}
-        <div className="bg-white/5 p-4 rounded-xl hidden lg:block border border-white/5">
+        <div className="bg-black/5 dark:bg-white/5 p-4 rounded-xl hidden lg:block border border-slate-200 dark:border-slate-200 dark:border-white/10">
           <p className="text-xs font-semibold text-[#0ea5e9] uppercase tracking-widest mb-2">Suporte</p>
-          <p className="text-xs text-slate-400 leading-relaxed">Precisa de ajuda com sua estratégia?</p>
-          <button className="mt-3 text-xs font-bold text-white flex items-center gap-1 hover:underline">
+          <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 leading-relaxed">Precisa de ajuda com sua estratégia?</p>
+          <button className="mt-3 text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1 hover:underline">
             Abrir Ticket <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
           </button>
         </div>
@@ -120,7 +127,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
                 <Image src={profile.avatar_url} width={40} height={40} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-gradient-to-tr from-[#0ea5e9] to-indigo-500 flex items-center justify-center">
-                  <span className="text-xs font-black text-white">{getInitials()}</span>
+                  <span className="text-xs font-black text-slate-900 dark:text-white">{getInitials()}</span>
                 </div>
               )}
             </div>
@@ -129,11 +136,11 @@ export function Sidebar({ className = '' }: SidebarProps) {
           {/* Name + Sair */}
           <div className="hidden lg:flex flex-1 items-center justify-between min-w-0">
             <Link href="/perfil" className="truncate">
-              <p className="text-sm font-bold text-white truncate hover:text-[#0ea5e9] transition-colors">{getDisplayName()}</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white truncate hover:text-[#0ea5e9] transition-colors">{getDisplayName()}</p>
             </Link>
             <button
               onClick={handleLogout}
-              className="text-xs font-bold text-slate-500 hover:text-red-400 transition-colors px-2 py-1 rounded-lg hover:bg-red-500/10 shrink-0"
+              className="text-xs font-bold text-slate-700 dark:text-white/90 hover:text-red-400 transition-colors px-2 py-1 rounded-lg hover:bg-red-500/10 shrink-0"
             >
               Sair
             </button>

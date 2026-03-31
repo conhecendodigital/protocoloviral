@@ -5,7 +5,7 @@ import { PROMPT_CONFIGS, type PromptType } from '@/types/prompt'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
-const PROMPT_ORDER: PromptType[] = ['clareza', 'persona', 'ideias', 'roteiro', 'vendas']
+const PROMPT_ORDER: PromptType[] = ['clareza', 'persona', 'ideias', 'vendas']
 
 const COLORS: Record<PromptType, string> = {
   clareza: 'from-sky-500 to-cyan-400',
@@ -42,15 +42,17 @@ export default function PromptsIndexPage() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
             <div className="flex items-center gap-4 mb-4">
               <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#0ea5e9] to-indigo-600 flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.3)]">
-                <span className="material-symbols-outlined text-white text-3xl">auto_awesome</span>
+                <span className="material-symbols-outlined text-slate-900 dark:text-white text-3xl">auto_awesome</span>
               </div>
               <div>
-                <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Geradores de Texto</h1>
+                <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">GERADORES DE</span> TEXTO
+                </h1>
                 <p className="text-[#0ea5e9] font-medium mt-1">Escolha o que você quer criar</p>
               </div>
             </div>
-            <p className="text-slate-400 max-w-2xl leading-relaxed mt-4">
-              Comece pelo <strong className="text-white">Passo 1 (Clareza)</strong> para saber 
+            <p className="text-slate-800 dark:text-white/90 dark:text-white/90 max-w-2xl leading-relaxed mt-4">
+              Comece pelo <strong className="text-slate-900 dark:text-white">Passo 1 (Clareza)</strong> para saber 
               sobre o que falar. Depois siga para os próximos. Cada um usa as informações do seu perfil para 
               criar textos feitos sob medida para você.
             </p>
@@ -82,27 +84,27 @@ export default function PromptsIndexPage() {
                         <div className={`size-12 rounded-xl bg-gradient-to-br ${COLORS[tipo]} flex items-center justify-center shadow-lg ${GLOW_COLORS[tipo]}`}>
                           <span className="text-2xl">{config.icone}</span>
                         </div>
-                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                        <span className="text-xs font-black text-slate-700 dark:text-white/90 uppercase tracking-widest bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-200 dark:border-white/10">
                           Passo {config.numero}
                         </span>
                       </div>
 
                       {/* Title & Subtitle */}
-                      <h3 className="text-lg font-bold text-white tracking-tight mb-1 group-hover:text-white/90 transition-colors">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight mb-1 group-hover:text-white/90 transition-colors">
                         {config.titulo}
                       </h3>
                       <p className="text-sm text-[#0ea5e9] font-semibold mb-3">{config.subtitulo}</p>
                       
                       {/* Description */}
-                      <p className="text-xs text-slate-400 leading-relaxed mb-5">
+                      <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 leading-relaxed mb-5">
                         {config.descricao}
                       </p>
 
                       {/* Dependencies */}
                       {hasDeps && (
                         <div className="flex items-center gap-2 mb-4">
-                          <span className="material-symbols-outlined text-slate-600 text-sm">link</span>
-                          <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+                          <span className="material-symbols-outlined text-slate-800 dark:text-white/90 text-sm">link</span>
+                          <span className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-widest font-bold">
                             Precisa fazer antes: {config.dependencias.map(d => PROMPT_CONFIGS[d].titulo).join(', ')}
                           </span>
                         </div>
@@ -110,8 +112,8 @@ export default function PromptsIndexPage() {
 
                       {/* CTA */}
                       <div className={`flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r ${COLORS[tipo]} opacity-80 group-hover:opacity-100 transition-opacity`}>
-                        <span className="text-sm font-bold text-white">Começar</span>
-                        <span className="material-symbols-outlined text-white text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        <span className="text-sm font-bold text-slate-900 dark:text-white">Começar</span>
+                        <span className="material-symbols-outlined text-slate-900 dark:text-white text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
                       </div>
                     </div>
                   </Link>

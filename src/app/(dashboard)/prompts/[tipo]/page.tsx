@@ -43,7 +43,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
     return (
       <>
         <div className="p-8 text-center mt-20">
-          <p className="text-slate-400 text-lg">Este tipo de prompt não existe.</p>
+          <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg">Este tipo de prompt não existe.</p>
           <Link href="/" className="text-[#0ea5e9] text-sm mt-4 font-bold hover:underline inline-block">Voltar ao início</Link>
         </div>
       </>
@@ -109,14 +109,14 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex items-center gap-4 mb-2">
               <span className="text-4xl">{config.icone}</span>
-              <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                Passo {config.numero}: {config.titulo}
+              <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">PASSO {config.numero}:</span> {config.titulo}
               </h1>
             </div>
-            <p className="text-slate-400">{config.descricao}</p>
+            <p className="text-slate-800 dark:text-white/90 dark:text-white/90">{config.descricao}</p>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="glass-card p-6 lg:p-8 rounded-xl flex flex-col gap-6 shadow-2xl shadow-[#0ea5e9]/10 border border-white/5">
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="glass-card p-6 lg:p-8 rounded-xl flex flex-col gap-6 shadow-2xl shadow-[#0ea5e9]/10 border border-slate-200 dark:border-slate-200 dark:border-white/10">
             
             {/* Dependencies Warning */}
             {!deps.met && deps.missing && (
@@ -127,7 +127,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                     <p className="text-sm font-bold text-amber-400">
                       Faça o Passo {PROMPT_CONFIGS[deps.missing].numero} ({PROMPT_CONFIGS[deps.missing].titulo}) antes
                     </p>
-                    <p className="text-xs text-slate-400 mt-1 mb-3">
+                    <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 mt-1 mb-3">
                       Cole a resposta que o ChatGPT te deu no campo abaixo.
                     </p>
                     <Link href={`/prompts/${deps.missing}`} className="text-xs text-[#0ea5e9] font-bold hover:underline flex items-center gap-1 w-max">
@@ -148,7 +148,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
 
                 return (
                   <div key={dep}>
-                    <label className="text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2 uppercase tracking-wider">
+                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-300 mb-2 flex items-center gap-2 uppercase tracking-wider">
                       {isSatisfied ? <span className="material-symbols-outlined text-emerald-500 text-[18px]">check_circle</span> : <span className="material-symbols-outlined text-amber-500 text-[18px]">error</span>}
                       Resposta do Passo {depConfig.numero} ({depConfig.titulo})
                     </label>
@@ -156,7 +156,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                       placeholder={`Cole aqui a resposta do ChatGPT do Passo ${depConfig.numero}...`}
                       value={value}
                       onChange={e => updateField(fieldKey, e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all shadow-inner min-h-[100px]"
+                      className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all shadow-sm min-h-[140px] max-h-[300px] overflow-y-auto custom-scrollbar"
                     />
                   </div>
                 )
@@ -165,14 +165,14 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
               {/* Extra Field (Roteiro / Vendas) */}
               {config.campoExtra && (
                 <div>
-                  <label className="text-sm font-semibold text-slate-300 mb-2 block uppercase tracking-wider">
+                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-300 mb-2 block uppercase tracking-wider">
                     {config.campoExtra.label}
                   </label>
                   <Textarea
                     placeholder={config.campoExtra.placeholder}
                     value={(profile as Record<string, string | null>)?.[config.campoExtra.id] || ''}
                     onChange={e => updateField(config.campoExtra!.id, e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all shadow-inner min-h-[100px]"
+                    className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all shadow-sm min-h-[140px] max-h-[300px] overflow-y-auto custom-scrollbar"
                   />
                 </div>
               )}
@@ -191,18 +191,18 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
           {/* Paste Current Response section */}
           {generated && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-xl p-6 border-l-4 border-l-[#0ea5e9]">
-              <label className="text-sm font-bold flex items-center gap-2 text-white mb-2 uppercase tracking-wide">
+              <label className="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white mb-2 uppercase tracking-wide">
                 <span className="material-symbols-outlined text-[#0ea5e9]">chat</span>
                 Resposta do ChatGPT
               </label>
-              <p className="text-xs text-slate-400 mb-4">
+              <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 mb-4">
                 Copie o texto acima, cole no ChatGPT, e depois cole aqui a resposta que ele te der.
               </p>
               <Textarea
                 placeholder="Cole a resposta final aqui..."
                 value={(profile as Record<string, string | null>)?.[`resposta${config.numero}`] || ''}
                 onChange={e => updateField(`resposta${config.numero}`, e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg p-4 text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all min-h-[140px]"
+                className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:ring-2 focus:ring-[#0ea5e9] outline-none resize-none transition-all shadow-sm min-h-[140px] max-h-[300px] overflow-y-auto custom-scrollbar"
               />
 
               {/* Next Prompt Button — appears when response is pasted */}
@@ -224,7 +224,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                   ) : (
                     <Link
                       href="/prompts"
-                      className="w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg bg-gradient-to-r from-emerald-500 to-green-400 transition-transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-500/20"
+                      className="w-full py-4 rounded-xl flex items-center justify-center gap-3 text-slate-900 dark:text-white font-bold text-lg bg-gradient-to-r from-emerald-500 to-green-400 transition-transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-500/20"
                     >
                       <span className="material-symbols-outlined text-xl">check_circle</span>
                       <span>Tudo Pronto! 🎉</span>
@@ -240,7 +240,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
         {/* Right Column: Terminal Result */}
         <div className="flex flex-col h-full min-h-[600px] xl:max-h-[calc(100vh-120px)] xl:sticky xl:top-[100px]">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Seu Texto Gerado</span>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700 dark:text-white/90">Seu Texto Gerado</span>
             <div className="flex gap-2">
               <span className={cn(
                 "px-2 py-1 text-[10px] font-bold rounded border transition-colors",
@@ -252,23 +252,23 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
             </div>
           </div>
           
-          <div className="bg-[#0a0a0a] border border-white/10 rounded-xl flex flex-col flex-1 overflow-hidden shadow-2xl">
+          <div className="bg-slate-50 dark:bg-[#0a0a0a] border border-slate-200 dark:border-white/10 rounded-xl flex flex-col flex-1 overflow-hidden shadow-xl">
             {/* Mac-style Terminal Header */}
-            <div className="bg-white/5 px-4 py-3 flex items-center justify-between border-b border-white/5">
+            <div className="bg-slate-100 dark:bg-white/[0.02] px-4 py-3 flex items-center justify-between border-b border-slate-200 dark:border-white/10">
               <div className="flex gap-2">
                 <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
                 <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
                 <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
               </div>
-              <div className="text-[10px] text-slate-500 font-mono">gerador_texto_{config.tipo}</div>
-              <button onClick={handleCopy} disabled={!generated} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors disabled:opacity-50">
+              <div className="text-[10px] text-slate-700 dark:text-white/90 font-mono">gerador_texto_{config.tipo}</div>
+              <button onClick={handleCopy} disabled={!generated} className="flex items-center gap-2 text-slate-800 dark:text-white/90 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors disabled:opacity-50">
                 <span className="material-symbols-outlined text-sm">{copied ? 'check' : 'content_copy'}</span>
                 <span className="text-[10px] font-bold uppercase">{copied ? 'Copiado' : 'Copiar'}</span>
               </button>
             </div>
             
             {/* Terminal Content */}
-            <div className="p-6 font-mono text-sm leading-relaxed overflow-y-auto flex-1 text-slate-300">
+            <div className="p-6 font-mono text-sm leading-relaxed overflow-y-auto flex-1 text-slate-900 dark:text-slate-300">
               {generated ? (
                  <div className="space-y-4">
                    <p className="text-[#0ea5e9]">✅ Texto gerado!</p>
@@ -283,10 +283,10 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
               )}
             </div>
 
-            <div className="p-4 border-t border-white/5 bg-white/[0.02]">
+            <div className="p-4 border-t border-slate-200 dark:border-slate-200 dark:border-white/10 bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <span className="text-[#0ea5e9] font-bold">➜</span>
-                <span className="text-slate-500 text-xs">Copie o texto acima e cole no ChatGPT</span>
+                <span className="text-slate-700 dark:text-white/90 text-xs">Copie o texto acima e cole no ChatGPT</span>
               </div>
             </div>
           </div>

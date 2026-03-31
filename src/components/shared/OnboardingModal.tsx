@@ -127,10 +127,10 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             className="size-24 rounded-full bg-gradient-to-br from-emerald-400 to-[#0ea5e9] flex items-center justify-center mb-8 shadow-[0_0_60px_rgba(16,185,129,0.4)]"
           >
-            <span className="material-symbols-outlined text-[48px] text-white">check_circle</span>
+            <span className="material-symbols-outlined text-[48px] text-slate-900 dark:text-white">check_circle</span>
           </motion.div>
-          <h2 className="text-4xl font-black text-white mb-4 tracking-tight">Perfil Completo!</h2>
-          <p className="text-lg text-slate-400 max-w-md">
+          <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Perfil Completo!</h2>
+          <p className="text-lg text-slate-800 dark:text-white/90 dark:text-white/90 max-w-md">
             Agora a Inteligência Artificial tem o contexto ideal para gerar conteúdos personalizados para você.
           </p>
           <motion.div
@@ -165,23 +165,23 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
               className="size-20 bg-gradient-to-br from-[#0ea5e9] to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(14,165,233,0.3)]"
             >
-              <span className="material-symbols-outlined text-[40px] text-white">waving_hand</span>
+              <span className="material-symbols-outlined text-[40px] text-slate-900 dark:text-white">waving_hand</span>
             </motion.div>
 
-            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-4 leading-tight">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
               Antes de começar,<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">preciso te conhecer melhor!</span>
             </h2>
 
-            <p className="text-base text-slate-400 max-w-lg mx-auto mb-4 leading-relaxed">
+            <p className="text-base text-slate-800 dark:text-white/90 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
               Vou te fazer algumas perguntas rápidas sobre você, seu público e seus objetivos.
             </p>
 
-            <p className="text-base text-slate-400 max-w-lg mx-auto mb-4 leading-relaxed">
-              Essas respostas vão alimentar diretamente a <span className="font-bold text-white">Inteligência Artificial</span> que gera seus prompts, roteiros, ideias de conteúdo e estratégias de vendas.
+            <p className="text-base text-slate-800 dark:text-white/90 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
+              Essas respostas vão alimentar diretamente a <span className="font-bold text-slate-900 dark:text-white">Inteligência Artificial</span> que gera seus prompts, roteiros, ideias de conteúdo e estratégias de vendas.
             </p>
 
-            <p className="text-sm text-slate-500 max-w-lg mx-auto mb-10 leading-relaxed">
+            <p className="text-sm text-slate-700 dark:text-white/90 max-w-lg mx-auto mb-10 leading-relaxed">
               Quanto mais detalhado você for, <span className="font-bold text-[#0ea5e9]">mais personalizados e poderosos</span> serão os conteúdos gerados para o seu nicho. Sem essas informações, a IA não tem contexto suficiente.
             </p>
 
@@ -193,7 +193,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                 setDirection(1)
                 setCurrentStep(0)
               }}
-              className="onboarding-next-btn inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-white font-bold text-base transition-all active:scale-[0.97]"
+              className="onboarding-next-btn inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-slate-900 dark:text-white font-bold text-base transition-all active:scale-[0.97]"
             >
               <span>Vamos começar</span>
               <span className="material-symbols-outlined text-xl">arrow_forward</span>
@@ -201,7 +201,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
 
             <button
               onClick={onComplete}
-              className="block mx-auto mt-6 text-sm font-medium text-slate-600 hover:text-slate-400 transition-colors"
+              className="block mx-auto mt-6 text-sm font-medium text-slate-800 dark:text-white/90 hover:text-slate-800 dark:text-white/90 dark:text-white/90 transition-colors"
             >
               Preencher depois
             </button>
@@ -227,22 +227,22 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
           {/* Logo */}
           <div className="flex items-center justify-center gap-3 mb-8">
             <div className="size-10 bg-[#0ea5e9] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(14,165,233,0.4)]">
-              <svg className="text-white w-6 h-6" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <svg className="text-slate-900 dark:text-white w-6 h-6" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                 <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
               </svg>
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">Mapa do Engajamento</span>
+            <span className="text-slate-900 dark:text-white font-bold text-lg tracking-tight">Mapa do Engajamento</span>
           </div>
 
           {/* Progress Bar */}
           <div className="w-full">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+              <span className="text-xs font-bold text-slate-700 dark:text-white/90 uppercase tracking-widest">
                 Pergunta {currentStep + 1} de {totalSteps}
               </span>
               <span className="text-xs font-black text-[#0ea5e9]">{Math.round(progress)}%</span>
             </div>
-            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-[#0ea5e9] to-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.5)]"
                 initial={{ width: 0 }}
@@ -293,10 +293,10 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             >
               <div className="onboarding-card p-8 md:p-10 rounded-3xl">
                 {/* Question Label */}
-                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-3 leading-tight">
+                <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-3 leading-tight">
                   {currentField.label}
                 </h2>
-                <p className="text-sm text-slate-500 mb-8">
+                <p className="text-sm text-slate-700 dark:text-white/90 mb-8">
                   {currentField.placeholder}
                 </p>
 
@@ -306,8 +306,8 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                     value={answers[currentField.id] || ''}
                     onChange={(e) => handleAnswer(e.target.value)}
                     placeholder="Digite sua resposta aqui..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-[#0ea5e9] transition-all resize-none text-sm leading-relaxed min-h-[120px]"
-                    rows={4}
+                    className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all resize-none text-base leading-relaxed min-h-[160px] shadow-sm"
+                    rows={5}
                     autoFocus
                   />
                 ) : (
@@ -316,7 +316,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                     value={answers[currentField.id] || ''}
                     onChange={(e) => handleAnswer(e.target.value)}
                     placeholder="Digite sua resposta aqui..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-5 text-white placeholder:text-slate-600 focus:outline-none focus:border-[#0ea5e9] transition-all text-sm"
+                    className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-5 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all text-base shadow-sm"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleNext()
@@ -339,7 +339,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
           <button
             onClick={handleBack}
             disabled={currentStep < 0}
-            className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none px-4 py-3"
+            className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none px-4 py-3"
           >
             <span className="material-symbols-outlined text-xl">arrow_back</span>
             Voltar
@@ -349,7 +349,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             {/* Skip */}
             <button
               onClick={handleSkip}
-              className="text-sm font-medium text-slate-600 hover:text-slate-400 transition-colors px-4 py-3"
+              className="text-sm font-medium text-slate-800 dark:text-white/90 hover:text-slate-800 dark:text-white/90 dark:text-white/90 transition-colors px-4 py-3"
             >
               Pular
             </button>
@@ -358,7 +358,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             <button
               onClick={handleNext}
               disabled={isCompleting}
-              className="onboarding-next-btn flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-bold text-sm transition-all active:scale-[0.97] disabled:opacity-70"
+              className="onboarding-next-btn flex items-center gap-2 px-8 py-4 rounded-2xl text-slate-900 dark:text-white font-bold text-sm transition-all active:scale-[0.97] disabled:opacity-70"
             >
               {currentStep === totalSteps - 1 ? (
                 <>
@@ -385,7 +385,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                   ? 'w-6 bg-[#0ea5e9] shadow-[0_0_8px_rgba(14,165,233,0.5)]'
                   : i < currentStep
                   ? 'w-1.5 bg-[#0ea5e9]/50'
-                  : 'w-1.5 bg-white/10'
+                  : 'w-1.5 bg-black/10 dark:bg-white/10'
               }`}
             />
           ))}
