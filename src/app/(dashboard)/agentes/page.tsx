@@ -31,21 +31,6 @@ export default function AgentesLibraryPage() {
 
   const isAdmin = profile?.is_admin === true
 
-  const toggleAgentStatus = async (id: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'inativo' ? 'ativo' : 'inativo'
-    // Atualização otimista
-    setAgentes(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a))
-    await supabase.from('agents').update({ status: newStatus }).eq('id', id)
-  }
-
-  const deleteAgent = async (id: string) => {
-    if (!confirm('ATENÇÃO: Você tem certeza que deseja EXCLUIR PERMANENTEMENTE este agente? \n\nEsta ação apagará a base de conhecimento e as sessões de chat dele!')) return
-    
-    // Atualização otimista
-    setAgentes(prev => prev.filter(a => a.id !== id))
-    await supabase.from('agents').delete().eq('id', id)
-  }
-
   // Filtragem e Divisão
   const activeAgents = agentes.filter(a => a.status !== 'inativo')
   const inactiveAgents = agentes.filter(a => a.status === 'inativo')
@@ -122,8 +107,8 @@ export default function AgentesLibraryPage() {
                 <span className="material-symbols-outlined text-white text-3xl">smart_toy</span>
               </div>
               <div>
-                <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tight">Biblioteca de Agentes</h1>
-                <p className="text-indigo-600 dark:text-indigo-400 font-medium mt-1">Sua equipe especialista com o seu DNA</p>
+                <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">BIBLIOTECA DE</span> AGENTES</h1>
+                <p className="text-indigo-600 dark:text-indigo-400 font-medium mt-1">Sua equipe de especialistas</p>
               </div>
             </div>
             <p className="text-muted-foreground max-w-2xl leading-relaxed mt-4">

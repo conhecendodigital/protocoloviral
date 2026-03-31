@@ -108,6 +108,7 @@ export default function EditarAgentePage() {
     const [saved, setSaved] = useState(false);
     const [dragOver, setDragOver] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     /* ── Chat Preview State (Vercel AI SDK) ── */
     const { messages, setMessages, sendMessage, status: chatStatus } = useChat({
@@ -332,11 +333,11 @@ export default function EditarAgentePage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!confirm('ATENÇÃO: Deseja realmente excluir este agente de forma PERMANENTE? Esta ação não pode ser desfeita e apagará todo o histórico de conversas.')) {
-            return;
-        }
-        
+    const handleDeleteClick = () => {
+        setShowDeleteModal(true);
+    };
+
+    const executeDelete = async () => {
         try {
             const { error } = await supabase
                 .from('agents')
@@ -374,7 +375,7 @@ export default function EditarAgentePage() {
                             <span className="material-symbols-outlined text-muted-foreground text-2xl">settings</span>
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black text-foreground tracking-tight">Editar Agente</h1>
+                            <h1 className="text-3xl font-black text-foreground tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">CONFIGURAÇÕES DO</span> AGENTE</h1>
                             <p className="text-muted-foreground mt-0.5 text-sm">Ajuste o comportamento do {agentName}</p>
                         </div>
                     </div>
@@ -389,7 +390,7 @@ export default function EditarAgentePage() {
                         </button>
                         
                         <button 
-                            onClick={handleDelete}
+                            onClick={handleDeleteClick}
                             className="flex items-center justify-center rounded-xl bg-secondary hover:bg-destructive/20 transition-colors w-12 h-12 text-muted-foreground hover:text-destructive border border-border shadow-lg"
                             title="Excluir Permanentemente"
                         >
@@ -755,6 +756,37 @@ export default function EditarAgentePage() {
                 </div>
 
             </div>
+
+            {/* DELETE MODAL */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="w-full max-w-md bg-card border border-border shadow-2xl rounded-3xl p-6 relative m-4">
+                        <div className="w-12 h-12 rounded-2xl bg-destructive/10 border border-destructive/20 flex items-center justify-center mb-5">
+                            <span className="material-symbols-outlined text-destructive text-2xl">warning</span>
+                        </div>
+                        <h3 className="text-xl font-bold tracking-tight text-foreground mb-2">Excluir Agente?</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+                            ATENÇÃO: Deseja realmente excluir o agente <strong className="text-foreground">{agentName}</strong> de forma PERMANENTE? Esta ação não pode ser desfeita e apagará todo o histórico de conversas e sua base de conhecimento.
+                        </p>
+                        <div className="flex items-center justify-end gap-3 mt-auto">
+                            <button 
+                                onClick={() => setShowDeleteModal(false)}
+                                className="px-5 py-2.5 rounded-xl font-bold text-sm bg-secondary hover:bg-secondary/80 text-foreground transition-colors border border-border"
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                onClick={executeDelete}
+                                className="px-5 py-2.5 rounded-xl font-bold text-sm bg-destructive hover:bg-destructive/90 text-destructive-foreground transition-colors shadow-lg shadow-destructive/20 flex items-center gap-2"
+                            >
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                                Excluir Permanentemente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </main>
     );
 }

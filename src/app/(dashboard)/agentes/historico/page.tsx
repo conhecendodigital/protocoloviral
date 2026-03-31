@@ -21,6 +21,7 @@ export default function HistoricoAgentesPage() {
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const supabase = useMemo(() => createClient(), [])
+  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null)
 
   // Estado que controla se estamos vendo as pastas de agentes ou as sessões de um agente específico
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null)
@@ -64,10 +65,14 @@ export default function HistoricoAgentesPage() {
 
   const deleteSession = async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (!confirm('Você tem certeza que deseja excluir esta conversa?')) return
+    setSessionToDelete(id);
+  }
 
-    await supabase.from('chat_sessions').delete().eq('id', id)
-    setSessions(prev => prev.filter(s => s.id !== id))
+  const executeDeleteSession = async () => {
+    if (!sessionToDelete) return;
+    await supabase.from('chat_sessions').delete().eq('id', sessionToDelete)
+    setSessions(prev => prev.filter(s => s.id !== sessionToDelete))
+    setSessionToDelete(null);
   }
 
   const navigateToChat = (agentId: string, sessionId: string) => {
@@ -129,14 +134,14 @@ export default function HistoricoAgentesPage() {
             </button>
           )}
 
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-2 flex items-center gap-3">
+          <h1 className="text-3xl lg:text-4xl font-black tracking-tighter uppercase italic text-foreground mb-2 flex items-center gap-3">
             {selectedAgentId ? (
               <>
                 <FolderOpen className="w-8 h-8 text-sky-500" />
-                <span>Conversas com <span className="text-sky-600 dark:text-sky-400">{selectedAgentInfo?.name}</span></span>
+                <span><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">CONVERSAS COM</span> <span className="text-foreground">{selectedAgentInfo?.name.toUpperCase()}</span></span>
               </>
             ) : (
-              'Histórico de Conversas'
+              <><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">HISTÓRICO DE</span> CONVERSAS</>
             )}
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl">
@@ -255,6 +260,37 @@ export default function HistoricoAgentesPage() {
           )}
         </div>
       )}
+
+      {/* DELETE MODAL */}
+      {sessionToDelete && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSessionToDelete(null)}>
+              <div className="w-full max-w-md bg-card border border-border shadow-2xl rounded-3xl p-6 relative m-4" onClick={(e) => e.stopPropagation()}>
+                  <div className="w-12 h-12 rounded-2xl bg-destructive/10 border border-destructive/20 flex items-center justify-center mb-5">
+                      <Trash2 className="text-destructive w-6 h-6" />
+                  </div>
+                  <h3 className="text-xl font-bold tracking-tight text-foreground mb-2">Excluir Sessão?</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+                      Você tem certeza que deseja excluir esta conversa? Esta ação não pode ser desfeita.
+                  </p>
+                  <div className="flex items-center justify-end gap-3 mt-auto">
+                      <button 
+                          onClick={() => setSessionToDelete(null)}
+                          className="px-5 py-2.5 rounded-xl font-bold text-sm bg-secondary hover:bg-secondary/80 text-foreground transition-colors border border-border"
+                      >
+                          Cancelar
+                      </button>
+                      <button 
+                          onClick={executeDeleteSession}
+                          className="px-5 py-2.5 rounded-xl font-bold text-sm bg-destructive hover:bg-destructive/90 text-destructive-foreground transition-colors shadow-lg shadow-destructive/20 flex items-center gap-2"
+                      >
+                          <Trash2 className="w-4 h-4" />
+                          Excluir
+                      </button>
+                  </div>
+              </div>
+          </div>
+      )}
+
     </div>
   )
 }
