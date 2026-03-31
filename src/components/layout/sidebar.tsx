@@ -20,6 +20,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Home', href: '/', icon: 'home', section: 'Menu' },
   { label: 'Jornada', href: '/jornada', icon: 'explore', badge: '🎮', badgeHot: true, section: 'Menu' },
+  { label: 'Seus Agentes', href: '/agentes', icon: 'smart_toy', badge: 'IA', badgeHot: true, section: 'Ferramentas' },
   { label: 'Geradores', href: '/prompts', icon: 'auto_awesome', section: 'Ferramentas' },
   { label: 'Formatos', href: '/formatos', icon: 'movie_filter', badge: '🔥', badgeHot: true, section: 'Ferramentas' },
   { label: 'Ganchos Virais', href: '/ganchos', icon: 'anchor', badge: '50', section: 'Ferramentas' },

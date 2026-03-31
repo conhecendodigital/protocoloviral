@@ -1,0 +1,1 @@
+const test = async () => { const res = await fetch('http://localhost:3000/api/chat', { method: 'POST', body: JSON.stringify({ messages: [{ role: 'user', content: 'test string content' }] }) }); const text = await res.text(); console.log('STATUS:', res.status); console.log('BODY:', text.slice(0, 100)); }; test();  

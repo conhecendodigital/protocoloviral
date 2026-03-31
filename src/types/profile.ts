@@ -28,6 +28,7 @@ export interface Profile {
   metodo_concluido: boolean
   onboarding_completed: boolean
   conquistas: string[]
+  is_admin: boolean
   created_at: string
   updated_at: string
 }

@@ -1,0 +1,167 @@
+import { createServerSupabase } from '@/lib/supabase/server'
+import { streamText, convertToModelMessages } from 'ai'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { createOpenAI } from '@ai-sdk/openai'
+import { createAnthropic } from '@ai-sdk/anthropic'
+
+export const maxDuration = 60
+
+export async function POST(req: Request) {
+  try {
+    const { messages, agent_id, session_id } = await req.json()
+    console.log('[API/CHAT] Payload received:', { hasMessages: !!messages, agent_id, session_id })
+    
+    // Auth check
+    const supabase = await createServerSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      return new Response('Unauthorized', { status: 401 })
+    }
+
+    // Load Agent
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('id', agent_id)
+      .single()
+
+    if (!agent) {
+      return new Response('Agent Not Found', { status: 404 })
+    }
+
+    // Load DNA
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+
+    // Load RAG Files (Knowledge Base)
+    const { data: files } = await supabase
+      .from('knowledge_base_files')
+      .select('*')
+      .eq('agent_id', agent_id)
+
+    let ragContext = '';
+
+    if (files && files.length > 0) {
+      console.log(`[RAG] Agent ${agent.name} has ${files.length} attached documents. Loading...`);
+      ragContext = `\n\n============ BASE DE CONHECIMENTO DO AGENTE ============\nOrientações: Use as informações abaixo estritamente como conhecimento interno primário para responder ao usuário. Se a informação não estiver nesses textos e você julgar necessária, você pode inferir respostas. Mas priorize o conhecimento contido aqui:\n\n`;
+
+      for (const file of files) {
+        if (!file.storage_path) continue;
+
+        try {
+          const { data: fileData, error: downloadError } = await supabase
+              .storage
+              .from('knowledge_base')
+              .download(file.storage_path);
+
+          if (downloadError || !fileData) {
+            console.error(`[RAG] Error downloading ${file.file_name}:`, downloadError);
+            continue;
+          }
+
+          let fileExtractedText = '';
+          const buffer = Buffer.from(await fileData.arrayBuffer());
+
+          if (file.file_type === 'PDF' || file.file_name.toLowerCase().endsWith('.pdf')) {
+             try {
+                 const { PDFParse } = await import('pdf-parse');
+                 const parser = new (PDFParse as any)({ data: new Uint8Array(buffer) });
+                 const textR = await (parser as any).getText();
+                 await (parser as any).destroy();
+                 fileExtractedText = textR.text;
+             } catch (fallbackErr) {
+                 console.error(`[RAG] Fallback PDF parse failed:`, fallbackErr);
+             }
+          } else {
+             // Assume TXT or simple text format
+             fileExtractedText = new TextDecoder('utf-8').decode(buffer);
+          }
+
+          if (fileExtractedText && fileExtractedText.trim().length > 0) {
+            ragContext += `--- DOCUMENTO: ${file.file_name} ---\n${fileExtractedText.trim()}\n\n`;
+          }
+
+        } catch (err) {
+          console.error(`[RAG] General error processing file ${file.file_name}:`, err);
+        }
+      }
+      
+      ragContext += `========================================================\n`;
+    }
+
+    // Build DNA Context
+    let dnaContext = ''
+    if (profile) {
+      dnaContext = `
+============ DNA DO CLIENTE (CONTEXTO OBRIGATÓRIO) ============
+Você está interagindo com o seguinte perfil digital:
+Nome: ${profile.nome_completo || 'Não informado'}
+Nicho/Área: ${profile.nicho || 'Não informado'}
+Assunto principal: ${profile.assunto || 'Não informado'}
+Diferencial: ${profile.diferencial || 'Não informado'}
+Público-alvo: ${profile.publico || 'Não informado'}
+Dor do público: ${profile.dor || 'Não informado'}
+O que o público já tentou: ${profile.tentou || 'Não informado'}
+Propósito: ${profile.proposito || 'Não informado'}
+O que não quer falar: ${profile.naoquer || 'Não informado'}
+Metas de conteúdo: ${profile.ideia_roteiro || 'Não informado'}
+Produto para venda: ${profile.produto_venda || 'Não informado'}
+================================================================
+
+INSTRUÇÕES ESPECÍFICAS DESTE AGENTE:
+${agent.system_prompt}
+`
+    } else {
+      dnaContext = agent.system_prompt
+    }
+
+    // Combine Final System Context
+    const finalSystemPrompt = dnaContext + ragContext;
+
+    // Set Provider
+    let model;
+    if (agent.ai_provider === 'google') {
+       const google = createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY })
+       model = google(agent.ai_model || 'gemini-2.0-flash')
+    } else if (agent.ai_provider === 'openai') {
+       const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
+       model = openai(agent.ai_model || 'gpt-4o')
+    } else if (agent.ai_provider === 'anthropic') {
+       const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+       model = anthropic(agent.ai_model || 'claude-3-5-sonnet-latest')
+    } else {
+       const google = createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY })
+       model = google('gemini-2.0-flash')
+    }
+
+    // Format messages for Vercel AI
+    const coreMessages = await convertToModelMessages(messages);
+
+    const result = streamText({
+      model,
+      system: finalSystemPrompt,
+      messages: coreMessages,
+      async onFinish({ text }) {
+        // Ao finalizar, salvamos a resposta do assistente no supabase
+        if (session_id) {
+            await supabase.from('chat_messages').insert({
+              session_id,
+              user_id: user.id,
+              role: 'assistant',
+              content: text
+            })
+        }
+      }
+    })
+
+    return result.toUIMessageStreamResponse()
+    
+  } catch (error) {
+    console.error('Chat Error:', error)
+    return new Response(JSON.stringify({ error: 'Erro interno do servidor' }), { status: 500 })
+  }
+}
