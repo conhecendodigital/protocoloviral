@@ -258,7 +258,7 @@ export default function NovoAgentePage() {
                             <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-2xl">robot_2</span>
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black text-foreground tracking-tight">Criar Novo Agente</h1>
+                            <h1 className="text-3xl font-black text-foreground tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">CRIAR NOVO</span> AGENTE</h1>
                             <p className="text-muted-foreground mt-0.5 text-sm">Configure um consultor especialista de IA</p>
                         </div>
                     </div>
