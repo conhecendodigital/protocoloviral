@@ -367,22 +367,22 @@ export default function EditarAgentePage() {
                 {/* ─── HEADER ─── */}
                 <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link href="/agentes" className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors border border-white/5">
+                        <Link href="/agentes" className="p-2 rounded-xl bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors border border-border">
                             <span className="material-symbols-outlined text-xl">arrow_back</span>
                         </Link>
-                        <div className="bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-[0_0_20px_rgba(0,0,0,0.2)]">
-                            <span className="material-symbols-outlined text-slate-300 text-2xl">settings</span>
+                        <div className="bg-secondary p-3 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.1)]">
+                            <span className="material-symbols-outlined text-muted-foreground text-2xl">settings</span>
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black text-white tracking-tight">Editar Agente</h1>
-                            <p className="text-slate-400 mt-0.5 text-sm">Ajuste o comportamento do {agentName}</p>
+                            <h1 className="text-3xl font-black text-foreground tracking-tight">Editar Agente</h1>
+                            <p className="text-muted-foreground mt-0.5 text-sm">Ajuste o comportamento do {agentName}</p>
                         </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
                         <button 
                             onClick={toggleAgentStatus}
-                            className="flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors w-12 h-12 text-slate-400 hover:text-white border border-slate-700 shadow-lg"
+                            className="flex items-center justify-center rounded-xl bg-secondary hover:bg-secondary/80 transition-colors w-12 h-12 text-muted-foreground hover:text-foreground border border-border shadow-lg"
                             title={status === 'inativo' ? 'Ativar Agente' : 'Desativar Agente'}
                         >
                             <span className="material-symbols-outlined text-[20px]">{status === 'inativo' ? 'visibility' : 'visibility_off'}</span>
@@ -390,7 +390,7 @@ export default function EditarAgentePage() {
                         
                         <button 
                             onClick={handleDelete}
-                            className="flex items-center justify-center rounded-xl bg-slate-800 hover:bg-rose-500/20 transition-colors w-12 h-12 text-slate-400 hover:text-rose-400 border border-slate-700 shadow-lg"
+                            className="flex items-center justify-center rounded-xl bg-secondary hover:bg-destructive/20 transition-colors w-12 h-12 text-muted-foreground hover:text-destructive border border-border shadow-lg"
                             title="Excluir Permanentemente"
                         >
                             <span className="material-symbols-outlined text-[20px]">delete</span>
@@ -400,8 +400,8 @@ export default function EditarAgentePage() {
                             onClick={handleSave}
                             disabled={saving}
                             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all shadow-lg h-12 ${saving
-                                ? 'bg-slate-600/50 text-white/60 cursor-not-allowed'
-                                : 'bg-white hover:bg-slate-200 justify-center text-black border shadow-[0_0_30px_rgba(255,255,255,0.15)]'
+                                ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                                : 'bg-foreground hover:bg-foreground/90 justify-center text-background border border-border shadow-[0_0_30px_rgba(0,0,0,0.1)] dark:shadow-[0_0_30px_rgba(255,255,255,0.15)]'
                                 }`}
                         >
                             {saving ? (
@@ -432,72 +432,72 @@ export default function EditarAgentePage() {
                     <div className="w-full lg:w-[60%] space-y-6">
 
                         {/* ── Basic Info ── */}
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card rounded-3xl p-6 border border-white/5">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card rounded-3xl p-6 border border-border">
                             <div className="space-y-5">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                                     <div className="col-span-1 md:col-span-2">
-                                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Nome do Agente</label>
+                                        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Nome do Agente</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                <span className="material-symbols-outlined text-slate-600 text-lg">badge</span>
+                                                <span className="material-symbols-outlined text-muted-foreground text-lg">badge</span>
                                             </div>
                                             <input
                                                 type="text"
                                                 value={agentName}
                                                 onChange={(e) => setAgentName(e.target.value)}
-                                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                                                className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Categoria</label>
+                                        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Categoria</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                <span className="material-symbols-outlined text-slate-600 text-lg">category</span>
+                                                <span className="material-symbols-outlined text-muted-foreground text-lg">category</span>
                                             </div>
                                             <select
                                                 value={category}
                                                 onChange={(e) => setCategory(e.target.value)}
-                                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-12 pr-10 py-3 text-sm text-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+                                                className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-10 py-3 text-sm text-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
                                             >
                                                 {categoryOptions.map((opt) => (
-                                                    <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-200">{opt.label}</option>
+                                                    <option key={opt.value} value={opt.value} className="bg-popover text-foreground">{opt.label}</option>
                                                 ))}
                                             </select>
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                <span className="material-symbols-outlined text-slate-500 text-lg">expand_more</span>
+                                                <span className="material-symbols-outlined text-muted-foreground text-lg">expand_more</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
                                     <div className="col-span-1 md:col-span-3">
-                                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Descrição Curta</label>
+                                        <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Descrição Curta</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-3 pointer-events-none">
-                                                <span className="material-symbols-outlined text-slate-600 text-lg">description</span>
+                                                <span className="material-symbols-outlined text-muted-foreground text-lg">description</span>
                                             </div>
                                             <textarea
                                                 value={description}
                                                 onChange={(e) => setDescription(e.target.value)}
                                                 rows={2}
-                                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all resize-none"
+                                                className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all resize-none"
                                             />
                                         </div>
                                     </div>
                                     <div className="col-span-1">
-                                         <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Status</label>
+                                         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Status</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                <span className="material-symbols-outlined text-slate-600 text-lg">toggle_on</span>
+                                                <span className="material-symbols-outlined text-muted-foreground text-lg">toggle_on</span>
                                             </div>
                                             <select
                                                 value={status}
                                                 onChange={(e) => setStatus(e.target.value)}
-                                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+                                                className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-4 py-3 text-sm text-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
                                             >
-                                                <option value="ativo" className="bg-slate-900 text-emerald-400">Ativo</option>
-                                                <option value="inativo" className="bg-slate-900 text-rose-400">Inativo</option>
+                                                <option value="ativo" className="bg-popover text-emerald-500 dark:text-emerald-400">Ativo</option>
+                                                <option value="inativo" className="bg-popover text-rose-500 dark:text-rose-400">Inativo</option>
                                             </select>
                                         </div>
                                     </div>
@@ -507,23 +507,23 @@ export default function EditarAgentePage() {
                         </motion.div>
 
                         {/* ── AI Model Selection ── */}
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card rounded-3xl p-6 border border-white/5 relative z-20">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card rounded-3xl p-6 border border-border relative z-20">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="bg-indigo-500/10 p-2 rounded-lg">
-                                    <span className="material-symbols-outlined text-indigo-400 text-xl">memory</span>
+                                    <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-xl">memory</span>
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-white">Motor de Inteligência</h3>
-                                    <p className="text-xs text-slate-500">Escolha o modelo de IA que vai alimentar o agente</p>
+                                    <h3 className="text-lg font-bold text-foreground">Motor de Inteligência</h3>
+                                    <p className="text-xs text-muted-foreground">Escolha o modelo de IA que vai alimentar o agente</p>
                                 </div>
                             </div>
 
                             <div ref={modelDropdownRef} className="relative">
                                 <button
                                     onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
-                                    className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 flex items-center gap-3 transition-all text-left ${modelDropdownOpen
+                                    className={`w-full bg-background/50 border rounded-xl px-4 py-3 flex items-center gap-3 transition-all text-left ${modelDropdownOpen
                                         ? 'border-indigo-500 ring-1 ring-indigo-500'
-                                        : 'border-white/10 hover:border-white/20'
+                                        : 'border-border hover:border-indigo-500/50'
                                         }`}
                                 >
                                     {selectedModelInfo ? (
@@ -532,29 +532,29 @@ export default function EditarAgentePage() {
                                                 <span className={`material-symbols-outlined text-[16px] ${selectedModelInfo.provider.color}`}>{selectedModelInfo.provider.icon}</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold text-white truncate">{selectedModelInfo.model.name}</p>
-                                                <p className="text-[10px] text-slate-500 font-medium">{selectedModelInfo.provider.label}</p>
+                                                <p className="text-sm font-bold text-foreground truncate">{selectedModelInfo.model.name}</p>
+                                                <p className="text-[10px] text-muted-foreground font-medium">{selectedModelInfo.provider.label}</p>
                                             </div>
                                         </>
                                     ) : (
                                         <>
-                                            <span className="material-symbols-outlined text-slate-600 text-lg">memory</span>
-                                            <span className="text-sm text-slate-500">Selecionar modelo...</span>
+                                            <span className="material-symbols-outlined text-muted-foreground text-lg">memory</span>
+                                            <span className="text-sm text-muted-foreground">Selecionar modelo...</span>
                                         </>
                                     )}
-                                    <span className={`material-symbols-outlined text-slate-500 text-lg ml-auto transition-transform ${modelDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
+                                    <span className={`material-symbols-outlined text-muted-foreground text-lg ml-auto transition-transform ${modelDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
                                 </button>
 
                                 {modelDropdownOpen && (
-                                    <div className="absolute z-50 mt-2 w-full bg-slate-900 border border-white/10 rounded-xl shadow-[0_15px_50px_rgba(0,0,0,0.6)] overflow-hidden">
+                                    <div className="absolute z-50 mt-2 w-full bg-popover border border-border rounded-xl shadow-[0_15px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_15px_50px_rgba(0,0,0,0.6)] overflow-hidden">
                                         <div className="max-h-80 overflow-y-auto custom-scrollbar">
                                             {aiProviders.map((provider, pi) => (
                                                 <div key={provider.id}>
-                                                    <div className={`sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm px-4 py-2 flex items-center gap-2 ${pi > 0 ? 'border-t border-white/5' : ''}`}>
+                                                    <div className={`sticky top-0 z-10 bg-popover/95 backdrop-blur-sm px-4 py-2 flex items-center gap-2 ${pi > 0 ? 'border-t border-border' : ''}`}>
                                                         <div className={`${provider.bg} p-1 rounded-md`}>
                                                             <span className={`material-symbols-outlined text-[14px] ${provider.color}`}>{provider.icon}</span>
                                                         </div>
-                                                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{provider.label}</span>
+                                                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{provider.label}</span>
                                                     </div>
                                                     {provider.models.map((model) => {
                                                         const isSelected = selectedModel === model.id;
@@ -563,12 +563,12 @@ export default function EditarAgentePage() {
                                                                 key={model.id}
                                                                 onClick={() => { setSelectedModel(model.id); setModelDropdownOpen(false); }}
                                                                 className={`w-full text-left px-4 py-2.5 pl-11 flex items-center justify-between transition-colors ${isSelected
-                                                                    ? 'bg-indigo-500/10 text-indigo-400'
-                                                                    : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                                                                    ? 'bg-indigo-500/10 text-indigo-500'
+                                                                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
                                                                     }`}
                                                             >
                                                                 <span className={`text-sm ${isSelected ? 'font-bold' : 'font-medium'}`}>{model.name}</span>
-                                                                {isSelected && <span className="material-symbols-outlined text-indigo-400 text-[16px]">check_circle</span>}
+                                                                {isSelected && <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-[16px]">check_circle</span>}
                                                             </button>
                                                         );
                                                     })}
@@ -581,14 +581,14 @@ export default function EditarAgentePage() {
                         </motion.div>
 
                         {/* ── System Prompt ── */}
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card rounded-3xl p-6 border border-white/5">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card rounded-3xl p-6 border border-border">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="bg-amber-500/10 p-2 rounded-lg">
-                                    <span className="material-symbols-outlined text-amber-400 text-xl">code</span>
+                                    <span className="material-symbols-outlined text-amber-500 dark:text-amber-400 text-xl">code</span>
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-white">System Prompt</h3>
-                                    <p className="text-xs text-slate-500">Instruções comportamentais do Agente</p>
+                                    <h3 className="text-lg font-bold text-foreground">System Prompt</h3>
+                                    <p className="text-xs text-muted-foreground">Instruções comportamentais do Agente</p>
                                 </div>
                             </div>
 
@@ -596,19 +596,19 @@ export default function EditarAgentePage() {
                                 value={systemPrompt}
                                 onChange={(e) => setSystemPrompt(e.target.value)}
                                 rows={8}
-                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 outline-none transition-all resize-none font-mono leading-relaxed custom-scrollbar"
+                                className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 outline-none transition-all resize-none font-mono leading-relaxed custom-scrollbar"
                             />
                         </motion.div>
 
                         {/* ── Knowledge Base (RAG) ── */}
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-card rounded-3xl p-6 border border-white/5">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-card rounded-3xl p-6 border border-border">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="bg-blue-500/10 p-2 rounded-lg">
                                     <span className="material-symbols-outlined text-blue-400 text-xl">folder_open</span>
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-white">Base de Treinamento (RAG)</h3>
-                                    <p className="text-xs text-slate-500">PDFs e Textos que a IA vai ler para responder com contexto.</p>
+                                    <h3 className="text-lg font-bold text-foreground">Base de Treinamento (RAG)</h3>
+                                    <p className="text-xs text-muted-foreground">PDFs e Textos que a IA vai ler para responder com contexto.</p>
                                 </div>
                             </div>
 
@@ -619,24 +619,24 @@ export default function EditarAgentePage() {
                                 onClick={() => fileUploadRef.current?.click()}
                                 className={`border-dashed border-2 rounded-xl p-8 text-center cursor-pointer transition-all ${dragOver
                                     ? 'border-indigo-500 bg-indigo-500/5'
-                                    : 'border-white/10 hover:border-indigo-500/50 hover:bg-white/[0.02]'
+                                    : 'border-border hover:border-indigo-500/50 hover:bg-secondary/30'
                                     }`}
                             >
-                                <div className={`mx-auto size-12 rounded-full flex items-center justify-center mb-3 transition-colors ${dragOver ? 'bg-indigo-500/20' : 'bg-white/5'}`}>
-                                    <span className={`material-symbols-outlined text-2xl ${dragOver ? 'text-indigo-400' : 'text-slate-500'}`}>cloud_upload</span>
+                                <div className={`mx-auto size-12 rounded-full flex items-center justify-center mb-3 transition-colors ${dragOver ? 'bg-indigo-500/20' : 'bg-secondary'}`}>
+                                    <span className={`material-symbols-outlined text-2xl ${dragOver ? 'text-indigo-400' : 'text-muted-foreground'}`}>cloud_upload</span>
                                 </div>
-                                <p className="text-sm font-bold text-slate-300 mb-1">
+                                <p className="text-sm font-bold text-foreground mb-1">
                                     {dragOver ? 'Solte para enviar!' : 'Arraste arquivos ou clique aqui'}
                                 </p>
-                                <p className="text-[11px] text-slate-500">Documentos suportados: PDF, TXT</p>
+                                <p className="text-[11px] text-muted-foreground">Documentos suportados: PDF, TXT</p>
                                 <input ref={fileUploadRef} type="file" accept=".pdf,.txt" onChange={handleFileUpload} className="hidden" />
                             </div>
 
                             {files.length > 0 && (
                                 <div className="mt-5 space-y-2">
-                                    <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Arquivos Anexados ({files.length})</h4>
+                                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">Arquivos Anexados ({files.length})</h4>
                                     {files.map((file) => (
-                                        <div key={file.id} className="flex items-center justify-between bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 group">
+                                        <div key={file.id} className="flex items-center justify-between bg-background/50 border border-border rounded-xl px-4 py-3 group">
                                             <div className="flex items-center gap-3">
                                                 <div className={`p-1.5 rounded-lg ${file.type === 'PDF' ? 'bg-rose-500/15 text-rose-400' : 'bg-blue-500/15 text-blue-400'}`}>
                                                     <span className="material-symbols-outlined text-[16px]">
@@ -644,13 +644,13 @@ export default function EditarAgentePage() {
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-medium text-slate-300">{file.name}</p>
-                                                    <p className="text-[10px] text-slate-500">{file.size} {file.storage_path && "— Ativo no DB"}</p>
+                                                    <p className="text-sm font-medium text-foreground">{file.name}</p>
+                                                    <p className="text-[10px] text-muted-foreground">{file.size} {file.storage_path && "— Ativo no DB"}</p>
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={() => handleRemoveFile(file.id)}
-                                                className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                                                className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                                                 title="Remover arquivo"
                                             >
                                                 <span className="material-symbols-outlined text-[18px]">close</span>
@@ -658,7 +658,7 @@ export default function EditarAgentePage() {
                                         </div>
                                     ))}
                                     {filesToDelete.length > 0 && (
-                                        <p className="text-[10px] text-rose-400/80 mt-2 font-medium">As deleções ocorrerão ao Salvar Alterações.</p>
+                                        <p className="text-[10px] text-destructive/80 mt-2 font-medium">As deleções ocorrerão ao Salvar Alterações.</p>
                                     )}
                                 </div>
                             )}
@@ -670,38 +670,38 @@ export default function EditarAgentePage() {
                        RIGHT COLUMN — CHAT PREVIEW
                        ══════════════════════════════ */}
                     <div className="w-full lg:w-[40%] sticky top-8">
-                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="glass-card rounded-3xl overflow-hidden flex flex-col h-[calc(100vh-8rem)] border border-white/5 shadow-2xl shadow-indigo-500/5">
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="glass-card rounded-3xl overflow-hidden flex flex-col h-[calc(100vh-8rem)] border border-border shadow-2xl shadow-indigo-500/5">
 
-                            <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
+                            <div className="px-5 py-4 border-b border-border bg-secondary/30 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="size-8 rounded-lg bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
-                                        <span className="material-symbols-outlined text-indigo-400 text-[16px]">visibility</span>
+                                        <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-[16px]">visibility</span>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-white">Live Preview</p>
+                                        <p className="text-sm font-bold text-foreground">Live Preview</p>
                                         <div className="flex items-center gap-1.5 mt-0.5">
                                             <span className="size-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                                            <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Testando Atualização</span>
+                                            <span className="text-[10px] text-emerald-500 dark:text-emerald-400 font-bold uppercase tracking-wider">Testando Atualização</span>
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={() => setMessages([])} className="text-slate-500 hover:text-white transition-colors" title="Limpar Chat">
+                                <button onClick={() => setMessages([])} className="text-muted-foreground hover:text-foreground transition-colors" title="Limpar Chat">
                                     <span className="material-symbols-outlined text-[18px]">clear_all</span>
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-slate-900/40">
+                            <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-background/40">
                                 {messages.map((msg, i) => (
                                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                         {msg.role === 'assistant' && (
                                             <div className="size-7 rounded-lg bg-indigo-500/20 flex items-center justify-center mr-2 flex-shrink-0 mt-1 border border-indigo-500/20">
-                                                <span className="material-symbols-outlined text-indigo-400 text-[14px]">smart_toy</span>
+                                                <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-[14px]">smart_toy</span>
                                             </div>
                                         )}
                                         <div
                                             className={`max-w-[85%] px-4 py-3 rounded-2xl text-[13px] leading-relaxed break-words shadow-sm ${msg.role === 'user'
                                                 ? 'bg-indigo-600 text-white rounded-tr-sm'
-                                                : 'bg-white/5 border border-white/5 text-slate-300 rounded-tl-sm'
+                                                : 'bg-secondary border border-border text-foreground rounded-tl-sm'
                                                 }`}
                                         >
                                             {msg.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || ''}
@@ -712,13 +712,13 @@ export default function EditarAgentePage() {
                                 {isLoading && (
                                     <div className="flex justify-start">
                                         <div className="size-7 rounded-lg bg-indigo-500/20 flex items-center justify-center mr-2 mt-1 border border-indigo-500/20">
-                                            <span className="material-symbols-outlined text-indigo-400 text-[14px]">smart_toy</span>
+                                            <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-[14px]">smart_toy</span>
                                         </div>
-                                        <div className="bg-white/5 border border-white/5 px-4 py-4 rounded-2xl rounded-tl-sm">
+                                        <div className="bg-secondary border border-border px-4 py-4 rounded-2xl rounded-tl-sm">
                                             <div className="flex items-center gap-1">
-                                                <span className="size-1.5 bg-slate-500 rounded-full animate-bounce [animation-delay:0ms]" />
-                                                <span className="size-1.5 bg-slate-500 rounded-full animate-bounce [animation-delay:150ms]" />
-                                                <span className="size-1.5 bg-slate-500 rounded-full animate-bounce [animation-delay:300ms]" />
+                                                <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:0ms]" />
+                                                <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:150ms]" />
+                                                <span className="size-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:300ms]" />
                                             </div>
                                         </div>
                                     </div>
@@ -726,24 +726,24 @@ export default function EditarAgentePage() {
                                 <div ref={chatEndRef} />
                             </div>
 
-                            <div className="p-4 border-t border-white/5 bg-white/[0.02]">
+                            <div className="p-4 border-t border-border bg-secondary/30">
                                 <form onSubmit={onSubmitTest} className="relative flex items-center gap-2">
                                     <input
                                         type="text"
                                         value={input}
                                         onChange={handleInputChange}
                                         placeholder="Pressione Enter para testar..."
-                                        className="flex-1 bg-slate-900/80 border border-white/10 rounded-xl pl-4 pr-12 py-3 text-sm text-slate-200 placeholder-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                                        className="flex-1 bg-background/80 border border-border rounded-xl pl-4 pr-12 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                                     />
                                     <button
                                         type="submit"
                                         disabled={!(input || '').trim() || isLoading}
-                                        className="absolute right-2 flex-shrink-0 size-8 rounded-lg flex items-center justify-center transition-all bg-indigo-500 text-white hover:bg-indigo-400 disabled:bg-slate-800 disabled:text-slate-600 shadow-md"
+                                        className="absolute right-2 flex-shrink-0 size-8 rounded-lg flex items-center justify-center transition-all bg-indigo-500 text-white hover:bg-indigo-400 disabled:bg-muted disabled:text-muted-foreground shadow-md"
                                     >
                                         <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
                                     </button>
                                 </form>
-                                <p className="text-[10px] text-indigo-400 mt-3 text-center flex items-center justify-center gap-1 font-medium">
+                                <p className="text-[10px] text-indigo-500 dark:text-indigo-400 mt-3 text-center flex items-center justify-center gap-1 font-medium">
                                     <span className="material-symbols-outlined text-[12px]">bolt</span>
                                     Vercel AI SDK • {selectedModelInfo?.model.name || selectedModel}
                                 </p>

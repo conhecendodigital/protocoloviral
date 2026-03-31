@@ -43,16 +43,19 @@ export default function HistoricoAgentesPage() {
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false })
 
-      if (s) {
-        setSessions(s.map(session => ({
-          id: session.id,
-          title: session.title,
-          updated_at: session.updated_at,
-          agent_id: session.agent_id,
-          agent_name: session.agents?.name || 'Agente Excluído',
-          agent_avatar: session.agents?.avatar_url,
-        })))
-      }
+        if (s) {
+          setSessions(s.map(session => {
+            const agentData = Array.isArray(session.agents) ? session.agents[0] : session.agents;
+            return {
+              id: session.id,
+              title: session.title,
+              updated_at: session.updated_at,
+              agent_id: session.agent_id,
+              agent_name: (agentData as any)?.name || 'Agente Excluído',
+              agent_avatar: (agentData as any)?.avatar_url,
+            }
+          }))
+        }
       setIsLoading(false)
     }
 
@@ -113,24 +116,24 @@ export default function HistoricoAgentesPage() {
           {selectedAgentId ? (
             <button 
               onClick={() => setSelectedAgentId(null)}
-              className="flex items-center gap-2 text-sm text-sky-500 font-medium hover:text-sky-400 transition-colors mb-2 bg-sky-500/10 px-3 py-1.5 rounded-full"
+              className="flex items-center gap-2 text-sm text-sky-600 dark:text-sky-500 font-medium hover:text-sky-500 dark:hover:text-sky-400 transition-colors mb-2 bg-sky-500/10 px-3 py-1.5 rounded-full"
             >
               <ArrowLeft className="w-4 h-4" /> Voltar para Pastas de Agentes
             </button>
           ) : (
             <button 
               onClick={() => router.push('/agentes')}
-              className="flex items-center gap-2 text-sm text-slate-400 font-medium hover:text-white transition-colors mb-2"
+              className="flex items-center gap-2 text-sm text-muted-foreground font-medium hover:text-foreground transition-colors mb-2"
             >
               <ArrowLeft className="w-4 h-4" /> Voltar para Biblioteca
             </button>
           )}
 
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-white mb-2 flex items-center gap-3">
+          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-2 flex items-center gap-3">
             {selectedAgentId ? (
               <>
                 <FolderOpen className="w-8 h-8 text-sky-500" />
-                <span>Conversas com <span className="text-sky-400">{selectedAgentInfo?.name}</span></span>
+                <span>Conversas com <span className="text-sky-600 dark:text-sky-400">{selectedAgentInfo?.name}</span></span>
               </>
             ) : (
               'Histórico de Conversas'
@@ -144,7 +147,7 @@ export default function HistoricoAgentesPage() {
         </div>
       </div>
 
-      <div className="w-full h-px bg-white/5 my-2"></div>
+      <div className="w-full h-px bg-border my-2"></div>
 
       {isLoading ? (
         <div className="flex justify-center py-20">
@@ -152,15 +155,15 @@ export default function HistoricoAgentesPage() {
         </div>
       ) : sessions.length === 0 ? (
         /* Vazio Geral */
-        <div className="py-20 text-center animate-in fade-in zoom-in duration-500 glass-card rounded-3xl border border-white/5">
-           <div className="w-20 h-20 rounded-full border border-dashed border-white/20 flex items-center justify-center mx-auto mb-6 bg-white/5">
+        <div className="py-20 text-center animate-in fade-in zoom-in duration-500 glass-card rounded-3xl border border-border">
+           <div className="w-20 h-20 rounded-full border border-dashed border-border flex items-center justify-center mx-auto mb-6 bg-secondary">
               <MessageSquare className="w-8 h-8 text-muted-foreground" />
            </div>
-           <h3 className="text-xl font-bold text-white mb-2">Nenhuma conversa encontrada</h3>
+           <h3 className="text-xl font-bold text-foreground mb-2">Nenhuma conversa encontrada</h3>
            <p className="text-muted-foreground max-w-sm mx-auto mb-6">Você ainda não interagiu com os agentes de IA. Inicie um diálogo na biblioteca de agentes.</p>
            <button 
                onClick={() => router.push('/agentes')}
-               className="bg-sky-500 text-white font-semibold py-3 px-8 rounded-xl hover:bg-sky-400 transition-all shadow-lg shadow-sky-500/20"
+               className="bg-sky-600 dark:bg-sky-500 text-white font-semibold py-3 px-8 rounded-xl hover:bg-sky-500 dark:hover:bg-sky-400 transition-all shadow-lg shadow-sky-500/20"
            >
                Ir para Agentes
            </button>
@@ -172,33 +175,33 @@ export default function HistoricoAgentesPage() {
             <div 
               key={agent.id}
               onClick={() => setSelectedAgentId(agent.id)}
-              className="bg-[#0A0A0B] border border-white/5 hover:border-sky-500/40 rounded-3xl p-6 flex flex-col cursor-pointer transition-all hover:bg-white/[0.02] hover:-translate-y-1 hover:shadow-xl hover:shadow-sky-500/10 group"
+              className="bg-card border border-border hover:border-sky-500/40 rounded-3xl p-6 flex flex-col cursor-pointer transition-all hover:bg-muted/50 hover:-translate-y-1 hover:shadow-xl hover:shadow-sky-500/10 group"
             >
               <div className="flex items-start justify-between mb-5">
                  <div className="flex items-center gap-4">
-                    <div className="size-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-600/20 flex items-center justify-center ring-1 ring-white/10 overflow-hidden">
+                    <div className="size-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-600/20 flex items-center justify-center ring-1 ring-border overflow-hidden">
                        {agent.avatar ? (
                          <img src={agent.avatar} alt="Avatar" className="w-full h-full object-cover" />
                        ) : (
-                         <Sparkles className="w-6 h-6 text-sky-400" />
+                         <Sparkles className="w-6 h-6 text-sky-500 dark:text-sky-400" />
                        )}
                     </div>
                     <div>
-                      <p className="text-xl font-bold text-white tracking-tight">{agent.name}</p>
-                      <p className="text-xs text-sky-400 font-medium py-0.5 mt-1 rounded-full bg-sky-500/10 w-fit px-2 border border-sky-500/20">
+                      <p className="text-xl font-bold text-foreground tracking-tight">{agent.name}</p>
+                      <p className="text-xs text-sky-600 dark:text-sky-400 font-medium py-0.5 mt-1 rounded-full bg-sky-500/10 w-fit px-2 border border-sky-500/20">
                         {agent.sessionCount} conversa{agent.sessionCount > 1 ? 's' : ''} gravada{agent.sessionCount > 1 ? 's' : ''}
                       </p>
                     </div>
                  </div>
               </div>
 
-              <div className="mt-auto pt-6 flex items-center justify-between border-t border-white/5">
+              <div className="mt-auto pt-6 flex items-center justify-between border-t border-border">
                 <span className="text-xs text-muted-foreground flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" /> 
                   Última vez {formatDistanceToNow(new Date(agent.lastUpdate), { addSuffix: true, locale: ptBR })}
                 </span>
                 
-                <span className="text-sm font-bold text-sky-500 group-hover:text-sky-400 transition-colors flex items-center gap-1">
+                <span className="text-sm font-bold text-sky-600 group-hover:text-sky-500 dark:text-sky-500 dark:group-hover:text-sky-400 transition-colors flex items-center gap-1">
                   Abrir <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
@@ -212,33 +215,33 @@ export default function HistoricoAgentesPage() {
             <div 
               key={session.id}
               onClick={() => navigateToChat(session.agent_id, session.id)}
-              className="bg-[#0A0A0B] border border-white/5 hover:border-indigo-500/50 rounded-2xl p-6 flex flex-col cursor-pointer transition-all hover:bg-white/[0.02] hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/10 group"
+              className="bg-card border border-border hover:border-indigo-500/50 rounded-2xl p-6 flex flex-col cursor-pointer transition-all hover:bg-muted/50 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/10 group"
             >
               <div className="flex items-start justify-between mb-4">
                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center">
-                       <MessageSquare className="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition-colors" />
+                    <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center">
+                       <MessageSquare className="w-4 h-4 text-muted-foreground group-hover:text-indigo-500 transition-colors" />
                     </div>
                  </div>
 
                  <button 
                    onClick={(e) => deleteSession(session.id, e)}
-                   className="text-muted-foreground hover:text-rose-400 transition-colors p-2 rounded-lg hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 ring-1 ring-transparent hover:ring-rose-500/20"
+                   className="text-muted-foreground hover:text-destructive transition-colors p-2 rounded-lg hover:bg-destructive/10 opacity-0 group-hover:opacity-100 ring-1 ring-transparent hover:ring-destructive/20"
                  >
                    <Trash2 className="w-4 h-4" />
                  </button>
               </div>
 
-              <h4 className="text-lg font-bold text-slate-200 line-clamp-3 leading-snug mb-4">
+              <h4 className="text-lg font-bold text-foreground line-clamp-3 leading-snug mb-4">
                 {session.title}
               </h4>
 
-              <div className="mt-auto pt-4 flex items-center justify-between border-t border-white/5">
-                <p className="text-xs text-slate-500 flex items-center gap-1.5">
+              <div className="mt-auto pt-4 flex items-center justify-between border-t border-border">
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" /> 
                   {formatDistanceToNow(new Date(session.updated_at), { addSuffix: true, locale: ptBR })}
                 </p>
-                <span className="text-xs font-bold text-indigo-500 group-hover:text-indigo-400 flex items-center gap-1">
+                <span className="text-xs font-bold text-indigo-600 group-hover:text-indigo-500 dark:text-indigo-500 dark:group-hover:text-indigo-400 flex items-center gap-1">
                   Retomar <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
@@ -246,7 +249,7 @@ export default function HistoricoAgentesPage() {
           ))}
           
           {filteredSessions.length === 0 && (
-             <div className="col-span-full py-16 text-center text-slate-500">
+             <div className="col-span-full py-16 text-center text-muted-foreground">
                 Nenhuma conversa extra encontrada para este agente.
              </div>
           )}

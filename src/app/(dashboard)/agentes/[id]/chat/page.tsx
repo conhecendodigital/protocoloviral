@@ -160,14 +160,14 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] border border-white/5 rounded-2xl bg-black/40 overflow-hidden relative shadow-2xl">
+    <div className="flex flex-col h-[calc(100vh-140px)] border border-border rounded-2xl glass-card overflow-hidden relative shadow-lg">
       
       {/* Header Interno do Chat */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/5 backdrop-blur-md shrink-0">
+      <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-secondary/50 backdrop-blur-md shrink-0">
         <div className="flex items-center gap-4">
           <button 
               onClick={() => router.push('/agentes')}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-muted-foreground hover:text-white transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-secondary hover:bg-secondary/80 border border-border text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -179,7 +179,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
                <h1 className="text-xl font-bold tracking-tight">
                  {agent?.name || 'Carregando...'}
                </h1>
-               <span className="bg-sky-500/20 text-sky-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border border-sky-500/30">
+               <span className="bg-sky-500/20 text-sky-600 dark:text-sky-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border border-sky-500/30">
                   {agent?.category || 'Geral'}
                </span>
             </div>
@@ -189,7 +189,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
           </div>
         </div>
         <div className="flex items-center gap-3">
-           <button onClick={() => router.push('/agentes/historico')} className="text-sm font-medium text-muted-foreground hover:text-white transition-colors bg-white/5 border border-white/10 px-4 py-2 rounded-lg hover:bg-white/10">
+           <button onClick={() => router.push('/agentes/historico')} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors bg-secondary border border-border px-4 py-2 rounded-lg hover:bg-secondary/80">
               Ver Histórico
            </button>
         </div>
@@ -214,12 +214,12 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                      <button onClick={() => handleSuggestionClick('Escreva um conteúdo instigante focando na principal dor do meu público.')} className="bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-xl text-left transition-all hover:border-sky-500/50 group">
-                          <h3 className="text-sm font-bold text-foreground mb-1 group-hover:text-sky-400 transition-colors">Tocar na Ferida</h3>
+                      <button onClick={() => handleSuggestionClick('Escreva um conteúdo instigante focando na principal dor do meu público.')} className="bg-secondary hover:bg-secondary/80 border border-border p-4 rounded-xl text-left transition-all hover:border-sky-500/50 group">
+                          <h3 className="text-sm font-bold text-foreground mb-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Tocar na Ferida</h3>
                           <p className="text-xs text-muted-foreground">Conteúdo focado em dores latentes...</p>
                       </button>
-                      <button onClick={() => handleSuggestionClick('Faça um resumo dos meus principais diferenciais e como evidenciá-los.')} className="bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-xl text-left transition-all hover:border-sky-500/50 group">
-                          <h3 className="text-sm font-bold text-foreground mb-1 group-hover:text-sky-400 transition-colors">Reforçar Autoridade</h3>
+                      <button onClick={() => handleSuggestionClick('Faça um resumo dos meus principais diferenciais e como evidenciá-los.')} className="bg-secondary hover:bg-secondary/80 border border-border p-4 rounded-xl text-left transition-all hover:border-sky-500/50 group">
+                          <h3 className="text-sm font-bold text-foreground mb-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Reforçar Autoridade</h3>
                           <p className="text-xs text-muted-foreground">Listar os grandes diferenciais do DNA...</p>
                       </button>
                   </div>
@@ -229,21 +229,21 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
           <div className="max-w-4xl mx-auto space-y-8 pb-4">
               {messages.map((message) => (
                   <div key={message.id} className={`flex gap-4 animate-in slide-in-from-bottom-2 duration-300 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                       <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border ${message.role === 'assistant' ? 'bg-gradient-to-tr from-sky-500 to-blue-600 border-sky-400/30 shadow-[0_0_15px_rgba(56,189,248,0.4)]' : 'bg-white/5 border-white/10'}`}>
+                       <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border ${message.role === 'assistant' ? 'bg-gradient-to-tr from-sky-500 to-blue-600 border-sky-400/30 shadow-[0_0_15px_rgba(56,189,248,0.4)]' : 'bg-secondary border-border'}`}>
                           {message.role === 'assistant' ? (
                               <Sparkles className="w-5 h-5 text-white" />
                           ) : (
-                              <div className="text-sm font-bold text-white">Você</div>
+                              <div className="text-sm font-bold text-foreground">Você</div>
                           )}
                        </div>
 
-                       <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-5 ${message.role === 'user' ? 'bg-white/5 border border-white/10 text-white overflow-hidden rounded-tr-sm' : 'bg-transparent text-slate-200'}`}>
+                       <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-5 ${message.role === 'user' ? 'bg-secondary border border-border text-foreground overflow-hidden rounded-tr-sm' : 'bg-transparent text-foreground'}`}>
                            {message.role === 'user' ? (
                               <p className="whitespace-pre-wrap leading-relaxed text-[15px]">
                                 {message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n')}
                               </p>
                            ) : (
-                              <div className="prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-headings:text-white prose-a:text-sky-400 leading-relaxed text-[15px]">
+                              <div className="prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-headings:text-foreground prose-a:text-sky-600 dark:prose-a:text-sky-400 leading-relaxed text-[15px] prose-p:text-foreground">
                                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                       {message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || ''}
                                   </ReactMarkdown>
@@ -273,11 +273,11 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
       </div>
 
       {/* Text Input Footer */}
-      <div className="p-4 md:p-6 bg-black/40 border-t border-white/5 shrink-0">
+      <div className="p-4 md:p-6 bg-card border-t border-border shrink-0">
         <div className="max-w-4xl mx-auto relative">
-           <form onSubmit={onSubmit} className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-2 flex items-end gap-2 shadow-2xl focus-within:border-sky-500/50 focus-within:ring-1 focus-within:ring-sky-500/50 transition-all">
+           <form onSubmit={onSubmit} className="glass-card border border-border rounded-2xl p-2 flex items-end gap-2 shadow-sm focus-within:border-sky-500/50 focus-within:ring-1 focus-within:ring-sky-500/50 transition-all">
              
-             <button type="button" className="w-12 h-12 flex items-center justify-center rounded-xl bg-transparent hover:bg-white/5 text-muted-foreground hover:text-white transition-colors shrink-0">
+             <button type="button" className="w-12 h-12 flex items-center justify-center rounded-xl bg-transparent hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors shrink-0">
                <Paperclip className="w-5 h-5" />
              </button>
 
@@ -285,7 +285,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
                 value={input || ''}
                 onChange={(e) => handleInputChange(e)}
                 placeholder={`Envie uma requisição para o ${agent?.name || 'agente'}...`}
-                className="w-full bg-transparent border-none focus:ring-0 text-white resize-none py-3.5 px-2 max-h-32 min-h-[48px] custom-scrollbar focus:outline-none placeholder:text-muted-foreground"
+                className="w-full bg-transparent border-none focus:ring-0 text-foreground resize-none py-3.5 px-2 max-h-32 min-h-[48px] custom-scrollbar focus:outline-none placeholder:text-muted-foreground"
                 rows={1}
                 style={{ height: 'auto' }}
                 onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -299,7 +299,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
              <button 
                type="submit"
                disabled={!(input || '').trim() || isLoading}
-               className={`w-12 h-12 flex items-center justify-center rounded-xl shrink-0 transition-all ${(input || '').trim() && !isLoading ? 'bg-sky-500 text-white hover:bg-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.4)]' : 'bg-white/5 text-muted-foreground cursor-not-allowed'}`}
+               className={`w-12 h-12 flex items-center justify-center rounded-xl shrink-0 transition-all ${(input || '').trim() && !isLoading ? 'bg-sky-500 text-white hover:bg-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.4)]' : 'bg-muted text-muted-foreground cursor-not-allowed'}`}
              >
                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
              </button>

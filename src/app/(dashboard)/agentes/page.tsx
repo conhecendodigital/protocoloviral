@@ -77,10 +77,10 @@ export default function AgentesLibraryPage() {
             </div>
           </div>
 
-          <h3 className="text-xl font-bold text-white tracking-tight mb-1">{agente.name}</h3>
-          <p className={`text-xs ${agente.status === 'inativo' ? 'text-amber-400' : 'text-indigo-400'} font-semibold mb-3 uppercase tracking-wider`}>{agente.category || 'Mestre'}</p>
+          <h3 className="text-xl font-bold text-foreground tracking-tight mb-1">{agente.name}</h3>
+          <p className={`text-xs ${agente.status === 'inativo' ? 'text-amber-400' : 'text-indigo-500 dark:text-indigo-400'} font-semibold mb-3 uppercase tracking-wider`}>{agente.category || 'Mestre'}</p>
           
-          <p className="text-xs text-slate-400 leading-relaxed mb-6 line-clamp-3 flex-1">
+          <p className="text-xs text-muted-foreground leading-relaxed mb-6 line-clamp-3 flex-1">
             {agente.description}
           </p>
 
@@ -98,7 +98,7 @@ export default function AgentesLibraryPage() {
             {isAdmin && (
                 <Link 
                   href={`/agentes/${agente.id}/editar`}
-                  className="flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 transition-colors w-11 text-slate-400 hover:text-white border border-slate-700"
+                  className="flex items-center justify-center rounded-xl bg-card hover:bg-accent transition-colors w-11 text-muted-foreground hover:text-foreground border border-border"
                   title="Editar Agente"
                 >
                   <span className="material-symbols-outlined text-[18px]">settings</span>
@@ -122,11 +122,11 @@ export default function AgentesLibraryPage() {
                 <span className="material-symbols-outlined text-white text-3xl">smart_toy</span>
               </div>
               <div>
-                <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Biblioteca de Agentes</h1>
-                <p className="text-indigo-400 font-medium mt-1">Sua equipe especialista com o seu DNA</p>
+                <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tight">Biblioteca de Agentes</h1>
+                <p className="text-indigo-600 dark:text-indigo-400 font-medium mt-1">Sua equipe especialista com o seu DNA</p>
               </div>
             </div>
-            <p className="text-slate-400 max-w-2xl leading-relaxed mt-4">
+            <p className="text-muted-foreground max-w-2xl leading-relaxed mt-4">
               Converse com consultores treinados para alavancar os seus resultados. Cada agente adapta as 
               estratégias baseando-se no perfil do seu projeto.
             </p>
@@ -135,10 +135,10 @@ export default function AgentesLibraryPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <Link 
               href="/agentes/historico" 
-              className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+              className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-secondary hover:bg-secondary/80 border border-border transition-colors"
             >
-              <span className="material-symbols-outlined text-slate-300 text-sm">history</span>
-              <span className="text-sm font-bold text-white">Histórico de Sessões</span>
+              <span className="material-symbols-outlined text-muted-foreground text-sm">history</span>
+              <span className="text-sm font-bold text-foreground">Histórico de Sessões</span>
             </Link>
 
             {isAdmin && (
@@ -159,9 +159,9 @@ export default function AgentesLibraryPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
           </div>
         ) : agentes.length === 0 ? (
-          <div className="text-center py-20 glass-card rounded-3xl border border-white/5">
-            <span className="material-symbols-outlined text-4xl text-slate-500 mb-2">sentiment_dissatisfied</span>
-            <p className="text-slate-400">Nenhum agente disponível no momento.</p>
+          <div className="text-center py-20 glass-card rounded-3xl border border-border">
+            <span className="material-symbols-outlined text-4xl text-muted-foreground mb-2">sentiment_dissatisfied</span>
+            <p className="text-muted-foreground">Nenhum agente disponível no momento.</p>
           </div>
         ) : (
           <div className="space-y-16">
@@ -180,12 +180,12 @@ export default function AgentesLibraryPage() {
             {isAdmin && inactiveAgents.length > 0 && (
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="h-px bg-white/10 flex-1"></div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                  <div className="h-px bg-border flex-1"></div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                     <span className="material-symbols-outlined text-[16px]">visibility_off</span>
                     Agentes Inativos (Visão Admin)
                   </span>
-                  <div className="h-px bg-white/10 flex-1"></div>
+                  <div className="h-px bg-border flex-1"></div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
