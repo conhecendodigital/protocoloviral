@@ -1,1 +1,0 @@
-import { streamText } from 'ai'; import { createGoogleGenerativeAI } from '@ai-sdk/google'; async function main() { const google = createGoogleGenerativeAI({ apiKey: 'mock' }); const result = streamText({ model: google('gemini-1.5-flash'), prompt: 'foo' }); console.log(typeof result.toDataStreamResponse); } main();  
