@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     let currentTokensUsed = profile?.tokens_used_today || 0;
     
     // lastReset in UTC
-    let lastReset = profile?.last_token_reset ? new Date(profile.last_token_reset) : null;
+    const lastReset = profile?.last_token_reset ? new Date(profile.last_token_reset) : null;
 
     // Reset if 24 hours have passed or if never set
     if (!lastReset || (now.getTime() - lastReset.getTime()) > 24 * 60 * 60 * 1000) {

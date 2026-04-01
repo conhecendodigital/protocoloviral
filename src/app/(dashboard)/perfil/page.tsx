@@ -38,7 +38,7 @@ function FormattedContent({ text }: { text: string }) {
         
         // Anti-gluing: Separa minúscula seguida de Maiúscula se a cópia colou as colunas da tabela
         // Ex: "DimensãoO que" -> "Dimensão O que". Ignora YouTube, TikTok pois o espaço não estraga o sentido.
-        let displayLine = line
+        const displayLine = line
           .replace(/([a-zçãõáéíóú])([A-Z])/g, '$1 $2')
           .replace(/([a-zçãõáéíóú])(["])/g, '$1 $2')
 

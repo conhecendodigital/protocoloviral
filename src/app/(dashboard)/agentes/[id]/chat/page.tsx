@@ -81,7 +81,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
       }
 
       // 2. Carrega mensagens anteriores se tem session na URL
-      let activeSession = urlSessionId
+      const activeSession = urlSessionId
       
       if (activeSession) {
         setSessionId(activeSession)
