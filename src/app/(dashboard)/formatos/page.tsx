@@ -293,7 +293,7 @@ export default function FormatosPage() {
               <Link 
                 href={`/formatos/${formato.id}`}
                 key={formato.id}
-                className="group block relative aspect-[4/5] rounded-[24px] overflow-hidden bg-black/50 hover:shadow-xl hover:shadow-[#0ea5e9]/20 transition-all cursor-pointer ring-1 ring-white/10 hover:ring-[#0ea5e9]/40 hover:-translate-y-1"
+                className="group block relative aspect-[9/16] rounded-[24px] overflow-hidden bg-black/50 hover:shadow-xl hover:shadow-[#0ea5e9]/20 transition-all cursor-pointer ring-1 ring-white/10 hover:ring-[#0ea5e9]/40 hover:-translate-y-1"
               >
                 {/* O Vídeo Em AutoPlay */}
                 <div className="absolute inset-0 pointer-events-none">
