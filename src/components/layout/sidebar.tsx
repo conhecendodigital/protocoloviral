@@ -34,7 +34,6 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: 'Home', href: '/', icon: 'home' },
       { label: 'Jornada', href: '/jornada', icon: 'explore', badge: '🎮', badgeHot: true },
-      { label: 'Escritorio de IA', href: '/agentes', icon: 'smart_toy', badge: 'IA', badgeHot: true },
       { label: 'Geradores', href: '/prompts', icon: 'auto_awesome' },
       { label: 'Formatos', href: '/formatos', icon: 'movie_filter', badge: '🔥', badgeHot: true },
       { label: 'Rotina', href: '/rotina', icon: 'calendar_today' },
@@ -51,6 +50,15 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Stories', href: '/stories', icon: 'video_camera_front', badge: '🔥', badgeHot: true },
       { label: 'Analisador', href: '/bio-analyzer', icon: 'monitoring', badge: 'Novo' },
       { label: 'Calculadora', href: '/calculadora', icon: 'calculate', badge: 'Novo' },
+    ],
+  },
+  {
+    id: 'ia',
+    label: 'IA',
+    icon: 'smart_toy',
+    collapsible: false,
+    items: [
+      { label: 'Escritório de IA', href: '/agentes', icon: 'smart_toy', badge: 'IA', badgeHot: true },
     ],
   },
 ]

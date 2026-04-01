@@ -53,6 +53,15 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Calculadora', href: '/calculadora', msIcon: 'calculate', badge: 'Novo' },
     ],
   },
+  {
+    id: 'ia',
+    label: 'IA',
+    icon: 'smart_toy',
+    collapsible: false,
+    items: [
+      { label: 'Escritório de IA', href: '/agentes', msIcon: 'smart_toy', badge: 'IA', badgeHot: true },
+    ],
+  },
 ]
 
 export function MobileNav() {
