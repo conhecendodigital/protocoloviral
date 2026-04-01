@@ -288,7 +288,7 @@ export default function FormatosPage() {
 
         {/* Grid Feed Explorar Layout (IG Feed Style) */}
         {!loading && formatosProcessados.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4 md:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {formatosProcessados.map((formato, i) => (
               <Link 
                 href={`/formatos/${formato.id}`}
@@ -300,46 +300,46 @@ export default function FormatosPage() {
                   {renderVideoExploreContent(formato.video_url, formato.titulo)}
                 </div>
                 
-                {/* Sobreposição de Gradiente para legibilidade (sempre visível perto do fundo) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#060a12]/95 via-[#060a12]/40 to-transparent pointer-events-none" />
-                <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#060a12]/50 to-transparent pointer-events-none" />
+                {/* Sobreposição de Gradiente para legibilidade (Apenas no Hover) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#060a12]/95 via-[#060a12]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#060a12]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                 {formato.destaque && (
-                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-gradient-to-r from-amber-500/90 to-orange-600/90 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md shadow-black/30 backdrop-blur-sm">
+                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-gradient-to-r from-amber-500/90 to-orange-600/90 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md shadow-black/30 backdrop-blur-sm opacity-100">
                     <span className="material-symbols-outlined text-[10px] sm:text-[12px]">local_fire_department</span>
                     Hot
                   </div>
                 )}
                 
-                {/* Informações da Card */}
-                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex flex-col justify-end">
-                   <div className="flex items-center gap-2 mb-2 flex-wrap text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#0ea5e9]">
-                     <span className="bg-[#0ea5e9]/20 backdrop-blur-md px-2 py-0.5 rounded text-white flex gap-1 items-center">
+                {/* Informações da Card (Apenas no Hover) */}
+                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+                   <div className="flex items-center gap-2 mb-3 flex-wrap text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-[#0ea5e9]">
+                     <span className="bg-[#0ea5e9]/20 backdrop-blur-md px-2.5 py-1 rounded text-white flex gap-1 items-center border border-white/10">
                        <span>{nichoEmojis[formato.nicho] || '📁'}</span>
                        {formato.nicho || 'Geral'}
                      </span>
                      <span>•</span>
-                     <span className="text-white/80 drop-shadow-sm">{formato.plataforma}</span>
+                     <span className="text-white/90 drop-shadow-sm">{formato.plataforma}</span>
                    </div>
                    
-                   <h3 className="text-sm sm:text-base font-bold text-white leading-tight line-clamp-2 drop-shadow-md group-hover:text-[#0ea5e9] transition-colors mb-2 sm:mb-3">
+                   <h3 className="text-base sm:text-lg font-bold text-white leading-tight line-clamp-3 drop-shadow-lg group-hover:text-[#0ea5e9] transition-colors mb-4">
                      {formato.titulo}
                    </h3>
 
                    {/* Micro-Metrics e Avatar placeholder */}
-                   <div className="flex items-center justify-between mt-auto w-full">
-                     <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md rounded-full px-2 py-1 text-[10px] sm:text-[11px] font-bold text-white border border-white/10">
-                        <span className="material-symbols-outlined text-[12px] sm:text-[14px] text-green-400">trending_up</span>
+                   <div className="flex items-center justify-between mt-auto w-full pt-1 border-t border-white/10">
+                     <div className="flex items-center gap-1.5 px-1 py-1 text-[11px] sm:text-[12px] font-bold text-white mt-1">
+                        <span className="material-symbols-outlined text-[14px] sm:text-[15px] text-green-400">trending_up</span>
                         {formato.engajamento ? `${formato.engajamento.toFixed(1)}%` : 'Alto'}
                      </div>
 
                      {(formato.views || formato.curtidas) && (
-                       <div className="flex items-center gap-2 sm:gap-3 text-white/80 drop-shadow-md text-[10px] sm:text-[12px] font-medium">
+                       <div className="flex items-center gap-3 sm:gap-4 text-white/90 drop-shadow-md text-[11px] sm:text-[13px] font-bold mt-1">
                          {formato.views != null && (
-                           <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[13px] sm:text-[14px]">visibility</span> {formatNumber(formato.views)}</span>
+                           <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[14px] sm:text-[16px] text-[#0ea5e9]">visibility</span> {formatNumber(formato.views)}</span>
                          )}
                          {formato.views == null && formato.curtidas != null && (
-                           <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[13px] sm:text-[14px]">favorite</span> {formatNumber(formato.curtidas)}</span>
+                           <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[14px] sm:text-[16px] text-rose-400">favorite</span> {formatNumber(formato.curtidas)}</span>
                          )}
                        </div>
                      )}
@@ -347,11 +347,7 @@ export default function FormatosPage() {
                 </div>
                 
                 {/* Hover Play State Icon */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 backdrop-blur-[1px] z-10">
-                   <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-2xl scale-90 group-hover:scale-100 transition-transform">
-                      <span className="material-symbols-outlined text-[32px] ml-1">play_arrow</span>
-                   </div>
-                </div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 backdrop-blur-[2px] pointer-events-none z-0" />
               </Link>
             ))}
           </div>
