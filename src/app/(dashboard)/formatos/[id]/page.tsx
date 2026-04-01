@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
 import { Textarea } from '@/components/ui/textarea'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
 interface Formato {
@@ -58,7 +59,10 @@ const nichoEmojis: Record<string, string> = {
   'Todos': '🔥',
 }
 
-export default function FormatoViewPage({ params }: { params: { id: string } }) {
+export default function FormatoViewPage() {
+  const params = useParams()
+  const formatId = params.id as string
+
   const [formato, setFormato] = useState<Formato | null>(null)
   const [loading, setLoading] = useState(true)
   const supabase = useMemo(() => createClient(), [])
@@ -72,10 +76,15 @@ export default function FormatoViewPage({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     async function fetchFormato() {
+      if (!formatId) {
+        setLoading(false)
+        return
+      }
+      
       const { data, error } = await supabase
         .from('formatos')
         .select('*')
-        .eq('id', params.id)
+        .eq('id', formatId)
         .single()
 
       if (!error && data) {
@@ -84,7 +93,7 @@ export default function FormatoViewPage({ params }: { params: { id: string } }) 
       setLoading(false)
     }
     fetchFormato()
-  }, [supabase, params.id])
+  }, [supabase, formatId])
 
   const handleGenerateReel = async () => {
     if (!profile?.resposta1 || !profile?.resposta2) {
