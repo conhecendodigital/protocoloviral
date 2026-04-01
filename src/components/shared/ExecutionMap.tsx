@@ -168,30 +168,8 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
   }
 
   const steps = getSteps()
-
-  const statusConfig = {
-    done: {
-      badge: '✅',
-      badgeText: 'Concluído',
-      badgeClass: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-      cardClass: 'border-emerald-500/20 bg-emerald-500/5',
-      lineClass: 'bg-emerald-500',
-    },
-    current: {
-      badge: '📍',
-      badgeText: 'Fazer Agora',
-      badgeClass: 'bg-[#0ea5e9]/15 text-[#0ea5e9] border-[#0ea5e9]/30',
-      cardClass: 'border-[#0ea5e9]/30 bg-[#0ea5e9]/5 ring-1 ring-[#0ea5e9]/20',
-      lineClass: 'bg-black/10 dark:bg-white/10',
-    },
-    locked: {
-      badge: '🔒',
-      badgeText: 'Bloqueado',
-      badgeClass: 'bg-black/5 dark:bg-white/5 text-slate-700 dark:text-white/90 border-slate-300/10 dark:border-slate-200 dark:border-white/10',
-      cardClass: 'border-slate-200 dark:border-slate-200 dark:border-white/10 bg-white/[0.02] opacity-60',
-      lineClass: 'bg-black/10 dark:bg-white/10',
-    },
-  }
+  const activeStep = steps.find(s => s.status === 'current') || steps.find(s => s.status === 'locked') || steps[steps.length - 1]
+  const isDone = activeStep.status === 'done'
 
   return (
     <motion.section
@@ -200,153 +178,132 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
       transition={{ delay: 0.15 }}
       className="mb-10"
     >
-      {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <span className="material-symbols-outlined text-[#0ea5e9] text-2xl">pin_drop</span>
         <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
-          {isRecurring && completion === 100
-            ? 'Sua Rotina de Hoje'
-            : 'Seu Mapa de Execução'}
+          Sua Prioridade Agora
         </h3>
       </div>
       <p className="text-sm text-slate-700 dark:text-white/90 mb-6 ml-9">
-        {isRecurring && completion === 100
-          ? 'Siga estes 4 passos para criar conteúdo todos os dias.'
-          : 'Siga estes 4 passos para começar a criar seu conteúdo.'}
+        Foque em uma tarefa por vez para construir o seu negócio de forma contínua.
       </p>
 
-      {/* Steps */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">  
-        {steps.map((step, i) => {
-          const config = statusConfig[step.status]
-          
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1 }}
-              className={`relative rounded-2xl p-6 border transition-all ${config.cardClass}`}
-            >
-              {/* Step Number + Connector */}
-              <div className="flex items-center gap-3 mb-4">
-                <div
-                  className="size-8 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
-                  style={{
-                    backgroundColor: step.status === 'locked' ? 'rgba(255,255,255,0.05)' : `${step.color}20`,
-                    color: step.status === 'locked' ? '#64748b' : step.color,
-                    border: `1px solid ${step.status === 'locked' ? 'rgba(255,255,255,0.1)' : `${step.color}40`}`,
-                  }}
-                >
-                  {step.status === 'done' ? (
-                    <span className="material-symbols-outlined text-base text-emerald-400">check</span>
-                  ) : (
-                    i + 1
-                  )}
-                </div>
+      {/* Hero Task Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2 }}
+        className={`relative rounded-3xl p-6 sm:p-8 sm:pr-10 border transition-all glass-card ${
+          isDone
+            ? 'border-emerald-500/30'
+            : activeStep.status === 'locked' 
+              ? 'border-slate-300/20 dark:border-white/10 opacity-70' 
+              : 'border-[#0ea5e9]/40 shadow-xl shadow-[#0ea5e9]/10'
+        } overflow-hidden`}
+      >
+        {/* Background glow para destacar */}
+        {!isDone && activeStep.status === 'current' && (
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#0ea5e9]/10 blur-[80px] rounded-full pointer-events-none" />
+        )}
 
-                {/* Status Badge */}
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${config.badgeClass}`}>
-                  {config.badge} {config.badgeText}
-                </span>
-              </div>
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 sm:items-center relative z-10">
+          {/* Ícone Grande */}
+          <div
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 border"
+            style={{
+              backgroundColor: isDone ? '#10b98120' : activeStep.status === 'locked' ? 'rgba(255,255,255,0.05)' : `${activeStep.color}20`,
+              color: isDone ? '#10b981' : activeStep.status === 'locked' ? '#64748b' : activeStep.color,
+              borderColor: isDone ? '#10b98140' : activeStep.status === 'locked' ? 'rgba(255,255,255,0.1)' : `${activeStep.color}40`,
+            }}
+          >
+            <span className="material-symbols-outlined text-3xl sm:text-4xl">
+              {isDone ? 'check' : activeStep.icon}
+            </span>
+          </div>
 
-              {/* Icon + Title */}
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className="material-symbols-outlined text-xl"
-                  style={{ color: step.status === 'locked' ? '#475569' : step.color }}
-                >
-                  {step.icon}
-                </span>
-                <h4 className={`font-bold text-base ${step.status === 'locked' ? 'text-slate-700 dark:text-white/90' : 'text-slate-900 dark:text-white'}`}>
-                  {step.title}
-                </h4>
-              </div>
+          <div className="flex-1 space-y-2">
+            <span className={`text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full inline-block mb-1 border ${
+              isDone
+                ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
+                : activeStep.status === 'locked'
+                  ? 'bg-slate-200/50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-white/10'
+                  : 'bg-[#0ea5e9]/15 text-[#0ea5e9] border-[#0ea5e9]/30'
+            }`}>
+              {isDone ? '✅ Fase Completa' : activeStep.status === 'locked' ? '🔒 Próxima Etapa (Bloqueada)' : '📍 FAZER NESTE MOMENTO'}
+            </span>
+            <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+              {activeStep.title}
+            </h4>
+            <p className="text-slate-700 dark:text-white/80 text-sm sm:text-base leading-relaxed max-w-2xl">
+              {activeStep.description}
+            </p>
+          </div>
 
-              {/* Description */}
-              <p className={`text-sm leading-relaxed mb-5 ${step.status === 'locked' ? 'text-slate-800 dark:text-white/90' : 'text-slate-800 dark:text-white/90 dark:text-white/90'}`}>
-                {step.description}
-              </p>
-
-              {/* Action Buttons */}
-              {step.status === 'current' && (
-                <div className="flex flex-col gap-2">
-                  {step.external ? (
-                    <a
-                      href={step.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-900 dark:text-white transition-all hover:opacity-90 active:scale-[0.97]"
-                      style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
-                    >
-                      <span className="material-symbols-outlined text-base">open_in_new</span>
-                      {step.btnLabel}
-                    </a>
-                  ) : (
-                    <Link
-                      href={step.href}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-900 dark:text-white transition-all hover:opacity-90 active:scale-[0.97]"
-                      style={{ background: `linear-gradient(135deg, ${step.color}, ${step.color}dd)` }}
-                    >
-                      <span className="material-symbols-outlined text-base">arrow_forward</span>
-                      {step.btnLabel}
-                    </Link>
-                  )}
-
-                  {/* Confirm button for step 2 */}
-                  {step.showConfirm && (
-                    <AnimatePresence>
-                      <motion.button
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        onClick={handleConfirmMetodo}
-                        disabled={confirming}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition-all hover:bg-emerald-500/20 active:scale-[0.97] disabled:opacity-60"
-                      >
-                        <span className="material-symbols-outlined text-base">
-                          {confirming ? 'sync' : 'check_circle'}
-                        </span>
-                        {confirming ? 'Salvando...' : 'Já vi, pode marcar como feito'}
-                      </motion.button>
-                    </AnimatePresence>
-                  )}
-                </div>
-              )}
-
-              {step.status === 'done' && (
-                step.external ? (
+          {/* Ação */}
+          <div className="shrink-0 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-slate-200 dark:border-white/10 sm:pl-10">
+            {activeStep.status === 'current' && (
+              <div className="flex flex-col gap-3">
+                {activeStep.external ? (
                   <a
-                    href={step.href}
+                    href={activeStep.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition-all hover:bg-emerald-500/20"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 dark:text-white transition-all shadow-lg hover:scale-105 active:scale-95"
+                    style={{ background: `linear-gradient(135deg, ${activeStep.color}, ${activeStep.color}dd)` }}
                   >
-                    <span className="material-symbols-outlined text-base">visibility</span>
-                    {step.doneBtnLabel}
+                    <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                    {activeStep.btnLabel}
                   </a>
                 ) : (
                   <Link
-                    href={step.href}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 transition-all hover:bg-emerald-500/20"
+                    href={activeStep.href}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 dark:text-white transition-all shadow-lg hover:scale-105 active:scale-95"
+                    style={{ background: `linear-gradient(135deg, ${activeStep.color}, ${activeStep.color}dd)` }}
                   >
-                    <span className="material-symbols-outlined text-base">visibility</span>
-                    {step.doneBtnLabel}
+                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    {activeStep.btnLabel}
                   </Link>
-                )
-              )}
+                )}
+                {activeStep.showConfirm && (
+                   <motion.button
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     onClick={handleConfirmMetodo}
+                     disabled={confirming}
+                     className="inline-flex justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all disabled:opacity-60"
+                   >
+                     <span className="material-symbols-outlined text-[16px]">
+                       {confirming ? 'sync' : 'check_circle'}
+                     </span>
+                     {confirming ? 'Salvando...' : 'Marcar como feito'}
+                   </motion.button>
+                )}
+              </div>
+            )}
+            
+            {activeStep.status === 'done' && (
+              <Link
+                href={activeStep.href}
+                className="inline-flex justify-center items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
+              >
+                <span className="material-symbols-outlined">visibility</span>
+                Revisar Etapa
+              </Link>
+            )}
 
-              {step.status === 'locked' && (
-                <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-slate-800 dark:text-white/90 bg-white/[0.03] border border-slate-200 dark:border-slate-200 dark:border-white/10 cursor-not-allowed">
-                  <span className="material-symbols-outlined text-base">lock</span>
-                  {step.btnLabel}
+            {activeStep.status === 'locked' && (
+              <div className="inline-flex justify-center flex-col items-center gap-1">
+                <div className="w-12 h-12 rounded-full border border-slate-300 dark:border-white/10 flex items-center justify-center mb-2">
+                  <span className="material-symbols-outlined text-slate-400">lock</span>
                 </div>
-              )}
-            </motion.div>
-          )
-        })}
-      </div>
+                <span className="text-xs uppercase tracking-widest text-slate-500 font-bold block text-center">
+                  Cumpra a etapa anterior
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
     </motion.section>
   )
 }
