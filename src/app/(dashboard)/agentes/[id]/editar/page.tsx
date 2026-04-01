@@ -95,6 +95,7 @@ export default function EditarAgentePage() {
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
     const [status, setStatus] = useState('ativo');
+    const [requiredPlan, setRequiredPlan] = useState('free');
     const [selectedModel, setSelectedModel] = useState('gpt-4o');
     const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
     const [systemPrompt, setSystemPrompt] = useState('');
@@ -167,6 +168,7 @@ export default function EditarAgentePage() {
             setStatus(agent.status || 'ativo');
             setSelectedModel(agent.ai_model || 'gpt-4o');
             setSystemPrompt(agent.system_prompt || '');
+            setRequiredPlan(agent.required_plan || 'free');
             
             // fetch files
             const { data: dbFiles } = await supabase
@@ -254,6 +256,7 @@ export default function EditarAgentePage() {
                     ai_provider: providerId,
                     ai_model: selectedModel,
                     system_prompt: systemPrompt,
+                    required_plan: requiredPlan,
                     status
                 })
                 .eq('id', agentId);
@@ -500,6 +503,26 @@ export default function EditarAgentePage() {
                                                 <option value="ativo" className="bg-popover text-emerald-500 dark:text-emerald-400">Ativo</option>
                                                 <option value="inativo" className="bg-popover text-rose-500 dark:text-rose-400">Inativo</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Nível Mínimo do Plano (Acesso)</label>
+                                    <div className="relative">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <span className="material-symbols-outlined text-muted-foreground text-lg">workspace_premium</span>
+                                        </div>
+                                        <select
+                                            value={requiredPlan}
+                                            onChange={(e) => setRequiredPlan(e.target.value)}
+                                            className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-10 py-3 text-sm text-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+                                        >
+                                            <option value="free" className="bg-popover text-foreground">Acesso Livre (Básico)</option>
+                                            <option value="pro" className="bg-popover text-foreground">Exclusivo: Pro e Premium</option>
+                                            <option value="premium" className="bg-popover text-foreground">VIP - Somente Premium</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <span className="material-symbols-outlined text-muted-foreground text-lg">expand_more</span>
                                         </div>
                                     </div>
                                 </div>

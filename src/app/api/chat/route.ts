@@ -37,6 +37,62 @@ export async function POST(req: Request) {
       .eq('id', user.id)
       .single()
 
+    let userTier = profile?.plan_tier || 'free';
+    const isAdmin = profile?.is_admin === true;
+    const now = new Date();
+
+    // Verificação Mestra de Downgrade Agendado / Falha de Pagamento MP
+    if (!isAdmin && profile?.current_period_end) {
+      const expirationDate = new Date(profile.current_period_end);
+      if (now > expirationDate && userTier !== 'free') {
+         userTier = 'free'; // Rebaixa o tier na memoria
+         
+         // Atualiza no banco removendo a assinatura vencida
+         await supabase.from('profiles').update({ 
+             plan_tier: 'free',
+             mp_subscription_id: null,
+             cancel_at_period_end: false 
+         }).eq('id', user.id);
+      }
+    }
+
+    // Check Plan Restriction
+    if (!isAdmin) {
+      if (agent.required_plan === 'premium' && userTier !== 'premium') {
+        return new Response(JSON.stringify({ error: 'Acesso negado: Este Agente é exclusivo para o plano Premium. Faça o upgrade na aba Assinatura.', code: 'upgrade_required' }), { status: 403 });
+      }
+      if (agent.required_plan === 'pro' && userTier === 'free') {
+        return new Response(JSON.stringify({ error: 'Acesso negado: Este Agente é exclusivo para planos Pro e Premium. Faça o upgrade.', code: 'upgrade_required' }), { status: 403 });
+      }
+    }
+
+    // Check Tokens Limits
+    const getTokenLimit = (tier: string) => {
+      if (tier === 'premium') return 150000;
+      if (tier === 'pro') return 50000;
+      return 5000;
+    };
+
+    const tokenLimit = getTokenLimit(userTier);
+    let currentTokensUsed = profile?.tokens_used_today || 0;
+    
+    // lastReset in UTC
+    let lastReset = profile?.last_token_reset ? new Date(profile.last_token_reset) : null;
+
+    // Reset if 24 hours have passed or if never set
+    if (!lastReset || (now.getTime() - lastReset.getTime()) > 24 * 60 * 60 * 1000) {
+      currentTokensUsed = 0;
+      await supabase.from('profiles').update({ 
+        tokens_used_today: 0, 
+        last_token_reset: now.toISOString() 
+      }).eq('id', user.id);
+    }
+
+    // Prevents request if out of tokens
+    if (!isAdmin && currentTokensUsed >= tokenLimit) {
+      return new Response(JSON.stringify({ error: `Você atingiu seu limite diário de ${tokenLimit.toLocaleString('pt-BR')} tokens de IA. Retorne amanhã ou faça o upgrade do seu plano.`, code: 'limit_reached' }), { status: 403 });
+    }
+
     // Load RAG Files (Knowledge Base)
     const { data: files } = await supabase
       .from('knowledge_base_files')
@@ -145,7 +201,7 @@ ${agent.system_prompt}
       model,
       system: finalSystemPrompt,
       messages: coreMessages,
-      async onFinish({ text }) {
+      async onFinish({ text, usage }) {
         // Ao finalizar, salvamos a resposta do assistente no supabase
         if (session_id) {
             await supabase.from('chat_messages').insert({
@@ -154,6 +210,15 @@ ${agent.system_prompt}
               role: 'assistant',
               content: text
             })
+        }
+
+        // Atualizar saldo de tokens consumidos
+        if (usage && usage.totalTokens && !isAdmin) {
+            const extraTokens = profile?.tokens_used_this_cycle || 0;
+            await supabase.from('profiles').update({ 
+                tokens_used_today: currentTokensUsed + usage.totalTokens,
+                tokens_used_this_cycle: extraTokens + usage.totalTokens
+            }).eq('id', user.id);
         }
       }
     })

@@ -29,6 +29,17 @@ export interface Profile {
   onboarding_completed: boolean
   conquistas: string[]
   is_admin: boolean
+  // Novos campos de Monetização e IA
+  plan_tier?: 'free' | 'pro' | 'premium'
+  mp_customer_id?: string | null
+  mp_subscription_id?: string | null
+  current_period_end?: string | null
+  tokens_used_today?: number
+  last_token_reset?: string | null
+  cancel_at_period_end?: boolean
+  tokens_used_this_cycle?: number
+  subscription_start_date?: string | null
+  has_accepted_terms?: boolean
   created_at: string
   updated_at: string
 }
