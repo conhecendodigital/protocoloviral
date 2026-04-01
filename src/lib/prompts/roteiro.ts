@@ -1,7 +1,8 @@
 import type { Profile } from '@/types/profile'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 
 export function generateRoteiroPrompt(profile: Partial<Profile>): string {
-  const val = (v: string | null | undefined) => v || '[Não preenchido]'
+  const val = (v: string | null | undefined) => sanitizeForPrompt(v || '')
   return `# TAREFA
 Você é um roteirista profissional de conteúdo para redes sociais. Sua missão é transformar uma ideia em conteúdo COMPLETO e PRONTO PARA EXECUÇÃO em múltiplos formatos.
 

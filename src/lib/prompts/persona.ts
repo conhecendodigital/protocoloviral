@@ -1,7 +1,8 @@
 import type { Profile } from '@/types/profile'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 
 export function generatePersonaPrompt(profile: Partial<Profile>): string {
-  const val = (v: string | null | undefined) => v || '[Não preenchido]'
+  const val = (v: string | null | undefined) => sanitizeForPrompt(v || '')
   return `# TAREFA
 Você é um especialista em comportamento do consumidor e criação de personas para marketing digital. Sua missão é criar um perfil psicológico e comportamental COMPLETO do cliente ideal baseado nos dados fornecidos.
 

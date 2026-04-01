@@ -1,7 +1,29 @@
 import { NextResponse } from 'next/server'
+import { createServerSupabase } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: Request) {
   try {
+    // ── Auth Check ──
+    const supabase = await createServerSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Não autorizado. Faça login para gerar roteiros.' },
+        { status: 401 }
+      )
+    }
+
+    // ── Rate Limit: 10 requests/min por usuário ──
+    const rateLimit = checkRateLimit(`generate-reel:${user.id}`, 10, 60_000)
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Muitas requisições. Aguarde um momento antes de tentar novamente.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rateLimit.resetAt - Date.now()) / 1000)) } }
+      )
+    }
+
     const { persona, estudo, duracaoStr, nicho } = await req.json()
 
     if (!persona || !estudo || !nicho) {

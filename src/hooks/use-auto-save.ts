@@ -26,9 +26,14 @@ export function useAutoSave(userId: string | undefined) {
       return false
     }
 
+    // Security: enforce max length
+    const isResponseField = fieldName.startsWith('resposta')
+    const maxLen = isResponseField ? 20_000 : 5_000
+    const sanitizedValue = typeof value === 'string' ? value.slice(0, maxLen) : value
+
     try {
       const updateData: Record<string, string> = {}
-      updateData[fieldName] = value
+      updateData[fieldName] = sanitizedValue
 
       const { error } = await supabase
         .from('profiles')

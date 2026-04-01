@@ -1,7 +1,8 @@
 import type { Profile } from '@/types/profile'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 
 export function generateClarezaPrompt(profile: Partial<Profile>): string {
-  const val = (v: string | null | undefined) => v || '[Não preenchido]'
+  const val = (v: string | null | undefined) => sanitizeForPrompt(v || '')
   return `# TAREFA
 Você é um estrategista de posicionamento digital especializado em criadores de conteúdo e infoprodutores. Sua missão é analisar as informações fornecidas e criar um posicionamento único, diferenciado e autêntico.
 

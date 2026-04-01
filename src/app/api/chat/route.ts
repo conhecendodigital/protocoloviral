@@ -3,13 +3,13 @@ import { streamText, convertToModelMessages } from 'ai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const maxDuration = 60
 
 export async function POST(req: Request) {
   try {
     const { messages, agent_id, session_id } = await req.json()
-    console.log('[API/CHAT] Payload received:', { hasMessages: !!messages, agent_id, session_id })
     
     // Auth check
     const supabase = await createServerSupabase()
@@ -17,6 +17,12 @@ export async function POST(req: Request) {
     
     if (!user) {
       return new Response('Unauthorized', { status: 401 })
+    }
+
+    // ── Rate Limit: 30 messages/min per user ──
+    const rateLimit = checkRateLimit(`chat:${user.id}`, 30, 60_000)
+    if (!rateLimit.allowed) {
+      return new Response(JSON.stringify({ error: 'Muitas mensagens. Aguarde um momento.' }), { status: 429 })
     }
 
     // Load Agent

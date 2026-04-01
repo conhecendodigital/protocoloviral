@@ -1,9 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerSupabase } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
 
 export async function POST(req: NextRequest) {
   try {
+    // ── Auth Check ──
+    const supabase = await createServerSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ enhanced: {}, used_ai: false, error: 'UNAUTHORIZED' }, { status: 401 })
+    }
+
+    // ── Rate Limit: 15 requests/min por usuário ──
+    const rateLimit = checkRateLimit(`enhance:${user.id}`, 15, 60_000)
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ enhanced: {}, used_ai: false, error: 'RATE_LIMITED' }, { status: 429 })
+    }
+
     const apiKey = process.env.GEMINI_API_KEY
     const body = await req.json()
     const { fields } = body as { fields: { id: string; label: string; value: string }[] }

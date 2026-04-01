@@ -54,16 +54,34 @@ export function useProfile() {
       return
     }
 
-    setProfile(prev => prev ? { ...prev, [field]: value } : null)
+    // Security: enforce max length
+    const isResponseField = field.startsWith('resposta')
+    const maxLen = isResponseField ? 20_000 : 5_000
+    const sanitizedValue = typeof value === 'string' ? value.slice(0, maxLen) : value
+
+    setProfile(prev => prev ? { ...prev, [field]: sanitizedValue } : null)
 
     await supabase
       .from('profiles')
-      .update({ [field]: value })
+      .update({ [field]: sanitizedValue })
       .eq('id', userId)
   }, [userId, supabase])
 
   const uploadAvatar = useCallback(async (file: File) => {
     if (!userId) return null
+
+    // ── Security: Validate file type and size ──
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      console.warn('[useProfile] Blocked avatar upload: invalid file type', file.type)
+      return null
+    }
+    const MAX_SIZE = 5 * 1024 * 1024 // 5MB
+    if (file.size > MAX_SIZE) {
+      console.warn('[useProfile] Blocked avatar upload: file too large', file.size)
+      return null
+    }
+
     const ext = file.name.split('.').pop() || 'jpg'
     const filePath = `${userId}/avatar.${ext}`
 

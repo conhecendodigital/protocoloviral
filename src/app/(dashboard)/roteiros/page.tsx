@@ -23,10 +23,13 @@ export default function RoteirosPage() {
   const [savedId, setSavedId] = useState<string | null>(null)
   const supabase = useMemo(() => createClient(), [])
 
+  const [userId, setUserId] = useState<string | null>(null)
+
   useEffect(() => {
     async function fetchRoteiros() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { setLoading(false); return }
+      setUserId(user.id)
 
       const { data, error } = await supabase
         .from('roteiros')
@@ -58,17 +61,19 @@ export default function RoteirosPage() {
   }
 
   const handleDelete = async (id: string) => {
-    await supabase.from('roteiros').delete().eq('id', id)
+    if (!userId) return
+    await supabase.from('roteiros').delete().eq('id', id).eq('user_id', userId)
     setRoteiros(prev => prev.filter(r => r.id !== id))
   }
 
   const handleSave = async (id: string) => {
+    if (!userId) return
     const texto = editedTexts[id]
     if (texto === undefined) return
     setSavingId(id)
     const primeiraLinha = texto.split('\n')[0]
     const titulo = primeiraLinha.replace(/\*\*/g, '').trim() || 'Roteiro sem título'
-    await supabase.from('roteiros').update({ roteiro: texto, titulo }).eq('id', id)
+    await supabase.from('roteiros').update({ roteiro: texto, titulo }).eq('id', id).eq('user_id', userId)
     setRoteiros(prev => prev.map(r => r.id === id ? { ...r, roteiro: texto, titulo } : r))
     setSavingId(null)
     setSavedId(id)

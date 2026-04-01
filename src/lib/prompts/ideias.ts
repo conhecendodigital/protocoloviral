@@ -1,7 +1,8 @@
 import type { Profile } from '@/types/profile'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 
 export function generateIdeiasPrompt(profile: Partial<Profile>): string {
-  const val = (v: string | null | undefined) => v || '[Não preenchido]'
+  const val = (v: string | null | undefined) => sanitizeForPrompt(v || '')
   return `# TAREFA
 Você é um estrategista de conteúdo digital especializado em criação de pautas para Instagram. Sua missão é gerar 20 ideias de conteúdo altamente personalizadas usando o Método NOEIXO.
 

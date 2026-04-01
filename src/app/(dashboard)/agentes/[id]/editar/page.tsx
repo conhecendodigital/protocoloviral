@@ -147,6 +147,21 @@ export default function EditarAgentePage() {
     useEffect(() => {
         async function fetchAgentData() {
             if (!agentId) return;
+
+            // ── Admin Check ──
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) { router.push('/login'); return; }
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', user.id)
+                .single();
+
+            if (!profile?.is_admin) {
+                router.push('/agentes');
+                return;
+            }
             
             // fetch agent
             const { data: agent, error } = await supabase
@@ -189,7 +204,7 @@ export default function EditarAgentePage() {
         }
         
         fetchAgentData();
-    }, [agentId, supabase]);
+    }, [agentId, supabase, router]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -221,6 +236,23 @@ export default function EditarAgentePage() {
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.[0]) {
             const f = e.target.files[0];
+
+            // ── Security: Validate file type ──
+            const allowedTypes = ['application/pdf', 'text/plain'];
+            const allowedExtensions = ['.pdf', '.txt'];
+            const ext = '.' + (f.name.split('.').pop()?.toLowerCase() || '');
+            if (!allowedTypes.includes(f.type) && !allowedExtensions.includes(ext)) {
+                alert('Formato não suportado. Envie apenas PDF ou TXT.');
+                return;
+            }
+
+            // ── Security: Validate file size (max 20MB) ──
+            const MAX_RAG_SIZE = 20 * 1024 * 1024;
+            if (f.size > MAX_RAG_SIZE) {
+                alert('Arquivo muito grande. Máximo: 20MB.');
+                return;
+            }
+
             setFiles((prev) => [
                 ...prev,
                 { id: `temp_${Date.now()}`, name: f.name, size: `${(f.size / 1024).toFixed(0)} KB`, type: f.name.split('.').pop()?.toUpperCase() || 'FILE', file: f },

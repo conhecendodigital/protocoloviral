@@ -1,7 +1,8 @@
 import type { Profile } from '@/types/profile'
+import { sanitizeForPrompt } from '@/lib/sanitize'
 
 export function generateVendasPrompt(profile: Partial<Profile>): string {
-  const val = (v: string | null | undefined) => v || '[Não preenchido]'
+  const val = (v: string | null | undefined) => sanitizeForPrompt(v || '')
   return `# TAREFA
 Você é um estrategista de vendas por conteúdo especializado em lançamentos e vendas perpétuas para Instagram. Sua missão é criar uma estratégia COMPLETA de 14 dias que prepara e converte a audiência sem parecer invasivo.
 

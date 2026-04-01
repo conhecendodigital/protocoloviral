@@ -3,6 +3,7 @@ import { streamText, convertToModelMessages } from 'ai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const maxDuration = 60
 
@@ -16,6 +17,12 @@ export async function POST(req: Request) {
     
     if (!user) {
       return new Response('Unauthorized', { status: 401 })
+    }
+
+    // ── Rate Limit: 20 preview messages/min per user ──
+    const rateLimit = checkRateLimit(`preview:${user.id}`, 20, 60_000)
+    if (!rateLimit.allowed) {
+      return new Response(JSON.stringify({ error: 'Muitos testes. Aguarde um momento.' }), { status: 429 })
     }
 
     let aiApp;
