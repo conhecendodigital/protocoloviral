@@ -58,7 +58,9 @@ export default function RoteirosPage() {
   }
 
   const handleDelete = async (id: string) => {
-    await supabase.from('roteiros').delete().eq('id', id)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('roteiros').delete().eq('id', id).eq('user_id', user.id)
     setRoteiros(prev => prev.filter(r => r.id !== id))
   }
 
@@ -66,9 +68,14 @@ export default function RoteirosPage() {
     const texto = editedTexts[id]
     if (texto === undefined) return
     setSavingId(id)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
     const primeiraLinha = texto.split('\n')[0]
     const titulo = primeiraLinha.replace(/\*\*/g, '').trim() || 'Roteiro sem título'
-    await supabase.from('roteiros').update({ roteiro: texto, titulo }).eq('id', id)
+    await supabase.from('roteiros').update({ roteiro: texto, titulo }).eq('id', id).eq('user_id', user.id)
+    
     setRoteiros(prev => prev.map(r => r.id === id ? { ...r, roteiro: texto, titulo } : r))
     setSavingId(null)
     setSavedId(id)

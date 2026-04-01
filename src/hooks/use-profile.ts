@@ -64,6 +64,21 @@ export function useProfile() {
 
   const uploadAvatar = useCallback(async (file: File) => {
     if (!userId) return null
+
+    // [Segurança]: Validação rigorosa de Tipo e Tamanho (Max 5MB)
+    const MAX_SIZE = 5 * 1024 * 1024
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      console.warn('[useProfile] Formato inválido')
+      return null
+    }
+
+    if (file.size > MAX_SIZE) {
+      console.warn('[useProfile] Arquivo excedeu 5MB')
+      return null
+    }
+
     const ext = file.name.split('.').pop() || 'jpg'
     const filePath = `${userId}/avatar.${ext}`
 

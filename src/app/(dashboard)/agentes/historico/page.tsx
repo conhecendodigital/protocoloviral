@@ -70,7 +70,11 @@ export default function HistoricoAgentesPage() {
 
   const executeDeleteSession = async () => {
     if (!sessionToDelete) return;
-    await supabase.from('chat_sessions').delete().eq('id', sessionToDelete)
+    
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    
+    await supabase.from('chat_sessions').delete().eq('id', sessionToDelete).eq('user_id', user.id)
     setSessions(prev => prev.filter(s => s.id !== sessionToDelete))
     setSessionToDelete(null);
   }

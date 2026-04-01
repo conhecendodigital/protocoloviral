@@ -1,7 +1,25 @@
 import { NextResponse } from 'next/server'
+import { createServerSupabase } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createServerSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
+
+    // [Segurança]: Rate Limit de 10 requests por Minuto para proteger a conta de billing
+    const isAllowed = checkRateLimit(user.id, 10, 60000);
+    if (!isAllowed) {
+      return NextResponse.json(
+        { error: 'Limite de geração excedido em segurança anti-spam. Tente em 60 segundos.' },
+        { status: 429 } 
+      )
+    }
+
     const { persona, estudo, duracaoStr, nicho } = await req.json()
 
     if (!persona || !estudo || !nicho) {

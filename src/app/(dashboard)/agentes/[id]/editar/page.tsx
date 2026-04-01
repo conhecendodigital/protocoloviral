@@ -144,12 +144,30 @@ export default function EditarAgentePage() {
     const chatEndRef = useRef<HTMLDivElement>(null);
     const modelDropdownRef = useRef<HTMLDivElement>(null);
 
-    /* ── Fetch Initial Data ── */
+  /* ── Fetch Initial Data & Check Admin ── */
     useEffect(() => {
         async function fetchAgentData() {
             if (!agentId) return;
             
-            // fetch agent
+            // 1. Check Seclvl (Is Admin?)
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
+                router.replace('/login')
+                return
+            }
+            
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', user.id)
+                .single()
+                
+            if (!profile?.is_admin) {
+                router.replace('/agentes')
+                return
+            }
+            
+            // 2. fetch agent
             const { data: agent, error } = await supabase
                 .from('agents')
                 .select('*')
@@ -223,6 +241,27 @@ export default function EditarAgentePage() {
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.[0]) {
             const f = e.target.files[0];
+
+            // [Segurança]: Validação de Tamanho e Tipo para Knowledge Base (Max 10MB)
+            const MAX_SIZE = 10 * 1024 * 1024;
+            const ALLOWED_TYPES = [
+                'text/plain', 
+                'application/pdf', 
+                'text/csv', 
+                'application/json',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // docx
+            ];
+
+            if (f.size > MAX_SIZE) {
+                alert('O arquivo excedeu o limite máximo de 10MB.');
+                return;
+            }
+
+            if (!ALLOWED_TYPES.includes(f.type)) {
+                alert('Tipo de arquivo não permitido. Envie apenas PDF, TXT, CSV, JSON ou DOCX.');
+                return;
+            }
+
             setFiles((prev) => [
                 ...prev,
                 { id: `temp_${Date.now()}`, name: f.name, size: `${(f.size / 1024).toFixed(0)} KB`, type: f.name.split('.').pop()?.toUpperCase() || 'FILE', file: f },

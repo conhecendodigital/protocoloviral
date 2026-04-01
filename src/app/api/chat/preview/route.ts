@@ -3,6 +3,7 @@ import { streamText, convertToModelMessages } from 'ai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export const maxDuration = 60
 
@@ -16,6 +17,11 @@ export async function POST(req: Request) {
     
     if (!user) {
       return new Response('Unauthorized', { status: 401 })
+    }
+
+    const isAllowed = checkRateLimit(user.id, 10, 60000);
+    if (!isAllowed) {
+      return new Response('Rate limit exceeded', { status: 429 })
     }
 
     let aiApp;

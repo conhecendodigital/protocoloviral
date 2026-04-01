@@ -1,7 +1,20 @@
 import type { Profile } from '@/types/profile'
 
 export function generateClarezaPrompt(profile: Partial<Profile>): string {
-  const val = (v: string | null | undefined) => v || '[Não preenchido]'
+  // [Segurança]: Sanitização anti Prompt-Injection
+  const sanitize = (text: string | null | undefined) => {
+    if (!text) return '[Não preenchido]'
+    // Remove tentativas de system override
+    return text
+      .replace(/ignore todas as instru(?:ç|c)(?:õ|o)es/gi, '[CONTEÚDO REMOVIDO]')
+      .replace(/esque(?:ç|c)a (tudo|as instru(?:ç|c)(?:õ|o)es)/gi, '[CONTEÚDO REMOVIDO]')
+      .replace(/voc(?:ê|e) (agora )?(?:é|e)/gi, '[CONTEÚDO REMOVIDO]')
+      .replace(/system prompt/gi, '[CONTEÚDO REMOVIDO]')
+      .replace(/```/g, "'''") // Evita quebra de bloco de markdown
+      .trim()
+  }
+
+  const val = (v: string | null | undefined) => sanitize(v)
   return `# TAREFA
 Você é um estrategista de posicionamento digital especializado em criadores de conteúdo e infoprodutores. Sua missão é analisar as informações fornecidas e criar um posicionamento único, diferenciado e autêntico.
 
