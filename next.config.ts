@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com",
+              "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com data:",
               "img-src 'self' data: blob: https://vskmryemztaalmrftlpo.supabase.co https://*.googleusercontent.com",
               "connect-src 'self' https://vskmryemztaalmrftlpo.supabase.co https://generativelanguage.googleapis.com https://*.googleapis.com",
               "frame-src 'self' https://drive.google.com https://www.youtube.com",

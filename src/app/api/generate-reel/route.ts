@@ -237,7 +237,7 @@ Replique TODOS os elementos do formato viral com o conteúdo do nicho acima.
 O roteiro encarna a dor da persona ligada ao nicho — sem detalhes pessoais irrelevantes.
 Duração equivalente a: ${duracao}`
 
-    const modelName = 'gemini-2.5-flash'
+    const modelName = 'gemini-2.0-flash'
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`
 
     const response = await fetch(endpoint, {

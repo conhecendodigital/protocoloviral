@@ -173,7 +173,6 @@ export default function AgentesLibraryPage() {
 
         {profile && (!profile.plan_tier || profile.plan_tier === 'free') && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 w-full rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 p-1 flex relative overflow-hidden shadow-xl shadow-orange-500/20">
-            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay"></div>
             <div className="w-full bg-background/90 backdrop-blur-xl rounded-xl p-6 flex items-center justify-between border border-white/10 relative z-10 flex-col md:flex-row gap-4">
               <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
                 <div className="size-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-inner shrink-0">
