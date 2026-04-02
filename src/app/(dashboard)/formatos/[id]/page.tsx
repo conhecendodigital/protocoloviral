@@ -383,7 +383,7 @@ export default function FormatoViewPage() {
                         {title}
                       </p>
                       {content.trim() && (
-                        <p className="text-sm text-[#0ea5e9] whitespace-pre-wrap leading-relaxed opacity-80 mix-blend-screen">
+                        <p className="text-sm text-slate-900 dark:text-white whitespace-pre-wrap leading-relaxed opacity-90">
                           {content.trim()}
                         </p>
                       )}
@@ -391,7 +391,7 @@ export default function FormatoViewPage() {
                   )
                 }
                 return (
-                  <p key={i} className="text-sm text-[#0ea5e9] whitespace-pre-wrap leading-relaxed opacity-80">
+                  <p key={i} className="text-sm text-slate-900 dark:text-white whitespace-pre-wrap leading-relaxed opacity-90">
                     {block}
                   </p>
                 )
