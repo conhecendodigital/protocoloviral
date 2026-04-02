@@ -10,7 +10,7 @@ const plans = [
         name: 'Plano Básico',
         price: 'Grátis',
         desc: 'Para testar a plataforma.',
-        tokens: '5.000 tokens / 24h',
+        tokens: '5 Créditos / 24h',
         features: [
             'Acesso a agentes básicos',
             'Histórico de chat'
@@ -26,7 +26,7 @@ const plans = [
         name: 'Profissional',
         price: 'R$ 49/mês',
         desc: 'Para quem precisa acelerar o conteúdo.',
-        tokens: '50.000 tokens / 24h',
+        tokens: '50 Créditos / 24h',
         features: [
             'Tudo do Básico',
             'Acesso a agentes Pro',
@@ -44,7 +44,7 @@ const plans = [
         name: 'Elite VIP',
         price: 'R$ 97/mês',
         desc: 'Limites altíssimos para alto volume.',
-        tokens: '150.000 tokens / 24h',
+        tokens: '150 Créditos / 24h',
         features: [
             'Tudo do Profissional',
             'Acesso VIP a todos os Agentes',
@@ -186,7 +186,8 @@ export default function PlanosPage() {
                     </h1>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
                         Aumente a inteligência do seu negócio utilizando IA com orçamentos previsíveis. 
-                        Todos os planos <strong>recarregam de tokens automaticamente a cada 24 horas</strong>.
+                        Todos os planos <strong>recarregam de créditos automaticamente a cada 24 horas</strong>.<br/>
+                        <span className="text-sm mt-3 inline-block">💡 <strong>1 Crédito</strong> equivale a aproximadamente <strong>1 página de texto</strong> lida ou escrita pela IA.</span>
                     </p>
                 </motion.div>
 

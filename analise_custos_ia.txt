@@ -1,0 +1,37 @@
+### Substituir por IA "Gratuita" como principal e as pagas como Fallback
+Essa é a clássica mentalidade de redução de custos, e faz todo o sentido, mas tem um erro técnico letal se vocês caírem no conto da API "totalmente gratuita".
+
+APIs gratuitas de código aberto (Llama, Mistral em HuggingFace ou Groq free-tier) possuem Rate Limits severos (limite de requests por minuto) ou ficam instáveis. Se o seu site tiver um pico de uso, sua "IA master gratuita" vai cair (erro 429), ativará o Fallback para as pagas (GPT-4/Claude) massivamente de uma vez, e todos os usuários usarão a cara do mesmo jeito — e com lentidão.
+
+A jogada de mestre que você deve sugerir ao seu chefe:
+Não usemos IAs "gratuitas" instáveis. Usemos o Gemini 2.0 Flash da Google, que vocês já colocaram no código, ou o GPT-4o Mini. Eles não são de graça, mas o custo deles é tão bizarro e ridículo de barato que chega a parecer erro.
+
+Exemplo de custo: O Gemini 2.0 Flash processa documentos RAG de forma genial, segue prompts excelentemente e custa apenas $0.15 dólares para cada 1 MILHÃO de tokens. O GPT-4o custa $5,00 dólares pelo mesmo 1 milhão. É uma redução de custo de 97%.
+A estratégia de produto: Defina o Gemini Flash (ou GPT-4o mini) como o motor padrão e inegociável de todos os planos Free e Pro. Mantenha o Claude 3.5 Sonnet e o GPT-4o como o motor padrão para o plano Premium. Assim, você economiza absurdamente na base sem sacrificar estabilidade.
+
+---
+
+### A Matemática de Custos: Os limites atuais vão dar lucro?
+(5k no Free, 50k no Pro, 150k no Premium/Dia)
+
+Para saber se vai "doer no bolso", vamos fazer o pior cenário usando um modelo de IA Premium super caro (ex: Claude 3.5 Sonnet ou GPT-4o) que custam na média $5.00 dólares a cada 1 Milhão de tokens mesclados (Input/Output).
+
+Plano Free (5.000 tokens/dia)
+- Custo diário máximo: $0,025 (2 centavos).
+- Custo mensal (se ele voltar 30 dias): $0.75 dólares (R$ 3,75 mensais de prejuízo máximo por free user).
+
+Plano Pro (50.000 tokens/dia)
+- Custo diário: $0,25.
+- Custo mensal usando 100% todo dia: $7.50 dólares (R$ 37,50 reais).
+
+Plano Premium (150.000 tokens/dia)
+- Custo diário: $0,75.
+- Custo mensal usando 100% todo dia: $22.50 dólares (R$ 112,00).
+
+O seu limite está extremamente seguro e trará lucro pelas seguintes razões:
+1. A média mercadológica dita que apenas 10% a 15% dos usuários chegam no limite do plano sequer uma vez no mês.
+2. 50.000 tokens por dia dá equivalente a escrever e ler 37 páginas inteiras de TCC por dia. Ninguém conversa com IA o suficiente para bater isso mensalmente.
+3. Se você seguir o conselho e usar IAs em versão "Flash/Mini" no plano Pro, o custo de $7.50 dólares mensais despenca para meros $0.15 dólares mensais.
+
+Resumo da Ópera:
+A sua ideia das 24 horas fixas faz total sentido como proteção. Os limites de token que você escolheu (5k, 50k, 150k) não vão te dar prejuízo mesmo se o usuário for maníaco, desde que você precifique a assinatura com o câmbio do dólar em mente. Se quiser maquiar isso pro usuário entender sem ele achar que você tirou tokens do bolso dele, faça a divisão mágica de 1 crédito visual = 1.000 tokens nos bastidores!
