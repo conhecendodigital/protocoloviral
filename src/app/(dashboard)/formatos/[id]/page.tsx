@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
 import { Textarea } from '@/components/ui/textarea'
 import { useParams } from 'next/navigation'
+import { parseRoteiroBlocks } from '@/lib/parser'
 import Link from 'next/link'
 
 interface Formato {
@@ -466,11 +467,42 @@ export default function FormatoViewPage() {
                   {activeTab === 'roteiro' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                       {formato.roteiro_completo ? (
-                        <AnaliseSection icon="description" title="Roteiro Completo">
-                          <p className="text-sm text-slate-900 dark:text-white/90 leading-relaxed mt-2 whitespace-pre-wrap">
-                            {formato.roteiro_completo}
-                          </p>
-                        </AnaliseSection>
+                        (() => {
+                          const parsed = parseRoteiroBlocks(formato.roteiro_completo);
+                          if (parsed) {
+                            return (
+                              <div className="space-y-4 pt-2">
+                                <div className="bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 rounded-xl p-5 shadow-inner">
+                                  <h4 className="text-[11px] font-black text-[#0ea5e9] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[16px]">format_quote</span>Gancho
+                                  </h4>
+                                  <p className="text-[15px] font-semibold text-slate-900 dark:text-white leading-[1.7] whitespace-pre-wrap">{parsed.gancho}</p>
+                                </div>
+                                <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-inner">
+                                  <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[16px]">subject</span>Desenvolvimento
+                                  </h4>
+                                  <p className="text-[15px] text-slate-900 dark:text-white/90 leading-[1.7] whitespace-pre-wrap">{parsed.desenvolvimento}</p>
+                                </div>
+                                {parsed.cta?.trim() && (
+                                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5 shadow-inner">
+                                  <h4 className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[16px]">smart_button</span>CTA e Final
+                                  </h4>
+                                  <p className="text-[15px] font-semibold text-emerald-900 dark:text-emerald-100 leading-[1.7] whitespace-pre-wrap">{parsed.cta}</p>
+                                </div>
+                                )}
+                              </div>
+                            )
+                          }
+                          return (
+                            <AnaliseSection icon="description" title="Roteiro Completo">
+                              <p className="text-[15px] text-slate-900 dark:text-white/90 leading-[1.7] mt-2 whitespace-pre-wrap">
+                                {formato.roteiro_completo}
+                              </p>
+                            </AnaliseSection>
+                          )
+                        })()
                       ) : (
                         <p className="text-sm text-slate-500 dark:text-white/40 text-center py-8">Roteiro não disponível.</p>
                       )}
@@ -623,11 +655,58 @@ export default function FormatoViewPage() {
                   </div>
                 </div>
                 <div className="p-5 sm:p-8">
-                  <Textarea
-                    value={generatedReel}
-                    onChange={(e) => setGeneratedReel(e.target.value)}
-                    className="w-full bg-transparent border-0 text-white focus:ring-0 outline-none resize-none min-h-[400px] overflow-y-auto custom-scrollbar font-sans text-[15px] leading-[1.8] p-0"
-                  />
+                  {(() => {
+                    const parsed = parseRoteiroBlocks(generatedReel);
+                    if (parsed) {
+                      const updateReel = (newBlocks: any) => {
+                        const merged = { ...parsed, ...newBlocks }
+                        setGeneratedReel(`**${merged.titulo}**\n\n[GANCHO]\n${merged.gancho}\n\n[DESENVOLVIMENTO]\n${merged.desenvolvimento}\n\n[CTA E FINAL]\n${merged.cta}`)
+                      }
+                      return (
+                        <div className="space-y-6">
+                          <div className="space-y-2">
+                            <h4 className="text-[11px] font-black text-[#0ea5e9] uppercase tracking-[0.2em] flex items-center gap-2">
+                              <span className="material-symbols-outlined text-[16px]">format_quote</span>Gancho
+                            </h4>
+                            <Textarea
+                              value={parsed.gancho}
+                              onChange={(e) => updateReel({ gancho: e.target.value })}
+                              className="w-full bg-black/20 border border-[#0ea5e9]/30 rounded-xl p-4 text-white placeholder-white/30 focus:ring-1 focus:ring-[#0ea5e9] focus:border-[#0ea5e9]/50 outline-none resize-y min-h-[120px] font-sans text-[15px] leading-[1.7]"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                              <span className="material-symbols-outlined text-[16px]">subject</span>Desenvolvimento
+                            </h4>
+                            <Textarea
+                              value={parsed.desenvolvimento}
+                              onChange={(e) => updateReel({ desenvolvimento: e.target.value })}
+                              className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-white/30 focus:ring-1 focus:ring-white/30 focus:border-white/20 outline-none resize-y min-h-[220px] font-sans text-[15px] leading-[1.7]"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <h4 className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                              <span className="material-symbols-outlined text-[16px]">smart_button</span>CTA e Final
+                            </h4>
+                            <Textarea
+                              value={parsed.cta}
+                              onChange={(e) => updateReel({ cta: e.target.value })}
+                              className="w-full bg-black/20 border border-emerald-500/30 rounded-xl p-4 text-[#a7f3d0] placeholder-emerald-500/30 focus:ring-1 focus:ring-emerald-500 outline-none resize-y min-h-[100px] font-sans text-[15px] leading-[1.7]"
+                            />
+                          </div>
+                        </div>
+                      )
+                    }
+                    return (
+                      <Textarea
+                        value={generatedReel}
+                        onChange={(e) => setGeneratedReel(e.target.value)}
+                        className="w-full bg-transparent border-0 text-white focus:ring-0 outline-none resize-y min-h-[400px] font-sans text-[15px] leading-[1.8] p-0 custom-scrollbar"
+                      />
+                    )
+                  })()}
                 </div>
               </motion.div>
             )}

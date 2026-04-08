@@ -186,22 +186,28 @@ Identifique qual destes arquétipos o formato viral se encaixa e use a lógica c
 - COMPARAÇÃO RICO/POBRE → dois personagens + comparações práticas
 - TUTORIAL RÁPIDO → jeito errado vs jeito certo + passo a passo
 
-FORMATO DE ENTREGA:
-- Entregue APENAS o texto falado — sem títulos de seção, sem colchetes, sem indicações visuais
-- Apenas o título do vídeo em negrito na primeira linha, depois o texto corrido
-- Nada depois do roteiro
+FORMATO DE ENTREGA OBRIGATÓRIO:
+Você DEVE estruturar a sua resposta exatamente com os blocos abaixo, separados por essas exatas tags (em negrito ou não, mas contendo os colchetes textuais abaixo):
+[GANCHO]
+<texto do gancho, os 3 primeiros segundos>
+
+[DESENVOLVIMENTO]
+<texto principal>
+
+[CTA E FINAL]
+<texto do call to action e encerramento. se o vídeo original não tem, deixe a parte do CTA em branco>
 
 EXEMPLO DE FORMATO CORRETO:
 **A Culpa do Feed**
-Oi, desculpa a demora. É que eu tava salvando mais um post de 'como crescer no Instagram', abrindo mais um tutorial de IA, colocando mais uma ideia no Notion — sem postar nada. De novo. Como se salvar fosse o mesmo que fazer. Mas agora chega. Você também fica nesse ciclo? Me conta aqui.
 
-EXEMPLO DE FORMATO ERRADO:
-🎬 [TÍTULO]
-**[GANCHO]**
-texto do gancho
-**[DESENVOLVIMENTO]**
-texto
-*(Visual: indicação visual)*`
+[GANCHO]
+Oi, desculpa a demora. É que eu tava salvando mais um post de como crescer no Instagram, sem postar nada.
+
+[DESENVOLVIMENTO]
+De novo. Como se salvar fosse o mesmo que fazer. Mas agora chega. Ficar focando em tutorial não vai te trazer cliente. Você precisa focar na dor do seu público.
+
+[CTA E FINAL]
+Você também fica nesse ciclo? Me conta aqui nos comentários.`
 
     const userPrompt = `Você vai gerar um roteiro de Reels. Siga os passos na ordem abaixo.
 

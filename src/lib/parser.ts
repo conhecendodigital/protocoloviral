@@ -257,3 +257,51 @@ export function parsePersona(text: string | null | undefined): PersonaParsed | n
     raw: text,
   }
 }
+
+// ─── Roteiro Visual Parser ──────────────────────────────────
+
+export interface RoteiroBlocks {
+  titulo: string;
+  gancho: string;
+  desenvolvimento: string;
+  cta: string;
+}
+
+/**
+ * Lê um texto que contém as marcações de roteiro [GANCHO], [DESENVOLVIMENTO] e [CTA E FINAL]
+ * E retorna a divisão ou null caso não esteja formatado corretamente.
+ */
+export function parseRoteiroBlocks(text: string): RoteiroBlocks | null {
+  if (!text) return null;
+
+  // Busca o título - a primeira linha com **
+  const lines = text.split('\\n');
+  let titulo = '';
+  if (lines[0] && lines[0].includes('**')) {
+    titulo = lines[0].replace(/\\*\\*/g, '').trim();
+  } else {
+    // Tenta pegar a primeira linha sem estar vazia
+    titulo = lines.find(l => l.trim().length > 0 && !l.includes('[GANCHO]'))?.replace(/\\*\\*/g, '').trim() || 'Roteiro';
+  }
+
+  // Regex para achar os blocos (tratando negrito opcional e espaços)
+  const regexGancho = /(?:\\*\\*)?\\[GANCHO\\](?:\\*\\*)?[\\s\\S]*?(?=(?:\\*\\*)?\\[DESENVOLVIMENTO\\](?:\\*\\*)?)/i;
+  const regexDev = /(?:\\*\\*)?\\[DESENVOLVIMENTO\\](?:\\*\\*)?[\\s\\S]*?(?=(?:\\*\\*)?\\[CTA E FINAL\\](?:\\*\\*)?|$)/i;
+  const regexCta = /(?:\\*\\*)?\\[CTA E FINAL\\](?:\\*\\*)?[\\s\\S]*/i;
+
+  const mGancho = text.match(regexGancho);
+  const mDev = text.match(regexDev);
+  const mCta = text.match(regexCta);
+
+  if (!mGancho && !mDev) return null; // Não achou nem o gancho nem desenvolvimento
+
+  const pureText = (blockMatch: RegExpMatchArray | null, tagName: RegExp) => 
+    blockMatch ? blockMatch[0].replace(tagName, '').replace(/\\*\\*/g, '').trim() : '';
+
+  return {
+    titulo,
+    gancho: pureText(mGancho, /(?:\\*\\*)?\\[GANCHO\\](?:\\*\\*)?/i),
+    desenvolvimento: pureText(mDev, /(?:\\*\\*)?\\[DESENVOLVIMENTO\\](?:\\*\\*)?/i),
+    cta: pureText(mCta, /(?:\\*\\*)?\\[CTA E FINAL\\](?:\\*\\*)?/i),
+  };
+}
