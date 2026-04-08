@@ -133,14 +133,12 @@ Dor do nicho: salva mil posts, assiste tutorial, mas não posta nada
 ❌ ERRADO — detalhes pessoais que não servem:
 "Desculpa a demora. É que eu tava às 22h30, filho dormindo, marido falando que internet não sustenta ninguém..."
 
-REGRAS INVIOLÁVEIS:
-❌ Zero plágio — nenhuma frase do original entra no novo
-❌ Zero genérico — nada que qualquer criador de qualquer nicho poderia falar
-❌ Zero linguagem de IA — sem "mergulhe", "jornada", "transforme sua vida"
-❌ Zero dados inventados — só o que está nos dados do criador
-❌ Zero indicações visuais — só o texto falado
-❌ Zero explicações após o roteiro — entregue só o roteiro
-❌ Zero elementos inventados — se o original não tem CTA, não adiciona CTA. Se não tem pergunta, não adiciona pergunta. Se não tem virada, não adiciona virada. O roteiro novo tem EXATAMENTE os mesmos elementos do original — nem mais, nem menos.
+REGRAS INVIOLÁVEIS E CRÍTICAS:
+❌ ZERO INDICAÇÕES VISUAIS: É expressamente proibido usar textos entre parênteses descrevendo imagens, telas ou encenação (Ex: NÃO USE "(mostra tela)", "(imagem de X)"). Retorne APENAS as sílabas que saem da boca da pessoa.
+❌ ZERO REPETIÇÃO NARRATIVA: O roteiro deve ser fluido e único. Nunca repita a mesma introdução ou o mesmo bloco de transição duas vezes seguidas!
+❌ ZERO PLÁGIO METAFÓRICO: Se o contexto do estudo for "Burger King e McDonald's", o seu ROTEIRO NÃO DEVE falar de "A e B" com a mesma linguagem exata e cansativa. Crie uma nova abordagem focada no Nicho.
+❌ ZERO LINGUAGEM GENÉRICA DE IA: Proibido termos como "mergulhe nessa jornada", "desvende esse segredo", "eleve seu negócio". Use o português rasgado e coloquial.
+❌ ZERO ELEMENTOS FORA DO CONTEXTO: Entregue apenas o GANCHO, DESENVOLVIMENTO e CTA, não coloque recados adicionais no final.
 
 ═══════════════════════════════════
 CHECKLIST DE QUALIDADE (validar antes de entregar)
@@ -246,10 +244,14 @@ Ideia de Conteúdo / Tema Específico a abordar: ${ideia}
 ═══════════════════════════
 PASSO 5 — ESCREVA O ROTEIRO
 ═══════════════════════════
-Replique TODOS os elementos do formato viral com o conteúdo do nicho acima.
-OBRIGATÓRIO: O roteiro tem que focar na base da "Ideia de Conteúdo" e abraçar firmemente a atitude do "Tom de voz escolhido" (Ex: Se for um comediante use humor; se for amigo seja conversacional e solto, etc.).
-O roteiro encarna a dor da persona ligada ao nicho — sem detalhes pessoais irrelevantes.
-Duração equivalente a: ${duracao}`
+Combine e adapte o formato original para o seu Nicho e base do Conteúdo.
+⚠️ REGRAS MÁXIMAS ⚠️
+1. O roteiro DEVE OBRIGATORIAMENTE ser fluido e conter a atitude do "Tom de voz escolhido" [${tomVoz}].
+2. NUNCA use parênteses com descrições visuais do cenário/vídeo. Foque apenas na locução falada!
+3. NÃO REPITA IDEIAS NO MESMO ROTEIRO. Fale a "Ideia de Conteúdo" e vá direto ao ponto, não crie dois momentos separados enrolando para entregar o valor ("E é aí que você erra..." -> "Eu vou te mostrar..."). Avance de forma contundente e pareça um humano inteligente. 
+4. O roteiro encarna a dor da persona sem encheção de linguiça.
+
+Duração alvo: ${duracao}`
 
     const modelName = 'gemini-2.0-flash'
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`
