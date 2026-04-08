@@ -24,11 +24,11 @@ export async function POST(req: Request) {
       )
     }
 
-    const { persona, estudo, duracaoStr, nicho } = await req.json()
+    const { persona, estudo, duracaoStr, nicho, ideia, tomVoz } = await req.json()
 
-    if (!persona || !estudo || !nicho) {
+    if (!persona || !estudo || !nicho || !ideia) {
       return NextResponse.json(
-        { error: 'Faltam dados obrigatórios (clareza, persona ou estudo) para gerar o roteiro.' },
+        { error: 'Faltam dados obrigatórios (persona, estudo, nicho ou ideia de conteúdo) para gerar o roteiro.' },
         { status: 400 }
       )
     }
@@ -232,14 +232,22 @@ PASSO 2 — NICHO DO CRIADOR
 ${nicho}
 
 ═══════════════════════════
-PASSO 3 — DOR DA PERSONA
+PASSO 3 — DOR DA PERSONA E DADOS DEMOGRÁFICOS
 ═══════════════════════════
 ${persona}
 
 ═══════════════════════════
-PASSO 4 — ESCREVA O ROTEIRO
+PASSO 4 — CONTEXTO OBRIGATÓRIO E TOM DE VOZ
+═══════════════════════════
+Tom de voz escolhido pelo criador: O roteiro deve obrigatoriamente encarnar a personalidade de um [${tomVoz}], adotando essa atitude do início ao fim do roteiro. A linguagem e o comportamento devem ser fiéis a esse arquétipo.
+
+Ideia de Conteúdo / Tema Específico a abordar: ${ideia}
+
+═══════════════════════════
+PASSO 5 — ESCREVA O ROTEIRO
 ═══════════════════════════
 Replique TODOS os elementos do formato viral com o conteúdo do nicho acima.
+OBRIGATÓRIO: O roteiro tem que focar na base da "Ideia de Conteúdo" e abraçar firmemente a atitude do "Tom de voz escolhido" (Ex: Se for um comediante use humor; se for amigo seja conversacional e solto, etc.).
 O roteiro encarna a dor da persona ligada ao nicho — sem detalhes pessoais irrelevantes.
 Duração equivalente a: ${duracao}`
 

@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
 import { Textarea } from '@/components/ui/textarea'
 import { useParams } from 'next/navigation'
-import { parseRoteiroBlocks } from '@/lib/parser'
+import { parseRoteiroBlocks, parsePersona } from '@/lib/parser'
 import Link from 'next/link'
 
 interface Formato {
@@ -111,6 +111,12 @@ export default function FormatoViewPage() {
   const [generatedReel, setGeneratedReel] = useState<string | null>(null)
   const [generateError, setGenerateError] = useState<string | null>(null)
   const [ideia, setIdeia] = useState('')
+  const [tomVoz, setTomVoz] = useState('')
+
+  useEffect(() => {
+    const savedTone = localStorage.getItem('mapa-engajamento-tom-voz')
+    if (savedTone) setTomVoz(savedTone)
+  }, [])
 
   // decide se usa análise nova ou estudo legado
   const hasNewAnalysis = !!(formato?.gancho || formato?.analise_tipo)
@@ -135,18 +141,27 @@ export default function FormatoViewPage() {
       return
     }
     if (!formato) return
+    if (!ideia.trim()) {
+      setGenerateError('⚠️ A Ideia de Conteúdo é obrigatória para adaptar o roteiro.')
+      return
+    }
     setGeneratingReel(true)
     setGenerateError(null)
     try {
       const nicho = profile.nicho || ''
-      const persona = profile.resposta2.substring(0, 8000)
+      const parsedPersona = parsePersona(profile.resposta2)
+      let shortPersona = profile.resposta2.substring(0, 8000)
+      if (parsedPersona) {
+        shortPersona = `PERFIL DEMOGRÁFICO:\nNome: ${parsedPersona.demografico.nome}\nIdade: ${parsedPersona.demografico.idade}\nGênero: ${parsedPersona.demografico.genero}\nCidade: ${parsedPersona.demografico.cidade}\nProfissão: ${parsedPersona.demografico.profissao}\nEscolaridade: ${parsedPersona.demografico.escolaridade}\n\nROTINA DIÁRIA:\n${parsedPersona.rotina}`
+      }
+      
       const estudo = formato.estudo || formato.roteiro_completo || ''
       const duracaoStr = formato.duracao ? `${formatDuration(formato.duracao)} segundos` : '30 segundos'
 
       const res = await fetch('/api/generate-reel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nicho, persona, estudo, duracaoStr, ideia: ideia || '' })
+        body: JSON.stringify({ nicho, persona: shortPersona, estudo, duracaoStr, ideia: ideia.trim(), tomVoz: tomVoz || 'Amigo' })
       })
 
       if (!res.ok) {
@@ -586,10 +601,42 @@ export default function FormatoViewPage() {
             </div>
 
             {!generatedReel && (
-              <div className="space-y-4 relative z-10">
+              <div className="space-y-6 relative z-10">
+                <div className="space-y-3">
+                  <label className="text-xs font-bold text-slate-700 dark:text-white/70 uppercase tracking-widest pl-1">
+                    Como a Inteligência deve se comportar? (Tom de Voz)
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {[
+                      { id: 'Professor', icon: '🧑‍🏫' },
+                      { id: 'Amigo', icon: '🤝' },
+                      { id: 'Provocador', icon: '🔥' },
+                      { id: 'Mentor', icon: '🧭' },
+                      { id: 'Comediante', icon: '😂' },
+                      { id: 'Hipeman', icon: '🚀' },
+                    ].map((tom) => (
+                      <button
+                        key={tom.id}
+                        onClick={() => {
+                          setTomVoz(tom.id)
+                          localStorage.setItem('mapa-engajamento-tom-voz', tom.id)
+                        }}
+                        className={`flex items-center gap-2 p-3 rounded-xl border text-sm font-bold transition-all ${
+                          tomVoz === tom.id
+                            ? 'bg-[#0ea5e9]/10 border-[#0ea5e9] text-[#0ea5e9]'
+                            : 'bg-black/5 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/10'
+                        }`}
+                      >
+                        <span className="text-base">{tom.icon}</span>
+                        {tom.id}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-700 dark:text-white/70 uppercase tracking-widest pl-1">
-                    Contexto Adicional <span className="text-white/40 opacity-70">(opcional)</span>
+                    Sua Ideia de Conteúdo <span className="text-red-500 font-extrabold">* (obrigatório)</span>
                   </label>
                   <textarea
                     value={ideia}
