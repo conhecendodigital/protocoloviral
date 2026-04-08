@@ -185,28 +185,33 @@ Identifique qual destes arquétipos o formato viral se encaixa e use a lógica c
 - COMPARAÇÃO RICO/POBRE → dois personagens + comparações práticas
 - TUTORIAL RÁPIDO → jeito errado vs jeito certo + passo a passo
 
-FORMATO DE ENTREGA OBRIGATÓRIO:
-Você DEVE estruturar a sua resposta exatamente com os blocos abaixo, separados por essas exatas tags (em negrito ou não, mas contendo os colchetes textuais abaixo):
+FORMATO DE ENTREGA OBRIGATÓRIO E RACIOCÍNIO (CHAIN OF THOUGHT):
+Você DEVE estruturar a sua resposta primeiro com um bloco de análise e mapeamento, seguido pelas exatas tags do roteiro. Se você pular a análise, o roteiro sairá ruim.
+
+[SALA_DE_ROTEIRISTAS]
+<Escreva aqui uma análise de 2 ou 3 parágrafos desconstruindo o formato original (Qual é a dinâmica psicológica dele? Surpresa? Comparação? Tutorial quebrado?). Logo em seguida, responda: COMO eu aplico a minha Ideia de Conteúdo EXATA nessa dinâmica, SEM precisar herdar historinhas literais (ex. Empresa A vs Empresa B) que fogem do nicho?>
+
 [GANCHO]
-<texto do gancho, os 3 primeiros segundos>
+<texto final gerado do gancho, 3 primeiros segundos>
 
 [DESENVOLVIMENTO]
-<texto principal>
+<texto final principal>
 
 [CTA E FINAL]
-<texto do call to action e encerramento. se o vídeo original não tem, deixe a parte do CTA em branco>
+<texto do call to action e encerramento>
 
 EXEMPLO DE FORMATO CORRETO:
-**A Culpa do Feed**
+[SALA_DE_ROTEIRISTAS]
+O formato original se apoia no gatilho do inimigo em comum ("O mercado quer seu dinheiro"). Minha ideia de conteúdo é ensinar ChatGPT. Vou transferir esse arquétipo trocando o inimigo para "gurus que vendem pacotes de prints inúteis". O ritmo continuará indignado e rápido.
 
 [GANCHO]
-Oi, desculpa a demora. É que eu tava salvando mais um post de como crescer no Instagram, sem postar nada.
+Cê viu que tão te empurrando 10 mil prompts de ChatGPT como se fosse a salvação da sua vida, né?
 
 [DESENVOLVIMENTO]
-De novo. Como se salvar fosse o mesmo que fazer. Mas agora chega. Ficar focando em tutorial não vai te trazer cliente. Você precisa focar na dor do seu público.
+Esses gurus nadam de braçada enquanto você tenta testar cada prompt inútil. A verdade é que IA não é milagre mágico. Você quer um funil que presta? Pare de salvar textão e me acompanhe na prática para criar automações enxutas.
 
 [CTA E FINAL]
-Você também fica nesse ciclo? Me conta aqui nos comentários.`
+Duvida? Digita AUTO aqui nos comentários.`
 
     const userPrompt = `Você vai gerar um roteiro de Reels. Siga os passos na ordem abaixo.
 
@@ -243,14 +248,14 @@ Tom de voz escolhido pelo criador: O roteiro deve obrigatoriamente encarnar a pe
 Ideia de Conteúdo / Tema Específico a abordar: ${ideia}
 
 ═══════════════════════════
-PASSO 5 — ESCREVA O ROTEIRO
+PASSO 5 — EXECUTE O FLUXO DE ROTEIRIZAÇÃO
 ═══════════════════════════
-Combine e adapte o formato original para o seu Nicho e base do Conteúdo.
-⚠️ REGRAS MÁXIMAS ⚠️
-1. O roteiro DEVE OBRIGATORIAMENTE ser fluido e conter a atitude do "Tom de voz escolhido" [${tomVoz}].
+O Formato Viral (Estudo) é apenas a "Música de fundo" (ritmo, tempo, emoção). A Letra (história, metáforas, conteúdo) VEM DA SUA IDEIA DE CONTEÚDO e da Dor da Persona.
+⚠️ MÉTODOLOGIA MÁXIMA ⚠️
+1. Faça a tempestade de ideias obrigatória dentro de [SALA_DE_ROTEIRISTAS]. Planeje lá como quebrar amarras erradas.
 2. NUNCA use parênteses com descrições visuais do cenário/vídeo. Foque apenas na locução falada!
-3. NÃO REPITA IDEIAS NO MESMO ROTEIRO. Fale a "Ideia de Conteúdo" e vá direto ao ponto, não crie dois momentos separados enrolando para entregar o valor ("E é aí que você erra..." -> "Eu vou te mostrar..."). Avance de forma contundente e pareça um humano inteligente. 
-4. O roteiro encarna a dor da persona sem encheção de linguiça.
+3. O modelo original pode usar uma metáfora (ex: A vencendo B), não se apegue a ela se não for nativa e natural para o seu tema atual. Traduza a SENSAÇÃO para o seu ambiente.
+4. O roteiro DEVE ser fluido, respeitando a atitude de [${tomVoz}] do início ao fim, sem enrolações corporativas chatas.
 
 Duração alvo: ${duracao}`
 
