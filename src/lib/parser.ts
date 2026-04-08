@@ -303,8 +303,8 @@ export function parseRoteiroBlocks(text: string): RoteiroBlocks | null {
 
     let ganchoEndIndex = firstPuncResult.index! + firstPuncResult[0].length;
     
-    // Se o gancho for muito curto e existir próxima frase, pegue a segunda (Ex: "Oi! Tem um segredo...")
-    if (ganchoEndIndex < 40) {
+    // Se o gancho for curto (ex: Oi! / Você viu?), pegue a segunda frase para dar mais contexto
+    if (ganchoEndIndex < 80) {
       const secondTarget = cleanText.substring(ganchoEndIndex).match(/[.?!]+[\s\n]+/);
       if (secondTarget) {
          ganchoEndIndex += secondTarget.index! + secondTarget[0].length;
@@ -317,9 +317,11 @@ export function parseRoteiroBlocks(text: string): RoteiroBlocks | null {
     let cta = '';
     let ctaLength = 0;
     
-    // Pegar apenas a última frase pro CTA, se tivermos bastante volume
-    if (reversedTokens && reversedTokens.length >= 4) {
-       // O match sempre consome pra frente, pegamos o último array item
+    // Pegar as duas últimas frases para formar o CTA (evitar falas curtas cortadas como "Tchau.")
+    if (reversedTokens && reversedTokens.length >= 6) {
+       cta = reversedTokens[reversedTokens.length - 2].trim() + ' ' + reversedTokens[reversedTokens.length - 1].trim();
+       ctaLength = reversedTokens[reversedTokens.length - 2].length + reversedTokens[reversedTokens.length - 1].length;
+    } else if (reversedTokens && reversedTokens.length >= 4) {
        cta = reversedTokens[reversedTokens.length - 1].trim();
        ctaLength = reversedTokens[reversedTokens.length - 1].length;
     }
