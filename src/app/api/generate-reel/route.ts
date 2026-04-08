@@ -136,9 +136,10 @@ Dor do nicho: salva mil posts, assiste tutorial, mas não posta nada
 REGRAS INVIOLÁVEIS E CRÍTICAS:
 ❌ ZERO INDICAÇÕES VISUAIS: É expressamente proibido usar textos entre parênteses descrevendo imagens, telas ou encenação (Ex: NÃO USE "(mostra tela)", "(imagem de X)"). Retorne APENAS as sílabas que saem da boca da pessoa.
 ❌ ZERO REPETIÇÃO NARRATIVA: O roteiro deve ser fluido e único. Nunca repita a mesma introdução ou o mesmo bloco de transição duas vezes seguidas!
-❌ ZERO PLÁGIO METAFÓRICO: Se o contexto do estudo for "Burger King e McDonald's", o seu ROTEIRO NÃO DEVE falar de "A e B" com a mesma linguagem exata e cansativa. Crie uma nova abordagem focada no Nicho.
-❌ ZERO LINGUAGEM GENÉRICA DE IA: Proibido termos como "mergulhe nessa jornada", "desvende esse segredo", "eleve seu negócio". Use o português rasgado e coloquial.
-❌ ZERO ELEMENTOS FORA DO CONTEXTO: Entregue apenas o GANCHO, DESENVOLVIMENTO e CTA, não coloque recados adicionais no final.
+❌ ZERO FORÇAR METÁFORAS IRRACIONAIS: Nunca force o mesmo molde de "personagem 1 vs personagem 2" ou "empresa A vs B" se isso criar uma história sem sentido no seu nicho ("Ex: OpenAI deu rasteira no ChatGPT" é falso e absurdo). O gancho DEVE ser sempre adaptado pela lógica real da [Ideia de Conteúdo]!
+❌ ZERO FAKE NEWS E DADOS DESATUALIZADOS: Jamais invente eventos, cite versões desatualizadas de softwares (como "lançou o Claude 3") ou minta sobre funcionamento de produtos. Fale exclusivamente ancorado nos benefícios reais solicitados.
+❌ ZERO LINGUAGEM GENÉRICA DE IA: Proibido termos como "mergulhe nessa jornada", "desvende esse segredo", "eleve seu negócio". Use o português natural.
+❌ ZERO ELEMENTOS FORA DO CONTEXTO: Entregue apenas o GANCHO, DESENVOLVIMENTO e CTA. Não crie informações inúteis após o CTA.
 
 ═══════════════════════════════════
 CHECKLIST DE QUALIDADE (validar antes de entregar)
