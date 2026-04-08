@@ -285,23 +285,64 @@ export function parseRoteiroBlocks(text: string): RoteiroBlocks | null {
   }
 
   // Regex para achar os blocos (tratando negrito opcional e espaços)
-  const regexGancho = /(?:\\*\\*)?\\[GANCHO\\](?:\\*\\*)?[\\s\\S]*?(?=(?:\\*\\*)?\\[DESENVOLVIMENTO\\](?:\\*\\*)?)/i;
-  const regexDev = /(?:\\*\\*)?\\[DESENVOLVIMENTO\\](?:\\*\\*)?[\\s\\S]*?(?=(?:\\*\\*)?\\[CTA E FINAL\\](?:\\*\\*)?|$)/i;
-  const regexCta = /(?:\\*\\*)?\\[CTA E FINAL\\](?:\\*\\*)?[\\s\\S]*/i;
+  const regexGancho = /(?:\*\*)?\[GANCHO\](?:\*\*)?[\s\S]*?(?=(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?)/i;
+  const regexDev = /(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?[\s\S]*?(?=(?:\*\*)?\[CTA E FINAL\](?:\*\*)?|$)/i;
+  const regexCta = /(?:\*\*)?\[CTA E FINAL\](?:\*\*)?[\s\S]*/i;
 
   const mGancho = text.match(regexGancho);
   const mDev = text.match(regexDev);
   const mCta = text.match(regexCta);
 
-  if (!mGancho && !mDev) return null; // Não achou nem o gancho nem desenvolvimento
+  if (!mGancho && !mDev) {
+    // FALLBACK HEURÍSTICO P/ ROTEIRO ORIGINAL SCRAPEADO (Sem Tags)
+    let cleanText = text.replace(titulo, '').trim();
+    if (!cleanText) cleanText = text.trim();
+
+    const firstPuncResult = cleanText.match(/[.?!]+[\s\n]+/);
+    if (!firstPuncResult) return null; // Sem pontuação, sem divisão
+
+    let ganchoEndIndex = firstPuncResult.index! + firstPuncResult[0].length;
+    
+    // Se o gancho for muito curto e existir próxima frase, pegue a segunda (Ex: "Oi! Tem um segredo...")
+    if (ganchoEndIndex < 40) {
+      const secondTarget = cleanText.substring(ganchoEndIndex).match(/[.?!]+[\s\n]+/);
+      if (secondTarget) {
+         ganchoEndIndex += secondTarget.index! + secondTarget[0].length;
+      }
+    }
+
+    const gancho = cleanText.substring(0, ganchoEndIndex).trim();
+
+    const reversedTokens = cleanText.match(/[^.?!]+[.?!]+(?:[\s\n]|$)/g);
+    let cta = '';
+    let ctaLength = 0;
+    
+    // Pegar apenas a última frase pro CTA, se tivermos bastante volume
+    if (reversedTokens && reversedTokens.length >= 4) {
+       // O match sempre consome pra frente, pegamos o último array item
+       cta = reversedTokens[reversedTokens.length - 1].trim();
+       ctaLength = reversedTokens[reversedTokens.length - 1].length;
+    }
+
+    const devStart = ganchoEndIndex;
+    const devEnd = cleanText.length - ctaLength;
+    const desenvolvimento = cleanText.substring(devStart, devEnd).trim();
+
+    return {
+      titulo,
+      gancho,
+      desenvolvimento,
+      cta
+    }
+  }
 
   const pureText = (blockMatch: RegExpMatchArray | null, tagName: RegExp) => 
-    blockMatch ? blockMatch[0].replace(tagName, '').replace(/\\*\\*/g, '').trim() : '';
+    blockMatch ? blockMatch[0].replace(tagName, '').replace(/\*\*/g, '').trim() : '';
 
   return {
     titulo,
-    gancho: pureText(mGancho, /(?:\\*\\*)?\\[GANCHO\\](?:\\*\\*)?/i),
-    desenvolvimento: pureText(mDev, /(?:\\*\\*)?\\[DESENVOLVIMENTO\\](?:\\*\\*)?/i),
-    cta: pureText(mCta, /(?:\\*\\*)?\\[CTA E FINAL\\](?:\\*\\*)?/i),
+    gancho: pureText(mGancho, /(?:\*\*)?\[GANCHO\](?:\*\*)?/i),
+    desenvolvimento: pureText(mDev, /(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?/i),
+    cta: pureText(mCta, /(?:\*\*)?\[CTA E FINAL\](?:\*\*)?/i),
   };
 }
