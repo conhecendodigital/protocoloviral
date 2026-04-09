@@ -109,6 +109,7 @@ export default function FormatoViewPage() {
   const { profile } = useProfile()
   const [generatingReel, setGeneratingReel] = useState(false)
   const [generatedReel, setGeneratedReel] = useState<string | null>(null)
+  const [editableBlocks, setEditableBlocks] = useState<{titulo: string, gancho: string, desenvolvimento: string, cta: string} | null>(null)
   const [generateError, setGenerateError] = useState<string | null>(null)
   const [ideia, setIdeia] = useState('')
   const [tomVoz, setTomVoz] = useState('')
@@ -147,6 +148,8 @@ export default function FormatoViewPage() {
     }
     setGeneratingReel(true)
     setGenerateError(null)
+    setGeneratedReel('')
+    setEditableBlocks(null)
     try {
       const nicho = profile.nicho || ''
       const parsedPersona = parsePersona(profile.resposta2)
@@ -703,10 +706,11 @@ export default function FormatoViewPage() {
                 </div>
                 <div className="p-5 sm:p-8">
                   {(() => {
-                    const parsed = parseRoteiroBlocks(generatedReel);
+                    const parsed = editableBlocks || parseRoteiroBlocks(generatedReel);
                     if (parsed) {
                       const updateReel = (newBlocks: any) => {
                         const merged = { ...parsed, ...newBlocks }
+                        setEditableBlocks(merged)
                         setGeneratedReel(`**${merged.titulo}**\n\n[GANCHO]\n${merged.gancho}\n\n[DESENVOLVIMENTO]\n${merged.desenvolvimento}\n\n[CTA E FINAL]\n${merged.cta}`)
                       }
                       return (
