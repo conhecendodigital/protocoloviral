@@ -1,10 +1,10 @@
 import { embed } from 'ai'
 import { openai } from '@ai-sdk/openai'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabase } from '@/lib/supabase/server'
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = await createServerSupabase()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {

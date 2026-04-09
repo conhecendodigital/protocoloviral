@@ -1,13 +1,13 @@
 import { streamText, embed } from 'ai'
 import { openai } from '@ai-sdk/openai'
 import { anthropic } from '@ai-sdk/anthropic'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabase } from '@/lib/supabase/server'
 
 export const maxDuration = 60
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = await createServerSupabase()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
