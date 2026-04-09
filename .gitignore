@@ -46,3 +46,8 @@ stitch_export/
 
 # temp files
 temp/
+
+# internal docs (strategy, prompts, migrations)
+implementation_plan*.md
+alucinacao.md
+migracao_v3.sql
