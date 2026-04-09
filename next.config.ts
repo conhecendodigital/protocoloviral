@@ -11,6 +11,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/prompts',
+        destination: '/roteirista',
+        permanent: true,
+      },
+      {
+        source: '/prompts/:path*',
+        destination: '/roteirista',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {

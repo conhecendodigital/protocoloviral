@@ -171,24 +171,6 @@ export default function AgentesLibraryPage() {
           </div>
         </motion.div>
 
-        {profile && (!profile.plan_tier || profile.plan_tier === 'free') && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 w-full rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 p-1 flex relative overflow-hidden shadow-xl shadow-orange-500/20">
-            <div className="w-full bg-background/90 backdrop-blur-xl rounded-xl p-6 flex items-center justify-between border border-white/10 relative z-10 flex-col md:flex-row gap-4">
-              <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
-                <div className="size-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-inner shrink-0">
-                  <span className="material-symbols-outlined text-2xl">workspace_premium</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-black italic uppercase tracking-tight text-foreground">AUMENTE SEU LIMITE DIÁRIO</h3>
-                  <p className="text-sm font-medium text-muted-foreground mt-1">Dê upload de arquivos e libere as Inteligências Artificiais de ponta sem preocupações.</p>
-                </div>
-              </div>
-              <Link href="/planos" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-sm tracking-wide hover:scale-105 hover:shadow-lg transition-all whitespace-nowrap">
-                Fazer Upgrade
-              </Link>
-            </div>
-          </motion.div>
-        )}
 
         {/* Loading State */}
         {loading ? (
@@ -233,6 +215,26 @@ export default function AgentesLibraryPage() {
               </div>
             )}
           </div>
+        )}
+
+        {/* Upgrade CTA - Fim da Página */}
+        {profile && (!profile.plan_tier || profile.plan_tier === 'free') && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-16 mb-4 w-full rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 p-1 flex relative overflow-hidden shadow-xl shadow-orange-500/20">
+            <div className="w-full bg-background/90 backdrop-blur-xl rounded-xl p-6 flex items-center justify-between border border-white/10 relative z-10 flex-col md:flex-row gap-4">
+              <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
+                <div className="size-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-inner shrink-0">
+                  <span className="material-symbols-outlined text-2xl">workspace_premium</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-black italic uppercase tracking-tight text-foreground">AUMENTE SEU LIMITE DIÁRIO</h3>
+                  <p className="text-sm font-medium text-muted-foreground mt-1">Dê upload de arquivos e libere as Inteligências Artificiais de ponta sem preocupações.</p>
+                </div>
+              </div>
+              <Link href="/planos" className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-sm tracking-wide hover:scale-105 hover:shadow-lg transition-all whitespace-nowrap">
+                Fazer Upgrade
+              </Link>
+            </div>
+          </motion.div>
         )}
       </div>
     </main>

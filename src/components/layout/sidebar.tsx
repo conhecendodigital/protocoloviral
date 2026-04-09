@@ -49,7 +49,6 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Stories', href: '/stories', icon: 'video_camera_front' },
       { label: 'Analisador', href: '/bio-analyzer', icon: 'monitoring' },
       { label: 'Calculadora', href: '/calculadora', icon: 'calculate' },
-      { label: 'Geradores', href: '/prompts', icon: 'auto_awesome' },
       { label: 'Meu Perfil', href: '/perfil', icon: 'person' },
       { label: 'Jornada', href: '/jornada', icon: 'explore' },
       { label: 'Rotina', href: '/rotina', icon: 'calendar_today' },

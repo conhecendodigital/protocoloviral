@@ -93,32 +93,32 @@ export default function HomePage() {
           transition={{ delay: 0.3 }}
           className="mb-10 w-full relative group cursor-pointer"
         >
-           <Link href="/prompts" className="block relative overflow-hidden rounded-[2rem] p-8 sm:p-12 transition-all duration-500 shadow-2xl hover:shadow-[#e11d48]/40 border border-[#e11d48]/30">
+           <Link href="/roteirista" className="block relative overflow-hidden rounded-[2rem] p-8 sm:p-12 transition-all duration-500 shadow-2xl hover:shadow-[#0ea5e9]/40 border border-[#0ea5e9]/30">
               {/* Background gradient escuro premium */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#4c0519] via-[#881337] to-[#e11d48] opacity-90 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#060a12] via-[#0284c7] to-[#0ea5e9] opacity-90 transition-opacity duration-500 group-hover:opacity-100" />
               
               {/* Decorativos */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[100px] rounded-full mix-blend-overlay" />
-              <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-rose-500/30 blur-[100px] rounded-full mix-blend-screen" />
+              <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#0ea5e9]/30 blur-[100px] rounded-full mix-blend-screen" />
               
               <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-8">
                 <div className="flex-1 flex flex-col items-center sm:items-start text-center sm:text-left">
                   <span className="inline-flex items-center gap-2 text-[11px] sm:text-[13px] font-black tracking-[0.2em] text-white/80 uppercase mb-3 bg-white/10 px-4 py-1.5 rounded-full border border-white/10">
-                     <span className="material-symbols-outlined text-[14px]">auto_awesome</span>
-                     Nossa Inteligência
+                     <span className="material-symbols-outlined text-[14px]">psychology</span>
+                     Escritório de IA
                   </span>
                   <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-lg mb-2">
-                     Crie seu primeiro roteiro
+                     Acesse seus Agentes Premium
                   </h2>
                   <p className="text-white/80 font-medium text-sm sm:text-base max-w-lg">
-                    Transforme conhecimento em conteúdo viral que atrai, retém e converte seguidores com 1 clique nas ferramentas VIPs.
+                    Transforme conhecimento em conteúdo viral que atrai, retém e converte seguidores com o nosso Roteirista inteligente, 100% anti-alucinação.
                   </p>
                 </div>
                 
                 <div className="shrink-0 relative">
                   <div className="absolute inset-0 bg-white blur-xl opacity-30 group-hover:opacity-60 transition-opacity rounded-full animate-pulse" />
-                  <div className="bg-white text-[#e11d48] px-8 py-4 sm:px-10 sm:py-5 rounded-full font-black text-lg sm:text-xl shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10 w-full sm:w-auto">
-                    👉 Criar Agora
+                  <div className="bg-white text-[#0ea5e9] px-8 py-4 sm:px-10 sm:py-5 rounded-full font-black text-lg sm:text-xl shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10 w-full sm:w-auto">
+                    👉 Iniciar Agora
                   </div>
                 </div>
               </div>
