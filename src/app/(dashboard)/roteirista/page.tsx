@@ -27,6 +27,7 @@ interface Formato {
   id: string
   titulo: string
   icone?: string
+  nicho?: string
 }
 
 // removed SUGESTOES array
@@ -40,6 +41,7 @@ export default function RoteiristaPage() {
   const [input, setInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [activeTab, setActiveTab] = useState<'roteiro' | 'analisar'>('roteiro')
+  const [activeFilter, setActiveFilter] = useState<string | null>(null)
 
   // Plus Menu
   const [showPlusMenu, setShowPlusMenu] = useState(false)
@@ -83,7 +85,7 @@ export default function RoteiristaPage() {
       // Formatos
       const { data: fmts } = await supabase
         .from('formatos')
-        .select('id, titulo, icone')
+        .select('id, titulo, icone, nicho')
         .order('titulo')
 
       if (fmts) setFormatos(fmts)
@@ -120,6 +122,18 @@ export default function RoteiristaPage() {
   // ─── Derived ──────────────────────────────────────────
   const selectedVoice = voiceProfiles.find(v => v.id === selectedVoiceId)
   const hasMessages = messages.length > 0
+
+  const categorias = useMemo(() => {
+    const cats = Array.from(new Set(formatos.map(f => f.nicho).filter(Boolean))) as string[];
+    // Capitalize properly
+    const beautified = cats.map(c => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase());
+    return ["Todos", ...Array.from(new Set(beautified))];
+  }, [formatos])
+
+  const filteredFormatos = useMemo(() => {
+    if (!activeFilter) return formatos;
+    return formatos.filter(f => f.nicho && f.nicho.toLowerCase() === activeFilter.toLowerCase());
+  }, [formatos, activeFilter])
 
   // ─── Send Message ─────────────────────────────────────
   const handleSend = async () => {
@@ -319,27 +333,54 @@ export default function RoteiristaPage() {
       {!hasMessages ? (
         /* ═══ EMPTY STATE — title + cards + input all centered ═══ */
         <div className="flex-1 flex flex-col items-center justify-center px-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
             <div className="size-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-500/20 border border-[#0ea5e9]/20 flex items-center justify-center shadow-[0_0_40px_rgba(14,165,233,0.15)]">
               <span className="material-symbols-outlined text-[#0ea5e9] text-4xl">auto_awesome</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">O que vamos criar hoje?</h1>
-            <p className="text-sm text-slate-500 dark:text-white/50 max-w-md mx-auto">Descreva sua ideia e eu vou criar o roteiro perfeito para você, no seu tom de voz.</p>
+            <p className="text-sm text-slate-500 dark:text-white/50 max-w-md mx-auto">Descreva sua ideia ou explore dezenas de formatos virais para o seu roteiro.</p>
           </motion.div>
 
-          <div className="grid grid-cols-2 gap-3 w-full max-w-xl mx-auto mb-8">
-            {formatos.slice(0, 4).map((f, i) => (
-              <motion.button key={f.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.05 }} onClick={() => handleFormatCardClick(f)} className="text-left p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:border-slate-300 dark:hover:border-white/15 transition-all group flex flex-col items-start gap-2 h-full">
-                <span className="material-symbols-outlined text-[#0ea5e9] text-xl block group-hover:scale-110 transition-transform">{f.icone || 'bolt'}</span>
-                <p className="text-sm font-semibold text-slate-700 dark:text-white/80 leading-snug line-clamp-2" title={f.titulo}>{f.titulo}</p>
-                <div className="mt-auto">
-                    <span className="text-[10px] text-[#0ea5e9]/70 font-medium">Usar formato →</span>
+          <AnimatePresence>
+            {formatos.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap items-center justify-center gap-2 mb-4 w-full max-w-2xl mx-auto px-4">
+                {categorias.map(cat => (
+                  <button 
+                    key={cat}
+                    onClick={() => setActiveFilter(cat === 'Todos' ? null : cat)}
+                    className={`px-3 py-1.5 text-[11px] font-bold rounded-full transition-all border ${
+                      (activeFilter?.toLowerCase() === cat.toLowerCase()) || (!activeFilter && cat === 'Todos')
+                        ? 'bg-[#0ea5e9] text-white border-[#0ea5e9] shadow-lg shadow-[#0ea5e9]/20 scale-105' 
+                        : 'bg-transparent text-slate-500 dark:text-white/50 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full max-w-3xl mx-auto mb-8 max-h-[35vh] overflow-y-auto custom-scrollbar p-2">
+            {filteredFormatos.slice(0, 15).map((f, i) => (
+              <motion.button key={f.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }} onClick={() => handleFormatCardClick(f)} className="text-left p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:border-[#0ea5e9]/30 transition-all group flex flex-col items-start gap-1.5 h-full relative overflow-hidden">
+                <span className="material-symbols-outlined text-[#0ea5e9] text-lg block group-hover:scale-110 group-hover:rotate-6 transition-transform">{f.icone || 'bolt'}</span>
+                {f.nicho && <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400 dark:text-white/30">{f.nicho}</span>}
+                <p className="text-xs font-semibold text-slate-700 dark:text-white/80 leading-snug line-clamp-3 mb-2" title={f.titulo}>{f.titulo}</p>
+                <div className="mt-auto pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] text-[#0ea5e9] font-bold bg-[#0ea5e9]/10 px-2 py-0.5 rounded-full inline-block">Usar →</span>
                 </div>
               </motion.button>
             ))}
             {formatos.length === 0 && (
-              <div className="col-span-2 text-center text-sm text-slate-400 dark:text-white/30 py-4">
-                Carregando formatos virais...
+              <div className="col-span-full text-center text-sm text-slate-400 dark:text-white/30 py-8">
+                <span className="material-symbols-outlined text-3xl mb-2 opacity-50 animate-pulse">hourglass_top</span>
+                <p>Carregando formatos virais...</p>
+              </div>
+            )}
+            {filteredFormatos.length === 0 && formatos.length > 0 && (
+              <div className="col-span-full text-center text-sm text-slate-400 dark:text-white/30 py-8">
+                Nenhum formato encontrado para este filtro.
               </div>
             )}
           </div>

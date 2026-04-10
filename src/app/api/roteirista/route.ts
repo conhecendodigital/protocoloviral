@@ -2,6 +2,7 @@ import { streamText, embed } from 'ai'
 import { openai } from '@ai-sdk/openai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { PROMPTS_MATADORES } from './prompts_matadores'
 
 export const maxDuration = 60
 
@@ -88,11 +89,19 @@ Você DEVE mimetizar o seguinte estilo de escrita:
         .single()
         
       if (dbFormat) {
+        let killerPrompt = ''
+        if (dbFormat.nicho) {
+          const nic = dbFormat.nicho.toLowerCase().trim()
+          if (PROMPTS_MATADORES[nic]) {
+            killerPrompt = `\n${PROMPTS_MATADORES[nic]}\n`
+          }
+        }
+
         formatContext = `
 [ESTRUTURA VIRAL REFERÊNCIA]
 Baseie a arquitetura do roteiro NESTA estrutura comprovada (mas não copie as mesmas palavras, apenas o esqueleto e pacing):
 Título/Nicho de Referência: ${dbFormat.titulo} (${dbFormat.nicho})
-Descrição/Pitch da Estrutura: ${dbFormat.descricao || ''}
+${killerPrompt}
 Passo-a-Passo / Estudo do Formato:
 ${dbFormat.estudo}
 `
