@@ -211,7 +211,7 @@ export default function RoteiristaPage() {
   // ██  RENDER
   // ═══════════════════════════════════════════════════════
   return (
-    <main className="flex-1 flex flex-col h-full relative z-10 overflow-hidden bg-white dark:bg-[#0A0F1A]">
+    <main className="flex-1 flex flex-col relative z-10 overflow-hidden bg-transparent -m-6 lg:-m-10 h-[calc(100vh-4rem)]" style={{ maxWidth: 'none' }}>
 
       {/* ─── CHAT AREA ─────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
