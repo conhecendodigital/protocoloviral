@@ -80,15 +80,23 @@ Você DEVE mimetizar o seguinte estilo de escrita:
 
     // 4. Fetch / Map Format Data
     let formatContext = ''
-    if (formatData) {
-      formatContext = `
+    if (formatData && formatData.id) {
+      const { data: dbFormat } = await supabase
+        .from('formatos')
+        .select('*')
+        .eq('id', formatData.id)
+        .single()
+        
+      if (dbFormat) {
+        formatContext = `
 [ESTRUTURA VIRAL REFERÊNCIA]
 Baseie a arquitetura do roteiro NESTA estrutura comprovada (mas não copie as mesmas palavras, apenas o esqueleto e pacing):
-Título/Nicho de Referência: ${formatData.titulo} (${formatData.nicho})
-Descrição/Pitch da Estrutura: ${formatData.descricao || ''}
+Título/Nicho de Referência: ${dbFormat.titulo} (${dbFormat.nicho})
+Descrição/Pitch da Estrutura: ${dbFormat.descricao || ''}
 Passo-a-Passo / Estudo do Formato:
-${formatData.estudo}
+${dbFormat.estudo}
 `
+      }
     }
 
     // 5. Grounding: Serper API se for mode="search"

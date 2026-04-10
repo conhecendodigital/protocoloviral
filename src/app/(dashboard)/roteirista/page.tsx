@@ -29,13 +29,7 @@ interface Formato {
   icone?: string
 }
 
-// ─── Suggestion Cards ───────────────────────────────────
-const SUGESTOES = [
-  { icon: 'amp_stories', label: 'Sequência de Stories', prompt: 'Crie uma sequência de Stories sobre ' },
-  { icon: 'movie', label: 'Roteiro de Reels', prompt: 'Escreva um roteiro de Reels viral sobre ' },
-  { icon: 'view_carousel', label: 'Carrossel Educativo', prompt: 'Monte um carrossel educativo sobre ' },
-  { icon: 'bolt', label: 'Ganchos Poderosos', prompt: 'Gere 10 ganchos poderosos para ' },
-]
+// removed SUGESTOES array
 
 // ═══════════════════════════════════════════════════════════
 // ██  ROTEIRISTA PAGE — ChatGPT-style
@@ -198,8 +192,8 @@ export default function RoteiristaPage() {
     }
   }
 
-  const handleSuggestionClick = (prompt: string) => {
-    setInput(prompt)
+  const handleFormatCardClick = (f: Formato) => {
+    setSelectedFormato(f)
     textareaRef.current?.focus()
   }
 
@@ -334,12 +328,20 @@ export default function RoteiristaPage() {
           </motion.div>
 
           <div className="grid grid-cols-2 gap-3 w-full max-w-xl mx-auto mb-8">
-            {SUGESTOES.map((s, i) => (
-              <motion.button key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.05 }} onClick={() => handleSuggestionClick(s.prompt)} className="text-left p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:border-slate-300 dark:hover:border-white/15 transition-all group">
-                <span className="material-symbols-outlined text-[#0ea5e9] text-xl mb-2 block group-hover:scale-110 transition-transform">{s.icon}</span>
-                <p className="text-sm font-semibold text-slate-700 dark:text-white/80 leading-snug">{s.label}</p>
+            {formatos.slice(0, 4).map((f, i) => (
+              <motion.button key={f.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.05 }} onClick={() => handleFormatCardClick(f)} className="text-left p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:border-slate-300 dark:hover:border-white/15 transition-all group flex flex-col items-start gap-2 h-full">
+                <span className="material-symbols-outlined text-[#0ea5e9] text-xl block group-hover:scale-110 transition-transform">{f.icone || 'bolt'}</span>
+                <p className="text-sm font-semibold text-slate-700 dark:text-white/80 leading-snug line-clamp-2" title={f.titulo}>{f.titulo}</p>
+                <div className="mt-auto">
+                    <span className="text-[10px] text-[#0ea5e9]/70 font-medium">Usar formato →</span>
+                </div>
               </motion.button>
             ))}
+            {formatos.length === 0 && (
+              <div className="col-span-2 text-center text-sm text-slate-400 dark:text-white/30 py-4">
+                Carregando formatos virais...
+              </div>
+            )}
           </div>
 
           {renderInput()}
