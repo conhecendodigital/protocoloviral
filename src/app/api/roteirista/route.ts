@@ -3,6 +3,7 @@ import { openai } from '@ai-sdk/openai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { PROMPTS_MATADORES } from './prompts_matadores'
+import { createClient } from '@supabase/supabase-js'
 
 export const maxDuration = 60
 
@@ -81,6 +82,9 @@ Você DEVE mimetizar o seguinte estilo de escrita:
 
     // 4. Fetch / Map Format Data
     let formatContext = ''
+    let formatTitle = null
+    let formatNiche = null
+
     if (formatData && formatData.id) {
       const { data: dbFormat } = await supabase
         .from('formatos')
@@ -89,6 +93,8 @@ Você DEVE mimetizar o seguinte estilo de escrita:
         .single()
         
       if (dbFormat) {
+        formatTitle = dbFormat.titulo
+        formatNiche = dbFormat.nicho
         let killerPrompt = ''
         if (dbFormat.nicho) {
           const nic = dbFormat.nicho.toLowerCase().trim()
@@ -189,6 +195,28 @@ INSTRUÇÕES FINAIS: Entregue diretamente o roteiro/conteúdo, sem meta-comentá
       model: selectedModel,
       system: systemPrompt,
       prompt: `Crie/Escreva sobre este o seguinte pedido/tema: ${topic}`,
+      onFinish: async ({ text }) => {
+        try {
+          const adminSupabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+          )
+          
+          const lines = text.split('\n')
+          const firstLine = lines.find(line => line.trim() !== '') || ''
+          const title = firstLine.replace(/\*\*/g, '').replace(/^#+\s*/, '').substring(0, 100).trim() || 'Roteiro Gerado'
+          
+          await adminSupabase.from('roteiros').insert({
+            user_id: user.id,
+            roteiro: text,
+            titulo: title,
+            nicho: formatNiche,
+            formato_nome: formatTitle
+          })
+        } catch (e) {
+          console.error('[ON_FINISH_SAVE_ERROR]', e)
+        }
+      }
     })
 
     return result.toDataStreamResponse()

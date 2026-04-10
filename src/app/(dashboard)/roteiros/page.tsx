@@ -13,12 +13,55 @@ interface Roteiro {
   created_at: string
 }
 
+interface RoteiroBlock {
+  type: string;
+  content: string;
+}
+
+function parseScriptToBlocks(text: string): RoteiroBlock[] | null {
+  const tokens = text.split(/\n/);
+  const blocks: RoteiroBlock[] = [];
+  let currentBlockType = 'Geral';
+  let currentBlockContent: string[] = [];
+  let hasFoundAnyBlock = false;
+
+  for (const line of tokens) {
+    const bracketMatch = line.match(/^\[(.*?)\]\s*$/);
+    const mdMatch = line.match(/^##\s*(.*?)\s*$/);
+    
+    if (bracketMatch || mdMatch) {
+      if (currentBlockContent.length > 0 || hasFoundAnyBlock) {
+        blocks.push({
+          type: currentBlockType,
+          content: currentBlockContent.join('\n').trim()
+        });
+      }
+      currentBlockContent = [];
+      currentBlockType = (bracketMatch ? bracketMatch[1] : (mdMatch ? mdMatch[1] : '')).trim();
+      hasFoundAnyBlock = true;
+    } else {
+      currentBlockContent.push(line);
+    }
+  }
+  
+  if (currentBlockContent.length > 0 || hasFoundAnyBlock) {
+    blocks.push({
+      type: currentBlockType,
+      content: currentBlockContent.join('\n').trim()
+    });
+  }
+
+  const finalBlocks = blocks.filter(b => b.content !== '' || b.type !== 'Geral');
+  return hasFoundAnyBlock ? finalBlocks : null;
+}
+
 export default function RoteirosPage() {
   const [roteiros, setRoteiros] = useState<Roteiro[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [editedTexts, setEditedTexts] = useState<Record<string, string>>({})
+  const [editedBlocks, setEditedBlocks] = useState<Record<string, RoteiroBlock[]>>({})
   const [savingId, setSavingId] = useState<string | null>(null)
   const [savedId, setSavedId] = useState<string | null>(null)
   const supabase = useMemo(() => createClient(), [])
@@ -66,22 +109,46 @@ export default function RoteirosPage() {
     setRoteiros(prev => prev.filter(r => r.id !== id))
   }
 
-  const handleSave = async (id: string) => {
+  const getFullEditedText = (id: string, original: string) => {
+    if (editedBlocks[id]) {
+      return editedBlocks[id].map(b => b.type === 'Geral' ? b.content : `[${b.type}]\n${b.content}`).join('\n\n').trim();
+    }
+    return editedTexts[id] !== undefined ? editedTexts[id] : original;
+  }
+
+  const handleSave = async (id: string, original: string) => {
     if (!userId) return
-    const texto = editedTexts[id]
-    if (texto === undefined) return
+    const texto = getFullEditedText(id, original)
     setSavingId(id)
-    const primeiraLinha = texto.split('\n')[0]
+    const primeiraLinha = texto.split('\n').find(l => l.trim().length > 0) || '';
     const titulo = primeiraLinha.replace(/\*\*/g, '').trim() || 'Roteiro sem título'
     await supabase.from('roteiros').update({ roteiro: texto, titulo }).eq('id', id).eq('user_id', userId)
     setRoteiros(prev => prev.map(r => r.id === id ? { ...r, roteiro: texto, titulo } : r))
+    setEditedTexts(prev => { const n = { ...prev }; delete n[id]; return n })
+    setEditedBlocks(prev => { const n = { ...prev }; delete n[id]; return n })
     setSavingId(null)
     setSavedId(id)
     setTimeout(() => setSavedId(null), 2000)
   }
 
   const getEditedText = (r: Roteiro) => editedTexts[r.id] !== undefined ? editedTexts[r.id] : r.roteiro
-  const isEdited = (r: Roteiro) => editedTexts[r.id] !== undefined && editedTexts[r.id] !== r.roteiro
+  
+  const isEdited = (r: Roteiro) => {
+    if (editedBlocks[r.id]) return true;
+    return editedTexts[r.id] !== undefined && editedTexts[r.id] !== r.roteiro;
+  }
+
+  const getBlocksToRender = (r: Roteiro): RoteiroBlock[] | null => {
+    if (editedBlocks[r.id]) return editedBlocks[r.id];
+    return parseScriptToBlocks(r.roteiro);
+  }
+
+  const handleBlockChange = (scriptId: string, blockIndex: number, newContent: string, r: Roteiro) => {
+    const blocks = getBlocksToRender(r) || [];
+    const newBlocks = [...blocks];
+    newBlocks[blockIndex] = { ...newBlocks[blockIndex], content: newContent };
+    setEditedBlocks(prev => ({ ...prev, [scriptId]: newBlocks }));
+  }
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr)
@@ -190,7 +257,7 @@ export default function RoteirosPage() {
                           {/* Action buttons */}
                           <div className="flex items-center gap-2 py-3">
                             <button
-                              onClick={() => handleCopy(r.roteiro, r.id)}
+                              onClick={() => handleCopy(getFullEditedText(r.id, r.roteiro), r.id)}
                               className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white transition-all shadow-lg shadow-emerald-500/20"
                             >
                               <span className="material-symbols-outlined text-[14px]">
@@ -209,19 +276,49 @@ export default function RoteirosPage() {
 
                           {/* Roteiro text — editável */}
                           <div className="bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-slate-100 dark:border-white/5 overflow-hidden">
-                            <textarea
-                              value={getEditedText(r)}
-                              onChange={e => setEditedTexts(prev => ({ ...prev, [r.id]: e.target.value }))}
-                              className="w-full bg-transparent p-5 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[200px] focus:ring-2 focus:ring-emerald-500/30 rounded-xl transition-shadow"
-                              style={{ height: 'auto', minHeight: `${Math.max(200, getEditedText(r).split('\n').length * 26)}px` }}
-                            />
+                            {(() => {
+                              const blocks = getBlocksToRender(r);
+                              if (blocks) {
+                                return (
+                                  <div className="flex flex-col gap-4 p-5">
+                                    {blocks.map((b, bIdx) => (
+                                      <div key={bIdx} className="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+                                        {b.type !== 'Geral' && (
+                                          <div className="bg-slate-100/50 dark:bg-white/5 px-4 py-2 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+                                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-white/50">
+                                              {b.type}
+                                            </span>
+                                          </div>
+                                        )}
+                                        <textarea
+                                          value={b.content}
+                                          onChange={(e) => handleBlockChange(r.id, bIdx, e.target.value, r)}
+                                          placeholder={b.type === 'Geral' ? 'Escreva aqui...' : `Conteúdo para: ${b.type}`}
+                                          className="w-full bg-transparent p-4 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[100px]"
+                                          style={{ height: 'auto', minHeight: `${Math.max(100, b.content.split('\n').length * 26)}px` }}
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              }
+                              
+                              return (
+                                  <textarea
+                                    value={getEditedText(r)}
+                                    onChange={e => setEditedTexts(prev => ({ ...prev, [r.id]: e.target.value }))}
+                                    className="w-full bg-transparent p-5 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[200px] focus:ring-2 focus:ring-emerald-500/30 rounded-xl transition-shadow"
+                                    style={{ height: 'auto', minHeight: `${Math.max(200, getEditedText(r).split('\n').length * 26)}px` }}
+                                  />
+                              );
+                            })()}
                           </div>
                           
                           {/* Salvar — aparece quando editado */}
                           {isEdited(r) && (
-                            <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mt-3 flex items-center gap-3">
+                            <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex items-center gap-3">
                               <button
-                                onClick={() => handleSave(r.id)}
+                                onClick={() => handleSave(r.id, r.roteiro)}
                                 disabled={savingId === r.id}
                                 className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
                               >
@@ -231,7 +328,10 @@ export default function RoteirosPage() {
                                 {savingId === r.id ? 'Salvando...' : savedId === r.id ? 'Salvo!' : 'Salvar alterações'}
                               </button>
                               <button
-                                onClick={() => setEditedTexts(prev => { const next = { ...prev }; delete next[r.id]; return next })}
+                                onClick={() => {
+                                  setEditedTexts(prev => { const next = { ...prev }; delete next[r.id]; return next })
+                                  setEditedBlocks(prev => { const next = { ...prev }; delete next[r.id]; return next })
+                                }}
                                 className="text-[10px] font-bold uppercase tracking-widest px-3 py-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white/70 transition-colors"
                               >
                                 Desfazer
