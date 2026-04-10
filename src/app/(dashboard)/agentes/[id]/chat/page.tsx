@@ -173,7 +173,11 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
           </button>
           
           <div className="flex items-center gap-2 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md px-3 py-1.5 rounded-xl">
-             <span className="material-symbols-outlined text-[#0ea5e9] text-[18px]">smart_toy</span>
+             {agent?.avatar_url ? (
+                 <img src={agent.avatar_url} alt={agent.name || ''} className="size-[22px] rounded-full object-cover border border-[#0ea5e9]/20" />
+             ) : (
+                 <span className="material-symbols-outlined text-[#0ea5e9] text-[18px]">smart_toy</span>
+             )}
              <h1 className="text-sm font-bold text-slate-800 dark:text-white/90">
                {agent?.name || 'Carregando...'}
              </h1>
@@ -198,8 +202,12 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
       ) : messages.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center px-6 mt-10">
               <div className="text-center mb-6">
-                 <div className="size-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-500/20 border border-[#0ea5e9]/20 flex items-center justify-center shadow-[0_0_40px_rgba(14,165,233,0.15)]">
-                     <span className="material-symbols-outlined text-[#0ea5e9] text-4xl">smart_toy</span>
+                 <div className="size-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-500/20 border border-[#0ea5e9]/20 flex items-center justify-center shadow-[0_0_40px_rgba(14,165,233,0.15)] overflow-hidden">
+                     {agent?.avatar_url ? (
+                         <img src={agent.avatar_url} alt={agent.name || ''} className="w-full h-full object-cover" />
+                     ) : (
+                         <span className="material-symbols-outlined text-[#0ea5e9] text-4xl">smart_toy</span>
+                     )}
                  </div>
                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">{agent?.name || 'Novo Agente'}</h2>
                  <p className="text-sm text-slate-500 dark:text-white/50 max-w-md mx-auto leading-relaxed">

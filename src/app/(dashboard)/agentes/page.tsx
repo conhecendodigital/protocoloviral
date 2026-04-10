@@ -109,7 +109,7 @@ export default function AgentesLibraryPage() {
                 <span className="material-symbols-outlined text-white text-3xl">smart_toy</span>
               </div>
               <div>
-                <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">BIBLIOTECA DE</span> AGENTES</h1>
+                <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9] pr-2">BIBLIOTECA <span className="ml-1.5">DE</span></span> AGENTES</h1>
                 <p className="text-indigo-600 dark:text-indigo-400 font-medium mt-1">Sua equipe de especialistas</p>
               </div>
             </div>

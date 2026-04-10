@@ -101,6 +101,19 @@ export default function NovoAgentePage() {
     const [dragOver, setDragOver] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+    // Avatar state
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const avatarInputRef = useRef<HTMLInputElement>(null);
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setAvatarFile(file);
+            setAvatarPreview(URL.createObjectURL(file));
+        }
+    };
+
     /* ── Chat Preview State (Vercel AI SDK) ── */
     const { messages, status, sendMessage, setMessages } = useChat({
         transport: new DefaultChatTransport({
@@ -197,6 +210,24 @@ export default function NovoAgentePage() {
             if (agentError) throw agentError;
             const agentId = agentData.id;
 
+            // 1.5 Upload Avatar (se houver)
+            let finalAvatarUrl = null;
+            if (avatarFile) {
+                const ext = avatarFile.name.split('.').pop() || 'jpg';
+                const avatarPath = `agents/${agentId}-${Date.now()}.${ext}`;
+                const { error: avatarError } = await supabase.storage
+                    .from('avatars')
+                    .upload(avatarPath, avatarFile, { upsert: true });
+
+                if (avatarError) {
+                    console.error("Avatar upload error:", avatarError);
+                } else {
+                    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(avatarPath);
+                    finalAvatarUrl = urlData.publicUrl + '?t=' + Date.now();
+                    await supabase.from('agents').update({ avatar_url: finalAvatarUrl }).eq('id', agentId);
+                }
+            }
+
             // 2. Upload Files (RAG)
             if (files.length > 0) {
                 const uploadPromises = files.map(async (fileObj) => {
@@ -256,11 +287,34 @@ export default function NovoAgentePage() {
                         <Link href="/agentes" className="p-2 rounded-xl bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors border border-border">
                             <span className="material-symbols-outlined text-xl">arrow_back</span>
                         </Link>
-                        <div className="bg-indigo-500/15 p-3 rounded-xl border border-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-                            <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-2xl">robot_2</span>
+                        
+                        {/* Avatar Picker */}
+                        <div 
+                            className="relative group cursor-pointer size-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.15)] flex items-center justify-center overflow-hidden"
+                            onClick={() => avatarInputRef.current?.click()}
+                        >
+                            {avatarPreview ? (
+                                <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
+                            ) : (
+                                <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-3xl">robot_2</span>
+                            )}
+                            
+                            {/* Overlay hover */}
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                <span className="material-symbols-outlined text-white text-xl">photo_camera</span>
+                            </div>
+                            
+                            <input 
+                                ref={avatarInputRef} 
+                                type="file" 
+                                accept="image/png,image/jpeg,image/webp" 
+                                className="hidden" 
+                                onChange={handleAvatarChange} 
+                            />
                         </div>
+
                         <div>
-                            <h1 className="text-3xl font-black text-foreground tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">CRIAR NOVO</span> AGENTE</h1>
+                            <h1 className="text-3xl font-black text-foreground tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9] pr-2">CRIAR <span className="ml-1.5">NOVO</span></span> AGENTE</h1>
                             <p className="text-muted-foreground mt-0.5 text-sm">Configure um consultor especialista de IA</p>
                         </div>
                     </div>
@@ -341,7 +395,7 @@ export default function NovoAgentePage() {
                                 </div>
                                 <div>
                                     <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Descrição Curta</label>
-                                    <div className="relative">
+                                    <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#141926] focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
                                         <div className="absolute left-4 top-3 pointer-events-none">
                                             <span className="material-symbols-outlined text-slate-600 text-lg">description</span>
                                         </div>
@@ -350,7 +404,7 @@ export default function NovoAgentePage() {
                                             onChange={(e) => setDescription(e.target.value)}
                                             rows={2}
                                             placeholder="Uma breve descrição do que este agente faz..."
-                                            className="w-full bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all resize-none"
+                                            className="w-full bg-transparent pl-12 pr-4 py-3 text-sm text-foreground placeholder-muted-foreground outline-none resize-none custom-scrollbar block"
                                         />
                                     </div>
                                 </div>
@@ -444,13 +498,15 @@ export default function NovoAgentePage() {
                                 </div>
                             </div>
 
-                            <textarea
-                                value={systemPrompt}
-                                onChange={(e) => setSystemPrompt(e.target.value)}
-                                rows={8}
-                                placeholder="Você é um especialista do Protocolo Viral. Sempre responda focando na viralização e retenção da audiência..."
-                                className="w-full bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 outline-none transition-all resize-none font-mono leading-relaxed custom-scrollbar"
-                            />
+                            <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#141926] focus-within:border-amber-500 focus-within:ring-1 focus-within:ring-amber-500/50 transition-all">
+                                <textarea
+                                    value={systemPrompt}
+                                    onChange={(e) => setSystemPrompt(e.target.value)}
+                                    rows={8}
+                                    placeholder="Você é um especialista do Protocolo Viral. Sempre responda focando na viralização e retenção da audiência..."
+                                    className="w-full bg-transparent px-4 py-3 text-sm text-foreground placeholder-muted-foreground outline-none resize-none font-mono leading-relaxed custom-scrollbar block"
+                                />
+                            </div>
                         </motion.div>
 
                         {/* ── Knowledge Base (RAG) ── */}
