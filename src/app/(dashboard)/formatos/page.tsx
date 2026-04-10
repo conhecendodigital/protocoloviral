@@ -182,7 +182,7 @@ export default function FormatosPage() {
       <div className="p-4 sm:p-6 lg:mx-auto max-w-7xl w-full space-y-8 pb-32">
 
         {/* Header e Filtros Estilo "Explore" Premium */}
-        <section className="sticky top-0 z-50 pt-4 pb-6 bg-slate-50/90 dark:bg-[#060a12]/90 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 mx-[-16px] sm:mx-[-24px] px-4 sm:px-6">
+        <section className="sticky top-0 z-50 pt-4 pb-6 backdrop-blur-xl mx-[-16px] sm:mx-[-24px] px-4 sm:px-6">
            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between max-w-7xl mx-auto">
              <div className="flex-1 w-full relative">
                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xl pointer-events-none">search</span>
