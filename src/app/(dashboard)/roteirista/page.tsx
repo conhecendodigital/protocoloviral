@@ -211,7 +211,7 @@ export default function RoteiristaPage() {
   // ██  RENDER
   // ═══════════════════════════════════════════════════════
   return (
-    <main className="flex-1 flex flex-col relative z-10 overflow-hidden bg-transparent -m-6 lg:-m-10 h-[calc(100vh-4rem)]" style={{ maxWidth: 'none' }}>
+    <main className="fixed inset-0 z-30 flex flex-col overflow-hidden bg-[#000000]">
 
       {/* ─── CHAT AREA ─────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -321,7 +321,7 @@ export default function RoteiristaPage() {
       </div>
 
       {/* ─── INPUT AREA ────────────────────────────────── */}
-      <div className="shrink-0 border-t border-slate-200/50 dark:border-white/[0.06] bg-white/80 dark:bg-[#0A0F1A]/80 backdrop-blur-xl">
+      <div className="shrink-0 border-t border-white/[0.06] bg-[#000000]/90 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
 
           {/* Active Filters */}
