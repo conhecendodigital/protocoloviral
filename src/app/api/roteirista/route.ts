@@ -47,7 +47,31 @@ export async function POST(req: Request) {
         .eq('id', credits.id)
     }
 
-    // 2. Fetch Agent
+    // 2. Profile Check and Free Tier Limit
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan_tier')
+      .eq('id', user.id)
+      .single()
+
+    const isPro = profile?.plan_tier === 'pro' || profile?.plan_tier === 'premium'
+
+    if (!isPro) {
+      const startOfDay = new Date()
+      startOfDay.setHours(0,0,0,0)
+      
+      const { count } = await supabase
+        .from('roteiros')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', startOfDay.toISOString())
+
+      if (count !== null && count >= 5) {
+        return new Response('Limite de 5 roteiros diários atingido.', { status: 403 })
+      }
+    }
+
+    // 3. Fetch Agent
     const { data: agent } = await supabase
       .from('agents')
       .select('*')
@@ -58,7 +82,7 @@ export async function POST(req: Request) {
       return new Response('Agent not found', { status: 404 })
     }
 
-    // 3. Fetch Voice Profile
+    // 4. Fetch Voice Profile
     let voiceContext = ''
     if (voiceProfileId) {
       const { data: vp } = await supabase
@@ -80,7 +104,7 @@ Você DEVE mimetizar o seguinte estilo de escrita:
       }
     }
 
-    // 4. Fetch / Map Format Data
+    // 5. Fetch / Map Format Data
     let formatContext = ''
     let formatTitle = null
     let formatNiche = null
@@ -114,7 +138,7 @@ ${dbFormat.estudo}
       }
     }
 
-    // 5. Grounding: Serper API se for mode="search"
+    // 6. Grounding: Serper API se for mode="search"
     let serperContext = ''
     if (mode === 'search') {
       const serperKey = process.env.SERPER_API_KEY
@@ -143,7 +167,7 @@ ${facts}
       }
     }
 
-    // 6. RAG Retrieval (Memória) se for mode="premium"
+    // 7. RAG Retrieval (Memória) se for mode="premium"
     let memoryContext = ''
     if (mode === 'premium') {
       try {

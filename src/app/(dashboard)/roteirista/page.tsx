@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
+import { useProfile } from '@/hooks/use-profile'
 
 // ─── Types ──────────────────────────────────────────────
 interface Message {
@@ -62,6 +63,11 @@ export default function RoteiristaPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const supabase = useMemo(() => createClient(), [])
+  
+  // Profile & Limits
+  const { profile } = useProfile()
+  const isPro = profile?.plan_tier === 'pro' || profile?.plan_tier === 'premium'
+  const [generationsToday, setGenerationsToday] = useState(0)
 
   // ─── Load Data ────────────────────────────────────────
   useEffect(() => {
@@ -89,6 +95,19 @@ export default function RoteiristaPage() {
         .order('titulo')
 
       if (fmts) setFormatos(fmts)
+
+      // Daily Usage Count
+      const startOfDay = new Date()
+      startOfDay.setHours(0,0,0,0)
+      const { count } = await supabase
+        .from('roteiros')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', session.user.id)
+        .gte('created_at', startOfDay.toISOString())
+
+      if (count !== null) {
+        setGenerationsToday(count)
+      }
     }
     load()
   }, [supabase])
@@ -140,6 +159,23 @@ export default function RoteiristaPage() {
     const text = input.trim()
     if (!text || isGenerating) return
 
+    if (!isPro && generationsToday >= 5) {
+      setMessages(prev => [...prev, {
+        id: crypto.randomUUID(),
+        role: 'user',
+        content: text,
+        format: selectedFormato?.titulo,
+        timestamp: new Date(),
+      }, {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: '🔒 **Limite Diário Atingido**\n\nVocê bateu o limite de **5 roteiros diários** do plano básico.\n\nAssine agora o nosso [Plano Premium](/assinatura) para ter acesso ilimitado!',
+        timestamp: new Date()
+      }])
+      setInput('')
+      return
+    }
+
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -189,6 +225,11 @@ export default function RoteiristaPage() {
         setMessages(prev =>
           prev.map(m => m.id === aiMsgId ? { ...m, content: currentText } : m)
         )
+      }
+      
+      // Increment usages today after success
+      if (!isPro) {
+        setGenerationsToday(prev => prev + 1)
       }
     } catch (err: any) {
       setMessages(prev =>

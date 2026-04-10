@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
+import { useProfile } from '@/hooks/use-profile'
 
 interface Roteiro {
   id: string
@@ -65,6 +66,9 @@ export default function RoteirosPage() {
   const [savingId, setSavingId] = useState<string | null>(null)
   const [savedId, setSavedId] = useState<string | null>(null)
   const supabase = useMemo(() => createClient(), [])
+
+  const { profile } = useProfile()
+  const isPro = profile?.plan_tier === 'pro' || profile?.plan_tier === 'premium'
 
   const [userId, setUserId] = useState<string | null>(null)
 
@@ -281,8 +285,12 @@ export default function RoteirosPage() {
                               if (blocks) {
                                 return (
                                   <div className="flex flex-col gap-4 p-5">
-                                    {blocks.map((b, bIdx) => (
-                                      <div key={bIdx} className="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
+                                    {blocks.map((b, bIdx) => {
+                                      const t = b.type.toLowerCase();
+                                      const isLocked = !isPro && !t.includes('titulo') && !t.includes('título') && !t.includes('gancho') && bIdx !== 0;
+                                      
+                                      return (
+                                      <div key={bIdx} className="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all relative">
                                         {b.type !== 'Geral' && (
                                           <div className="bg-slate-100/50 dark:bg-white/5 px-4 py-2 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
                                             <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-white/50">
@@ -290,26 +298,53 @@ export default function RoteirosPage() {
                                             </span>
                                           </div>
                                         )}
-                                        <textarea
-                                          value={b.content}
-                                          onChange={(e) => handleBlockChange(r.id, bIdx, e.target.value, r)}
-                                          placeholder={b.type === 'Geral' ? 'Escreva aqui...' : `Conteúdo para: ${b.type}`}
-                                          className="w-full bg-transparent p-4 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[100px]"
-                                          style={{ height: 'auto', minHeight: `${Math.max(100, b.content.split('\n').length * 26)}px` }}
-                                        />
+                                        {isLocked ? (
+                                          <div className="relative min-h-[120px] bg-slate-50/50 dark:bg-black/20 flex flex-col items-center justify-center p-6 overflow-hidden">
+                                            <div className="absolute inset-x-6 top-5 space-y-3 opacity-20 dark:opacity-10 pointer-events-none select-none">
+                                              <div className="h-2.5 bg-slate-600 rounded w-full blur-[2px]"></div>
+                                              <div className="h-2.5 bg-slate-600 rounded w-5/6 blur-[2px]"></div>
+                                              <div className="h-2.5 bg-slate-600 rounded w-4/6 blur-[2px]"></div>
+                                            </div>
+                                            
+                                            <div className="z-10 flex flex-col items-center relative mt-2">
+                                              <span className="material-symbols-outlined text-amber-500 text-3xl drop-shadow-md mb-1">lock</span>
+                                              <p className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">Exclusivo Premium</p>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <textarea
+                                            value={b.content}
+                                            onChange={(e) => handleBlockChange(r.id, bIdx, e.target.value, r)}
+                                            placeholder={b.type === 'Geral' ? 'Escreva aqui...' : `Conteúdo para: ${b.type}`}
+                                            className="w-full bg-transparent p-4 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[100px]"
+                                            style={{ height: 'auto', minHeight: `${Math.max(100, b.content.split('\n').length * 26)}px` }}
+                                          />
+                                        )}
                                       </div>
-                                    ))}
+                                    )})}
                                   </div>
                                 );
                               }
                               
                               return (
+                                <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-white/10">
+                                  {!isPro && (
+                                    <div className="absolute inset-0 z-10 bg-slate-50/80 dark:bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 mb-3">
+                                          <span className="material-symbols-outlined text-white text-2xl">lock</span>
+                                        </div>
+                                        <p className="text-sm font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-2">Roteiro Restrito</p>
+                                        <p className="text-xs font-medium text-slate-600 dark:text-white/70 max-w-[280px]">Assine o plano premium para destravar o roteiro completo ou continue editando o Gancho acima.</p>
+                                    </div>
+                                  )}
                                   <textarea
+                                    disabled={!isPro}
                                     value={getEditedText(r)}
                                     onChange={e => setEditedTexts(prev => ({ ...prev, [r.id]: e.target.value }))}
-                                    className="w-full bg-transparent p-5 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[200px] focus:ring-2 focus:ring-emerald-500/30 rounded-xl transition-shadow"
+                                    className="w-full bg-slate-50 dark:bg-white/[0.02] p-5 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[200px] focus:ring-2 focus:ring-emerald-500/30 transition-shadow"
                                     style={{ height: 'auto', minHeight: `${Math.max(200, getEditedText(r).split('\n').length * 26)}px` }}
                                   />
+                                </div>
                               );
                             })()}
                           </div>

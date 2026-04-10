@@ -6,11 +6,30 @@ import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
 
+// ─── Paywall Overlay ────────────────────────────────────────────────
+function PremiumOverlay({ title, desc }: { title: string; desc: string }) {
+  return (
+    <div className="absolute inset-0 z-50 flex flex-col items-center top-[15%] p-6 text-center">
+      <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.4)] mb-4">
+        <span className="material-symbols-outlined text-white text-3xl">lock</span>
+      </div>
+      <h4 className="text-2xl font-black text-foreground mb-2">{title}</h4>
+      <p className="text-sm font-medium text-muted-foreground max-w-sm mb-6 leading-relaxed">{desc}</p>
+      <Link href="/assinatura" className="font-bold text-sm bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 rounded-xl shadow-xl shadow-indigo-500/20 hover:scale-105 transition-transform">
+        Desbloquear Especialistas
+      </Link>
+    </div>
+  )
+}
+
 export default function AgentesLibraryPage() {
   const { profile } = useProfile()
   const supabase = useMemo(() => createClient(), [])
   const [agentes, setAgentes] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+
+  const isPro = profile?.plan_tier === 'pro' || profile?.plan_tier === 'premium'
+
 
   useEffect(() => {
     async function fetchAgentes() {
@@ -153,37 +172,45 @@ export default function AgentesLibraryPage() {
             <p className="text-muted-foreground">Nenhum agente disponível no momento.</p>
           </div>
         ) : (
-          <div className="space-y-16">
-            {/* Grid de Agentes Ativos */}
-            {activeAgents.length > 0 && (
-              <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {activeAgents.map((agente, i) => (
-                    <AgentCard key={agente.id} agente={agente} index={i} />
-                  ))}
-                </div>
-              </div>
+          <div className="relative min-h-[500px]">
+            {!isPro && (
+              <PremiumOverlay 
+                title="Sua Equipe Própria de IAs" 
+                desc="Agentes modelados com nossos prompts e frameworks de Retenção, Mapeamento, Criativos e Edição. Assine o plano Premium para destravar toda a equipe." 
+              />
             )}
+            <div className={`space-y-16 ${!isPro ? 'select-none pointer-events-none opacity-40 blur-md' : ''}`}>
+              {/* Grid de Agentes Ativos */}
+              {activeAgents.length > 0 && (
+                <div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {activeAgents.map((agente, i) => (
+                      <AgentCard key={agente.id} agente={agente} index={i} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {/* Grid de Agentes Inativos (apenas para Admin) */}
-            {isAdmin && inactiveAgents.length > 0 && (
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-px bg-border flex-1"></div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px]">visibility_off</span>
-                    Agentes Inativos (Visão Admin)
-                  </span>
-                  <div className="h-px bg-border flex-1"></div>
+              {/* Grid de Agentes Inativos (apenas para Admin) */}
+              {isAdmin && inactiveAgents.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-px bg-border flex-1"></div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[16px]">visibility_off</span>
+                      Agentes Inativos (Visão Admin)
+                    </span>
+                    <div className="h-px bg-border flex-1"></div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {inactiveAgents.map((agente, i) => (
+                      <AgentCard key={agente.id} agente={agente} index={i} />
+                    ))}
+                  </div>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {inactiveAgents.map((agente, i) => (
-                    <AgentCard key={agente.id} agente={agente} index={i} />
-                  ))}
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
 

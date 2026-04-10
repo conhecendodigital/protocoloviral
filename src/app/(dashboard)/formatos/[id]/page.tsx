@@ -97,6 +97,22 @@ function ForcaBadge({ forca }: { forca: string }) {
   )
 }
 
+// ─── Paywall Overlay ────────────────────────────────────────────────
+function PremiumOverlay({ title, desc }: { title: string; desc: string }) {
+  return (
+    <div className="absolute inset-0 z-50 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md bg-slate-900/60 dark:bg-black/70 rounded-2xl border border-white/5">
+      <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.4)] mb-4">
+        <span className="material-symbols-outlined text-white text-3xl">lock</span>
+      </div>
+      <h4 className="text-xl font-black text-white mb-2">{title}</h4>
+      <p className="text-sm font-medium text-white/80 max-w-sm mb-6 leading-relaxed">{desc}</p>
+      <Link href="/assinatura" className="shimmer-btn px-6 py-3 rounded-xl text-white font-bold text-sm shadow-xl shadow-amber-500/20 bg-gradient-to-r from-amber-500 to-orange-500 hover:scale-105 transition-transform">
+        Desbloquear Acesso Premium
+      </Link>
+    </div>
+  )
+}
+
 export default function FormatoViewPage() {
   const params = useParams()
   const formatId = params.id as string
@@ -118,6 +134,8 @@ export default function FormatoViewPage() {
     const savedTone = localStorage.getItem('mapa-engajamento-tom-voz')
     if (savedTone) setTomVoz(savedTone)
   }, [])
+
+  const isPro = profile?.plan_tier === 'pro' || profile?.plan_tier === 'premium'
 
   // decide se usa análise nova ou estudo legado
   const hasNewAnalysis = !!(formato?.gancho || formato?.analise_tipo)
@@ -483,8 +501,15 @@ export default function FormatoViewPage() {
 
                   {/* Tab: Roteiro */}
                   {activeTab === 'roteiro' && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                      {formato.roteiro_completo ? (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative min-h-[300px]">
+                      {!isPro && (
+                        <PremiumOverlay 
+                          title="Roteiro Descriptografado" 
+                          desc="Assine o Premium para liberar o roteiro exato, decodificado palavra por palavra para você colar na sua produção." 
+                        />
+                      )}
+                      <div className={!isPro ? 'select-none pointer-events-none opacity-40 blur-sm' : ''}>
+                        {formato.roteiro_completo ? (
                         (() => {
                           const parsed = parseRoteiroBlocks(formato.roteiro_completo);
                           if (parsed) {
@@ -524,13 +549,21 @@ export default function FormatoViewPage() {
                       ) : (
                         <p className="text-sm text-slate-500 dark:text-white/40 text-center py-8">Roteiro não disponível.</p>
                       )}
+                      </div>
                     </motion.div>
                   )}
 
                   {/* Tab: Adaptar */}
                   {activeTab === 'adaptar' && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                      {formato.adaptacao_esqueleto && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative min-h-[300px]">
+                      {!isPro && (
+                        <PremiumOverlay 
+                          title="Fórmula de Adaptação" 
+                          desc="Libere dezenas de fórmulas prontas de como encaixar esse script viral perfeitamente dentro do seu próprio nicho." 
+                        />
+                      )}
+                      <div className={`space-y-6 ${!isPro ? 'select-none pointer-events-none opacity-40 blur-[6px]' : ''}`}>
+                        {formato.adaptacao_esqueleto && (
                         <AnaliseSection icon="schema" title="Esqueleto Replicável">
                           <p className="text-sm text-slate-900 dark:text-white/90 mt-1">{formato.adaptacao_esqueleto}</p>
                         </AnaliseSection>
@@ -558,52 +591,69 @@ export default function FormatoViewPage() {
                           </div>
                         </AnaliseSection>
                       )}
+                      </div>
                     </motion.div>
                   )}
                 </>
               ) : (
                 /* ── FALLBACK LEGADO ──────────────────────────────── */
-                <>
-                  {formato.estudo?.split('\n\n').map((block, i) => {
-                    const headerMatch = block.match(/^\*\*(.+?)\*\*(.*)/)
-                    if (headerMatch) {
-                      const title = headerMatch[1]
-                      const rest = headerMatch[2]?.trim() || ''
-                      const lines = block.split('\n').slice(1).join('\n')
-                      const content = rest ? `${rest}\n${lines}` : lines
+                <div className="relative min-h-[300px]">
+                  {!isPro && (
+                    <PremiumOverlay 
+                      title="Estudo Completo Restrito" 
+                      desc="Assine o Premium para liberar o manuscrito completo, estruturas e o roteiro exato para usar na sua produção." 
+                    />
+                  )}
+                  <div className={!isPro ? 'select-none pointer-events-none opacity-40 blur-[6px] overflow-hidden max-h-[300px]' : ''}>
+                    {formato.estudo?.split('\n\n').map((block, i) => {
+                      const headerMatch = block.match(/^\*\*(.+?)\*\*(.*)/)
+                      if (headerMatch) {
+                        const title = headerMatch[1]
+                        const rest = headerMatch[2]?.trim() || ''
+                        const lines = block.split('\n').slice(1).join('\n')
+                        const content = rest ? `${rest}\n${lines}` : lines
+                        return (
+                          <div key={i} className="border-l-2 border-[#0ea5e9]/40 pl-5 relative before:absolute before:w-2 before:h-2 before:rounded-full before:bg-[#0ea5e9] before:-left-[5px] before:top-1.5 mb-6">
+                            <p className="text-sm font-bold text-slate-900 dark:text-white mb-2 tracking-wide">{title}</p>
+                            {content.trim() && (
+                              <p className="text-sm text-slate-900 dark:text-white whitespace-pre-wrap leading-relaxed opacity-90">{content.trim()}</p>
+                            )}
+                          </div>
+                        )
+                      }
                       return (
-                        <div key={i} className="border-l-2 border-[#0ea5e9]/40 pl-5 relative before:absolute before:w-2 before:h-2 before:rounded-full before:bg-[#0ea5e9] before:-left-[5px] before:top-1.5">
-                          <p className="text-sm font-bold text-slate-900 dark:text-white mb-2 tracking-wide">{title}</p>
-                          {content.trim() && (
-                            <p className="text-sm text-slate-900 dark:text-white whitespace-pre-wrap leading-relaxed opacity-90">{content.trim()}</p>
-                          )}
-                        </div>
+                        <p key={i} className="text-sm text-slate-900 dark:text-white whitespace-pre-wrap leading-relaxed opacity-90 mb-4">{block}</p>
                       )
-                    }
-                    return (
-                      <p key={i} className="text-sm text-slate-900 dark:text-white whitespace-pre-wrap leading-relaxed opacity-90">{block}</p>
-                    )
-                  })}
-                </>
+                    })}
+                  </div>
+                </div>
               )}
             </div>
           </div>
 
           {/* ── AI Generator Box ───────────────────────────────────── */}
           <div className="glass-card rounded-2xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#0ea5e9]/10 blur-[80px] rounded-full pointer-events-none" />
+            {!isPro && (
+              <PremiumOverlay 
+                title="Clonagem por IA Bloqueada" 
+                desc="Desbloqueie o Premium para permitir que a Inteligência Artificial pegue este formato exato e escreva um roteiro inédito já moldado no seu nicho." 
+              />
+            )}
+            
+            <div className={`space-y-6 relative z-10 ${!isPro ? 'select-none pointer-events-none opacity-40 blur-md max-h-[350px] overflow-hidden' : ''}`}>
+              <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#0ea5e9]/10 blur-[80px] rounded-full pointer-events-none" />
 
-            <div className="space-y-2 relative z-10">
-              <h3 className="text-2xl font-black flex items-center gap-2 text-slate-900 dark:text-white">
-                <span className="material-symbols-outlined text-[#0ea5e9] text-3xl">flare</span>
-                Crie seu Roteiro Modelado
-              </h3>
-              <p className="text-sm text-slate-700 dark:text-white/80 leading-relaxed max-w-xl">
-                Nossa IA lerá o estudo de viralização e usará a estrutura campeã adaptando para <strong>seu nicho e perfil inseridos na configuração.</strong>
-              </p>
-            </div>
+              <div className="space-y-2 relative z-10">
+                <h3 className="text-2xl font-black flex items-center gap-2 text-slate-900 dark:text-white">
+                  <span className="material-symbols-outlined text-[#0ea5e9] text-3xl">flare</span>
+                  Crie seu Roteiro Modelado
+                </h3>
+                <p className="text-sm text-slate-700 dark:text-white/80 leading-relaxed max-w-xl">
+                  Nossa IA lerá o estudo de viralização e usará a estrutura campeã adaptando para <strong>seu nicho e perfil inseridos na configuração.</strong>
+                </p>
+              </div>
 
-            {!generatedReel && (
+              {!generatedReel && (
               <div className="space-y-6 relative z-10">
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-slate-700 dark:text-white/70 uppercase tracking-widest pl-1">
@@ -761,6 +811,8 @@ export default function FormatoViewPage() {
                 </div>
               </motion.div>
             )}
+            
+            </div>
           </div>
 
         </div>
