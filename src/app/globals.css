@@ -183,6 +183,23 @@
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s;
   }
+  /* Fix: ensure text is always visible in inputs/textareas */
+  input, textarea {
+    color: inherit;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  textarea {
+    overflow-y: auto !important;
+    min-height: 2.5rem;
+  }
+  /* field-sizing-content fallback for unsupported browsers */
+  @supports not (field-sizing: content) {
+    textarea[data-slot="textarea"] {
+      min-height: 4rem;
+      overflow-y: auto;
+    }
+  }
 }
 
 /* Premium Apple-Style Glassmorphism (visionOS inspired) */
