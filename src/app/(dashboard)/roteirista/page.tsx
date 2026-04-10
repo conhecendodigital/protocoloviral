@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { useProfile } from '@/hooks/use-profile'
 
 // ─── Types ──────────────────────────────────────────────
@@ -37,7 +39,17 @@ interface Formato {
 // ██  ROTEIRISTA PAGE — ChatGPT-style
 // ═══════════════════════════════════════════════════════════
 export default function RoteiristaPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-slate-400">Carregando painel do roteirista...</div>}>
+      <RoteiristaContent />
+    </Suspense>
+  )
+}
+
+function RoteiristaContent() {
   // ─── State ────────────────────────────────────────────
+  const searchParams = useSearchParams()
+  const urlFormatoId = searchParams?.get('formato_id')
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
@@ -94,7 +106,9 @@ export default function RoteiristaPage() {
         .select('id, titulo, icone, nicho')
         .order('titulo')
 
-      if (fmts) setFormatos(fmts)
+      if (fmts) {
+        setFormatos(fmts)
+      }
 
       // Daily Usage Count
       const startOfDay = new Date()
@@ -111,6 +125,16 @@ export default function RoteiristaPage() {
     }
     load()
   }, [supabase])
+
+  // ─── Sync Formato URL ─────────────────────────────────
+  useEffect(() => {
+    if (urlFormatoId && formatos.length > 0) {
+      const matched = formatos.find(f => f.id === urlFormatoId)
+      if (matched && matched.id !== selectedFormato?.id) {
+        setSelectedFormato(matched)
+      }
+    }
+  }, [urlFormatoId, formatos, selectedFormato?.id])
 
   // ─── Auto-scroll ──────────────────────────────────────
   useEffect(() => {

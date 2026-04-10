@@ -25,8 +25,8 @@ export async function POST(req: Request) {
       formatData 
     } = body
 
-    if (!topic || !agentId) {
-      return new Response('Topic and Agent ID are required', { status: 400 })
+    if (!topic) {
+      return new Response('Topic is required', { status: 400 })
     }
 
     // 1. Deduct credit for PREMIUM or SEARCH
@@ -71,15 +71,28 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Fetch Agent
-    const { data: agent } = await supabase
-      .from('agents')
-      .select('*')
-      .eq('id', agentId)
-      .single()
+    // 3. Fetch Agent or load Pro Context
+    let baseSystemPrompt = ''
+    if (agentId) {
+      const { data: agent } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('id', agentId)
+        .single()
 
-    if (!agent) {
-      return new Response('Agent not found', { status: 404 })
+      if (!agent) {
+        return new Response('Agent not found', { status: 404 })
+      }
+      baseSystemPrompt = agent.system_prompt
+    } else {
+      const { ROTEIRISTA_PRO_SKILL, CONTEXTO_CRIADOR } = await import('./pro-context')
+      baseSystemPrompt = `
+============ DIRETRIZES DA FERRAMENTA (ROTEIRISTA PRO) ============
+${ROTEIRISTA_PRO_SKILL}
+
+============ CONTEXTO DO CRIADOR ============
+${CONTEXTO_CRIADOR}
+`
     }
 
     // 4. Fetch Voice Profile
@@ -196,7 +209,7 @@ ${mTexts}
 
     // Builder do System Prompt Master
     const systemPrompt = `
-${agent.system_prompt}
+${baseSystemPrompt}
 
 ${voiceContext}
 

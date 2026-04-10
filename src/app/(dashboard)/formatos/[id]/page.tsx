@@ -631,7 +631,31 @@ export default function FormatoViewPage() {
             </div>
           </div>
 
-          {/* ── AI Generator Box ───────────────────────────────────── */}
+          {/* ── Botão Redirecionar Roteirista ───────────────── */}
+          <div className="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden bg-gradient-to-r from-[#0ea5e9]/10 to-transparent border-[#0ea5e9]/20">
+            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="space-y-2">
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#0ea5e9]">flare</span>
+                  Usar com Inteligência
+                </h3>
+                <p className="text-sm text-slate-700 dark:text-white/80 leading-relaxed max-w-xl">
+                  Leve esta estrutura exata para o seu <strong>Roteirista Pro</strong> e deixe a Inteligência Artificial moldar o roteiro perfeito para o seu nicho.
+                </p>
+              </div>
+              <Link 
+                href={`/roteirista?formato_id=${formato.id}`}
+                className="w-full sm:w-auto shimmer-btn px-8 py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-base shadow-xl shadow-[#0ea5e9]/20 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
+              >
+                <span className="material-symbols-outlined">arrow_forward</span>
+                Levar para o Roteirista
+              </Link>
+            </div>
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#0ea5e9]/20 blur-[80px] rounded-full pointer-events-none" />
+          </div>
+
+          {/* ── AI Generator Box (Oculto / Legado) ───────────────────────────────────── */}
+          {false && (
           <div className="glass-card rounded-2xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
             {!isPro && (
               <PremiumOverlay 
@@ -814,6 +838,7 @@ export default function FormatoViewPage() {
             
             </div>
           </div>
+          )}
 
         </div>
       </div>
