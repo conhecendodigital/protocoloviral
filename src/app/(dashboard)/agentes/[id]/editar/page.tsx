@@ -468,7 +468,7 @@ export default function EditarAgentePage() {
                     <div className="w-full lg:w-[60%] space-y-6">
 
                         {/* ── Basic Info ── */}
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card rounded-3xl p-6 border border-border">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-slate-50 dark:bg-white/[0.03] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08]">
                             <div className="space-y-5">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                                     <div className="col-span-1 md:col-span-2">
@@ -481,7 +481,7 @@ export default function EditarAgentePage() {
                                                 type="text"
                                                 value={agentName}
                                                 onChange={(e) => setAgentName(e.target.value)}
-                                                className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                                                className="w-full bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                                             />
                                         </div>
                                     </div>
@@ -494,7 +494,7 @@ export default function EditarAgentePage() {
                                             <select
                                                 value={category}
                                                 onChange={(e) => setCategory(e.target.value)}
-                                                className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-10 py-3 text-sm text-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+                                                className="w-full bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl pl-12 pr-10 py-3 text-sm text-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
                                             >
                                                 {categoryOptions.map((opt) => (
                                                     <option key={opt.value} value={opt.value} className="bg-popover text-foreground">{opt.label}</option>
@@ -517,7 +517,7 @@ export default function EditarAgentePage() {
                                                 value={description}
                                                 onChange={(e) => setDescription(e.target.value)}
                                                 rows={2}
-                                                className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all resize-none"
+                                                className="w-full bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all resize-none"
                                             />
                                         </div>
                                     </div>
@@ -530,7 +530,7 @@ export default function EditarAgentePage() {
                                             <select
                                                 value={status}
                                                 onChange={(e) => setStatus(e.target.value)}
-                                                className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-4 py-3 text-sm text-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
+                                                className="w-full bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
                                             >
                                                 <option value="ativo" className="bg-popover text-emerald-500 dark:text-emerald-400">Ativo</option>
                                                 <option value="inativo" className="bg-popover text-rose-500 dark:text-rose-400">Inativo</option>
@@ -544,7 +544,7 @@ export default function EditarAgentePage() {
                         </motion.div>
 
                         {/* ── AI Model Selection ── */}
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card rounded-3xl p-6 border border-border relative z-20">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-slate-50 dark:bg-white/[0.03] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08] relative z-20">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="bg-indigo-500/10 p-2 rounded-lg">
                                     <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-xl">memory</span>
@@ -558,9 +558,9 @@ export default function EditarAgentePage() {
                             <div ref={modelDropdownRef} className="relative">
                                 <button
                                     onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
-                                    className={`w-full bg-background/50 border rounded-xl px-4 py-3 flex items-center gap-3 transition-all text-left ${modelDropdownOpen
-                                        ? 'border-indigo-500 ring-1 ring-indigo-500'
-                                        : 'border-border hover:border-indigo-500/50'
+                                    className={`w-full bg-white dark:bg-[#141926] rounded-xl px-4 py-3 flex items-center gap-3 transition-all text-left ${modelDropdownOpen
+                                        ? 'border border-indigo-500 ring-1 ring-indigo-500'
+                                        : 'border border-slate-200 dark:border-white/10 hover:border-indigo-500/50'
                                         }`}
                                 >
                                     {selectedModelInfo ? (
@@ -618,7 +618,7 @@ export default function EditarAgentePage() {
                         </motion.div>
 
                         {/* ── System Prompt ── */}
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass-card rounded-3xl p-6 border border-border">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-slate-50 dark:bg-white/[0.03] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08]">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="bg-amber-500/10 p-2 rounded-lg">
                                     <span className="material-symbols-outlined text-amber-500 dark:text-amber-400 text-xl">code</span>
@@ -633,12 +633,12 @@ export default function EditarAgentePage() {
                                 value={systemPrompt}
                                 onChange={(e) => setSystemPrompt(e.target.value)}
                                 rows={8}
-                                className="w-full bg-background/50 border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 outline-none transition-all resize-none font-mono leading-relaxed custom-scrollbar"
+                                className="w-full bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50 outline-none transition-all resize-none font-mono leading-relaxed custom-scrollbar"
                             />
                         </motion.div>
 
                         {/* ── Knowledge Base (RAG) ── */}
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass-card rounded-3xl p-6 border border-border">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-slate-50 dark:bg-white/[0.03] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08]">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="bg-blue-500/10 p-2 rounded-lg">
                                     <span className="material-symbols-outlined text-blue-400 text-xl">folder_open</span>
@@ -656,7 +656,7 @@ export default function EditarAgentePage() {
                                 onClick={() => fileUploadRef.current?.click()}
                                 className={`border-dashed border-2 rounded-xl p-8 text-center cursor-pointer transition-all ${dragOver
                                     ? 'border-indigo-500 bg-indigo-500/5'
-                                    : 'border-border hover:border-indigo-500/50 hover:bg-secondary/30'
+                                    : 'border-slate-300 dark:border-white/10 hover:border-indigo-500/50 hover:bg-secondary/30'
                                     }`}
                             >
                                 <div className={`mx-auto size-12 rounded-full flex items-center justify-center mb-3 transition-colors ${dragOver ? 'bg-indigo-500/20' : 'bg-secondary'}`}>
@@ -673,7 +673,7 @@ export default function EditarAgentePage() {
                                 <div className="mt-5 space-y-2">
                                     <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">Arquivos Anexados ({files.length})</h4>
                                     {files.map((file) => (
-                                        <div key={file.id} className="flex items-center justify-between bg-background/50 border border-border rounded-xl px-4 py-3 group">
+                                        <div key={file.id} className="flex items-center justify-between bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 group">
                                             <div className="flex items-center gap-3">
                                                 <div className={`p-1.5 rounded-lg ${file.type === 'PDF' ? 'bg-rose-500/15 text-rose-400' : 'bg-blue-500/15 text-blue-400'}`}>
                                                     <span className="material-symbols-outlined text-[16px]">
@@ -707,7 +707,7 @@ export default function EditarAgentePage() {
                        RIGHT COLUMN — CHAT PREVIEW
                        ══════════════════════════════ */}
                     <div className="w-full lg:w-[40%] sticky top-8">
-                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="glass-card rounded-3xl overflow-hidden flex flex-col h-[calc(100vh-8rem)] border border-border shadow-2xl shadow-indigo-500/5">
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="bg-slate-50 dark:bg-white/[0.03] rounded-3xl overflow-hidden flex flex-col h-[calc(100vh-8rem)] border border-slate-200 dark:border-white/[0.08] shadow-2xl shadow-indigo-500/5">
 
                             <div className="px-5 py-4 border-b border-border bg-secondary/30 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -770,7 +770,7 @@ export default function EditarAgentePage() {
                                         value={input}
                                         onChange={handleInputChange}
                                         placeholder="Pressione Enter para testar..."
-                                        className="flex-1 bg-background/80 border border-border rounded-xl pl-4 pr-12 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                                        className="flex-1 bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl pl-4 pr-12 py-3 text-sm text-foreground placeholder-muted-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                                     />
                                     <button
                                         type="submit"

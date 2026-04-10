@@ -43,7 +43,7 @@ export default function AgentesLibraryPage() {
       transition={{ delay: index * 0.08, duration: 0.5 }}
       className="relative h-full"
     >
-      <div className={`group block glass-card rounded-3xl p-6 border ${agente.status === 'inativo' ? 'border-amber-500/20 opacity-80' : 'border-indigo-500/20'} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full ${agente.status === 'inativo' ? 'hover:border-amber-500/40' : 'hover:border-indigo-500/40'} relative overflow-hidden flex flex-col`} >
+      <div className={`group block bg-slate-50 dark:bg-white/[0.03] rounded-3xl p-6 border ${agente.status === 'inativo' ? 'border-amber-500/20 dark:border-amber-500/10 opacity-80' : 'border-slate-200 dark:border-white/[0.08]'} transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full ${agente.status === 'inativo' ? 'hover:border-amber-500/40' : 'hover:border-indigo-500/40'} relative overflow-hidden flex flex-col`} >
         
         {/* Status do Agente para admins (se estiver inativo) */}
         {isAdmin && agente.status === 'inativo' && (
@@ -148,7 +148,7 @@ export default function AgentesLibraryPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
           </div>
         ) : agentes.length === 0 ? (
-          <div className="text-center py-20 glass-card rounded-3xl border border-border">
+          <div className="text-center py-20 bg-slate-50 dark:bg-white/[0.03] rounded-3xl border border-slate-200 dark:border-white/[0.08]">
             <span className="material-symbols-outlined text-4xl text-muted-foreground mb-2">sentiment_dissatisfied</span>
             <p className="text-muted-foreground">Nenhum agente disponível no momento.</p>
           </div>

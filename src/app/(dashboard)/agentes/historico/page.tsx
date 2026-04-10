@@ -162,7 +162,7 @@ export default function HistoricoAgentesPage() {
         </div>
       ) : sessions.length === 0 ? (
         /* Vazio Geral */
-        <div className="py-20 text-center animate-in fade-in zoom-in duration-500 glass-card rounded-3xl border border-border">
+        <div className="py-20 text-center animate-in fade-in zoom-in duration-500 bg-slate-50 dark:bg-white/[0.03] rounded-3xl border border-slate-200 dark:border-white/[0.08]">
            <div className="w-20 h-20 rounded-full border border-dashed border-border flex items-center justify-center mx-auto mb-6 bg-secondary">
               <MessageSquare className="w-8 h-8 text-muted-foreground" />
            </div>

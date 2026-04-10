@@ -160,134 +160,106 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] border border-border rounded-2xl glass-card overflow-hidden relative shadow-lg">
+    <main className="absolute inset-0 flex flex-col overflow-hidden bg-white dark:bg-[#000000]">
       
-      {/* Header Interno do Chat */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-secondary/50 backdrop-blur-md shrink-0">
-        <div className="flex items-center gap-4">
+      {/* Header Interno do Chat - Floating concept */}
+      <header className="relative w-full z-10 flex items-center justify-between px-4 pt-24 pb-2 shrink-0 md:px-6">
+        <div className="flex items-center gap-2 md:gap-3">
           <button 
               onClick={() => router.push('/agentes')}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-secondary hover:bg-secondary/80 border border-border text-muted-foreground hover:text-foreground transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100/50 hover:bg-slate-200/50 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-white/70 transition-colors backdrop-blur-md"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <span className="material-symbols-outlined text-lg">arrow_back</span>
           </button>
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white shadow-[0_0_20px_rgba(56,189,248,0.3)]">
-            <Sparkles className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-               <h1 className="text-xl font-bold tracking-tight">
-                 {agent?.name || 'Carregando...'}
-               </h1>
-               <span className="bg-sky-500/20 text-sky-600 dark:text-sky-400 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border border-sky-500/30">
-                  {agent?.category || 'Geral'}
-               </span>
-            </div>
-            <p className="text-sm text-muted-foreground capitalize">
-              {agent?.ai_provider} • Mapeado ao seu DNA
-            </p>
+          
+          <div className="flex items-center gap-2 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md px-3 py-1.5 rounded-xl">
+             <span className="material-symbols-outlined text-[#0ea5e9] text-[18px]">smart_toy</span>
+             <h1 className="text-sm font-bold text-slate-800 dark:text-white/90">
+               {agent?.name || 'Carregando...'}
+             </h1>
+             <span className="bg-[#0ea5e9]/10 text-[#0ea5e9] text-[9px] uppercase font-bold px-2 py-0.5 rounded-full">
+                {agent?.category || 'Geral'}
+             </span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-           <button onClick={() => router.push('/agentes/historico')} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors bg-secondary border border-border px-4 py-2 rounded-lg hover:bg-secondary/80">
-              Ver Histórico
+        <div className="flex items-center">
+           <button onClick={() => router.push('/agentes/historico')} className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-white/60 dark:hover:text-white transition-colors bg-slate-100/50 hover:bg-slate-200/50 dark:bg-white/5 dark:hover:bg-white/10 px-3 py-2 rounded-xl backdrop-blur-md">
+              <span className="material-symbols-outlined text-sm">history</span>
+              <span>Histórico</span>
            </button>
         </div>
       </header>
 
       {/* Área de Mensagens */}
-      <div className="flex-1 overflow-y-auto p-6 scroll-smooth space-y-8 custom-scrollbar">
-          {isInitializing && (
-              <div className="flex h-full items-center justify-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
-              </div>
-          )}
-          
-          {!isInitializing && messages.length === 0 && (
-              <div className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center animate-in fade-in zoom-in duration-500">
-                  <div className="w-16 h-16 rounded-full bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(56,189,248,0.2)]">
-                      <Sparkles className="w-8 h-8 text-sky-500" />
-                  </div>
-                  <h2 className="text-3xl font-bold mb-3">Estou pronto para ajudar.</h2>
-                  <p className="text-muted-foreground mb-10 max-w-md leading-relaxed">
-                      Inicie nossa conversa. Como tenho acesso a todo o seu perfil e DNA de marca, garantiremos conteúdos 100% alinhados à sua identidade.
-                  </p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                      <button onClick={() => handleSuggestionClick('Escreva um conteúdo instigante focando na principal dor do meu público.')} className="bg-secondary hover:bg-secondary/80 border border-border p-4 rounded-xl text-left transition-all hover:border-sky-500/50 group">
-                          <h3 className="text-sm font-bold text-foreground mb-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Tocar na Ferida</h3>
-                          <p className="text-xs text-muted-foreground">Conteúdo focado em dores latentes...</p>
-                      </button>
-                      <button onClick={() => handleSuggestionClick('Faça um resumo dos meus principais diferenciais e como evidenciá-los.')} className="bg-secondary hover:bg-secondary/80 border border-border p-4 rounded-xl text-left transition-all hover:border-sky-500/50 group">
-                          <h3 className="text-sm font-bold text-foreground mb-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Reforçar Autoridade</h3>
-                          <p className="text-xs text-muted-foreground">Listar os grandes diferenciais do DNA...</p>
-                      </button>
-                  </div>
-              </div>
-          )}
-
-          <div className="max-w-4xl mx-auto space-y-8 pb-4">
-              {messages.map((message) => (
-                  <div key={message.id} className={`flex gap-4 animate-in slide-in-from-bottom-2 duration-300 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                       <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border ${message.role === 'assistant' ? 'bg-gradient-to-tr from-sky-500 to-blue-600 border-sky-400/30 shadow-[0_0_15px_rgba(56,189,248,0.4)]' : 'bg-secondary border-border'}`}>
-                          {message.role === 'assistant' ? (
-                              <Sparkles className="w-5 h-5 text-white" />
-                          ) : (
-                              <div className="text-sm font-bold text-foreground">Você</div>
-                          )}
-                       </div>
-
-                       <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-5 ${message.role === 'user' ? 'bg-secondary border border-border text-foreground overflow-hidden rounded-tr-sm' : 'bg-transparent text-foreground'}`}>
-                           {message.role === 'user' ? (
-                              <p className="whitespace-pre-wrap leading-relaxed text-[15px]">
-                                {message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n')}
-                              </p>
-                           ) : (
-                              <div className="prose dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-headings:text-foreground prose-a:text-sky-600 dark:prose-a:text-sky-400 leading-relaxed text-[15px] prose-p:text-foreground">
-                                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                      {message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || ''}
-                                  </ReactMarkdown>
-                              </div>
-                           )}
-                       </div>
-                  </div>
-              ))}
-
-              {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
-                   <div className="flex gap-4 animate-in fade-in duration-300">
-                       <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-gradient-to-tr from-sky-500 to-blue-600 border border-sky-400/30 shadow-[0_0_15px_rgba(56,189,248,0.4)]">
-                           <Sparkles className="w-5 h-5 text-white" />
-                       </div>
-                       <div className="bg-transparent rounded-2xl p-5">
-                           <div className="flex gap-1.5 items-center h-6">
-                               <div className="w-2 h-2 bg-sky-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                               <div className="w-2 h-2 bg-sky-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                               <div className="w-2 h-2 bg-sky-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                           </div>
-                       </div>
-                   </div>
-              )}
-              
-              <div ref={messagesEndRef} />
+      {isInitializing ? (
+          <div className="flex-1 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[#0ea5e9] text-3xl animate-spin">refresh</span>
           </div>
-      </div>
+      ) : messages.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center px-6 mt-10">
+              <div className="text-center mb-6">
+                 <div className="size-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-500/20 border border-[#0ea5e9]/20 flex items-center justify-center shadow-[0_0_40px_rgba(14,165,233,0.15)]">
+                     <span className="material-symbols-outlined text-[#0ea5e9] text-4xl">smart_toy</span>
+                 </div>
+                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">{agent?.name || 'Novo Agente'}</h2>
+                 <p className="text-sm text-slate-500 dark:text-white/50 max-w-md mx-auto leading-relaxed">
+                     Inicie nossa conversa. Como tenho acesso a todo o seu perfil e DNA de marca, garantiremos conteúdos 100% alinhados à sua identidade.
+                 </p>
+              </div>
+          </div>
+      ) : (
+          <div className="flex-1 overflow-y-auto custom-scrollbar pt-6">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-6 space-y-6">
+                {messages.map((message) => (
+                    <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[85%] rounded-2xl px-5 py-3 relative group ${message.role === 'user' ? 'bg-[#0ea5e9] text-white rounded-br-md' : 'bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white/90 border border-slate-200 dark:border-white/[0.06] rounded-bl-md'}`}>
+                            {message.role === 'assistant' ? (
+                                <div className="prose prose-sm dark:prose-invert max-w-none [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-sm [&_p]:text-[13px] [&_li]:text-[13px] [&_p]:leading-relaxed [&_li]:leading-relaxed">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || ''}</ReactMarkdown>
+                                </div>
+                            ) : (
+                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n')}</p>
+                            )}
+                            {message.role === 'assistant' && (
+                                <button onClick={() => navigator.clipboard.writeText(message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || '')} className="absolute -bottom-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-black/80 border border-white/10 hover:bg-white/10" title="Copiar">
+                                    <span className="material-symbols-outlined text-white/60 text-xs">content_copy</span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                ))}
+                {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
+                    <div className="flex justify-start">
+                        <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-2xl rounded-bl-md px-5 py-4">
+                            <div className="flex justify-center items-center gap-1.5 h-full">
+                                <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+                <div ref={messagesEndRef} />
+            </div>
+          </div>
+      )}
 
       {/* Text Input Footer */}
-      <div className="p-4 md:p-6 bg-card border-t border-border shrink-0">
-        <div className="max-w-4xl mx-auto relative">
-           <form onSubmit={onSubmit} className="glass-card border border-border rounded-2xl p-2 flex items-end gap-2 shadow-sm focus-within:border-sky-500/50 focus-within:ring-1 focus-within:ring-sky-500/50 transition-all">
+      <div className="shrink-0 px-4 sm:px-6 py-4">
+        <div className="max-w-3xl mx-auto">
+           <form onSubmit={onSubmit} className="relative flex items-end gap-2 bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-2xl px-3 py-2 focus-within:border-[#0ea5e9]/50 focus-within:ring-2 focus-within:ring-[#0ea5e9]/10 transition-all">
              
-             <button type="button" className="w-12 h-12 flex items-center justify-center rounded-xl bg-transparent hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors shrink-0">
-               <Paperclip className="w-5 h-5" />
+             <button type="button" className="size-9 rounded-xl flex items-center justify-center shrink-0 mb-0.5 transition-all text-slate-400 hover:text-slate-600 dark:hover:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10">
+               <span className="material-symbols-outlined text-lg">attach_file</span>
              </button>
 
              <textarea 
                 value={input || ''}
                 onChange={(e) => handleInputChange(e)}
                 placeholder={`Envie uma requisição para o ${agent?.name || 'agente'}...`}
-                className="w-full bg-transparent border-none focus:ring-0 text-foreground resize-none py-3.5 px-2 max-h-32 min-h-[48px] custom-scrollbar focus:outline-none placeholder:text-muted-foreground"
+                className="flex-1 bg-transparent border-0 outline-none text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 resize-none py-2 leading-relaxed disabled:opacity-50 min-h-[36px] max-h-[200px]"
                 rows={1}
-                style={{ height: 'auto' }}
+                disabled={isLoading}
                 onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault()
@@ -299,17 +271,18 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
              <button 
                type="submit"
                disabled={!(input || '').trim() || isLoading}
-               className={`w-12 h-12 flex items-center justify-center rounded-xl shrink-0 transition-all ${(input || '').trim() && !isLoading ? 'bg-sky-500 text-white hover:bg-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.4)]' : 'bg-muted text-muted-foreground cursor-not-allowed'}`}
+               className={`size-9 rounded-xl flex items-center justify-center shrink-0 mb-0.5 transition-all ${(input || '').trim() && !isLoading ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/30 hover:bg-[#0ea5e9]/90 scale-100' : 'bg-slate-200 dark:bg-white/10 text-slate-400 dark:text-white/30 scale-95'}`}
              >
-               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+               {isLoading ? <span className="material-symbols-outlined text-lg animate-spin">refresh</span> : <span className="material-symbols-outlined text-lg">arrow_upward</span>}
              </button>
            </form>
-           <div className="mt-3 text-center">
-              <p className="text-[11px] text-muted-foreground font-medium">Respostas baseadas no DNA do seu cliente. A IA pode cometer erros de interpretação.</p>
-           </div>
+           
+           <p className="text-center text-[11px] text-slate-400 dark:text-white/30 mt-2">
+              Respostas baseadas no DNA do seu cliente. A IA pode cometer erros de interpretação.
+           </p>
         </div>
       </div>
 
-    </div>
+    </main>
   )
 }
