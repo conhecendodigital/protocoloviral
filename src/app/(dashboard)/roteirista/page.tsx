@@ -321,7 +321,7 @@ export default function RoteiristaPage() {
       </div>
 
       {/* ─── INPUT AREA ────────────────────────────────── */}
-      <div className="shrink-0 border-t border-white/[0.06] bg-[#000000]/90 backdrop-blur-xl">
+      <div className="shrink-0 bg-[#000000]/90 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
 
           {/* Active Filters */}
