@@ -1,15 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 export interface VoiceProfile {
   id: string
   user_id: string
   name: string
-  description: string | null
-  sample_texts: string[]
-  extracted_style: any
+  description?: string
+  wizard_inputs: Record<string, any>
+  enriched_profile: Record<string, any>
   is_default: boolean
   created_at: string
   updated_at: string
@@ -17,107 +17,131 @@ export interface VoiceProfile {
 
 export function useVoiceProfiles() {
   const [profiles, setProfiles] = useState<VoiceProfile[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const supabase = createClient()
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const supabase = useMemo(() => createClient(), [])
+
+  const fetchProfiles = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user) { setLoading(false); return }
+
+    const { data, error } = await supabase
+      .from('voice_profiles')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false })
+
+    if (!error && data) {
+      setProfiles(data as VoiceProfile[])
+    }
+    setLoading(false)
+  }, [supabase])
 
   useEffect(() => {
     fetchProfiles()
-  }, [])
+  }, [fetchProfiles])
 
-  const fetchProfiles = async () => {
-    setIsLoading(true)
-    setError(null)
+  const createProfile = useCallback(async (
+    name: string,
+    wizardInputs: Record<string, any>
+  ): Promise<VoiceProfile | null> => {
+    setSaving(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) return null
 
+      // 1. Salvar wizard_inputs no Supabase
+      const isFirst = profiles.length === 0
       const { data, error } = await supabase
         .from('voice_profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setProfiles(data || [])
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const createProfile = async (profileData: {
-    name: string
-    description?: string
-    sample_texts: string[]
-    extracted_style: any
-    is_default?: boolean
-  }) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
-
-      const { data, error } = await supabase
-        .from('voice_profiles')
-        .insert([{ ...profileData, user_id: user.id }])
+        .insert({
+          user_id: session.user.id,
+          name,
+          wizard_inputs: wizardInputs,
+          enriched_profile: {},
+          is_default: isFirst,
+        })
         .select()
         .single()
 
-      if (error) throw error
-      setProfiles(prev => [data, ...prev])
-      return data
-    } catch (err: any) {
-      throw err
-    }
-  }
+      if (error || !data) {
+        console.error('Error creating voice profile:', error)
+        return null
+      }
 
-  const deleteProfile = async (id: string) => {
-    try {
-      const { error } = await supabase.from('voice_profiles').delete().eq('id', id)
-      if (error) throw error
+      // 2. Enriquecer com IA (background)
+      try {
+        const enrichRes = await fetch('/api/enrich-voice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            profile_id: data.id,
+            wizard_inputs: wizardInputs,
+          }),
+        })
+        
+        if (enrichRes.ok) {
+          const enrichData = await enrichRes.json()
+          if (enrichData.enriched_profile) {
+            // Atualizar no Supabase
+            await supabase
+              .from('voice_profiles')
+              .update({ enriched_profile: enrichData.enriched_profile })
+              .eq('id', data.id)
+
+            data.enriched_profile = enrichData.enriched_profile
+          }
+        }
+      } catch (enrichErr) {
+        console.error('Enrichment failed (non-critical):', enrichErr)
+      }
+
+      setProfiles(prev => [data as VoiceProfile, ...prev])
+      return data as VoiceProfile
+    } finally {
+      setSaving(false)
+    }
+  }, [supabase, profiles.length])
+
+  const deleteProfile = useCallback(async (id: string) => {
+    const { error } = await supabase
+      .from('voice_profiles')
+      .delete()
+      .eq('id', id)
+
+    if (!error) {
       setProfiles(prev => prev.filter(p => p.id !== id))
-    } catch (err: any) {
-      throw err
     }
-  }
+  }, [supabase])
 
-  const setDefaultProfile = async (id: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
+  const setDefault = useCallback(async (id: string) => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.user) return
 
-      // Unset previous defaults
-      await supabase
-        .from('voice_profiles')
-        .update({ is_default: false })
-        .eq('user_id', user.id)
+    // Remove default de todos
+    await supabase
+      .from('voice_profiles')
+      .update({ is_default: false })
+      .eq('user_id', session.user.id)
 
-      // Set new default
-      const { error } = await supabase
-        .from('voice_profiles')
-        .update({ is_default: true })
-        .eq('id', id)
+    // Seta o novo default
+    await supabase
+      .from('voice_profiles')
+      .update({ is_default: true })
+      .eq('id', id)
 
-      if (error) throw error
-      
-      // Update local state
-      setProfiles(prev => prev.map(p => ({
-        ...p,
-        is_default: p.id === id
-      })))
-    } catch (err: any) {
-      throw err
-    }
-  }
+    setProfiles(prev =>
+      prev.map(p => ({ ...p, is_default: p.id === id }))
+    )
+  }, [supabase])
 
   return {
     profiles,
-    isLoading,
-    error,
-    fetchProfiles,
+    loading,
+    saving,
     createProfile,
     deleteProfile,
-    setDefaultProfile
+    setDefault,
+    refetch: fetchProfiles,
   }
 }
