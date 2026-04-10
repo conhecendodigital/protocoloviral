@@ -211,7 +211,7 @@ export default function RoteiristaPage() {
   // ██  RENDER
   // ═══════════════════════════════════════════════════════
   return (
-    <main className="fixed inset-0 z-30 flex flex-col overflow-hidden bg-[#000000]">
+    <main className="absolute inset-0 flex flex-col overflow-hidden bg-[#000000]">
 
       {/* ─── CHAT AREA ─────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
