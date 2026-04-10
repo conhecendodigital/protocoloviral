@@ -31,13 +31,17 @@ function parseScriptToBlocks(text: string): RoteiroBlock[] | null {
     const mdMatch = line.match(/^##\s*(.*?)\s*$/);
     
     if (bracketMatch || mdMatch) {
-      if (currentBlockContent.length > 0 || hasFoundAnyBlock) {
+      if (hasFoundAnyBlock) {
         blocks.push({
           type: currentBlockType,
           content: currentBlockContent.join('\n').trim()
         });
+        currentBlockContent = [];
+      } else {
+        if (currentBlockContent.length > 0 && currentBlockContent.join('').trim().length > 0) {
+          currentBlockContent.push('');
+        }
       }
-      currentBlockContent = [];
       currentBlockType = (bracketMatch ? bracketMatch[1] : (mdMatch ? mdMatch[1] : '')).trim();
       hasFoundAnyBlock = true;
     } else {
@@ -63,6 +67,12 @@ export default function RoteirosPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [editedTexts, setEditedTexts] = useState<Record<string, string>>({})
   const [editedBlocks, setEditedBlocks] = useState<Record<string, RoteiroBlock[]>>({})
+  const [editingBlocksState, setEditingBlocksState] = useState<Record<string, boolean>>({})
+
+  const toggleEditBlock = (scriptId: string, bIdx: number | string) => {
+    const key = `${scriptId}-${bIdx}`
+    setEditingBlocksState(prev => ({ ...prev, [key]: !prev[key] }))
+  }
   const [savingId, setSavingId] = useState<string | null>(null)
   const [savedId, setSavedId] = useState<string | null>(null)
   const supabase = useMemo(() => createClient(), [])
@@ -285,40 +295,54 @@ export default function RoteirosPage() {
                               if (blocks) {
                                 return (
                                   <div className="flex flex-col gap-4 p-5">
+                                    {/* Demais Blocos */}
                                     {blocks.map((b, bIdx) => {
-                                      const t = b.type.toLowerCase();
+                                      const isTitleBlock = b.type === 'Geral' && bIdx === 0;
+                                      const t = isTitleBlock ? 'título' : b.type.toLowerCase();
+                                      const displayType = isTitleBlock ? 'Título' : b.type;
                                       const isLocked = !isPro && !t.includes('titulo') && !t.includes('título') && !t.includes('gancho') && bIdx !== 0;
+                                      const blockKey = `${r.id}-${bIdx}`;
+                                      const isEditing = !!editingBlocksState[blockKey];
                                       
                                       return (
                                       <div key={bIdx} className="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none flex flex-col focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all relative">
-                                        {b.type !== 'Geral' && (
+                                        {(b.type !== 'Geral' || isTitleBlock) && (
                                           <div className="bg-slate-100/50 dark:bg-white/5 px-4 py-2 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
                                             <span className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-white/50">
-                                              {b.type}
+                                              {displayType}
                                             </span>
+                                            {isLocked ? (
+                                              <span className="flex items-center justify-center text-amber-600 dark:text-amber-400 bg-amber-500/10 w-6 h-6 rounded" title="Apenas Leitura">
+                                                <span className="material-symbols-outlined text-[14px]">lock</span>
+                                              </span>
+                                            ) : (
+                                              <button
+                                                onClick={() => toggleEditBlock(r.id, bIdx)}
+                                                className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider transition-colors ${
+                                                  isEditing 
+                                                    ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30'
+                                                    : 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
+                                                }`}
+                                              >
+                                                <span className="material-symbols-outlined text-[12px]">{isEditing ? 'check' : 'edit'}</span>
+                                                {isEditing ? 'Concluir' : 'Editar'}
+                                              </button>
+                                            )}
                                           </div>
                                         )}
-                                        {isLocked ? (
-                                          <div className="relative min-h-[120px] bg-slate-50/50 dark:bg-black/20 flex flex-col items-center justify-center p-6 overflow-hidden">
-                                            <div className="absolute inset-x-6 top-5 space-y-3 opacity-20 dark:opacity-10 pointer-events-none select-none">
-                                              <div className="h-2.5 bg-slate-600 rounded w-full blur-[2px]"></div>
-                                              <div className="h-2.5 bg-slate-600 rounded w-5/6 blur-[2px]"></div>
-                                              <div className="h-2.5 bg-slate-600 rounded w-4/6 blur-[2px]"></div>
-                                            </div>
-                                            
-                                            <div className="z-10 flex flex-col items-center relative mt-2">
-                                              <span className="material-symbols-outlined text-amber-500 text-3xl drop-shadow-md mb-1">lock</span>
-                                              <p className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">Exclusivo Premium</p>
-                                            </div>
-                                          </div>
-                                        ) : (
+                                        {isEditing ? (
                                           <textarea
                                             value={b.content}
                                             onChange={(e) => handleBlockChange(r.id, bIdx, e.target.value, r)}
                                             placeholder={b.type === 'Geral' ? 'Escreva aqui...' : `Conteúdo para: ${b.type}`}
-                                            className="w-full bg-transparent p-4 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[100px]"
+                                            autoFocus
+                                            className="w-full bg-emerald-50/30 dark:bg-emerald-500/5 p-4 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[100px]"
                                             style={{ height: 'auto', minHeight: `${Math.max(100, b.content.split('\n').length * 26)}px` }}
                                           />
+                                        ) : (
+                                          <div className={`w-full bg-transparent p-4 font-sans text-sm sm:text-base leading-relaxed text-slate-700 dark:text-white/80 whitespace-pre-wrap ${isLocked ? 'opacity-80 cursor-default' : 'cursor-text hover:bg-slate-50/50 dark:hover:bg-white/[0.02]'} transition-colors`} onClick={() => !isLocked && toggleEditBlock(r.id, bIdx)}>
+                                            {b.content || <span className="opacity-40 italic">Vazio</span>}
+                                          </div>
                                         )}
                                       </div>
                                     )})}
@@ -328,22 +352,46 @@ export default function RoteirosPage() {
                               
                               return (
                                 <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-white/10">
-                                  {!isPro && (
-                                    <div className="absolute inset-0 z-10 bg-slate-50/80 dark:bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 mb-3">
-                                          <span className="material-symbols-outlined text-white text-2xl">lock</span>
-                                        </div>
-                                        <p className="text-sm font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-2">Roteiro Restrito</p>
-                                        <p className="text-xs font-medium text-slate-600 dark:text-white/70 max-w-[280px]">Assine o plano premium para destravar o roteiro completo ou continue editando o Gancho acima.</p>
+                                  <div className="bg-slate-100/50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 px-4 py-2 flex items-center justify-between">
+                                    <span className="text-[11px] font-black uppercase tracking-widest text-[#0ea5e9] flex items-center gap-1.5">
+                                      <span className="material-symbols-outlined text-[14px]">description</span>
+                                      Roteiro Completo
+                                    </span>
+                                    {!isPro ? (
+                                      <span className="flex items-center justify-center text-amber-600 dark:text-amber-400 bg-amber-500/10 w-6 h-6 rounded" title="Apenas Leitura">
+                                        <span className="material-symbols-outlined text-[14px]">lock</span>
+                                      </span>
+                                    ) : (
+                                      <button
+                                        onClick={() => toggleEditBlock(r.id, 'fallback')}
+                                        className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider transition-colors ${
+                                          editingBlocksState[`${r.id}-fallback`] 
+                                            ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30'
+                                            : 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
+                                        }`}
+                                      >
+                                        <span className="material-symbols-outlined text-[12px]">{editingBlocksState[`${r.id}-fallback`] ? 'check' : 'edit'}</span>
+                                        {editingBlocksState[`${r.id}-fallback`] ? 'Concluir' : 'Editar'}
+                                      </button>
+                                    )}
+                                  </div>
+                                  
+                                  {editingBlocksState[`${r.id}-fallback`] ? (
+                                    <textarea
+                                      value={getEditedText(r)}
+                                      onChange={e => setEditedTexts(prev => ({ ...prev, [r.id]: e.target.value }))}
+                                      autoFocus
+                                      className="w-full bg-emerald-50/30 dark:bg-emerald-500/5 p-5 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[200px]"
+                                      style={{ height: 'auto', minHeight: `${Math.max(200, getEditedText(r).split('\n').length * 26)}px` }}
+                                    />
+                                  ) : (
+                                    <div 
+                                      className={`w-full bg-transparent p-5 font-sans text-sm sm:text-base leading-relaxed text-slate-700 dark:text-white/80 whitespace-pre-wrap ${!isPro ? 'opacity-80 cursor-default' : 'cursor-text hover:bg-slate-50/50 dark:hover:bg-white/[0.02]'} transition-colors`}
+                                      onClick={() => isPro && toggleEditBlock(r.id, 'fallback')}
+                                    >
+                                      {getEditedText(r) || <span className="opacity-40 italic">Vazio</span>}
                                     </div>
                                   )}
-                                  <textarea
-                                    disabled={!isPro}
-                                    value={getEditedText(r)}
-                                    onChange={e => setEditedTexts(prev => ({ ...prev, [r.id]: e.target.value }))}
-                                    className="w-full bg-slate-50 dark:bg-white/[0.02] p-5 font-sans text-sm sm:text-base leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none min-h-[200px] focus:ring-2 focus:ring-emerald-500/30 transition-shadow"
-                                    style={{ height: 'auto', minHeight: `${Math.max(200, getEditedText(r).split('\n').length * 26)}px` }}
-                                  />
                                 </div>
                               );
                             })()}
@@ -366,6 +414,11 @@ export default function RoteirosPage() {
                                 onClick={() => {
                                   setEditedTexts(prev => { const next = { ...prev }; delete next[r.id]; return next })
                                   setEditedBlocks(prev => { const next = { ...prev }; delete next[r.id]; return next })
+                                  setEditingBlocksState(prev => {
+                                    const next = { ...prev };
+                                    Object.keys(next).forEach(k => { if(k.startsWith(r.id + '-')) delete next[k] });
+                                    return next;
+                                  })
                                 }}
                                 className="text-[10px] font-bold uppercase tracking-widest px-3 py-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white/70 transition-colors"
                               >
