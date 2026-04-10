@@ -16,12 +16,15 @@ export async function POST(req: Request) {
     const { data: profile } = await supabase.from('profiles').select('email, plan_tier, mp_subscription_id').eq('id', user.id).single();
 
     let title, price;
-    if (planId === 'pro') {
-      title = 'Plano Profissional - 30 Dias';
-      price = 49.00;
-    } else if (planId === 'premium') {
-      title = 'Plano Elite VIP - 30 Dias';
+    if (planId === 'mensal') {
+      title = 'Plano Mensal - Protocolo Viral';
+      price = 47.00;
+    } else if (planId === 'trimestral') {
+      title = 'Plano Trimestral - Protocolo Viral';
       price = 97.00;
+    } else if (planId === 'semestral') {
+      title = 'Plano Semestral - Protocolo Viral';
+      price = 147.00;
     } else {
       return NextResponse.json({ error: 'Plan invalid' }, { status: 400 });
     }
@@ -57,7 +60,7 @@ export async function POST(req: Request) {
           transaction_amount: price,
           currency_id: 'BRL',
         },
-        back_url: `${rawBaseUrl}/planos?success=true`,
+        back_url: `${rawBaseUrl}/?success=true`,
         payer_email: profile?.email || user.email,
         external_reference: `${user.id}___${planId}`
       }

@@ -354,26 +354,7 @@ export default function NovoAgentePage() {
                                         />
                                     </div>
                                 </div>
-                                <div>
-                                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Nível Mínimo do Plano (Acesso)</label>
-                                    <div className="relative">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <span className="material-symbols-outlined text-slate-600 text-lg">workspace_premium</span>
-                                        </div>
-                                        <select
-                                            value={requiredPlan}
-                                            onChange={(e) => setRequiredPlan(e.target.value)}
-                                            className="w-full bg-background/50 border border-border rounded-xl pl-12 pr-10 py-3 text-sm text-foreground focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none appearance-none"
-                                        >
-                                            <option value="free" className="bg-popover text-foreground">Acesso Livre (Básico)</option>
-                                            <option value="pro" className="bg-popover text-foreground">Exclusivo: Pro e Premium</option>
-                                            <option value="premium" className="bg-popover text-foreground">VIP - Somente Premium</option>
-                                        </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <span className="material-symbols-outlined text-slate-500 text-lg">expand_more</span>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                         </motion.div>
 
