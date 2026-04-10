@@ -100,13 +100,13 @@ function ForcaBadge({ forca }: { forca: string }) {
 // ─── Paywall Overlay ────────────────────────────────────────────────
 function PremiumOverlay({ title, desc }: { title: string; desc: string }) {
   return (
-    <div className="absolute inset-0 z-50 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md bg-slate-900/60 dark:bg-black/70 rounded-2xl border border-white/5">
+    <div className="absolute inset-0 z-50 flex flex-col items-center justify-center p-6 text-center backdrop-blur-[8px] bg-white/20 dark:bg-black/60 rounded-2xl border border-slate-200/50 dark:border-white/5">
       <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.4)] mb-4">
         <span className="material-symbols-outlined text-white text-3xl">lock</span>
       </div>
-      <h4 className="text-xl font-black text-white mb-2">{title}</h4>
-      <p className="text-sm font-medium text-white/80 max-w-sm mb-6 leading-relaxed">{desc}</p>
-      <Link href="/assinatura" className="shimmer-btn px-6 py-3 rounded-xl text-white font-bold text-sm shadow-xl shadow-amber-500/20 bg-gradient-to-r from-amber-500 to-orange-500 hover:scale-105 transition-transform">
+      <h4 className="text-xl font-black text-slate-900 dark:text-white mb-2">{title}</h4>
+      <p className="text-sm font-medium text-slate-700 dark:text-white/80 max-w-sm mb-6 leading-relaxed">{desc}</p>
+      <Link href="/assinatura" className="shimmer-btn px-6 py-3 rounded-xl text-white font-bold text-sm shadow-xl shadow-amber-500/20 bg-gradient-to-r from-blue-500 to-blue-600 hover:scale-105 transition-transform border border-blue-400/30">
         Desbloquear Acesso Premium
       </Link>
     </div>
@@ -508,7 +508,7 @@ export default function FormatoViewPage() {
                           desc="Assine o Premium para liberar o roteiro exato, decodificado palavra por palavra para você colar na sua produção." 
                         />
                       )}
-                      <div className={!isPro ? 'select-none pointer-events-none opacity-40 blur-sm' : ''}>
+                      <div className={!isPro ? 'select-none pointer-events-none blur-[6px]' : ''}>
                         {formato.roteiro_completo ? (
                         (() => {
                           const parsed = parseRoteiroBlocks(formato.roteiro_completo);
@@ -562,7 +562,7 @@ export default function FormatoViewPage() {
                           desc="Libere dezenas de fórmulas prontas de como encaixar esse script viral perfeitamente dentro do seu próprio nicho." 
                         />
                       )}
-                      <div className={`space-y-6 ${!isPro ? 'select-none pointer-events-none opacity-40 blur-[6px]' : ''}`}>
+                      <div className={`space-y-6 ${!isPro ? 'select-none pointer-events-none blur-[6px]' : ''}`}>
                         {formato.adaptacao_esqueleto && (
                         <AnaliseSection icon="schema" title="Esqueleto Replicável">
                           <p className="text-sm text-slate-900 dark:text-white/90 mt-1">{formato.adaptacao_esqueleto}</p>
@@ -604,7 +604,7 @@ export default function FormatoViewPage() {
                       desc="Assine o Premium para liberar o manuscrito completo, estruturas e o roteiro exato para usar na sua produção." 
                     />
                   )}
-                  <div className={!isPro ? 'select-none pointer-events-none opacity-40 blur-[6px] overflow-hidden max-h-[300px]' : ''}>
+                  <div className={!isPro ? 'select-none pointer-events-none blur-[6px] overflow-hidden max-h-[300px]' : ''}>
                     {formato.estudo?.split('\n\n').map((block, i) => {
                       const headerMatch = block.match(/^\*\*(.+?)\*\*(.*)/)
                       if (headerMatch) {
@@ -640,7 +640,7 @@ export default function FormatoViewPage() {
               />
             )}
             
-            <div className={`space-y-6 relative z-10 ${!isPro ? 'select-none pointer-events-none opacity-40 blur-md max-h-[350px] overflow-hidden' : ''}`}>
+            <div className={`space-y-6 relative z-10 ${!isPro ? 'select-none pointer-events-none blur-[6px] max-h-[350px] overflow-hidden' : ''}`}>
               <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-[#0ea5e9]/10 blur-[80px] rounded-full pointer-events-none" />
 
               <div className="space-y-2 relative z-10">
