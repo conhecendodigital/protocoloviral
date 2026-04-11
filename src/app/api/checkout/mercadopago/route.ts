@@ -18,13 +18,13 @@ export async function POST(req: Request) {
     let title, price;
     if (planId === 'mensal') {
       title = 'Plano Mensal - Protocolo Viral';
-      price = 47.00;
+      price = 97.00;
     } else if (planId === 'trimestral') {
       title = 'Plano Trimestral - Protocolo Viral';
-      price = 97.00;
+      price = 200.00;
     } else if (planId === 'semestral') {
       title = 'Plano Semestral - Protocolo Viral';
-      price = 147.00;
+      price = 297.00;
     } else {
       return NextResponse.json({ error: 'Plan invalid' }, { status: 400 });
     }
@@ -38,19 +38,8 @@ export async function POST(req: Request) {
     // CEO solicitou o uso explícito da API de Assinaturas Recorrentes do Mercado Pago
     const preApproval = new PreApproval(client);
 
-    // Lógica de Upgrade: Se há assinatura prévia rolando e é um upgrade cruzado, cancela a antiga ANTES de gerar a nova cobrança
-    if (profile?.plan_tier !== 'free' && profile?.mp_subscription_id && profile?.plan_tier !== planId) {
-        try {
-            await preApproval.update({
-                id: profile.mp_subscription_id,
-                body: { status: 'cancelled' }
-            });
-            console.log(`[Upgrade-Flow] Old subscription ${profile.mp_subscription_id} cancelled to make room for ${planId}`);
-        } catch(cancelErr) {
-            console.log(`[Upgrade-Flow] Failed to cancel old sub (might be cancelled already). Ignoring.`);
-        }
-    }
-    
+    // Removido: O cancelamento imediato aqui apagava a assinatura velha antes do usuário pagar.
+    // Agora isso é gerenciado exclusivamente no Webhook após a confirmação do pagamento.
     const response = await preApproval.create({
       body: {
         reason: title,
@@ -62,14 +51,12 @@ export async function POST(req: Request) {
         },
         back_url: `${rawBaseUrl}/?success=true`,
         payer_email: profile?.email || user.email,
-        external_reference: `${user.id}___${planId}`
+        external_reference: `${user.id}___${planId}___${profile?.mp_subscription_id || 'none'}`
       }
     });
 
-    // Salva provisoriamente o REAL ID da PreApproval para o Webhook e painel poderem cancelar no futuro
-    if (response?.id) {
-        await supabase.from('profiles').update({ mp_subscription_id: response.id }).eq('id', user.id);
-    }
+    // Removido: O salvamento provisório do ID da PreApproval agora é feito de forma segura
+    // apenas no Webhook, evitando que o usuário perca acesso para cancelar a assinatura ativa se fechar o popup.
 
     return NextResponse.json({ url: response.init_point });
   } catch (error: any) {

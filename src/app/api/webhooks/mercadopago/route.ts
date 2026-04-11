@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { MercadoPagoConfig, Payment } from 'mercadopago';
+import { MercadoPagoConfig, Payment, PreApproval } from 'mercadopago';
 import { createClient } from '@supabase/supabase-js';
 
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || '' });
@@ -25,10 +25,13 @@ export async function POST(req: Request) {
       const paymentData = await payment.get({ id: paymentId });
       
       if (paymentData.status === 'approved') {
-         // Utilizamos a referência externa pra saber 'quem' comprou 'o quê'
+         // Utilizamos a referência externa pra saber 'quem' comprou 'o quê' (e o que ele tinha antes)
          const extRef = paymentData.external_reference;
          if (extRef && extRef.includes('___')) {
-             const [userId, planId] = extRef.split('___');
+             const parts = extRef.split('___');
+             const userId = parts[0];
+             const planId = parts[1];
+             const oldSubId = parts[2];
              
              // Supabase Client via Role Secundária pra bypass RLS em bg
              const supabaseAdmin = createClient(
@@ -47,15 +50,23 @@ export async function POST(req: Request) {
              const updatePayload: any = {
                  plan_tier: planId,
                  mp_customer_id: paymentData.payer?.id ? String(paymentData.payer.id) : null,
-                 // mp_subscription_id não entra aqui porque já foi setado com a real id de Assinatura (PreApproval) no Checkout!
                  current_period_end: periodEnd.toISOString()
              };
 
-             // Se for novo contrato, reseta o marcador do CDC (Art 49) de 7 dias e zera as fichas do ciclo
              if (isNewContract) {
                  updatePayload.subscription_start_date = new Date().toISOString();
                  updatePayload.tokens_used_this_cycle = 0;
                  updatePayload.cancel_at_period_end = false;
+                 
+                 // Segurança: Só agora que o pagamento foi aprovado nós cancelamos formalmente o contrato/plano antigo
+                 if (oldSubId && oldSubId !== 'none') {
+                     try {
+                         await new PreApproval(client).update({ id: oldSubId, body: { status: 'cancelled' } });
+                         console.log(`[Webhook] Contrato anterior ${oldSubId} cancelado com sucesso por upgrade.`);
+                     } catch(e) {
+                         console.error(`[Webhook] Falha ao tentar cancelar contrato anterior ${oldSubId} (ignorado).`, e);
+                     }
+                 }
              }
 
              await supabaseAdmin.from('profiles').update(updatePayload).eq('id', userId);
@@ -63,6 +74,27 @@ export async function POST(req: Request) {
              console.log(`[Webhooks - MP] User ${userId} upgraded/renewed successfully. Plan: ${planId}. New Contract: ${isNewContract}`);
          }
       }
+    } else if (type === 'subscription_preapproval') {
+       if (!paymentId) return NextResponse.json({ error: 'Id Not found' }, { status: 400 });
+       
+       const preApproval = new PreApproval(client);
+       const preAppData = await preApproval.get({ id: paymentId });
+       
+       // Assim que a assinatura torna-se vigente (authorized), plugamos o ID dela no DB!
+       if (preAppData.status === 'authorized') {
+          const extRef = preAppData.external_reference;
+          if (extRef && extRef.includes('___')) {
+             const parts = extRef.split('___');
+             const userId = parts[0];
+             
+             const supabaseAdmin = createClient(
+                 process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                 process.env.SUPABASE_SERVICE_ROLE_KEY!
+             );
+             await supabaseAdmin.from('profiles').update({ mp_subscription_id: preAppData.id }).eq('id', userId);
+             console.log(`[Webhook - PreApproval] User ${userId} active sub ID set to ${preAppData.id}`);
+          }
+       }
     }
 
     // Retorna imediato pra não timeout no MP

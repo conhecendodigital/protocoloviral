@@ -63,6 +63,15 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Tom de Voz', href: '/tom-de-voz', icon: 'record_voice_over', badge: '⭐', badgeHot: true },
     ],
   },
+  {
+    id: 'assinatura',
+    label: 'Premium',
+    icon: 'crown',
+    collapsible: false,
+    items: [
+      { label: 'Assinatura', href: '/assinatura', icon: 'workspace_premium', badge: 'PRO', badgeHot: true },
+    ],
+  },
 ]
 
 interface SidebarProps {
@@ -211,7 +220,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
 
         {/* Support Box */}
         <div className="bg-black/5 dark:bg-white/5 p-4 rounded-xl hidden lg:block border border-slate-200 dark:border-white/10">
-          <p className="text-xs font-semibold text-[#0ea5e9] uppercase tracking-widest mb-2">Suporte</p>
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Suporte</p>
           <p className="text-xs text-slate-800 dark:text-white/90 leading-relaxed">Precisa de ajuda com sua estratégia?</p>
           <button className="mt-3 text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1 hover:underline">
             Abrir Ticket <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
