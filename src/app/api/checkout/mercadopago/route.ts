@@ -30,10 +30,19 @@ export async function POST(req: Request) {
     }
 
     // O Mercado Pago recusa 'localhost' (mesmo com HTTP) no back_url para assinaturas (PreApproval).
-    // Usamos uma URL HTTPS válida (fictícia ou real) se NEXT_PUBLIC_APP_URL estiver ausente ou for localhost.
+    // Capturamos ativamente de onde o request está vindo (para funcionar dinâmico em deploys de produção / Vercel sem precisar de ENV fixa).
+    const originHeader = req.headers.get('origin');
+    const refererHeader = req.headers.get('referer');
     let rawBaseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
-    if (!rawBaseUrl || rawBaseUrl.includes('localhost')) {
-        rawBaseUrl = 'https://protocoloviral.com.br'; // URL válida exigida pelo SDK do MP para não estourar erro
+
+    try {
+        if (originHeader) rawBaseUrl = new URL(originHeader).origin;
+        else if (refererHeader) rawBaseUrl = new URL(refererHeader).origin;
+    } catch(e) {}
+
+    // Tratativa para desenvolvimento
+    if (!rawBaseUrl || rawBaseUrl.includes('localhost') || rawBaseUrl.includes('127.0.0.1')) {
+        rawBaseUrl = 'https://protocoloviral.com.br'; // URL válida exigida pelo SDK do MP para dev (bypass)
     }
     // CEO solicitou o uso explícito da API de Assinaturas Recorrentes do Mercado Pago
     const preApproval = new PreApproval(client);
