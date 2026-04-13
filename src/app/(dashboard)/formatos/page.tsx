@@ -300,6 +300,9 @@ export default function FormatosPage() {
                   {renderVideoExploreContent(formato.video_url, formato.titulo)}
                 </div>
                 
+                {/* Desfoque do vídeo ao passar o mouse */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 backdrop-blur-[2px] pointer-events-none z-0" />
+                
                 {/* Sobreposição de Gradiente para legibilidade (Apenas no Hover) */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#060a12]/95 via-[#060a12]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#060a12]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -312,7 +315,7 @@ export default function FormatosPage() {
                 )}
                 
                 {/* Informações da Card (Apenas no Hover) */}
-                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+                <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 z-10">
                    <div className="flex items-center gap-2 mb-3 flex-wrap text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-[#0ea5e9]">
                      <span className="bg-[#0ea5e9]/20 backdrop-blur-md px-2.5 py-1 rounded text-white flex gap-1 items-center border border-white/10">
                        <span>{nichoEmojis[formato.nicho] || '📁'}</span>
@@ -345,9 +348,6 @@ export default function FormatosPage() {
                      )}
                    </div>
                 </div>
-                
-                {/* Hover Play State Icon */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 backdrop-blur-[2px] pointer-events-none z-0" />
               </Link>
             ))}
           </div>
