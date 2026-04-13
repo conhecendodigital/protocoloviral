@@ -18,36 +18,22 @@ export async function POST(req: Request) {
 
     const body = await req.json()
     const { 
-      topic, 
+      messages = [], 
       mode = 'fast', 
       agentId, 
       voiceProfileId, 
       formatData 
     } = body
 
-    if (!topic) {
-      return new Response('Topic is required', { status: 400 })
+    if (!messages || messages.length === 0) {
+      return new Response('Messages are required', { status: 400 })
     }
 
-    // 1. Deduct credit for PREMIUM or SEARCH
-    if (mode === 'premium' || mode === 'search') {
-      const { data: credits, error: creditErr } = await supabase
-        .from('creditos_mensais')
-        .select('*')
-        .eq('user_id', user.id)
-        .single()
+    // Extrapolate topic from the latest user message for limits check & RAG
+    const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')
+    const topic = lastUserMsg ? lastUserMsg.content : ''
 
-      if (creditErr || !credits || (credits.credits_total - credits.credits_used) < 1) {
-        return new Response('Insufficient credits for Premium/Search generation.', { status: 402 })
-      }
-
-      await supabase
-        .from('creditos_mensais')
-        .update({ credits_used: credits.credits_used + 1 })
-        .eq('id', credits.id)
-    }
-
-    // 2. Profile Check and Free Tier Limit
+    // 1. Initial Gatekeeper: Only Block if Daily Free Limit is Exceeded. (Premium Credits will be deducted safely in onFinish)
     const { data: profile } = await supabase
       .from('profiles')
       .select('plan_tier, is_admin')
@@ -71,7 +57,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Fetch Agent or load Pro Context
+    // 2. Fetch Agent or load Pro Context
     let baseSystemPrompt = ''
     if (agentId) {
       const { data: agent } = await supabase
@@ -95,7 +81,7 @@ ${CONTEXTO_CRIADOR}
 `
     }
 
-    // 4. Fetch Voice Profile
+    // 3. Fetch Voice Profile
     let voiceContext = ''
     if (voiceProfileId) {
       const { data: vp } = await supabase
@@ -117,7 +103,7 @@ Você DEVE mimetizar o seguinte estilo de escrita:
       }
     }
 
-    // 5. Fetch / Map Format Data
+    // 4. Fetch / Map Format Data
     let formatContext = ''
     let formatTitle = null
     let formatNiche = null
@@ -151,7 +137,7 @@ ${dbFormat.estudo}
       }
     }
 
-    // 6. Grounding: Serper API se for mode="search"
+    // 5. Grounding: Serper API se for mode="search"
     let serperContext = ''
     if (mode === 'search') {
       const serperKey = process.env.SERPER_API_KEY
@@ -180,7 +166,7 @@ ${facts}
       }
     }
 
-    // 7. RAG Retrieval (Memória) se for mode="premium"
+    // 6. RAG Retrieval (Memória) se for mode="premium"
     let memoryContext = ''
     if (mode === 'premium') {
       try {
@@ -207,6 +193,19 @@ ${mTexts}
       }
     }
 
+    const onboardingContext = mode === 'analyze' || messages.length > 6 ? '' : `
+[DIRETRIZ DE CO-CRIAÇÃO E ONBOARDING]
+Você atua como um Consultor Estratégico e Roteirista Profissional em uma sessão interativa.
+O usuário enviará o contexto primário. NUNCA ENTREGUE UM ROTEIRO PRONTO NA PRIMEIRA OU SEGUNDA MENSAGEM (a menos que ele já tenha dado absolutamente TODOS os detalhes necessários e exija isso).
+Sua primeira resposta deve confirmar o entendimento, fazer alguns elogios e DEVOLVER AO USUÁRIO 1 a 3 perguntas essenciais (exemplo: público-alvo, promessa/gancho, tom, formato ou objeções) para preencher lacunas e enriquecer o roteiro. Converse de forma natural e engajante. Apenas diga coisas como: "Ótima ideia! Para o roteiro sair perfeito, me conta x, y e z...".
+
+[GATILHO DE ENTREGA FINAL]
+Apenas quando o usuário já tiver respondido suas dúvidas e você tiver total clareza do pedido, entregue o roteiro completo.
+QUANDO E SOMENTE QUANDO VOCÊ FOR ENTREGAR O ROTEIRO DEFINITIVO IMPRESSO NA TELA, VOCÊ DEVE OBRIGATORIAMENTE INICIAR SUA MENSAGEM COM A EXATA FLAG A SEGUIR (NA PRIMEIRA LINHA DA RESPOSTA):
+[ROTEIRO_FINAL]
+Isso sinalizará ao sistema que o script foi gerado e deve ser registrado.
+`
+
     // Builder do System Prompt Master
     const systemPrompt = `
 ${baseSystemPrompt}
@@ -219,7 +218,9 @@ ${serperContext}
 
 ${memoryContext}
 
-INSTRUÇÕES FINAIS: Entregue diretamente o roteiro/conteúdo, sem meta-comentários ("Aqui está o seu roteiro..."). Nunca utilize elementos visuais genéricos de banco de imagem (como "Pessoas sorrindo no escritório").
+${onboardingContext}
+
+INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imagem (como "Pessoas sorrindo no escritório").
 `
     // Selector do Modelo
     let selectedModel = openai('gpt-4o-mini')
@@ -231,21 +232,44 @@ INSTRUÇÕES FINAIS: Entregue diretamente o roteiro/conteúdo, sem meta-comentá
     const result = streamText({
       model: selectedModel,
       system: systemPrompt,
-      prompt: `Crie/Escreva sobre este o seguinte pedido/tema: ${topic}`,
+      messages: messages,
       onFinish: async ({ text }) => {
+        // Only save to DB and deduct exact credits if the AI actually generated the final script!
+        if (!text.includes('[ROTEIRO_FINAL]') && mode !== 'analyze') {
+          return;
+        }
+
         try {
            const adminSupabase = createClient(
              process.env.NEXT_PUBLIC_SUPABASE_URL!,
              process.env.SUPABASE_SERVICE_ROLE_KEY!
            )
            
-           const lines = text.split('\n')
+           // Deduct Premium/Search Credit right at the end!
+           if (mode === 'premium' || mode === 'search') {
+              const { data: credits, error: creditErr } = await adminSupabase
+                .from('creditos_mensais')
+                .select('*')
+                .eq('user_id', user.id)
+                .single()
+
+              if (!creditErr && credits && (credits.credits_total - credits.credits_used) >= 1) {
+                await adminSupabase
+                  .from('creditos_mensais')
+                  .update({ credits_used: credits.credits_used + 1 })
+                  .eq('id', credits.id)
+              }
+           }
+
+           // Clean Output
+           const finalScript = text.replace(/\[ROTEIRO_FINAL\]/g, '').trim()
+           const lines = finalScript.split('\n')
            const firstLine = lines.find(line => line.trim() !== '') || ''
            const title = firstLine.replace(/\*\*/g, '').replace(/^#+\s*/, '').substring(0, 100).trim() || 'Roteiro Gerado'
            
            await adminSupabase.from('roteiros').insert({
              user_id: user.id,
-             roteiro: text,
+             roteiro: finalScript,
              titulo: title,
              nicho: formatNiche,
              formato_nome: formatTitle

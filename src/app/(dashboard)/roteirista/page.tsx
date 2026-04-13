@@ -230,7 +230,7 @@ function RoteiristaContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          topic: text,
+          messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
           mode: activeTab === 'analisar' ? 'analyze' : 'fast',
           voiceProfileId: selectedVoiceId,
           formatData: selectedFormato ? { id: selectedFormato.id, titulo: selectedFormato.titulo } : null,
@@ -250,8 +250,12 @@ function RoteiristaContent() {
         done = doneReading
         const chunk = decoder.decode(value, { stream: true })
         currentText += chunk
+        
+        // Hide the hidden tag from the UI if it appears
+        const displayText = currentText.replace(/\[ROTEIRO_FINAL\]/g, '').trim()
+        
         setMessages(prev =>
-          prev.map(m => m.id === aiMsgId ? { ...m, content: currentText } : m)
+          prev.map(m => m.id === aiMsgId ? { ...m, content: displayText } : m)
         )
       }
       
