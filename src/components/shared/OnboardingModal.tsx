@@ -114,7 +114,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
   // Success screen
   if (showSuccess) {
     return (
-      <div className="onboarding-overlay">
+      <div className="onboarding-overlay dark">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -150,7 +150,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
   // Intro welcome screen
   if (currentStep === -1) {
     return (
-      <div className="onboarding-overlay">
+      <div className="onboarding-overlay dark">
         <div className="w-full max-w-2xl mx-auto px-6 flex flex-col items-center justify-center min-h-screen py-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -215,7 +215,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
   if (!currentField) return null
 
   return (
-    <div className="onboarding-overlay">
+    <div className="onboarding-overlay dark">
       <div className="w-full max-w-2xl mx-auto px-6 flex flex-col items-center justify-center min-h-screen py-12">
 
         {/* Top: Logo + Progress */}
