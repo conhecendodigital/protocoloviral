@@ -101,12 +101,20 @@ function RoteiristaContent() {
       }
 
       // Formatos
-      const { data: fmts } = await supabase
+      const { data: fmts, error: formatErr } = await supabase
         .from('formatos')
-        .select('id, titulo, icone, nicho')
+        .select('id, titulo, icone, nicho, estudo')
         .order('titulo')
 
-      if (fmts) {
+      if (formatErr) {
+        console.error("ERRO AO BUSCAR FORMATOS:", formatErr);
+        // Fallback incase nicho column fails on some environments
+        const { data: fallbackFmts } = await supabase
+          .from('formatos')
+          .select('id, titulo, icone')
+          .order('titulo')
+        if (fallbackFmts) setFormatos(fallbackFmts)
+      } else if (fmts) {
         setFormatos(fmts)
       }
 
