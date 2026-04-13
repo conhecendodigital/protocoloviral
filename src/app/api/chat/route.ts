@@ -156,18 +156,23 @@ export async function POST(req: Request) {
     if (profile) {
       dnaContext = `
 ============ DNA DO CLIENTE (CONTEXTO OBRIGATÓRIO) ============
-Você está interagindo com o seguinte perfil digital:
-Nome: ${profile.nome_completo || 'Não informado'}
-Nicho/Área: ${profile.nicho || 'Não informado'}
-Assunto principal: ${profile.assunto || 'Não informado'}
-Diferencial: ${profile.diferencial || 'Não informado'}
-Público-alvo: ${profile.publico || 'Não informado'}
-Dor do público: ${profile.dor || 'Não informado'}
-O que o público já tentou: ${profile.tentou || 'Não informado'}
-Propósito: ${profile.proposito || 'Não informado'}
-O que não quer falar: ${profile.naoquer || 'Não informado'}
-Metas de conteúdo: ${profile.ideia_roteiro || 'Não informado'}
-Produto para venda: ${profile.produto_venda || 'Não informado'}
+Sempre personalize profundamente suas respostas considerando QUEM é o usuário e QUEM é o público dele:
+
+[O PÚBLICO DO USUÁRIO]
+- Quem são: ${profile.publico || 'Não informado'}
+- Dores principais: ${profile.dor || 'Não informado'}
+- O que já tentaram: ${profile.tentou || 'Não informado'}
+
+[SOBRE O USUÁRIO]
+- Nome: ${profile.nome_completo || 'Não informado'}
+- Nicho de Atuação: ${profile.nicho || 'Não informado'}
+- Assunto Principal: ${profile.assunto || 'Não informado'}
+- Diferencial Único: ${profile.diferencial || 'Não informado'}
+- Propósito/Missão: ${profile.proposito || 'Não informado'}
+- O que NUNCA quer falar sobre: ${profile.naoquer || 'Não informado'}
+
+[PRODUTO]
+- O que o usuário vende: ${profile.produto_venda || 'Não informado'}
 ================================================================
 
 INSTRUÇÕES ESPECÍFICAS DESTE AGENTE:
