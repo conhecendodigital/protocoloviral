@@ -133,15 +133,18 @@ function RoteiristaContent() {
     load()
   }, [supabase])
 
+  const [initUrlParsed, setInitUrlParsed] = useState(false)
+
   // ─── Sync Formato URL ─────────────────────────────────
   useEffect(() => {
-    if (urlFormatoId && formatos.length > 0) {
+    if (urlFormatoId && formatos.length > 0 && !initUrlParsed) {
       const matched = formatos.find(f => f.id === urlFormatoId)
-      if (matched && matched.id !== selectedFormato?.id) {
+      if (matched) {
         setSelectedFormato(matched)
       }
+      setInitUrlParsed(true)
     }
-  }, [urlFormatoId, formatos, selectedFormato?.id])
+  }, [urlFormatoId, formatos, initUrlParsed])
 
   // ─── Auto-scroll ──────────────────────────────────────
   useEffect(() => {
