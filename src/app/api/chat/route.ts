@@ -64,18 +64,14 @@ export async function POST(req: Request) {
 
     // Check Plan Restriction
     if (!isAdmin) {
-      if (agent.required_plan === 'premium' && userTier !== 'premium') {
-        return new Response(JSON.stringify({ error: 'Acesso negado: Este Agente é exclusivo para o plano Premium. Faça o upgrade na aba Assinatura.', code: 'upgrade_required' }), { status: 403 });
-      }
-      if (agent.required_plan === 'pro' && userTier === 'free') {
-        return new Response(JSON.stringify({ error: 'Acesso negado: Este Agente é exclusivo para planos Pro e Premium. Faça o upgrade.', code: 'upgrade_required' }), { status: 403 });
+      if (agent.required_plan !== 'free' && userTier === 'free') {
+        return new Response(JSON.stringify({ error: 'Acesso negado: Este experiente é exclusivo para assinantes. Faça o upgrade do seu plano.', code: 'upgrade_required' }), { status: 403 });
       }
     }
 
     // Check Tokens Limits
     const getTokenLimit = (tier: string) => {
-      if (tier === 'premium') return 150000;
-      if (tier === 'pro') return 50000;
+      if (tier !== 'free') return 600000; // Assinantes tem o limite cheio
       return 5000;
     };
 

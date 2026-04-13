@@ -135,7 +135,7 @@ export default function FormatoViewPage() {
     if (savedTone) setTomVoz(savedTone)
   }, [])
 
-  const isPro = profile?.plan_tier === 'pro' || profile?.plan_tier === 'premium'
+  const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true
 
   // decide se usa análise nova ou estudo legado
   const hasNewAnalysis = !!(formato?.gancho || formato?.analise_tipo)

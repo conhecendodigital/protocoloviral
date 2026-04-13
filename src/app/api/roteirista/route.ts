@@ -50,11 +50,11 @@ export async function POST(req: Request) {
     // 2. Profile Check and Free Tier Limit
     const { data: profile } = await supabase
       .from('profiles')
-      .select('plan_tier')
+      .select('plan_tier, is_admin')
       .eq('id', user.id)
       .single()
 
-    const isPro = profile?.plan_tier === 'pro' || profile?.plan_tier === 'premium'
+    const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true
 
     if (!isPro) {
       const startOfDay = new Date()
@@ -228,35 +228,35 @@ INSTRUÇÕES FINAIS: Entregue diretamente o roteiro/conteúdo, sem meta-comentá
     }
 
     // Stream out
-    const result = await streamText({
+    const result = streamText({
       model: selectedModel,
       system: systemPrompt,
       prompt: `Crie/Escreva sobre este o seguinte pedido/tema: ${topic}`,
       onFinish: async ({ text }) => {
         try {
-          const adminSupabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-          )
-          
-          const lines = text.split('\n')
-          const firstLine = lines.find(line => line.trim() !== '') || ''
-          const title = firstLine.replace(/\*\*/g, '').replace(/^#+\s*/, '').substring(0, 100).trim() || 'Roteiro Gerado'
-          
-          await adminSupabase.from('roteiros').insert({
-            user_id: user.id,
-            roteiro: text,
-            titulo: title,
-            nicho: formatNiche,
-            formato_nome: formatTitle
-          })
+           const adminSupabase = createClient(
+             process.env.NEXT_PUBLIC_SUPABASE_URL!,
+             process.env.SUPABASE_SERVICE_ROLE_KEY!
+           )
+           
+           const lines = text.split('\n')
+           const firstLine = lines.find(line => line.trim() !== '') || ''
+           const title = firstLine.replace(/\*\*/g, '').replace(/^#+\s*/, '').substring(0, 100).trim() || 'Roteiro Gerado'
+           
+           await adminSupabase.from('roteiros').insert({
+             user_id: user.id,
+             roteiro: text,
+             titulo: title,
+             nicho: formatNiche,
+             formato_nome: formatTitle
+           })
         } catch (e) {
           console.error('[ON_FINISH_SAVE_ERROR]', e)
         }
       }
     })
 
-    return result.toDataStreamResponse()
+    return result.toTextStreamResponse()
 
   } catch (error: any) {
     console.error('[ROTEIRISTA_CORE_ERROR]', error)

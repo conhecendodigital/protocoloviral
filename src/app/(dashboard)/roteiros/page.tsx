@@ -78,7 +78,7 @@ export default function RoteirosPage() {
   const supabase = useMemo(() => createClient(), [])
 
   const { profile } = useProfile()
-  const isPro = profile?.plan_tier === 'pro' || profile?.plan_tier === 'premium'
+  const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true
 
   const [userId, setUserId] = useState<string | null>(null)
 

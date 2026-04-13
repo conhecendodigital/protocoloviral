@@ -30,7 +30,7 @@ export interface Profile {
   conquistas: string[]
   is_admin: boolean
   // Novos campos de Monetização e IA
-  plan_tier?: 'free' | 'pro' | 'premium'
+  plan_tier?: 'free' | 'mensal' | 'trimestral' | 'semestral' | string
   mp_customer_id?: string | null
   mp_subscription_id?: string | null
   current_period_end?: string | null

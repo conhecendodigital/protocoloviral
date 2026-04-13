@@ -29,9 +29,8 @@ export async function POST(req: Request) {
         // Define Limite Condição B (15% de Créditos)
         // Regra: Pro = 50k tokens diarios * 30 * 0.15 = 225.000 tokens
         // Premium = 150k diarios * 30 * 0.15 = 675.000 tokens
-        let usageLimit = 0;
-        if (profile.plan_tier === 'pro') usageLimit = 225000;
-        if (profile.plan_tier === 'premium') usageLimit = 675000;
+        let usageLimit = 60000; // Todos os planos permitem usar ate 60k tokens antes de perder direito a estorno automático
+        if (profile.plan_tier === 'free') usageLimit = 0;
 
         const isUnderRefundWindow = diffDays <= 7;
         const isUnderUsageAbuse = (profile.tokens_used_this_cycle || 0) < usageLimit;
