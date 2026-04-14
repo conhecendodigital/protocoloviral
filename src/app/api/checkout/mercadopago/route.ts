@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { MercadoPagoConfig, PreApproval } from 'mercadopago';
 import { createServerSupabase } from '@/lib/supabase/server';
 
+if (!process.env.MP_ACCESS_TOKEN) {
+  console.error("CRITICAL: MP_ACCESS_TOKEN is missing in environment variables!");
+}
 const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || '' });
 
 export async function POST(req: Request) {
@@ -70,6 +73,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: response.init_point });
   } catch (error: any) {
     console.error('Mercado Pago Checkout Error:', error);
-    return NextResponse.json({ error: error.message || 'Error creating checkout session' }, { status: 500 });
+    let errorMessage = error.message || 'Error creating checkout session';
+    if (!process.env.MP_ACCESS_TOKEN || errorMessage.includes('Unauthorized access to resource')) {
+      errorMessage = 'Token do Mercado Pago não configurado corretamente no servidor de produção (Vercel).';
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

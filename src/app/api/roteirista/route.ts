@@ -284,6 +284,15 @@ INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imag
 
   } catch (error: any) {
     console.error('[ROTEIRISTA_CORE_ERROR]', error)
-    return new Response(error.message || 'Internal Server Error', { status: 500 })
+    
+    // Default safe message for customers
+    let errorMessage = 'Nosso servidor de Inteligência Artificial está momentaneamente sobrecarregado. Por favor, tente gerar seu roteiro novamente em alguns segundos.'
+    
+    // Check developer failures internally, but don't expose keys or paths
+    if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+      console.error('[CRITICAL] Missing AI API Keys in environment.')
+    }
+    
+    return new Response(errorMessage, { status: 500 })
   }
 }
