@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useProfile } from '@/hooks/use-profile'
 import { Loader2, CheckCircle2, Shield, Star, Zap, Crown, ArrowRightLeft } from 'lucide-react'
+import { CheckoutBrick } from '@/components/checkout/checkout-brick'
 
 const FEATURES = [
   'Acesso completo a todos os Agentes de IA',
@@ -44,36 +45,23 @@ const PLANS = [
 export default function AssinaturaPage() {
   const { profile, loading } = useProfile()
   const [checkingOut, setCheckingOut] = useState<string | null>(null)
+  const [selectedPlanForBrick, setSelectedPlanForBrick] = useState<{ id: string, price: number } | null>(null)
   const [cancelStatus, setCancelStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [cancelMessage, setCancelMessage] = useState('')
 
-  const handleCheckout = async (planId: string) => {
-    setCheckingOut(planId)
-    try {
-      const res = await fetch('/api/checkout/mercadopago', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId })
-      })
+  const handleCheckoutClick = (planId: string, price: string) => {
+    setSelectedPlanForBrick({ id: planId, price: Number(price) })
+  }
 
-      const data = await res.json()
-      
-      if (data.url) {
-        // Abrir Modal/Popup da URL para não sair do app
-        const width = 600
-        const height = 800
-        const left = window.screen.width / 2 - width / 2
-        const top = window.screen.height / 2 - height / 2
-        window.open(data.url, 'MercadoPago_Checkout', `width=${width},height=${height},top=${top},left=${left},scrollbars=yes`)
-      } else {
-        alert(data.error || 'Erro ao gerar pagamento.')
-      }
-    } catch (err) {
-      console.error(err)
-      alert('Falha na comunicação com o servidor.')
-    } finally {
-      setCheckingOut(null)
-    }
+  const handleCheckoutSuccess = () => {
+    alert('Assinatura ativada com sucesso! Bem-vindo(a) ao Pro!')
+    setSelectedPlanForBrick(null)
+    window.location.reload() // Reload to fetch updated profile
+  }
+
+  const handleCheckoutError = (msg: string) => {
+    alert(msg)
+    setSelectedPlanForBrick(null)
   }
 
   const handleCancel = async () => {
@@ -118,6 +106,16 @@ export default function AssinaturaPage() {
 
   return (
     <main className="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-12 pb-32 w-full relative z-10">
+      
+      {selectedPlanForBrick && (
+        <CheckoutBrick 
+          planId={selectedPlanForBrick.id} 
+          price={selectedPlanForBrick.price} 
+          onSuccess={handleCheckoutSuccess}
+          onError={handleCheckoutError}
+          onClose={() => setSelectedPlanForBrick(null)}
+        />
+      )}
       
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Header */}
@@ -225,7 +223,7 @@ export default function AssinaturaPage() {
                 <div className="mt-auto pt-8 border-t border-slate-200 dark:border-white/10">
                   <button
                     disabled={activePlan === plan.id || checkingOut !== null}
-                    onClick={() => handleCheckout(plan.id)}
+                    onClick={() => handleCheckoutClick(plan.id, plan.price)}
                     className={`w-full py-4 rounded-xl flex items-center justify-center text-[13px] font-bold uppercase tracking-widest transition-all px-2 ${
                       activePlan === plan.id 
                         ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 cursor-not-allowed'

@@ -219,12 +219,33 @@ export function Sidebar({ className = '' }: SidebarProps) {
         </div>
 
         {/* Support Box */}
-        <div className="bg-black/5 dark:bg-white/5 p-4 rounded-xl hidden lg:block border border-slate-200 dark:border-white/10">
+        <div className="bg-black/5 dark:bg-white/5 p-4 rounded-xl hidden lg:block border border-slate-200 dark:border-white/10 relative">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Suporte</p>
           <p className="text-xs text-slate-800 dark:text-white/90 leading-relaxed">Precisa de ajuda com sua estratégia?</p>
-          <button className="mt-3 text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1 hover:underline">
-            Abrir Ticket <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-          </button>
+          
+          <div className="relative mt-3">
+            <details className="group">
+              <summary className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1 hover:underline cursor-pointer list-none">
+                Abrir Ticket <span className="material-symbols-outlined text-[14px] transition-transform group-open:rotate-90">arrow_forward</span>
+              </summary>
+              <div className="absolute left-0 bottom-full mb-2 w-48 bg-white dark:bg-[#1e2433] rounded-xl shadow-xl border border-slate-200 dark:border-white/10 overflow-hidden z-50 origin-bottom-left animate-in slide-in-from-bottom-2">
+                <button 
+                  onClick={() => alert('A Central de Ajuda interativa será lançada na próxima semana!')}
+                  className="w-full text-left px-4 py-3 text-sm font-medium text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/5 border-b border-slate-100 dark:border-white/5 flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">help</span>
+                  Central de Ajuda
+                </button>
+                <a 
+                  href="mailto:suporte@protocoloviral.com.br?subject=Suporte Roteirista VIP"
+                  className="w-full text-left px-4 py-3 text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-slate-50 dark:hover:bg-white/5 flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">mail</span>
+                  Mandar Email
+                </a>
+              </div>
+            </details>
+          </div>
         </div>
 
         {/* User Profile + Logout */}
