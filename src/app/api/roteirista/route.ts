@@ -3,6 +3,7 @@ import { openai } from '@ai-sdk/openai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { PROMPTS_MATADORES } from './prompts_matadores'
+import { ROTEIRISTA_PRO_SKILL, CONTEXTO_CRIADOR } from './pro-context'
 import { createClient } from '@supabase/supabase-js'
 
 export const maxDuration = 60
@@ -71,7 +72,7 @@ export async function POST(req: Request) {
       }
       baseSystemPrompt = agent.system_prompt
     } else {
-      const { ROTEIRISTA_PRO_SKILL, CONTEXTO_CRIADOR } = await import('./pro-context')
+      // Usando module importado estaticamente para evitar quebra de bundler da Vercel
       baseSystemPrompt = `
 ============ DIRETRIZES DA FERRAMENTA (ROTEIRISTA PRO) ============
 ${ROTEIRISTA_PRO_SKILL}
@@ -223,8 +224,16 @@ ${onboardingContext}
 INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imagem (como "Pessoas sorrindo no escritório").
 `
     // Selector do Modelo
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("Chave OPENAI_API_KEY ausente ou não confirmada na Vercel.")
+    }
+    
     let selectedModel = openai('gpt-4o-mini')
+
     if (mode === 'premium' || mode === 'search') {
+      if (!process.env.ANTHROPIC_API_KEY) {
+        throw new Error("Chave ANTHROPIC_API_KEY ausente na Vercel. Necessário para contas Ouro/Search.")
+      }
       selectedModel = anthropic('claude-3-5-sonnet-20241022') as any
     }
 
@@ -285,14 +294,12 @@ INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imag
   } catch (error: any) {
     console.error('[ROTEIRISTA_CORE_ERROR]', error)
     
-    // Default safe message for customers
-    let errorMessage = 'Nosso servidor de Inteligência Artificial está momentaneamente sobrecarregado. Por favor, tente gerar seu roteiro novamente em alguns segundos.'
-    
-    // Check developer failures internally, but don't expose keys or paths
+    // Check developer failures internally
     if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
       console.error('[CRITICAL] Missing AI API Keys in environment.')
     }
     
-    return new Response(errorMessage, { status: 500 })
+    // Mostrando o erro real para consertarmos rápido
+    return new Response(error.message || 'Nosso servidor de Inteligência Artificial está sobrecarregado ou falhando. Tente gerar novamente.', { status: 500 })
   }
 }
