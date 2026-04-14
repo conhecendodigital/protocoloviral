@@ -111,6 +111,10 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     console.error('[ANALYZE_TRIGGER_ERROR]', error)
-    return NextResponse.json({ error: 'Ocorreu um erro interno inesperado. Por favor, tente novamente.' }, { status: 500 })
+    return NextResponse.json({ 
+      error: 'Ocorreu um erro interno inesperado. Por favor, tente novamente.',
+      details: error?.message || String(error),
+      debug_stack: error?.stack || 'no stack'
+    }, { status: 500 })
   }
 }

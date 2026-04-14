@@ -232,8 +232,12 @@ ${agent.system_prompt}
 
     return result.toUIMessageStreamResponse()
     
-  } catch (error) {
+  } catch (error: any) {
     console.error('Chat Error:', error)
-    return new Response(JSON.stringify({ error: 'Erro interno do servidor' }), { status: 500 })
+    return new Response(JSON.stringify({ 
+      error: 'Erro interno do servidor',
+      details: error?.message || String(error),
+      debug_stack: error?.stack || 'no stack'
+    }), { status: 500 })
   }
 }
