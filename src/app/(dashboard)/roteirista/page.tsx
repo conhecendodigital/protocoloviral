@@ -336,8 +336,13 @@ function RoteiristaContent() {
         const chunk = decoder.decode(value, { stream: true })
         currentText += chunk
         
-        // Hide the hidden tag from the UI if it appears
-        const displayText = currentText.replace(/\[ROTEIRO_FINAL\]/g, '').trim()
+        // Hide the hidden tags from the UI
+        let displayText = currentText.replace(/\[ROTEIRO_FINAL\]/g, '')
+        
+        // Ocultar blocos de raciocínio lógico (CoT) com uma mensagem de status atraente
+        displayText = displayText.replace(/\[THINKING\][\s\S]*?(\[\/THINKING\]|$)/g, '> 🧠 **Ativando Raciocínio Profundo...**\n> Analisando formato e tom de voz antes de escrever...\n\n')
+        
+        displayText = displayText.trim()
         
         setMessages(prev =>
           prev.map(m => m.id === aiMsgId ? { ...m, content: displayText } : m)

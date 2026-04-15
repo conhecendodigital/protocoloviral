@@ -258,6 +258,19 @@ ${memoryContext}
 
 ${onboardingContext}
 
+[ARQUITETURA "ANTI-ALUCINAÇÃO" COM CHAIN OF THOUGHT OBRIGATÓRIA]
+Você DEVE OBRIGATORIAMENTE estruturar seu processo de pensamento de forma invisível antes de entregar a resposta final. Para isso, use as tags [THINKING] e [/THINKING] da seguinte maneira exata no INÍCIO da sua resposta:
+
+[THINKING]
+*   **Identidade & Tom:** [Reflita sobre o tom do criador]
+*   **Aderência ao Formato:** [Como os blocos serão aplicados]
+*   **Filtro Anti-Alucinação:** [Reflita sobre os dados fornecidos pelo RAG / Pesquisa Web]
+*   **Censura de Jargões:** [Lembrete interno: não usarei "Descubra", "Revolucionar", emojis forçados ou jargões rasos de marketing]
+[/THINKING]
+
+[ROTEIRO_FINAL]
+(Seu Roteiro genial entra aqui embaixo, focado 100% no ser humano)
+
 INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imagem (como "Pessoas sorrindo no escritório").
 `
     // Selector do Modelo
