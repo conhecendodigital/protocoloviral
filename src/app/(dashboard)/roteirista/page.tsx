@@ -410,7 +410,7 @@ function RoteiristaContent() {
       {/* Input Row */}
       <div className="relative flex items-end gap-2 bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] shadow-sm dark:shadow-none rounded-2xl px-3 py-2 focus-within:border-[#0ea5e9]/50 focus-within:ring-2 focus-within:ring-[#0ea5e9]/10 transition-all">
         {/* Plus Button */}
-        {activeTab === 'roteiro' && hasMessages && (
+        {activeTab === 'roteiro' && (
           <div className="relative" ref={plusMenuRef}>
             <button onClick={() => { setShowPlusMenu(!showPlusMenu); setShowVoiceMenu(false); setShowFormatMenu(false) }} className="size-9 rounded-xl bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/15 flex items-center justify-center transition-colors shrink-0 mb-0.5">
               <span className={`material-symbols-outlined text-slate-600 dark:text-white/60 text-lg transition-transform ${showPlusMenu ? 'rotate-45' : ''}`}>add</span>
@@ -510,51 +510,8 @@ function RoteiristaContent() {
             </p>
           </motion.div>
 
-          <AnimatePresence>
-            {activeTab === 'roteiro' && formatos.length > 0 && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0, overflow: 'hidden' }} className="flex flex-wrap items-center justify-center gap-2 mb-4 w-full max-w-2xl mx-auto px-4">
-                {categorias.map(cat => (
-                  <button 
-                    key={cat}
-                    onClick={() => setActiveFilter(cat === 'Todos' ? null : cat)}
-                    className={`px-3 py-1.5 text-[11px] font-bold rounded-full transition-all border ${
-                      (activeFilter?.toLowerCase() === cat.toLowerCase()) || (!activeFilter && cat === 'Todos')
-                        ? 'bg-[#0ea5e9] text-white border-[#0ea5e9] shadow-lg shadow-[#0ea5e9]/20 scale-105' 
-                        : 'bg-transparent text-slate-500 dark:text-white/50 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
 
-          {activeTab === 'roteiro' ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full max-w-3xl mx-auto mb-8 max-h-[35vh] overflow-y-auto custom-scrollbar p-2">
-              {filteredFormatos.slice(0, 15).map((f, i) => (
-                <motion.button key={f.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }} onClick={() => handleFormatCardClick(f)} className="text-left p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:border-[#0ea5e9]/30 transition-all group flex flex-col items-start gap-1.5 h-full relative overflow-hidden">
-                  <span className="material-symbols-outlined text-[#0ea5e9] text-lg block group-hover:scale-110 group-hover:rotate-6 transition-transform">{f.icone || 'bolt'}</span>
-                  {f.nicho && <span className="text-[9px] uppercase tracking-wider font-bold text-slate-400 dark:text-white/30">{f.nicho}</span>}
-                  <p className="text-xs font-semibold text-slate-700 dark:text-white/80 leading-snug line-clamp-3 mb-2" title={f.titulo}>{f.titulo}</p>
-                  <div className="mt-auto pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-[10px] text-[#0ea5e9] font-bold bg-[#0ea5e9]/10 px-2 py-0.5 rounded-full inline-block">Usar →</span>
-                  </div>
-                </motion.button>
-              ))}
-              {formatos.length === 0 && (
-                <div className="col-span-full text-center text-sm text-slate-400 dark:text-white/30 py-8">
-                  <span className="material-symbols-outlined text-3xl mb-2 opacity-50 animate-pulse">hourglass_top</span>
-                  <p>Carregando formatos virais...</p>
-                </div>
-              )}
-              {filteredFormatos.length === 0 && formatos.length > 0 && (
-                <div className="col-span-full text-center text-sm text-slate-400 dark:text-white/30 py-8">
-                  Nenhum formato encontrado para este filtro.
-                </div>
-              )}
-            </div>
-          ) : (
+          {activeTab === 'analisar' && (
             <div className="mb-8 p-6 max-w-xl mx-auto flex items-center gap-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-3xl text-left">
               <div className="size-12 shrink-0 rounded-2xl bg-violet-500/10 text-violet-500 flex items-center justify-center">
                  <span className="material-symbols-outlined">psychology</span>
