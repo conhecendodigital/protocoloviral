@@ -167,6 +167,17 @@ Título/Nicho de Referência: ${dbFormat.titulo} (${dbFormat.nicho})
 ${killerPrompt}
 Passo-a-Passo / Estudo do Formato:
 ${dbFormat.estudo}
+
+[REGRA DE PARIDADE DE BLOCOS — OBRIGATÓRIA]
+O roteiro DEVE respeitar a mesma quantidade de blocos/seções do formato de referência acima.
+Para cada bloco do formato, mantenha uma proporção semelhante de palavras.
+Ao final de CADA bloco do roteiro, insira uma tag de contagem assim:
+(~XX palavras | ⏱ ~Xs)
+Onde XX é a quantidade de palavras daquele bloco e X é o tempo estimado de fala (considere 2,5 palavras por segundo para fala natural).
+
+NUNCA pule um bloco que exista no formato de referência.
+NUNCA adicione blocos extras que não existam no formato original.
+Se o formato tem 4 blocos, o roteiro terá exatamente 4 blocos.
 `
       }
     }
@@ -258,18 +269,26 @@ ${memoryContext}
 
 ${onboardingContext}
 
+[REGRA DE LINGUAGEM — OBRIGATÓRIA]
+Escreva como se estivesse explicando para uma pessoa de 12 anos.
+Frases curtas. Palavras do dia a dia. Zero jargão técnico, zero academicismo.
+Se uma palavra tem um sinônimo mais simples, USE O MAIS SIMPLES.
+Exemplo: "otimizar" → "melhorar", "implementar" → "colocar", "estratégia" → "plano", "engajamento" → "atenção".
+O público do criador é gente real que usa WhatsApp mais do que Instagram. Fale como gente, não como robô.
+
 [ARQUITETURA "ANTI-ALUCINAÇÃO" COM CHAIN OF THOUGHT OBRIGATÓRIA]
 Você DEVE OBRIGATORIAMENTE estruturar seu processo de pensamento de forma invisível antes de entregar a resposta final. Para isso, use as tags [THINKING] e [/THINKING] da seguinte maneira exata no INÍCIO da sua resposta:
 
 [THINKING]
 *   **Identidade & Tom:** [Reflita sobre o tom do criador]
-*   **Aderência ao Formato:** [Como os blocos serão aplicados]
+*   **Aderência ao Formato:** [Como os blocos serão aplicados — quantos blocos o formato pede? Estou respeitando a proporção de palavras?]
 *   **Filtro Anti-Alucinação:** [Reflita sobre os dados fornecidos pelo RAG / Pesquisa Web]
+*   **Simplificação:** [Releia cada frase — uma criança de 12 anos entenderia isso? Se não, simplifique.]
 *   **Censura de Jargões:** [Lembrete interno: não usarei "Descubra", "Revolucionar", emojis forçados ou jargões rasos de marketing]
 [/THINKING]
 
 [ROTEIRO_FINAL]
-(Seu Roteiro genial entra aqui embaixo, focado 100% no ser humano)
+(Seu Roteiro genial entra aqui embaixo, focado 100% no ser humano, dividido nos blocos exatos do formato)
 
 INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imagem (como "Pessoas sorrindo no escritório").
 `
