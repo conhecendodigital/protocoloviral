@@ -410,7 +410,7 @@ function RoteiristaContent() {
       {/* Input Row */}
       <div className="relative flex items-end gap-2 bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] shadow-sm dark:shadow-none rounded-2xl px-3 py-2 focus-within:border-[#0ea5e9]/50 focus-within:ring-2 focus-within:ring-[#0ea5e9]/10 transition-all">
         {/* Plus Button */}
-        {activeTab === 'roteiro' && (
+        {activeTab === 'roteiro' && hasMessages && (
           <div className="relative" ref={plusMenuRef}>
             <button onClick={() => { setShowPlusMenu(!showPlusMenu); setShowVoiceMenu(false); setShowFormatMenu(false) }} className="size-9 rounded-xl bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/15 flex items-center justify-center transition-colors shrink-0 mb-0.5">
               <span className={`material-symbols-outlined text-slate-600 dark:text-white/60 text-lg transition-transform ${showPlusMenu ? 'rotate-45' : ''}`}>add</span>
@@ -488,7 +488,7 @@ function RoteiristaContent() {
   )
 
   return (
-    <main className="flex-1 flex flex-col h-[calc(100vh-80px)] lg:h-[calc(100vh-100px)] w-[calc(100%+3rem)] lg:w-[calc(100%+5rem)] -mx-6 lg:-mx-10 -mb-6 lg:-mb-10 overflow-hidden bg-transparent relative">
+    <main className="flex-1 flex flex-col h-[calc(100dvh-80px)] lg:h-[calc(100dvh-100px)] w-[calc(100%+3rem)] lg:w-[calc(100%+5rem)] -mx-6 lg:-mx-10 -mb-6 lg:-mb-10 overflow-hidden bg-transparent relative">
 
       {!hasMessages ? (
         /* ═══ EMPTY STATE — title + cards + input all centered ═══ */

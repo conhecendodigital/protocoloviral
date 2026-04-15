@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     // 1. Initial Gatekeeper: Only Block if Daily Free Limit is Exceeded. (Premium Credits will be deducted safely in onFinish)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('plan_tier, is_admin')
+      .select('plan_tier, is_admin, publico, dor, tentou, diferencial, proposito, naoquer, produto_venda')
       .eq('id', user.id)
       .single()
 
@@ -72,34 +72,67 @@ export async function POST(req: Request) {
       }
       baseSystemPrompt = agent.system_prompt
     } else {
-      // Usando module importado estaticamente para evitar quebra de bundler da Vercel
+      // 2. Fetch User Profile for personal context (DNA)
+    let userContext = ''
+    if (profile && profile.publico) {
+      userContext = `
+============ DNA DO CLIENTE (CONTEXTO OBRIGATÓRIO) ============
+Sempre personalize profundamente suas respostas considerando QUEM é o usuário e QUEM é o público dele:
+
+[O PÚBLICO DO USUÁRIO]
+- Quem são: ${profile.publico || 'Não informado'}
+- Dores principais: ${profile.dor || 'Não informado'}
+- O que já tentaram: ${profile.tentou || 'Não informado'}
+
+[SOBRE O USUÁRIO]
+- Diferencial Único: ${profile.diferencial || 'Não informado'}
+- Propósito/Missão: ${profile.proposito || 'Não informado'}
+- O que NUNCA quer falar sobre: ${profile.naoquer || 'Não informado'}
+
+[PRODUTO]
+- O que o usuário vende: ${profile.produto_venda || 'Não informado'}
+================================================================
+`
+    }
       baseSystemPrompt = `
 ============ DIRETRIZES DA FERRAMENTA (ROTEIRISTA PRO) ============
 ${ROTEIRISTA_PRO_SKILL}
 
-============ CONTEXTO DO CRIADOR ============
-${CONTEXTO_CRIADOR}
+${userContext}
 `
     }
 
+    // 3. Fetch Voice Profile
     // 3. Fetch Voice Profile
     let voiceContext = ''
     if (voiceProfileId) {
       const { data: vp } = await supabase
         .from('voice_profiles')
-        .select('extracted_style')
+        .select('enriched_profile, wizard_inputs')
         .eq('id', voiceProfileId)
         .single()
       
-      if (vp && vp.extracted_style) {
+      const st = vp?.enriched_profile
+      const wi = vp?.wizard_inputs
+
+      if (st || wi) {
+        let bordoesArr = wi?.bordoes || []
+        let palPref = wi?.palavras_preferidas || []
+        let palEvit = wi?.palavras_evitadas || []
+        
         voiceContext = `
 [INSTRUÇÃO DE TOM DE VOZ / "DNA DO CLIENTE"]
-Você DEVE mimetizar o seguinte estilo de escrita:
-- Formalidade: ${vp.extracted_style.formality || 'Neutra'}
-- Tom: ${(vp.extracted_style.tone || []).join(', ')}
-- Emoções Frequentes: ${(vp.extracted_style.emotions || []).join(', ')}
-- Vocabulário e Jargões que o usuário gosta: ${(vp.extracted_style.vocabulary || []).join(', ')}
-- Formatação comum: ${vp.extracted_style.formatting || 'Espaçada e limpa'}
+Você DEVE mimetizar o EXATO estilo de escrita deste criador:
+- Relação com a audiência: ${wi?.relacao || 'Amigável'}
+- Energia: ${wi?.energia || 'Média'}
+- Humor: ${wi?.humor || 2}/5
+- Vocabulário Formal<>Casual: ${st?.tone_axes?.formal_casual !== undefined ? st.tone_axes.formal_casual : '0.5'} (onde 0=formal e 1=casual)
+- Estilo de Frases: ${st?.sentence_style || 'Variado'}
+${palPref.length > 0 ? `- Palavras Preferidas (USAR): ${palPref.join(', ')}` : ''}
+${palEvit.length > 0 ? `- Palavras Evitadas (NUNCA USAR): ${palEvit.join(', ')}` : ''}
+${bordoesArr.length > 0 ? `- Bordões (encaixe de forma orgânica): ${bordoesArr.map((b: any) => `"${b.texto}"`).join(', ')}` : ''}
+
+REGRAS ESTILÍSTICAS DO CRIADOR: ${st?.generation_rules || ''}
 `
       }
     }
