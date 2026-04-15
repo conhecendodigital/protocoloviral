@@ -33,8 +33,16 @@ interface Formato {
   nicho?: string
 }
 
-// removed SUGESTOES array
-
+const HARDCODED_FORMATOS: Formato[] = [
+  { id: 'ancoragem', titulo: 'Ancoragem', icone: 'anchor' },
+  { id: 'perguntas-e-respostas', titulo: 'Perguntas e Respostas', icone: 'question_answer' },
+  { id: 'preguicoso', titulo: 'Preguiçoso', icone: 'weekend' },
+  { id: 'tela-dividida', titulo: 'Tela dividida', icone: 'splitscreen' },
+  { id: 'varias-cenas', titulo: 'Varias Cenas', icone: 'movie' },
+  { id: 'reacao', titulo: 'Reação (react)', icone: 'add_reaction' },
+  { id: 'caixinha-perguntas', titulo: 'Caixinha de Perguntas', icone: 'help_center' },
+  { id: 'tutorial', titulo: 'Tutorial (passo a passo)', icone: 'list_alt' }
+]
 // ═══════════════════════════════════════════════════════════
 // ██  ROTEIRISTA PAGE — ChatGPT-style
 // ═══════════════════════════════════════════════════════════
@@ -105,22 +113,8 @@ function RoteiristaContent() {
         setSelectedVoiceId(defaultVoice.id)
       }
 
-      // Formatos
-      const { data: fmts, error: formatErr } = await supabase
-        .from('formatos')
-        .select('id, titulo, nicho, estudo')
-        .order('titulo')
-
-      if (formatErr) {
-        console.error("ERRO AO BUSCAR FORMATOS:", formatErr);
-        const { data: fallbackFmts } = await supabase
-          .from('formatos')
-          .select('id, titulo')
-          .order('titulo')
-        if (fallbackFmts) setFormatos(fallbackFmts)
-      } else if (fmts) {
-        setFormatos(fmts)
-      }
+      // Formatos - Carregando a lista fixa padronizada
+      setFormatos(HARDCODED_FORMATOS)
 
       // Daily Usage Count
       const startOfDay = new Date()
@@ -448,7 +442,10 @@ function RoteiristaContent() {
                   </div>
                   <button onClick={() => { setSelectedFormato(null); setShowFormatMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!selectedFormato ? 'text-[#0ea5e9]' : 'text-slate-600 dark:text-white/70'}`}><span className="material-symbols-outlined text-sm">close</span> Sem formato</button>
                   {formatos.map(f => (
-                    <button key={f.id} onClick={() => { setSelectedFormato(f); setShowFormatMenu(false) }} className={`w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${selectedFormato?.id === f.id ? 'text-[#0ea5e9] bg-[#0ea5e9]/5' : 'text-slate-600 dark:text-white/70'}`}>{f.titulo}</button>
+                    <button key={f.id} onClick={() => { setSelectedFormato(f); setShowFormatMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${selectedFormato?.id === f.id ? 'text-[#0ea5e9] bg-[#0ea5e9]/5' : 'text-slate-600 dark:text-white/70'}`}>
+                      <span className="material-symbols-outlined text-lg opacity-70">{f.icone}</span>
+                      {f.titulo}
+                    </button>
                   ))}
                 </motion.div>
               )}

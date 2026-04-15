@@ -113,6 +113,22 @@ function PremiumOverlay({ title, desc }: { title: string; desc: string }) {
   )
 }
 
+const getFormatoIdParaRoteirista = (tipo: string | null, nicho: string | null): string => {
+  const t = (tipo || '').toLowerCase();
+  const n = (nicho || '').toLowerCase();
+  const combo = t + ' ' + n;
+  
+  if (combo.includes('ancorag') || combo.includes('story')) return 'ancoragem';
+  if (combo.includes('pergunta') || combo.includes('resposta') || combo.includes('dual')) return 'perguntas-e-respostas';
+  if (combo.includes('caixinha')) return 'caixinha-perguntas';
+  if (combo.includes('preguiçoso') || combo.includes('preguicoso') || combo.includes('certo') || combo.includes('errado')) return 'preguicoso';
+  if (combo.includes('tela') || combo.includes('dividida') || combo.includes('comparação') || combo.includes('lado a lado')) return 'tela-dividida';
+  if (combo.includes('tutorial') || combo.includes('dica') || combo.includes('passo')) return 'tutorial';
+  if (combo.includes('react') || combo.includes('reação') || combo.includes('experimento')) return 'reacao';
+  
+  return 'varias-cenas';
+}
+
 export default function FormatoViewPage() {
   const params = useParams()
   const formatId = params.id as string
@@ -644,7 +660,7 @@ export default function FormatoViewPage() {
                 </p>
               </div>
               <Link 
-                href={`/roteirista?formato_id=${formato.id}`}
+                href={`/roteirista?formato_id=${getFormatoIdParaRoteirista(formato.tipo, formato.nicho)}`}
                 className="w-full sm:w-auto shimmer-btn px-8 py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-base shadow-xl shadow-[#0ea5e9]/20 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
               >
                 <span className="material-symbols-outlined">arrow_forward</span>

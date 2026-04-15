@@ -2,7 +2,7 @@ import { streamText, embed } from 'ai'
 import { openai } from '@ai-sdk/openai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { createServerSupabase } from '@/lib/supabase/server'
-import { PROMPTS_MATADORES } from './prompts_matadores'
+import { FORMATOS_VIRAIS_PROMPTS } from '@/lib/prompts/formatos_virais'
 import { ROTEIRISTA_PRO_SKILL, CONTEXTO_CRIADOR } from './pro-context'
 import { createClient } from '@supabase/supabase-js'
 
@@ -140,44 +140,23 @@ REGRAS ESTILÍSTICAS DO CRIADOR: ${st?.generation_rules || ''}
     // 4. Fetch / Map Format Data
     let formatContext = ''
     let formatTitle = null
-    let formatNiche = null
 
     if (formatData && formatData.id) {
-      const { data: dbFormat } = await supabase
-        .from('formatos')
-        .select('*')
-        .eq('id', formatData.id)
-        .single()
-        
-      if (dbFormat) {
-        formatTitle = dbFormat.titulo
-        formatNiche = dbFormat.nicho
-        let killerPrompt = ''
-        if (dbFormat.nicho) {
-          const nic = dbFormat.nicho.toLowerCase().trim()
-          if (PROMPTS_MATADORES[nic]) {
-            killerPrompt = `\n${PROMPTS_MATADORES[nic]}\n`
-          }
-        }
-
+      if (FORMATOS_VIRAIS_PROMPTS[formatData.id]) {
+        formatTitle = formatData.titulo
         formatContext = `
 [ESTRUTURA VIRAL REFERÊNCIA]
-Baseie a arquitetura do roteiro NESTA estrutura comprovada (mas não copie as mesmas palavras, apenas o esqueleto e pacing):
-Título/Nicho de Referência: ${dbFormat.titulo} (${dbFormat.nicho})
-${killerPrompt}
-Passo-a-Passo / Estudo do Formato:
-${dbFormat.estudo}
+Baseie a arquitetura do roteiro EXATAMENTE NESTA estrutura comprovada:
+Título do Formato: ${formatData.titulo}
+
+${FORMATOS_VIRAIS_PROMPTS[formatData.id]}
 
 [REGRA DE PARIDADE DE BLOCOS — OBRIGATÓRIA]
-O roteiro DEVE respeitar a mesma quantidade de blocos/seções do formato de referência acima.
-Para cada bloco do formato, mantenha uma proporção semelhante de palavras.
-Ao final de CADA bloco do roteiro, insira uma tag de contagem assim:
-(~XX palavras | ⏱ ~Xs)
-Onde XX é a quantidade de palavras daquele bloco e X é o tempo estimado de fala (considere 2,5 palavras por segundo para fala natural).
+O roteiro DEVE respeitar rigorosamente a quantidade e os temas dos blocos exigidos na estrutura acima.
 
-NUNCA pule um bloco que exista no formato de referência.
-NUNCA adicione blocos extras que não existam no formato original.
-Se o formato tem 4 blocos, o roteiro terá exatamente 4 blocos.
+NUNCA pule um bloco que consta na [ESTRUTURA OBRIGATÓRIA].
+NUNCA adicione blocos extras.
+Se a estrutura pedir 3 blocos, seu roteiro terá exatamente 3 blocos. Se pedir 4, terá 4 blocos.
 `
       }
     }
@@ -250,9 +229,21 @@ ADAPTABILIDADE AO USUÁRIO:
 NUNCA entregue o roteiro final na primeira mensagem a menos que a ideia já venha redondinha. Se você for fazer perguntas, converse de forma natural, seja prestativo, nunca mecânico.
 
 [GATILHO DE ENTREGA FINAL]
-QUANDO E SOMENTE QUANDO VOCÊ FOR ENTREGAR O ROTEIRO DEFINITIVO (pronto para ser lido no teleprompter), VOCÊ DEVE OBRIGATORIAMENTE INICIAR SUA MENSAGEM COM A EXATA FLAG A SEGUIR (NA PRIMEIRA LINHA DA RESPOSTA):
+QUANDO E SOMENTE QUANDO VOCÊ FOR ENTREGAR O ROTEIRO DEFINITIVO (pronto para ser lido no teleprompter), VOCÊ DEVE OBRIGATORIAMENTE INICIAR SUA MENSAGEM COM A EXATA FLAG A SEGUIR:
 [ROTEIRO_FINAL]
-Isso sinalizará ao sistema que o script foi gerado e deve ser salvo no banco. Nunca use essa flag se estiver apenas sugerindo ideias, rascunhos ou conversando.
+
+REGRAS DE FORMATAÇÃO ESTRITAS DO [ROTEIRO_FINAL]:
+1. A PRIMEIRA LINHA após a flag [ROTEIRO_FINAL] DEVE OBRIGATORIAMENTE começar com a palavra "TÍTULO:" seguida do título do vídeo. Exemplo: "TÍTULO: Como viralizar rápido".
+2. ZERO CONVERSINHA! Nunca escreva "Ótima escolha!", "Aqui está a sugestão:" ou "Vamos seguir o formato XYZ". Após a linha do TÍTULO, inicie IMEDIATAMENTE os blocos do roteiro.
+3. FORMATAÇÃO DE TÍTULOS DE BLOCO: A Tag de colchetes de CADA BLOCO deve vir ISOLADA EM UMA LINHA SOZINHA. 
+QUEBRA DE LINHA OBRIGATÓRIA: Após fechar o colchete ']', você DEVE apertar ENTER obrigatoriamente. É estritamente PROIBIDO escrever o conteúdo na mesma linha da tag.
+NUNCA use "1. **[NOME]:**" ou subtítulos em markdown poluído. Use puramente "[NOME DO BLOCO]". Exemplo OBRIGATÓRIO:
+
+[GANCHO]
+
+(Texto do gancho vai aqui na linha de baixo, nunca colado na tag acima...)
+
+Isso sinalizará ao sistema que o script puro foi gerado. Nunca use a flag [ROTEIRO_FINAL] se estiver apenas sugerindo ideias, rascunhos ou conversando.
 `
 
     // Builder do System Prompt Master
@@ -269,9 +260,9 @@ ${memoryContext}
 
 ${onboardingContext}
 
-[REGRA DE LINGUAGEM — OBRIGATÓRIA]
-Escreva como se estivesse explicando para uma pessoa de 12 anos.
-Frases curtas. Palavras do dia a dia. Zero jargão técnico, zero academicismo.
+[REGRA DE LINGUAGEM E PROFUNDIDADE — OBRIGATÓRIA]
+Escreva como se estivesse explicando para uma pessoa de 12 anos, com frases curtas e palavras do dia a dia.
+No entanto, NUNCA entregue um roteiro curto ou superficial! Desenvolva os tópicos com bastante riqueza de detalhes. Se o gancho promete 5 dicas, OBRIGATORIAMENTE entregue todas as 5 dicas profundas. Traga profundidade, ritmo e explicações completas para cada bloco para gerar um roteiro denso e valioso.
 Se uma palavra tem um sinônimo mais simples, USE O MAIS SIMPLES.
 Exemplo: "otimizar" → "melhorar", "implementar" → "colocar", "estratégia" → "plano", "engajamento" → "atenção".
 O público do criador é gente real que usa WhatsApp mais do que Instagram. Fale como gente, não como robô.
@@ -288,7 +279,9 @@ Você DEVE OBRIGATORIAMENTE estruturar seu processo de pensamento de forma invis
 [/THINKING]
 
 [ROTEIRO_FINAL]
-(Seu Roteiro genial entra aqui embaixo, focado 100% no ser humano, dividido nos blocos exatos do formato)
+TÍTULO: Seu Título Genial Aqui
+[GANCHO]
+(Seu texto roteirizado entra aqui embaixo...)
 
 INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imagem (como "Pessoas sorrindo no escritório").
 `
@@ -339,17 +332,33 @@ INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imag
               }
            }
 
-           // Clean Output
-           const finalScript = text.replace(/\[ROTEIRO_FINAL\]/g, '').trim()
-           const lines = finalScript.split('\n')
-           const firstLine = lines.find(line => line.trim() !== '') || ''
-           const title = firstLine.replace(/\*\*/g, '').replace(/^#+\s*/, '').substring(0, 100).trim() || 'Roteiro Gerado'
+           // Clean Output: Descartar [THINKING] e remover título do corpo do texto
+           const parts = text.split('[ROTEIRO_FINAL]')
+           const scriptPart = parts.length > 1 ? parts[parts.length - 1] : text
+           const scriptLines = scriptPart.trim().split('\n')
+           
+           let title = 'Roteiro Gerado'
+           let finalScript = scriptPart.trim()
+           
+           // Acha a primeira linha real de conteúdo
+           const firstContentLineIndex = scriptLines.findIndex(line => line.trim() !== '')
+           if (firstContentLineIndex !== -1) {
+             const firstLine = scriptLines[firstContentLineIndex].trim()
+             
+             // Se a IA mandou com TÍTULO: ou não tem colchete (não é um bloco), assumimos que é o título
+             if (firstLine.toUpperCase().includes('TÍTULO:') || !firstLine.startsWith('[')) {
+                title = firstLine.replace(/TÍTULO:/i, '').replace(/\*\*/g, '').replace(/^#+\s*/, '').substring(0, 100).trim() || 'Roteiro Gerado'
+                // Remove essa linha pra não poluir os blocos
+                scriptLines.splice(0, firstContentLineIndex + 1)
+                finalScript = scriptLines.join('\n').trim()
+             }
+           }
            
            await adminSupabase.from('roteiros').insert({
              user_id: user.id,
              roteiro: finalScript,
              titulo: title,
-             nicho: formatNiche,
+             nicho: null,
              formato_nome: formatTitle
            })
         } catch (e) {

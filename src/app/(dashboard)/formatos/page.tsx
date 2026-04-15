@@ -40,20 +40,45 @@ const formatDuration = (s: number | null): string => {
   return `${min}:${sec.toString().padStart(2, '0')}`
 }
 
-const nichoEmojis: Record<string, string> = {
-  'Empresas': '🏢',
-  'Vlog': '🎥',
-  'Educação': '📚',
-  'Fitness': '💪',
-  'Comida': '🍕',
-  'Tech': '💻',
-  'Moda': '👗',
-  'Beleza': '💄',
-  'Finanças': '💰',
-  'Humor': '😂',
-  'Lifestyle': '✨',
-  'Saúde': '🏥',
+const HARDCODED_FORMAT_TYPES = [
+  'Todos',
+  'Ancoragem',
+  'Perguntas e Respostas',
+  'Preguiçoso',
+  'Tela dividida',
+  'Varias Cenas',
+  'Reação (react)',
+  'Caixinha de Perguntas',
+  'Tutorial (passo a passo)'
+];
+
+const formatoEmojis: Record<string, string> = {
+  'Ancoragem': '⚓',
+  'Perguntas e Respostas': '💬',
+  'Preguiçoso': '🛋️',
+  'Tela dividida': '📱',
+  'Varias Cenas': '🎬',
+  'Reação (react)': '😲',
+  'Caixinha de Perguntas': '❓',
+  'Tutorial (passo a passo)': '📋',
   'Todos': '🔥',
+};
+
+export const normalizeFormato = (tipo: string | null, nicho: string | null): string => {
+  const t = (tipo || '').toLowerCase();
+  const n = (nicho || '').toLowerCase();
+  const combo = t + ' ' + n;
+  
+  if (combo.includes('ancorag') || combo.includes('story')) return 'Ancoragem';
+  if (combo.includes('pergunta') || combo.includes('resposta') || combo.includes('dual')) return 'Perguntas e Respostas';
+  if (combo.includes('caixinha')) return 'Caixinha de Perguntas';
+  if (combo.includes('preguiçoso') || combo.includes('preguicoso') || combo.includes('certo') || combo.includes('errado')) return 'Preguiçoso';
+  if (combo.includes('tela') || combo.includes('dividida') || combo.includes('comparação') || combo.includes('lado a lado')) return 'Tela dividida';
+  if (combo.includes('tutorial') || combo.includes('dica') || combo.includes('passo')) return 'Tutorial (passo a passo)';
+  if (combo.includes('react') || combo.includes('reação') || combo.includes('experimento')) return 'Reação (react)';
+  
+  // default fallback to prevent 'geral' or random categories
+  return 'Varias Cenas';
 }
 
 export default function FormatosPage() {
@@ -62,9 +87,9 @@ export default function FormatosPage() {
   
   // States do Filtro "Explore"
   const [busca, setBusca] = useState('')
-  const [filtroNicho, setFiltroNicho] = useState('Todos')
+  const [filtroFormato, setFiltroFormato] = useState('Todos')
   const [ordemMenuAtivo, setOrdemMenuAtivo] = useState(false)
-  const [nichoMenuAtivo, setNichoMenuAtivo] = useState(false)
+  const [formatoMenuAtivo, setFormatoMenuAtivo] = useState(false)
   const [ordenacao, setOrdenacao] = useState<'recente' | 'engajamento' | 'views'>('recente')
   
   const supabase = useMemo(() => createClient(), [])
@@ -84,14 +109,15 @@ export default function FormatosPage() {
     fetchFormatos()
   }, [supabase])
 
-  const nichosOptions = useMemo(() => {
-    const unique = [...new Set(formatos.map(f => f.nicho).filter(Boolean))]
-    return ['Todos', ...unique]
-  }, [formatos])
+  const formatosOptions = HARDCODED_FORMAT_TYPES;
 
   // Filtragem e Ordenação encadeada
   const formatosProcessados = useMemo(() => {
-    let result = [...formatos]
+    // Add normalized field
+    let result = formatos.map(f => ({
+      ...f,
+      formato_normalizado: normalizeFormato(f.tipo, f.nicho)
+    }))
 
     // Busca Textual (Título, Descrição ou Plataforma)
     if (busca.trim()) {
@@ -99,13 +125,14 @@ export default function FormatosPage() {
       result = result.filter(f => 
         (f.titulo || '').toLowerCase().includes(q) || 
         (f.descricao || '').toLowerCase().includes(q) ||
-        (f.plataforma || '').toLowerCase().includes(q)
+        (f.plataforma || '').toLowerCase().includes(q) ||
+        f.formato_normalizado.toLowerCase().includes(q)
       )
     }
 
-    // Filtro Nicho
-    if (filtroNicho !== 'Todos') {
-      result = result.filter(f => f.nicho === filtroNicho)
+    // Filtro Formato
+    if (filtroFormato !== 'Todos') {
+      result = result.filter(f => f.formato_normalizado === filtroFormato)
     }
 
     // Ordenação
@@ -116,7 +143,7 @@ export default function FormatosPage() {
     })
 
     return result
-  }, [formatos, busca, filtroNicho, ordenacao])
+  }, [formatos, busca, filtroFormato, ordenacao])
 
   // Extração e Renderização em Autoplay Invisível
   const getDriveFileId = (url: string): string | null => {
@@ -197,31 +224,31 @@ export default function FormatosPage() {
              </div>
              
              <div className="flex items-center gap-3 w-full lg:w-auto shrink-0 relative">
-                {/* Dropdown Nicho */}
+                {/* Dropdown Formato */}
                 <div className="relative w-1/2 lg:w-48">
                   <button 
-                    onClick={() => { setNichoMenuAtivo(!nichoMenuAtivo); setOrdemMenuAtivo(false); }}
+                    onClick={() => { setFormatoMenuAtivo(!formatoMenuAtivo); setOrdemMenuAtivo(false); }}
                     className="w-full flex items-center justify-between gap-2 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 py-3.5 px-4 rounded-2xl text-sm font-bold text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                   >
                     <div className="flex items-center gap-2 truncate">
-                       <span>{nichoEmojis[filtroNicho] || '📁'}</span>
-                       <span className="truncate">{filtroNicho === 'Todos' ? 'Todas as Áreas' : filtroNicho}</span>
+                       <span>{formatoEmojis[filtroFormato] || '📁'}</span>
+                       <span className="truncate">{filtroFormato === 'Todos' ? 'Todos Formatos' : filtroFormato}</span>
                     </div>
                     <span className="material-symbols-outlined text-slate-400 text-lg shrink-0">unfold_more</span>
                   </button>
                   <AnimatePresence>
-                    {nichoMenuAtivo && (
+                    {formatoMenuAtivo && (
                       <motion.div 
                          initial={{ opacity: 0, scaleY: 0.9, y: 5 }} animate={{ opacity: 1, scaleY: 1, y: 0 }} exit={{ opacity: 0, scaleY: 0.9, y: 5 }}
                          className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0a0f1e] border border-slate-200 dark:border-white/10 shadow-2xl rounded-2xl p-2 z-50 transform origin-top max-h-64 overflow-y-auto custom-scrollbar"
                       >
-                         {nichosOptions.map((opt) => (
+                         {formatosOptions.map((opt) => (
                            <button 
-                             key={opt} onClick={() => { setFiltroNicho(opt); setNichoMenuAtivo(false); }}
-                             className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-colors ${filtroNicho === opt ? 'bg-[#0ea5e9]/10 text-[#0ea5e9] font-bold' : 'text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                             key={opt} onClick={() => { setFiltroFormato(opt); setFormatoMenuAtivo(false); }}
+                             className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-colors ${filtroFormato === opt ? 'bg-[#0ea5e9]/10 text-[#0ea5e9] font-bold' : 'text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5'}`}
                            >
-                             <span className="text-base">{opt === 'Todos' ? '🌐' : nichoEmojis[opt] || '📁'}</span>
-                             {opt === 'Todos' ? 'Todas as Categorias' : opt}
+                             <span className="text-base">{opt === 'Todos' ? '🌐' : formatoEmojis[opt] || '📁'}</span>
+                             {opt === 'Todos' ? 'Todos Formatos' : opt}
                            </button>
                          ))}
                       </motion.div>
@@ -232,7 +259,7 @@ export default function FormatosPage() {
                 {/* Dropdown Ordenação */}
                 <div className="relative w-1/2 lg:w-44">
                   <button 
-                    onClick={() => { setOrdemMenuAtivo(!ordemMenuAtivo); setNichoMenuAtivo(false); }}
+                    onClick={() => { setOrdemMenuAtivo(!ordemMenuAtivo); setFormatoMenuAtivo(false); }}
                     className="w-full flex items-center justify-between gap-2 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 py-3.5 px-4 rounded-2xl text-sm font-bold text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                   >
                     <div className="flex items-center gap-2 truncate">
@@ -318,8 +345,8 @@ export default function FormatosPage() {
                 <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 z-10">
                    <div className="flex items-center gap-2 mb-3 flex-wrap text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-[#0ea5e9]">
                      <span className="bg-[#0ea5e9]/20 backdrop-blur-md px-2.5 py-1 rounded text-white flex gap-1 items-center border border-white/10">
-                       <span>{nichoEmojis[formato.nicho] || '📁'}</span>
-                       {formato.nicho || 'Geral'}
+                       <span>{formatoEmojis[(formato as any).formato_normalizado] || '📁'}</span>
+                       {(formato as any).formato_normalizado || 'Geral'}
                      </span>
                      <span>•</span>
                      <span className="text-white/90 drop-shadow-sm">{formato.plataforma}</span>
@@ -355,8 +382,8 @@ export default function FormatosPage() {
       </div>
       
       {/* Background layer clicker to close active menus if clicking away */}
-      {(ordemMenuAtivo || nichoMenuAtivo) && (
-        <div className="fixed inset-0 z-40 bg-transparent" onClick={() => { setOrdemMenuAtivo(false); setNichoMenuAtivo(false); }} />
+      {(ordemMenuAtivo || formatoMenuAtivo) && (
+        <div className="fixed inset-0 z-40 bg-transparent" onClick={() => { setOrdemMenuAtivo(false); setFormatoMenuAtivo(false); }} />
       )}
     </main>
   )
