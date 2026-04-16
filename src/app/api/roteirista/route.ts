@@ -355,10 +355,20 @@ INSTRUÇÕES FINAIS: Nunca responda fora desta formatação estrita. Nunca conve
         for (let i = 0; i < fallbackModels.length; i++) {
            const selectedModel = fallbackModels[i];
            try {
+              const cacheOptimizedMessages = [
+                 {
+                   role: 'system',
+                   content: systemPrompt,
+                   // Ativa o Prompt Caching no Anthropic (corta custos absurdamente em prompts grandes)
+                   providerMetadata: { anthropic: { cacheControl: { type: 'ephemeral' } } },
+                   experimental_providerMetadata: { anthropic: { cacheControl: { type: 'ephemeral' } } }
+                 },
+                 ...sanitizedMessages
+              ];
+
               const result = streamText({
                 model: selectedModel,
-                system: systemPrompt,
-                messages: sanitizedMessages,
+                messages: cacheOptimizedMessages as any,
                 maxRetries: 0 // Não perca tempo, pule pro próximo provedor se falhar!
               });
 
