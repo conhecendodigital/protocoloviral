@@ -36,14 +36,21 @@ interface Formato {
 }
 
 const HARDCODED_FORMATOS: Formato[] = [
-  { id: 'ancoragem', titulo: 'Ancoragem', icone: 'anchor' },
-  { id: 'perguntas-e-respostas', titulo: 'Perguntas e Respostas', icone: 'question_answer' },
-  { id: 'preguicoso', titulo: 'Preguiçoso', icone: 'weekend' },
-  { id: 'tela-dividida', titulo: 'Tela dividida', icone: 'splitscreen' },
-  { id: 'varias-cenas', titulo: 'Varias Cenas', icone: 'movie' },
-  { id: 'reacao', titulo: 'Reação (react)', icone: 'add_reaction' },
-  { id: 'caixinha-perguntas', titulo: 'Caixinha de Perguntas', icone: 'help_center' },
-  { id: 'tutorial', titulo: 'Tutorial (passo a passo)', icone: 'list_alt' }
+  { id: 'ancoragem',            titulo: 'Ancoragem / Storytelling' },
+  { id: 'bastidores',           titulo: 'Bastidores e Comparação' },
+  { id: 'curiosidade',          titulo: 'Curiosidade' },
+  { id: 'curiosidade-noticia',  titulo: 'Curiosidade / Notícia' },
+  { id: 'dica-util',            titulo: 'Dica Útil do Dia' },
+  { id: 'ensino-oculto',        titulo: 'Ensino Oculto' },
+  { id: 'geral',                titulo: 'Geral (Tutorial Rápido)' },
+  { id: 'lista',                titulo: 'Lista Chocante' },
+  { id: 'nutricao',             titulo: 'Desmistificação (Nutrição/Consumo)' },
+  { id: 'pergunta-resposta',    titulo: 'Perguntas e Respostas' },
+  { id: 'preguicoso',           titulo: 'Preguiçoso (Sem Esforço)' },
+  { id: 'problema-solucao',     titulo: 'Problema / Solução' },
+  { id: 'react',                titulo: 'Reação (React)' },
+  { id: 'react-analise',        titulo: 'React / Análise' },
+  { id: 'tutorial',             titulo: 'Tutorial (Passo a Passo)' },
 ]
 // ═══════════════════════════════════════════════════════════
 // ██  ROTEIRISTA PAGE — ChatGPT-style
