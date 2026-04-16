@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo } from 'react'
+import { useState, useRef, useMemo, useEffect } from 'react'
 
 import { useProfile } from '@/hooks/use-profile'
 import { useAutoSave } from '@/hooks/use-auto-save'
@@ -14,6 +14,8 @@ import Image from 'next/image'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { parseClareza, parsePersona } from '@/lib/parser'
 import type { ClarezaParsed, PersonaParsed } from '@/lib/parser'
+import { WIZARD_SECTIONS } from '@/components/perfil/wizard-data'
+import { GamifiedQuestion } from '@/components/perfil/GamifiedQuestion'
 
 // ─── Section Config ────────────────────────────────────────
 const SECTION_META = {
@@ -301,11 +303,19 @@ export default function PerfilPage() {
   const [editingName, setEditingName] = useState(false)
   const [tempName, setTempName] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
-  const [enhancingAll, setEnhancingAll] = useState(false)
-  const [enhanceResult, setEnhanceResult] = useState<'idle' | 'success' | 'error'>('idle')
+
+  const [isEditingWizard, setIsEditingWizard] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const completion = getCompletionPercent()
+
+  // Initialize wizard edit state
+  useEffect(() => {
+    if (!loading) {
+      setIsEditingWizard(completion < 100)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading])
 
   // ─── Real-time Parser (computed from profile) ──────────
   const clarezaData = useMemo<ClarezaParsed | null>(
@@ -360,44 +370,6 @@ export default function PerfilPage() {
     setEditingName(false)
   }
   const handleCancelEditName = () => { setEditingName(false) }
-
-  const handleEnhanceAll = async () => {
-    if (!profile) return
-    setEnhanceResult('idle')
-    const filledFields = PROFILE_FIELDS
-      .filter(f => {
-        const val = (profile as Record<string, string | null>)?.[f.id]
-        return val && val.trim().length >= 5
-      })
-      .map(f => ({ id: f.id, label: f.label, value: (profile as Record<string, string | null>)?.[f.id] || '' }))
-
-    if (filledFields.length === 0) return
-    setEnhancingAll(true)
-    try {
-      const res = await fetch('/api/enhance-answer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fields: filledFields }),
-      })
-      const data = await res.json()
-      if (data.enhanced && typeof data.enhanced === 'object') {
-        let updated = 0
-        for (const [fieldId, value] of Object.entries(data.enhanced)) {
-          if (typeof value === 'string' && value.trim().length > 0) {
-            const original = filledFields.find(f => f.id === fieldId)?.value
-            if (original !== value) { handleFieldChange(fieldId, value); updated++ }
-          }
-        }
-        setEnhanceResult(updated > 0 ? 'success' : data.used_ai ? 'success' : 'error')
-      } else {
-        setEnhanceResult('error')
-      }
-    } catch {
-      setEnhanceResult('error')
-    }
-    setEnhancingAll(false)
-    setTimeout(() => setEnhanceResult('idle'), 4000)
-  }
 
   if (loading) {
     return (
@@ -509,38 +481,7 @@ export default function PerfilPage() {
                       <div className="h-full bg-gradient-to-r from-sky-400 to-[#0ea5e9] shadow-[0_0_15px_rgba(14,165,233,0.5)] transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `${completion}%` }} />
                     </div>
 
-                    {/* AI Enhance Button */}
-                    {completion > 0 && (
-                      <motion.button
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        onClick={handleEnhanceAll} disabled={enhancingAll}
-                        className={`mt-6 w-full py-3.5 rounded-2xl flex items-center justify-center gap-3 text-sm font-bold transition-all active:scale-[0.98] relative z-10 border disabled:opacity-60 disabled:pointer-events-none ${
-                          enhanceResult === 'success' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' :
-                          enhanceResult === 'error' ? 'border-red-500/30 bg-red-500/10 text-red-400' :
-                          'border-violet-500/30 bg-violet-500/10 text-violet-400 hover:bg-violet-500/20 hover:border-violet-500/50'
-                        }`}
-                      >
-                        {enhancingAll ? (
-                          <><Loader2 className="w-4 h-4 animate-spin" /><span>Melhorando respostas...</span></>
-                        ) : enhanceResult === 'success' ? (
-                          <><CheckCircle2 className="w-4 h-4" /><span>Suas respostas foram melhoradas!</span></>
-                        ) : enhanceResult === 'error' ? (
-                          <><span className="material-symbols-outlined text-lg">warning</span><span>Erro — tente novamente</span></>
-                        ) : (
-                          <><span className="material-symbols-outlined text-lg">auto_fix_high</span><span>Melhorar Tudo com IA</span></>
-                        )}
-                      </motion.button>
-                    )}
-
-                    <AnimatePresence>
-                      {enhanceResult === 'success' && (
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 relative z-10">
-                          <p className="text-sm text-emerald-400 text-center font-medium">Pronto! Suas respostas foram melhoradas. Seus próximos textos e roteiros vão ficar ainda melhores.</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {completion === 100 && enhanceResult !== 'success' && (
+                    {completion === 100 && (
                       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-[#0ea5e9]/10 border border-emerald-500/20 text-center relative z-10">
                         <span className="material-symbols-outlined text-[32px] text-emerald-400 mb-2 block">rocket_launch</span>
                         <h4 className="text-lg font-black text-slate-900 dark:text-white mb-1">Perfil Completo! 🚀</h4>
@@ -557,51 +498,91 @@ export default function PerfilPage() {
                     )}
                   </motion.div>
 
-                  {/* All 13 Fields - Grouped By Section */}
-                  {(['sobre', 'publico', 'objetivos'] as const).map((sectionKey) => {
-                    const meta = SECTION_META[sectionKey]
-                    const fields = PROFILE_FIELDS.filter(f => f.section === sectionKey)
+                  {/* All 13 Fields Gamified or Readonly */}
+                  {WIZARD_SECTIONS.map((section) => {
                     return (
-                      <motion.div key={sectionKey} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10">
-                        <div className="flex items-center gap-4 mb-8">
-                          <div className="size-12 rounded-xl bg-[#0ea5e9]/10 flex items-center justify-center border border-[#0ea5e9]/20 shadow-inner">
-                            <span className="material-symbols-outlined text-[#0ea5e9] text-2xl">{meta.icon}</span>
+                      <motion.div key={section.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10">
+                        <div className="flex items-center justify-between mb-8">
+                          <div className="flex items-center gap-4">
+                            <div className="size-12 rounded-xl bg-[#0ea5e9]/10 flex items-center justify-center border border-[#0ea5e9]/20 shadow-inner shrink-0">
+                              <span className="material-symbols-outlined text-[#0ea5e9] text-2xl">{section.icon}</span>
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight">{section.title}</h3>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight">{meta.title}</h3>
-                            <p className="text-sm text-slate-700 dark:text-white/60">{meta.desc}</p>
-                          </div>
+                          {!isEditingWizard && (
+                            <button onClick={() => setIsEditingWizard(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-600 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                              <span className="material-symbols-outlined text-sm">edit</span> Editar
+                            </button>
+                          )}
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {fields.map(field => {
-                            const fieldValue = profile?.[field.id] as string || ''
-                            const status = saveStatus[field.id] || 'idle'
-                            const isTextarea = field.type === 'textarea'
-                            return (
-                              <div key={field.id} className={`space-y-2 ${isTextarea ? 'md:col-span-2' : ''}`}>
-                                <div className="flex items-center justify-between">
-                                  <label htmlFor={field.id} className="text-xs font-bold text-slate-600 dark:text-white/60 uppercase tracking-widest ml-1">{field.label}</label>
-                                  <div className="h-4 flex items-center gap-2">
+
+                        {isEditingWizard ? (
+                          <div className="space-y-4">
+                            {section.questions.map(question => {
+                              const fieldValue = profile?.[question.id as keyof typeof profile] as string || ''
+                              const status = saveStatus[question.id] || 'idle'
+
+                              return (
+                                <div key={question.id} className="pt-6 border-t border-slate-100 dark:border-white/5 first:border-0 first:pt-0">
+                                  <div className="flex justify-end h-4 mb-2">
                                     {status === 'saving' && <span className="text-[10px] text-slate-500 flex items-center gap-1 uppercase tracking-widest font-bold"><Loader2 className="w-3 h-3 animate-spin" />Salvando</span>}
                                     {status === 'saved' && <span className="text-[10px] text-[#0ea5e9] flex items-center gap-1 uppercase tracking-widest font-bold"><CheckCircle2 className="w-3 h-3" />Salvo</span>}
                                     {status === 'error' && <span className="text-[10px] text-red-400 flex items-center gap-1 uppercase tracking-widest font-bold">Erro ao salvar</span>}
                                   </div>
+                                  <GamifiedQuestion
+                                    question={question}
+                                    value={fieldValue}
+                                    onChange={(val) => handleFieldChange(question.id, val)}
+                                  />
                                 </div>
-                                <div className="group relative">
-                                  <div className="absolute inset-0 bg-black/5 dark:bg-white/5 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none border border-[#0ea5e9]/50" />
-                                  {isTextarea ? (
-                                    <Textarea id={field.id} placeholder={field.placeholder} value={fieldValue} onChange={e => handleFieldChange(field.id, e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 rounded-2xl px-5 py-4 focus-visible:ring-0 focus-visible:border-[#0ea5e9] outline-none transition-all resize-none text-slate-900 dark:text-white text-sm leading-relaxed min-h-[100px] relative z-10 placeholder:text-slate-400 dark:placeholder:text-white/30" rows={4} />
-                                  ) : (
-                                    <Input id={field.id} placeholder={field.placeholder} value={fieldValue} onChange={e => handleFieldChange(field.id, e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 rounded-2xl px-5 py-6 h-auto focus-visible:ring-0 focus-visible:border-[#0ea5e9] outline-none transition-all text-slate-900 dark:text-white text-sm relative z-10 placeholder:text-slate-400 dark:placeholder:text-white/30" />
-                                  )}
+                              )
+                            })}
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {section.questions.map(question => {
+                              const fieldValue = profile?.[question.id as keyof typeof profile] as string || ''
+                              if (!fieldValue) return null
+
+                              // Attempt to find the matched option for better labeling
+                              const match = question.options.find(o => o.id === fieldValue)
+                              const displayLabel = match ? match.label : fieldValue
+
+                              return (
+                                <div key={question.id} className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-[#0ea5e9] block mb-1">
+                                    {question.title.replace(/\?/g, '')}
+                                  </span>
+                                  <p className="text-sm font-semibold text-slate-800 dark:text-white/90 leading-relaxed">
+                                    {displayLabel}
+                                  </p>
                                 </div>
-                              </div>
-                            )
-                          })}
-                        </div>
+                              )
+                            })}
+                          </div>
+                        )}
                       </motion.div>
                     )
                   })}
+
+                  {isEditingWizard && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 border-t border-slate-100 dark:border-white/10 mt-10">
+                      <p className="text-sm text-slate-500 dark:text-white/60">
+                        {completion === 100 
+                          ? "Perfil 100% completo! Seus roteiros estão prontos para máxima personalização." 
+                          : "Preencha tudo que puder. Quanto mais dados, melhores serão seus roteiros!"}
+                      </p>
+                      <button 
+                        onClick={() => setIsEditingWizard(false)} 
+                        className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-[#0ea5e9] text-white font-bold text-sm shadow-lg shadow-emerald-500/20 hover:brightness-110 transition-all active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        <span className="material-symbols-outlined">check_circle</span>
+                        {completion === 100 ? "Concluir Perfil" : "Concluir Edição"}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right Sidebar */}
