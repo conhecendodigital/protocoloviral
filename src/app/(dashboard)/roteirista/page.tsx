@@ -331,13 +331,18 @@ function RoteiristaContent() {
         )
       }
       
+      // Verifica se terminou vazio (stream fechada silenciosamente pela Vercel)
+      if (currentText.trim() === '') {
+        throw new Error('A Vercel ou Inteligência Artificial fechou a conexão sem retornar nenhum texto.')
+      }
+      
       // Increment usages today after success
       if (!isPro) {
         setGenerationsToday(prev => prev + 1)
       }
     } catch (err: any) {
       setMessages(prev =>
-        prev.map(m => m.id === aiMsgId ? { ...m, content: `❌ Erro: ${err.message}` } : m)
+        prev.map(m => m.id === aiMsgId ? { ...m, content: `❌ Erro de Conexão Frontend:\n\nUm erro impediu a resposta. Detalhes técnicos para o Eng:\n\`\`\`\n${err.message || String(err)}\n\`\`\`` } : m)
       )
     } finally {
       setIsGenerating(false)

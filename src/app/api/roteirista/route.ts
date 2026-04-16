@@ -170,15 +170,19 @@ Se a estrutura pedir 3 blocos, seu roteiro terá exatamente 3 blocos. Se pedir 4
           const controller = new AbortController()
           const timeoutId = setTimeout(() => controller.abort(), 4000)
           
-          const sRes = await fetch('https://google.serper.dev/search', {
-            method: 'POST',
-            headers: {
-              'X-API-KEY': serperKey,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ q: topic }),
-            signal: controller.signal
-          })
+          const topic = messages[messages.length - 1].content
+          const sRes = await Promise.race([
+            fetch('https://google.serper.dev/search', {
+              method: 'POST',
+              headers: {
+                'X-API-KEY': serperKey,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ q: topic }),
+              signal: controller.signal
+            }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Serper timeout absoluto")), 3500))
+          ]) as any;
           
           clearTimeout(timeoutId)
           const sData = await sRes.json()
