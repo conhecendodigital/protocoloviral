@@ -371,29 +371,12 @@ INSTRUÇÕES FINAIS: Nunca responda fora desta formatação estrita. Nunca conve
       }
     })
 
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of result.textStream) {
-            controller.enqueue(new TextEncoder().encode(chunk));
-          }
-          controller.close();
-        } catch (err: any) {
-          console.error('[STREAM ERROR]', err);
-          controller.enqueue(
-            new TextEncoder().encode(`\n\n❌ Erro Fatal Conectando à IA: ${err.message || String(err)}\n\nA Vercel ou a OpenAI estão rejeitando a requisição.`)
-          );
-          controller.close();
-        }
-      }
-    });
-
-    return new Response(stream, {
+    return result.toTextStreamResponse({
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-      },
+      }
     });
 
   } catch (error: any) {
