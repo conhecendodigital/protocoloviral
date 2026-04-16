@@ -31,11 +31,11 @@ export async function POST(req: Request) {
       return new Response('Messages are required', { status: 400 })
     }
 
-    // Extrai o último mensaje do usuário para RAG e limites
+    // Ultimo msg do usuario — usado para RAG e Serper
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user')
     const topic = lastUserMsg ? lastUserMsg.content : ''
 
-    // ─── 1. GATEKEEPER: limite diário para free ───────────────────────────────
+    // ─── 1. GATEKEEPER: limite diario free ───────────────────────────────────
     const { data: profile } = await supabase
       .from('profiles')
       .select('plan_tier, is_admin, publico, dor, tentou, diferencial, proposito, naoquer, produto_venda')
@@ -55,11 +55,11 @@ export async function POST(req: Request) {
         .gte('created_at', startOfDay.toISOString())
 
       if (count !== null && count >= 5) {
-        return new Response('Limite de 5 roteiros diários atingido.', { status: 403 })
+        return new Response('Limite de 5 roteiros diarios atingido.', { status: 403 })
       }
     }
 
-    // ─── 2. BASE DO SYSTEM PROMPT (agente customizado ou roteirista padrão) ───
+    // ─── 2. BASE DO SYSTEM PROMPT ────────────────────────────────────────────
     let baseSystemPrompt = ''
 
     if (agentId) {
@@ -73,39 +73,39 @@ export async function POST(req: Request) {
         return new Response('Agent not found', { status: 404 })
       }
       baseSystemPrompt = agent.system_prompt
+
     } else {
-      // DNA do criador (contexto do perfil)
       let userContext = ''
       if (profile?.publico) {
-        userContext = `
-============ DNA DO CLIENTE (CONTEXTO OBRIGATÓRIO) ============
-Personalize profundamente o roteiro considerando QUEM é o usuário e QUEM é o público dele:
-
-[O PÚBLICO DO USUÁRIO]
-- Quem são: ${profile.publico}
-- Dores principais: ${profile.dor || 'Não informado'}
-- O que já tentaram: ${profile.tentou || 'Não informado'}
-
-[SOBRE O USUÁRIO]
-- Diferencial Único: ${profile.diferencial || 'Não informado'}
-- Propósito/Missão: ${profile.proposito || 'Não informado'}
-- O que NUNCA quer abordar: ${profile.naoquer || 'Não informado'}
-
-[PRODUTO]
-- O que o usuário vende: ${profile.produto_venda || 'Não informado'}
-================================================================
-`
+        userContext = [
+          '============ DNA DO CLIENTE (CONTEXTO OBRIGATORIO) ============',
+          'Personalize profundamente o roteiro considerando QUEM e o usuario e QUEM e o publico dele:',
+          '',
+          '[O PUBLICO DO USUARIO]',
+          '- Quem sao: ' + profile.publico,
+          '- Dores principais: ' + (profile.dor || 'Nao informado'),
+          '- O que ja tentaram: ' + (profile.tentou || 'Nao informado'),
+          '',
+          '[SOBRE O USUARIO]',
+          '- Diferencial Unico: ' + (profile.diferencial || 'Nao informado'),
+          '- Proposito/Missao: ' + (profile.proposito || 'Nao informado'),
+          '- O que NUNCA quer abordar: ' + (profile.naoquer || 'Nao informado'),
+          '',
+          '[PRODUTO]',
+          '- O que o usuario vende: ' + (profile.produto_venda || 'Nao informado'),
+          '================================================================',
+        ].join('\n')
       }
 
-      baseSystemPrompt = `
-============ ROTEIRISTA PRO — DIRETRIZES COMPLETAS ============
-${ROTEIRISTA_PRO_SKILL}
-
-${userContext}
-`
+      baseSystemPrompt = [
+        '============ ROTEIRISTA PRO — DIRETRIZES COMPLETAS ============',
+        ROTEIRISTA_PRO_SKILL,
+        '',
+        userContext,
+      ].join('\n')
     }
 
-    // ─── 3. TOM DE VOZ (voice profile) ───────────────────────────────────────
+    // ─── 3. TOM DE VOZ ───────────────────────────────────────────────────────
     let voiceContext = ''
     if (voiceProfileId) {
       const { data: vp } = await supabase
@@ -118,96 +118,89 @@ ${userContext}
       const wi = vp?.wizard_inputs
 
       if (st || wi) {
-        const bordoesArr = wi?.bordoes || []
-        const palPref = wi?.palavras_preferidas || []
-        const palEvit = wi?.palavras_evitadas || []
+        const bordoesArr: any[] = wi?.bordoes || []
+        const palPref: string[] = wi?.palavras_preferidas || []
+        const palEvit: string[] = wi?.palavras_evitadas || []
 
-        voiceContext = `
-[TOM DE VOZ DO CRIADOR — SEGUIR À RISCA]
-Mimetize o EXATO estilo de escrita deste criador:
-- Relação com a audiência: ${wi?.relacao || 'Amigável'}
-- Energia: ${wi?.energia || 'Média'}
-- Humor: ${wi?.humor || 2}/5
-- Vocabulário (0=formal, 1=casual): ${st?.tone_axes?.formal_casual ?? '0.5'}
-- Estilo de Frases: ${st?.sentence_style || 'Variado'}
-${palPref.length > 0 ? `- Palavras OBRIGATÓRIAS: ${palPref.join(', ')}` : ''}
-${palEvit.length > 0 ? `- Palavras PROIBIDAS: ${palEvit.join(', ')}` : ''}
-${bordoesArr.length > 0 ? `- Bordões (use organicamente): ${bordoesArr.map((b: any) => `"${b.texto}"`).join(', ')}` : ''}
-${st?.generation_rules ? `- Regras estilísticas: ${st.generation_rules}` : ''}
-`
+        const voiceLines = [
+          '[TOM DE VOZ DO CRIADOR — SEGUIR A RISCA]',
+          'Mimetize o EXATO estilo de escrita deste criador:',
+          '- Relacao com a audiencia: ' + (wi?.relacao || 'Amigavel'),
+          '- Energia: ' + (wi?.energia || 'Media'),
+          '- Humor: ' + (wi?.humor || 2) + '/5',
+          '- Vocabulario (0=formal, 1=casual): ' + (st?.tone_axes?.formal_casual ?? '0.5'),
+          '- Estilo de Frases: ' + (st?.sentence_style || 'Variado'),
+        ]
+        if (palPref.length > 0) voiceLines.push('- Palavras OBRIGATORIAS: ' + palPref.join(', '))
+        if (palEvit.length > 0) voiceLines.push('- Palavras PROIBIDAS: ' + palEvit.join(', '))
+        if (bordoesArr.length > 0) voiceLines.push('- Bordoes (use organicamente): ' + bordoesArr.map((b: any) => '"' + b.texto + '"').join(', '))
+        if (st?.generation_rules) voiceLines.push('- Regras estilisticas: ' + st.generation_rules)
+
+        voiceContext = voiceLines.join('\n')
       }
     }
 
-    // ─── 4. FORMATO VIRAL (estrutura + duração real do vídeo original) ────────
+    // ─── 4. FORMATO VIRAL ────────────────────────────────────────────────────
     let formatContext = ''
     let formatTitle: string | null = null
 
     if (formatData?.id && FORMATOS_VIRAIS_PROMPTS[formatData.id]) {
-      // ── Formato selecionado: usa duração EXATA do vídeo viral estudado ──
+      // Formato selecionado: usa duracao do video real — cap 90s
       formatTitle = formatData.titulo
-
-      // Vídeos acima de 90s são exceção — clamp para 90s máximo
       const duracaoRaw = formatData.duracao ? Math.round(parseFloat(formatData.duracao)) : 50
       const duracaoClamped = Math.min(duracaoRaw, 90)
-      const duracaoSegundos = `${duracaoClamped} segundos`
+      const engajamentoRef = formatData.engajamento ? formatData.engajamento + '%' : 'nao informado'
 
-      const engajamentoRef = formatData.engajamento
-        ? `${formatData.engajamento}%`
-        : 'não informado'
+      formatContext = [
+        '[ESTRUTURA VIRAL REFERENCIA — SEGUIR EXATAMENTE]',
+        'Titulo do Formato: ' + formatData.titulo,
+        'DURACAO OBRIGATORIA: ' + duracaoClamped + ' segundos',
+        'O roteiro DEVE ter exatamente esse tempo lido em voz alta em ritmo natural.',
+        'Nem mais curto (perde valor), nem mais longo (mata retencao).',
+        'Engajamento do video original: ' + engajamentoRef,
+        '',
+        FORMATOS_VIRAIS_PROMPTS[formatData.id],
+        '',
+        '[REGRA DE PARIDADE DE BLOCOS — ABSOLUTA]',
+        'Respeite rigorosamente a quantidade e nomes dos blocos da estrutura acima.',
+        'NUNCA pule um bloco. NUNCA adicione blocos extras.',
+      ].join('\n')
 
-      formatContext = `
-[ESTRUTURA VIRAL REFERÊNCIA — SEGUIR EXATAMENTE]
-Título do Formato: ${formatData.titulo}
-
-⏱ DURAÇÃO OBRIGATÓRIA: ${duracaoSegundos}
-O roteiro final DEVE ter exatamente esse tempo quando lido em voz alta em ritmo natural.
-Nem mais curto (perde valor), nem mais longo (mata a retenção).
-📊 Engajamento do vídeo original: ${engajamentoRef}
-
-${FORMATOS_VIRAIS_PROMPTS[formatData.id]}
-
-[REGRA DE PARIDADE DE BLOCOS — ABSOLUTA]
-O roteiro DEVE respeitar rigorosamente a quantidade e os nomes dos blocos da estrutura acima.
-NUNCA pule um bloco. NUNCA adicione blocos extras.
-Se a estrutura pedir 3 blocos → roteiro terá 3 blocos.
-Se pedir 5 → terá 5. Sem exceção.
-`
     } else {
-      // ── Sem formato selecionado: duração automática baseada no arquétipo ──
-      // Dados reais de 25 vídeos virais estudados (engajamento médio 8–18%)
-      formatContext = `
-[DURAÇÃO AUTOMÁTICA — BASEADA EM DADOS REAIS DE VIRAIS]
-Escolha o arquétipo mais adequado ao tema e aplique a duração correspondente.
-A duração não é sugestão — é especificação técnica do formato.
-Ritmo de fala natural: ~2,5 palavras por segundo. Conte as palavras antes de entregar.
-
-FAIXA CURTA — 7 a 30 segundos (alcance máximo, topo de funil)
-→ CERTO vs ERRADO visual:   8–12s  | Problema → Contraste visual → fim
-→ TUTORIAL ULTRA-RÁPIDO:    20–28s | Pergunta → 3 passos → CTA
-→ PROBLEMA/SOLUÇÃO direto:  23–30s | Erro → Solução imediata → CTA salvar
-
-FAIXA MÉDIA — 33 a 65 segundos ⭐ PADRÃO RECOMENDADO
-(DM automation, engajamento real, equilíbrio alcance+profundidade)
-→ BASTIDORES/COMPARAÇÃO:    33–35s | Produto A vs B → Diferencial → CTA
-→ MISTÉRIO + SOLUÇÃO (3x):  34s    | "Não sabe ainda" → Ação+Benefício ×3 → CTA
-→ PROBLEMA/SOLUÇÃO lista:   35–38s | Promessa → Problema+Solução ×5 → CTA salvar
-→ QUIZ INTERATIVO:          37s    | Pergunta+Resposta+Explicação ×3 → CTA
-→ REACT/ANÁLISE:            40–41s | Problema → Hipótese → Experimento → CTA
-→ ANCORAGEM CORPORAL:       52–53s | Pergunta chocante → Descredita → Solução → CTA
-→ TUTORIAL + AUTORIDADE:    55–65s | Descoberta → Tutorial → CTA seguir
-→ LISTA ERROS:              63–65s | "X erros" → 5 demonstrações → CTA
-
-FAIXA LONGA — 69 a 90 segundos (autoridade profunda, storytelling)
-⚠️ LIMITE MÁXIMO: 90 segundos. NUNCA ultrapasse isso. Vídeos acima de 90s
-exigem habilidade excepcional de apresentação — a plataforma não garante esse nível.
-→ TUTORIAL HACK:            69–79s  | Notícia → Hack → Como fazer → CTA
-→ ANCORAGEM + IA/TECH:      80–90s  | Problema chocante → Solução tech → Casos → CTA
-→ REACT VIRAL:              80–90s  | Vídeo viral → Explicação → Impacto → CTA
-→ ANCORAGEM EMOCIONAL:      80–90s  | História de tensão → Resolução → Lição → CTA
-`
+      // Sem formato: duracao automatica baseada no arquetipo
+      formatContext = [
+        '[DURACAO AUTOMATICA — DADOS REAIS DE VIRAIS]',
+        'Escolha o arquetipo mais adequado ao tema e aplique a duracao correspondente.',
+        'A duracao nao e sugestao — e especificacao tecnica do formato.',
+        'Ritmo de fala natural: 2,5 palavras por segundo. Conte as palavras antes de entregar.',
+        '',
+        'FAIXA CURTA — 7 a 30 segundos (alcance maximo, topo de funil)',
+        'CERTO vs ERRADO visual:   8 a 12s  | Problema > Contraste visual > fim',
+        'TUTORIAL ULTRA-RAPIDO:    20 a 28s | Pergunta > 3 passos > CTA',
+        'PROBLEMA SOLUCAO direto:  23 a 30s | Erro > Solucao imediata > CTA salvar',
+        '',
+        'FAIXA MEDIA — 33 a 65 segundos (PADRAO RECOMENDADO)',
+        'DM automation, engajamento real, equilibrio alcance e profundidade.',
+        'BASTIDORES COMPARACAO:    33 a 35s | Produto A vs B > Diferencial > CTA',
+        'MISTERIO SOLUCAO 3x:      34s      | Nao sabe ainda > Acao e Beneficio x3 > CTA',
+        'PROBLEMA SOLUCAO lista:   35 a 38s | Promessa > Problema e Solucao x5 > CTA salvar',
+        'QUIZ INTERATIVO:          37s      | Pergunta e Resposta e Explicacao x3 > CTA',
+        'REACT ANALISE:            40 a 41s | Problema > Hipotese > Experimento > CTA',
+        'ANCORAGEM CORPORAL:       52 a 53s | Pergunta chocante > Descredita > Solucao > CTA',
+        'TUTORIAL AUTORIDADE:      55 a 65s | Descoberta > Tutorial > CTA seguir',
+        'LISTA ERROS:              63 a 65s | X erros > 5 demonstracoes > CTA',
+        '',
+        'FAIXA LONGA — 69 a 90 segundos (autoridade profunda, storytelling)',
+        'LIMITE MAXIMO: 90 segundos. NUNCA ultrapasse.',
+        'Acima de 90s exige habilidade excepcional — a plataforma nao garante esse nivel.',
+        'TUTORIAL HACK:            69 a 79s | Noticia > Hack > Como fazer > CTA',
+        'ANCORAGEM IA TECH:        80 a 90s | Problema chocante > Solucao tech > Casos > CTA',
+        'REACT VIRAL:              80 a 90s | Video viral > Explicacao > Impacto > CTA',
+        'ANCORAGEM EMOCIONAL:      80 a 90s | Historia de tensao > Resolucao > Licao > CTA',
+      ].join('\n')
     }
 
-    // ─── 5. GROUNDING COM SERPER (mode=search) ────────────────────────────────
+    // ─── 5. GROUNDING SERPER (mode=search) ───────────────────────────────────
     let serperContext = ''
     if (mode === 'search') {
       const serperKey = process.env.SERPER_API_KEY
@@ -219,23 +212,16 @@ exigem habilidade excepcional de apresentação — a plataforma não garante es
           const sRes = await Promise.race([
             fetch('https://google.serper.dev/search', {
               method: 'POST',
-              headers: {
-                'X-API-KEY': serperKey,
-                'Content-Type': 'application/json'
-              },
+              headers: { 'X-API-KEY': serperKey, 'Content-Type': 'application/json' },
               body: JSON.stringify({ q: topic }),
               signal: controller.signal
             }),
-            new Promise<never>((_, reject) =>
-              setTimeout(() => reject(new Error('Serper timeout')), 3500)
-            )
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3500))
           ])
 
           const sData = await Promise.race([
             (sRes as Response).json(),
-            new Promise<never>((_, reject) =>
-              setTimeout(() => reject(new Error('Serper body timeout')), 2000)
-            )
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('body timeout')), 2000))
           ]) as any
 
           clearTimeout(timeoutId)
@@ -246,11 +232,11 @@ exigem habilidade excepcional de apresentação — a plataforma não garante es
               .map((r: any) => '- ' + r.title + ': ' + r.snippet)
               .join('\n')
 
-            serperContext = `
-[FATOS REAIS DA INTERNET — USE PARA EMBASAR O ROTEIRO]
-Integre esses dados atuais no conteúdo para dar credibilidade e evitar invenções:
-${facts}
-`
+            serperContext = [
+              '[FATOS REAIS — USE PARA EMBASAR O ROTEIRO]',
+              'Integre esses dados atuais para dar credibilidade:',
+              facts,
+            ].join('\n')
           }
         } catch (e) {
           console.error('[SERPER ERROR]', e)
@@ -258,7 +244,7 @@ ${facts}
       }
     }
 
-    // ─── 6. MEMÓRIA RAG (mode=premium) ───────────────────────────────────────
+    // ─── 6. MEMORIA RAG (mode=premium) ───────────────────────────────────────
     let memoryContext = ''
     if (mode === 'premium') {
       try {
@@ -279,92 +265,84 @@ ${facts}
             .map((m: any) => m.content.substring(0, 500))
             .join('\n\n---\n\n')
 
-          memoryContext = `
-[MEMÓRIA DE CONTEÚDOS PASSADOS]
-Use para manter consistência de estilo e evitar repetição de temas já abordados:
-${mTexts}
-`
+          memoryContext = [
+            '[MEMORIA DE CONTEUDOS PASSADOS]',
+            'Use para manter consistencia e evitar repeticao de temas:',
+            mTexts,
+          ].join('\n')
         }
       } catch (e) {
         console.error('[RAG ERROR]', e)
       }
     }
 
-    // ─── 7. SYSTEM PROMPT MASTER ──────────────────────────────────────────────
-    const systemPrompt = `
-${baseSystemPrompt}
+    // ─── 7. SYSTEM PROMPT MASTER ─────────────────────────────────────────────
+    const systemPrompt = [
+      baseSystemPrompt,
+      voiceContext,
+      formatContext,
+      serperContext,
+      memoryContext,
+      '================================================================',
+      'REGRAS DE EXECUCAO — ABSOLUTAS E INVIOLAVEIS',
+      '================================================================',
+      '',
+      '[ENTREGA IMEDIATA — REGRA NUMERO 1]',
+      'Sua PRIMEIRA palavra na resposta e [THINKING]. Nada antes disso.',
+      'Apos [/THINKING], a proxima linha e [ROTEIRO_FINAL]. Nada entre eles.',
+      'PROIBIDO: cumprimentar, elogiar, introducao, perguntar, sugerir opcoes.',
+      'PROIBIDO: "Otima ideia!", "Aqui esta:", "Vamos criar", "Claro!", qualquer conversa.',
+      'Se o tema for vago — assuma, crie, entregue. Nunca peca confirmacao.',
+      '',
+      '[TAMANHO E DENSIDADE]',
+      'Profundidade NAO significa comprimento.',
+      'Cada frase deve ser densa, direta e impactante.',
+      'O roteiro DEVE ter exatamente o tempo do arquetipo — nem uma linha a mais.',
+      'Uma frase certeira vale mais que tres medianas.',
+      'Linguagem simples: "melhorar" nao "otimizar", "colocar" nao "implementar".',
+      '',
+      '[FORMATACAO OBRIGATORIA DE CADA BLOCO]',
+      'Tag do bloco em linha propria.',
+      'Linha em branco apos cada tag.',
+      'UMA frase por linha — ENTER apos cada frase.',
+      'Instrucao visual entre parenteses em linha propria.',
+      '[PAUSA] e [CORTE] em linhas proprias.',
+      'NUNCA texto corrido com 3+ frases sem quebra de linha.',
+      'NUNCA tag colada ao conteudo na mesma linha.',
+      '',
+      '[CTA — MAXIMO 3 LINHAS]',
+      'A pessoa ja decidiu agir — nao reexplique o video.',
+      'Modelo: acao + o que recebe + como fazer.',
+      'Exemplo: "Comenta CLAUDE. Eu mando no direct o passo a passo completo."',
+      'NUNCA mais de 3 linhas no CTA.',
+      '',
+      '[ARQUITETURA DE SAIDA OBRIGATORIA]',
+      '',
+      '[THINKING]',
+      '* Arquetipo: [nome e por que serve ao tema]',
+      '* Duracao alvo: [X segundos]',
+      '* Emocao ancora: [qual e por que]',
+      '* Gancho: [tipo e logica de scroll-stop]',
+      '* Tom: [como adaptar ao DNA do criador]',
+      '[/THINKING]',
+      '[ROTEIRO_FINAL]',
+      'TITULO: [titulo com promessa real]',
+      '[METADADOS hash1="#Hashtag" hash2="#Hashtag" hash3="#Hashtag" direcao="dica de entrega"]',
+      '[GANCHO]',
+      '',
+      '(texto do gancho — uma frase por linha)',
+      '',
+      '[NOME DO BLOCO 2]',
+      '',
+      '(conteudo — uma ideia por linha)',
+      '(Visual: instrucao isolada na propria linha)',
+      '',
+      '[CTA]',
+      '',
+      '(maximo 3 linhas)',
+    ].join('\n')
 
-${voiceContext}
-
-${formatContext}
-
-${serperContext}
-
-${memoryContext}
-
-================================================================
-REGRAS DE EXECUÇÃO — ABSOLUTAS E INVIOLÁVEIS
-================================================================
-
-[TAMANHO E DENSIDADE]
-Profundidade NÃO significa comprimento.
-Cada frase deve ser densa, direta e impactante.
-O roteiro DEVE respeitar o tamanho do arquétipo escolhido — nem uma linha a mais.
-Se o formato é de 35 segundos, o roteiro é de 35 segundos. Ponto.
-Uma frase certeira vale mais que três medianas.
-Linguagem simples: "melhorar" não "otimizar", "colocar" não "implementar", "plano" não "estratégia".
-
-[PROIBIÇÃO DE CONVERSA]
-NUNCA faça perguntas ao usuário.
-NUNCA sugira opções para ele escolher.
-NUNCA cumprimente, elogie ou faça introdução amigável.
-Se o tema for vago, assuma a liderança criativa e entregue.
-Sua ÚNICA função é entregar o [ROTEIRO_FINAL] imediatamente.
-
-[ARQUITETURA DE SAÍDA — COPIE EXATAMENTE]
-Sua PRIMEIRA palavra absoluta deve ser [THINKING].
-Após [/THINKING], a próxima linha deve ser [ROTEIRO_FINAL].
-Nenhum texto fora dessa estrutura.
-
-[THINKING]
-* Arquétipo escolhido: [nome e por quê serve ao tema]
-* Duração alvo: [X segundos — respeitando o formato]
-* Emoção âncora: [qual e por quê]
-* Gancho: [tipo e lógica de scroll-stop]
-* Tom do criador: [como vou adaptar ao DNA]
-[/THINKING]
-[ROTEIRO_FINAL]
-TÍTULO: [título com promessa real — sem clickbait vazio]
-[METADADOS hash1="#Hashtag" hash2="#Hashtag" hash3="#Hashtag" direcao="💡 dica de entrega"]
-[GANCHO]
-
-(texto do gancho — linha por linha, nunca parágrafo)
-
-[NOME DO BLOCO 2]
-
-(conteúdo — UMA ideia por linha, ENTER após cada frase)
-(Visual: instrução entre parênteses, isolada na própria linha)
-
-[NOME DO BLOCO 3]
-
-(continua...)
-
-[CTA]
-
-(máximo 3 linhas — ação + o que recebe + como fazer)
-
-[FORMATAÇÃO OBRIGATÓRIA DE CADA BLOCO]
-✅ Tag do bloco em linha própria
-✅ Linha em branco após a tag
-✅ UMA frase por linha
-✅ Instrução visual entre parênteses em linha própria
-✅ [PAUSA] e [CORTE] em linhas próprias
-❌ NUNCA texto corrido ou parágrafo com 3+ frases sem quebra
-❌ NUNCA tag colada ao conteúdo na mesma linha
-`
-
-    // ─── 8. SANITIZAÇÃO DAS MENSAGENS ─────────────────────────────────────────
-    // Anthropic exige: começa com 'user', alterna user/assistant, sem conteúdo vazio
+    // ─── 8. SANITIZACAO DAS MENSAGENS ────────────────────────────────────────
     const sanitizedMessages: typeof messages = []
 
     for (const msg of messages) {
@@ -375,24 +353,23 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
       } else {
         const last = sanitizedMessages[sanitizedMessages.length - 1]
         if (last.role === msg.role) {
-          last.content += '\n\n' + msg.content // merge consecutivos
+          last.content += '\n\n' + msg.content
         } else {
           sanitizedMessages.push(msg)
         }
       }
     }
 
-    // Anthropic não aceita terminar com 'assistant'
     if (sanitizedMessages.length > 0 &&
       sanitizedMessages[sanitizedMessages.length - 1].role === 'assistant') {
       sanitizedMessages.pop()
     }
 
     if (sanitizedMessages.length === 0) {
-      throw new Error('Não há mensagens válidas para processar.')
+      throw new Error('Nao ha mensagens validas para processar.')
     }
 
-    // ─── 9. SELEÇÃO DE MODELOS COM FALLBACK ───────────────────────────────────
+    // ─── 9. SELECAO DE MODELOS COM FALLBACK ──────────────────────────────────
     if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
       throw new Error('Nenhuma chave de API de IA configurada no servidor.')
     }
@@ -400,13 +377,11 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
     const fallbackModels: any[] = []
 
     if (mode === 'premium' || mode === 'search') {
-      // Premium: Claude primeiro (melhor qualidade de roteiro), depois fallbacks
       if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-sonnet-4-6-20250514'))
       if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o'))
       if (process.env.GEMINI_API_KEY) fallbackModels.push(google('gemini-2.0-flash'))
       if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o-mini'))
     } else {
-      // Fast/free: modelos rápidos e baratos
       if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o-mini'))
       if (process.env.GEMINI_API_KEY) fallbackModels.push(google('gemini-2.0-flash'))
       if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-haiku-4-5-20251001'))
@@ -416,7 +391,7 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
       throw new Error('Nenhum provedor de IA configurado no servidor.')
     }
 
-    // ─── 10. STREAM COM FALLBACK AUTOMÁTICO ───────────────────────────────────
+    // ─── 10. STREAM COM FALLBACK AUTOMATICO ──────────────────────────────────
     const customStream = new ReadableStream({
       async start(controller) {
         let success = false
@@ -432,11 +407,8 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
               system: systemPrompt,
               messages: sanitizedMessages,
               maxRetries: 0,
-              // Prompt caching para Anthropic (economiza ~90% no input após 1ª chamada)
               experimental_providerMetadata: {
-                anthropic: {
-                  cacheControl: { type: 'ephemeral' }
-                }
+                anthropic: { cacheControl: { type: 'ephemeral' } }
               }
             })
 
@@ -453,15 +425,12 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
             break
 
           } catch (err: any) {
-            console.warn(`[AI FALLBACK] Falha no provedor ${i} (${selectedModel.modelId ?? 'unknown'}):`, err?.message)
+            console.warn('[AI FALLBACK] Provedor ' + i + ' falhou:', err?.message)
             lastError = err
 
-            // Se falhou no meio do stream, avisa o usuário e para
             if (fullGeneratedText.length > 0) {
               controller.enqueue(
-                new TextEncoder().encode(
-                  '\n\n[ERRO DE CONEXÃO]\nA IA desconectou antes de terminar. Por favor, tente novamente.'
-                )
+                new TextEncoder().encode('\n\n[ERRO DE CONEXAO]\nA IA desconectou antes de terminar. Tente novamente.')
               )
               success = true
               break
@@ -469,17 +438,16 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
           }
         }
 
-        // Todos os provedores falharam
         if (!success) {
           console.error('[TODOS OS PROVEDORES FALHARAM]', lastError)
           controller.enqueue(
             new TextEncoder().encode(
-              '[ROTEIRO_FINAL]\nTÍTULO: Servidores sobrecarregados\n\n[GANCHO]\n❌ Estamos com alta demanda agora. Aguarde 1-2 minutos e tente novamente.'
+              '[ROTEIRO_FINAL]\nTITULO: Servidores sobrecarregados\n\n[GANCHO]\nAlta demanda agora. Aguarde 1-2 minutos e tente novamente.'
             )
           )
         }
 
-        // ─── 11. PÓS-GERAÇÃO: débito de crédito + salvar no banco ─────────────
+        // ─── 11. POS-GERACAO: credito + salvar ───────────────────────────────
         if (success && fullGeneratedText.includes('[ROTEIRO_FINAL]') && mode !== 'analyze') {
           try {
             const adminSupabase = createClient(
@@ -487,7 +455,6 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
               process.env.SUPABASE_SERVICE_ROLE_KEY!
             )
 
-            // Débito de crédito premium
             if (mode === 'premium' || mode === 'search') {
               const { data: credits, error: creditErr } = await adminSupabase
                 .from('creditos_mensais')
@@ -503,7 +470,6 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
               }
             }
 
-            // Extrai título e corpo do roteiro para salvar limpo
             const parts = fullGeneratedText.split('[ROTEIRO_FINAL]')
             const scriptPart = parts.length > 1 ? parts[parts.length - 1] : fullGeneratedText
             const scriptLines = scriptPart.trim().split('\n')
@@ -514,9 +480,10 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
             const firstContentIdx = scriptLines.findIndex((line: string) => line.trim() !== '')
             if (firstContentIdx !== -1) {
               const firstLine = scriptLines[firstContentIdx].trim()
-              if (firstLine.toUpperCase().includes('TÍTULO:') || !firstLine.startsWith('[')) {
+              if (firstLine.toUpperCase().includes('TITULO:') || !firstLine.startsWith('[')) {
                 title = firstLine
                   .replace(/TÍTULO:/i, '')
+                  .replace(/TITULO:/i, '')
                   .replace(/\*\*/g, '')
                   .replace(/^#+\s*/, '')
                   .substring(0, 100)
