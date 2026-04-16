@@ -1,6 +1,7 @@
 import { streamText, embed } from 'ai'
 import { openai } from '@ai-sdk/openai'
 import { anthropic } from '@ai-sdk/anthropic'
+import { google } from '@ai-sdk/google'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { FORMATOS_VIRAIS_PROMPTS } from '@/lib/prompts/formatos_virais'
 import { ROTEIRISTA_PRO_SKILL, CONTEXTO_CRIADOR } from './pro-context'
@@ -181,12 +182,16 @@ Se a estrutura pedir 3 blocos, seu roteiro terá exatamente 3 blocos. Se pedir 4
               body: JSON.stringify({ q: topic }),
               signal: controller.signal
             }),
-            new Promise((_, reject) => setTimeout(() => reject(new Error("Serper timeout absoluto")), 3500))
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Serper network timeout absoluto")), 3500))
           ]) as any;
-          
+
+          const sData = await Promise.race([
+            sRes.json(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error("Serper body timeout absoluto")), 2000))
+          ]) as any;
+
           clearTimeout(timeoutId)
-          const sData = await sRes.json()
-          if (sData.organic && sData.organic.length > 0) {
+          if (sData && sData.organic && sData.organic.length > 0) {
             const facts = sData.organic.slice(0, 4).map((r: any) => `- ${r.title}: ${r.snippet}`).join('\n')
             serperContext = `
 [INFORMAÇÕES EM TEMPO REAL DA INTERNET MUNDIAL (GROUNDING / ANTI-ALUCINAÇÃO)]
@@ -321,86 +326,128 @@ INSTRUÇÕES FINAIS: Nunca responda fora desta formatação estrita. Nunca conve
       sanitizedMessages.pop()
     }
 
-    // Fallback to OpenAI gpt-4o-mini by default
-    let selectedModel = openai('gpt-4o-mini')
-
-    if (mode === 'premium' || mode === 'search') {
-      if (process.env.ANTHROPIC_API_KEY) {
-        selectedModel = anthropic('claude-3-5-sonnet-20241022') as any
-      } else {
-        console.warn("Aviso: Chave ANTHROPIC_API_KEY ausente. Usando OpenAI como fallback para o modo Premium/Search.")
-      }
+    if (sanitizedMessages.length === 0) {
+      throw new Error("Não há mensagens válidas para processar.");
     }
 
-    // Stream out
-    const result = streamText({
-      model: selectedModel,
-      system: systemPrompt,
-      messages: sanitizedMessages,
-      onFinish: async ({ text }) => {
-        // Only save to DB and deduct exact credits if the AI actually generated the final script!
-        if (!text.includes('[ROTEIRO_FINAL]') && mode !== 'analyze') {
-          return;
-        }
+    // Configuração do Fallback Estratégico de IAs Invisível ao Usuário
+    const fallbackModels: any[] = [];
+    if (mode === 'premium' || mode === 'search') {
+      if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-3-5-sonnet') as any);
+      if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o'));
+      if (process.env.GEMINI_API_KEY) fallbackModels.push(google('gemini-2.0-flash'));
+      if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o-mini'));
+    } else {
+      if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o-mini'));
+      if (process.env.GEMINI_API_KEY) fallbackModels.push(google('gemini-2.0-flash'));
+    }
 
-        try {
-           const adminSupabase = createClient(
-             process.env.NEXT_PUBLIC_SUPABASE_URL!,
-             process.env.SUPABASE_SERVICE_ROLE_KEY!
-           )
-           
-           // Deduct Premium/Search Credit right at the end!
-           if (mode === 'premium' || mode === 'search') {
-              const { data: credits, error: creditErr } = await adminSupabase
-                .from('creditos_mensais')
-                .select('*')
-                .eq('user_id', user.id)
-                .single()
+    if (fallbackModels.length === 0) {
+      throw new Error("Nenhum provedor de Inteligência Artificial configurado no servidor.");
+    }
 
-              if (!creditErr && credits && (credits.credits_total - credits.credits_used) >= 1) {
-                await adminSupabase
-                  .from('creditos_mensais')
-                  .update({ credits_used: credits.credits_used + 1 })
-                  .eq('id', credits.id)
+    const customStream = new ReadableStream({
+      async start(controller) {
+        let success = false;
+        let lastError: any = null;
+        let fullGeneratedText = "";
+
+        for (let i = 0; i < fallbackModels.length; i++) {
+           const selectedModel = fallbackModels[i];
+           try {
+              const result = streamText({
+                model: selectedModel,
+                system: systemPrompt,
+                messages: sanitizedMessages,
+                maxRetries: 0 // Não perca tempo, pule pro próximo provedor se falhar!
+              });
+
+              let hasStarted = false;
+              for await (const chunk of result.textStream) {
+                 hasStarted = true;
+                 fullGeneratedText += chunk;
+                 controller.enqueue(new TextEncoder().encode(chunk));
+              }
+
+              if (fullGeneratedText.trim() === '') {
+                 throw new Error("A IA processou o stream mas não retornou nenhum texto.");
+              }
+
+              success = true;
+              break; // Sai do loop após gerar com sucesso!
+           } catch (err: any) {
+              console.warn(`[AI FALLBACK] Falha no provedor índice ${i}. Tentando próximo...`, err?.message);
+              lastError = err;
+              
+              if (fullGeneratedText.length > 0) {
+                 // A IA falhou no meio da digitação.
+                 controller.enqueue(new TextEncoder().encode(`\n\n[ERRO DE CONEXÃO NO MEIO DA GERAÇÃO]\nInfelizmente a Inteligência Artificial desconectou antes de terminar o roteiro. Por favor, tente gerá-lo novamente.`));
+                 success = true; // Impede a mensagem genérica de sobrescrever.
+                 break; 
               }
            }
-
-           // Clean Output: Descartar [THINKING] e remover título do corpo do texto
-           const parts = text.split('[ROTEIRO_FINAL]')
-           const scriptPart = parts.length > 1 ? parts[parts.length - 1] : text
-           const scriptLines = scriptPart.trim().split('\n')
-           
-           let title = 'Roteiro Gerado'
-           let finalScript = scriptPart.trim()
-           
-           // Acha a primeira linha real de conteúdo
-           const firstContentLineIndex = scriptLines.findIndex(line => line.trim() !== '')
-           if (firstContentLineIndex !== -1) {
-             const firstLine = scriptLines[firstContentLineIndex].trim()
-             
-             // Se a IA mandou com TÍTULO: ou não tem colchete (não é um bloco), assumimos que é o título
-             if (firstLine.toUpperCase().includes('TÍTULO:') || !firstLine.startsWith('[')) {
-                title = firstLine.replace(/TÍTULO:/i, '').replace(/\*\*/g, '').replace(/^#+\s*/, '').substring(0, 100).trim() || 'Roteiro Gerado'
-                // Remove essa linha pra não poluir os blocos
-                scriptLines.splice(0, firstContentLineIndex + 1)
-                finalScript = scriptLines.join('\n').trim()
-             }
-           }
-           
-           await adminSupabase.from('roteiros').insert({
-             user_id: user.id,
-             roteiro: finalScript,
-             titulo: title,
-             nicho: null,
-             formato_nome: formatTitle
-           })
-        } catch (e) {
-          console.error('[ON_FINISH_SAVE_ERROR]', e)
         }
-      }
-    })
 
-    return result.toTextStreamResponse({
+        if (!success && fullGeneratedText === '') {
+           console.error('[TODAS AS IAS DE BACKUP FALHARAM]', lastError);
+           const errorMsg = `\n\n[ROTEIRO_FINAL]\nTÍTULO: Servidores Congestionados\n\n[GANCHO]\n❌ **Atenção:** Estamos enfrentando uma alta demanda e os 3 datacenters originais e de backup falharam.\nO problema foi registrado pelos engenheiros.\n\nPor favor, aguarde cerca de 1 a 2 minutos e tente gerar novamente.`;
+           controller.enqueue(new TextEncoder().encode(errorMsg));
+        } else if (success && fullGeneratedText.includes('[ROTEIRO_FINAL]') && mode !== 'analyze') {
+           // -------- SALVAR NO BANCO SOMENTE O TEXTO DO PROVEDOR DE SUCESSO --------
+           try {
+               const adminSupabase = createClient(
+                 process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                 process.env.SUPABASE_SERVICE_ROLE_KEY!
+               )
+               
+               if (mode === 'premium' || mode === 'search') {
+                  const { data: credits, error: creditErr } = await adminSupabase
+                    .from('creditos_mensais')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .single()
+
+                  if (!creditErr && credits && (credits.credits_total - credits.credits_used) >= 1) {
+                    await adminSupabase
+                      .from('creditos_mensais')
+                      .update({ credits_used: credits.credits_used + 1 })
+                      .eq('id', credits.id)
+                  }
+               }
+
+               const parts = fullGeneratedText.split('[ROTEIRO_FINAL]')
+               const scriptPart = parts.length > 1 ? parts[parts.length - 1] : fullGeneratedText
+               const scriptLines = scriptPart.trim().split('\n')
+               
+               let title = 'Roteiro Gerado'
+               let finalScript = scriptPart.trim()
+               
+               const firstContentLineIndex = scriptLines.findIndex((line: string) => line.trim() !== '')
+               if (firstContentLineIndex !== -1) {
+                 const firstLine = scriptLines[firstContentLineIndex].trim()
+                 if (firstLine.toUpperCase().includes('TÍTULO:') || !firstLine.startsWith('[')) {
+                    title = firstLine.replace(/TÍTULO:/i, '').replace(/\*\*/g, '').replace(/^#+\s*/, '').substring(0, 100).trim() || 'Roteiro Gerado'
+                    scriptLines.splice(0, firstContentLineIndex + 1)
+                    finalScript = scriptLines.join('\n').trim()
+                 }
+               }
+               
+               await adminSupabase.from('roteiros').insert({
+                 user_id: user.id,
+                 roteiro: finalScript,
+                 titulo: title,
+                 nicho: null,
+                 formato_nome: formatTitle
+               })
+           } catch (dbErr) {
+              console.error('[ON_FINISH_SAVE_ERROR]', dbErr)
+           }
+        }
+        controller.close();
+      }
+    });
+
+    return new Response(customStream, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
