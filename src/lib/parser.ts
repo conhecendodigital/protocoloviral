@@ -297,6 +297,9 @@ function extractTime(blockText: string): number {
 
 function stripBlockMeta(blockText: string): string {
   return blockText
+    .replace(/\[THINKING\][\s\S]*?\[\/THINKING\]/gi, '')
+    .replace(/\[METADADOS[^\]]*\]/gi, '')
+    .replace(/\[\/?(?:GANCHO|DESENVOLVIMENTO|CTA E FINAL|CTA|THINKING)\]/gi, '')
     .replace(/🎤\s*.+/g, '')
     .replace(/⏱\s*\d+\s*s/gi, '')
     .replace(/\n{3,}/g, '\n\n')

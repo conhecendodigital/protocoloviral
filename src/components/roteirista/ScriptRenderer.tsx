@@ -95,9 +95,15 @@ export function ScriptRenderer({ content, isUnlocked, isGenerating, onSave }: Sc
 
   // Se o parser não achou as tags exatas do modelo visual
   if (!parsed || (!parsed.gancho && !parsed.desenvolvimento && !parsed.cta)) {
+    const sanitized = content
+      .replace(/\[THINKING\][\s\S]*?\[\/THINKING\]/gi, '')
+      .replace(/\[METADADOS[^\]]*\]/gi, '')
+      .replace(/🎤\s*.+/gm, '')
+      .replace(/⏱\s*\d+\s*s/gi, '')
+      .trim();
     return (
-      <div className="prose prose-sm dark:prose-invert max-w-none [&_p]:text-[13px] [&_p]:leading-relaxed">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+      <div className="prose prose-sm dark:prose-invert max-w-none [&_p]:text-[15px] [&_p]:leading-relaxed">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{sanitized}</ReactMarkdown>
       </div>
     )
   }

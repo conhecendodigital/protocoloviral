@@ -1,12 +1,19 @@
 import type { Metadata } from "next"
-import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
+import { Inter, Bricolage_Grotesque, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const plusJakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+})
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
   weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 })
 
 const jetbrainsMono = JetBrains_Mono({
@@ -35,7 +42,7 @@ export default function RootLayout({
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
-      <body className={`${plusJakarta.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}
         </ThemeProvider>
