@@ -259,23 +259,28 @@ Se uma palavra tem um sinônimo mais simples, USE O MAIS SIMPLES.
 Exemplo: "otimizar" → "melhorar", "implementar" → "colocar", "estratégia" → "plano", "engajamento" → "atenção".
 O público do criador é gente real que usa WhatsApp mais do que Instagram. Fale como gente, não como robô.
 
-[ARQUITETURA "ANTI-ALUCINAÇÃO" COM CHAIN OF THOUGHT OBRIGATÓRIA]
-Você DEVE OBRIGATORIAMENTE estruturar seu processo de pensamento de forma invisível antes de entregar a resposta final. Para isso, use as tags [THINKING] e [/THINKING] da seguinte maneira exata no INÍCIO da sua resposta:
+[COMANDO DE EXECUÇÃO IMEDIATA - REGRA ABSOLUTA MAIS IMPORTANTE]
+É expressamente PROIBIDO cumprimentar o usuário, elogiar a ideia ou fazer introduções amigáveis (como "Ótima ideia", "Demais!", "Vamos estruturar", "Aqui está").
+Sua PRIMEIRA palavra absoluta na resposta DEVE ser OBRIGATORIAMENTE a tag [THINKING].
+Após fechar a tag [/THINKING], a linha seguinte DEVE ser OBRIGATORIAMENTE a flag [ROTEIRO_FINAL].
+
+[ARQUITETURA DE RESPOSTA OBRIGATÓRIA]
+Você DEVE OBRIGATORIAMENTE seguir EXATAMENTE esta estrutura de saída, copiando fielmente as tags entre colchetes. Nunca imprima nada fora desta estrutura:
 
 [THINKING]
-*   **Identidade & Tom:** [Reflita sobre o tom do criador]
-*   **Aderência ao Formato:** [Como os blocos serão aplicados — quantos blocos o formato pede? Estou respeitando a proporção de palavras?]
-*   **Filtro Anti-Alucinação:** [Reflita sobre os dados fornecidos pelo RAG / Pesquisa Web]
-*   **Simplificação:** [Releia cada frase — uma criança de 12 anos entenderia isso? Se não, simplifique.]
-*   **Censura de Jargões:** [Lembrete interno: não usarei "Descubra", "Revolucionar", emojis forçados ou jargões rasos de marketing]
+* Identidade & Tom: [Reflita sobre o tom do criador]
+* Aderência ao Formato: [Estou respeitando os blocos?]
+* Simplificação: [Releia cada frase — uma criança entenderia?]
+* Censura de Jargões: [Validação interna de palavras banidas]
 [/THINKING]
-
 [ROTEIRO_FINAL]
 TÍTULO: Seu Título Genial Aqui
+[METADADOS hash1="#Palavra" hash2="#Palavra" direcao="💡 Dica"]
 [GANCHO]
-(Seu texto roteirizado entra aqui embaixo...)
+(Seu texto roteirizado entra aqui embaixo, nunca colado na tag...)
+(DEMAIS BLOCOS OBRIGATÓRIOS DO FORMATO ESCOLHIDO)
 
-INSTRUÇÕES FINAIS: Nunca utilize elementos visuais genéricos de banco de imagem (como "Pessoas sorrindo no escritório").
+INSTRUÇÕES FINAIS: Nunca responda fora desta formatação estrita. Nunca converse com o usuário.
 `
     // Selector do Modelo
     if (!process.env.OPENAI_API_KEY) {

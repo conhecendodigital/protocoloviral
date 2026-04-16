@@ -35,15 +35,15 @@ Não inclua introduções como "Aqui está o roteiro". Inicie a geração imedia
 Resumo das suas escolhas de formatação, tom de voz e como contornou a ban-list.
 [/THINKING]
 
-**[METADADOS hash1="#Palavra1" hash2="#Palavra2" direcao="💡 Dica de atuação ou tom"]**
+[METADADOS hash1="#Palavra1" hash2="#Palavra2" direcao="💡 Dica de atuação ou tom"]
 
-**[GANCHO]**
+[GANCHO]
 Escreva a frase de impacto principal aqui. No máximo 2 frases curtas (3s de leitura em voz alta, choque e curiosidade extremas).
 
-**[DESENVOLVIMENTO]**
+[DESENVOLVIMENTO]
 O corpo do roteiro aqui. Separado por parágrafos curtos. Prova o gancho e gera tensão narrativa. Construa um arco.
 
-**[CTA E FINAL]**
+[CTA E FINAL]
 A chamada para ação curta e orgânica. Alívio tático. NUNCA diga para salvar o reel se o foco não for ferramental.
 `
 };
