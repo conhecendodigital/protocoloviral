@@ -333,7 +333,7 @@ INSTRUÇÕES FINAIS: Nunca responda fora desta formatação estrita. Nunca conve
     // Configuração do Fallback Estratégico de IAs Invisível ao Usuário
     const fallbackModels: any[] = [];
     if (mode === 'premium' || mode === 'search') {
-      if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-4-6-sonnet') as any);
+      if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-3-5-sonnet-20241022') as any);
       if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o'));
       if (process.env.GEMINI_API_KEY) fallbackModels.push(google('gemini-2.0-flash'));
       if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o-mini'));
