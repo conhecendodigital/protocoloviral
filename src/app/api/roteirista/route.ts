@@ -99,7 +99,7 @@ export async function POST(req: Request) {
 
       baseSystemPrompt = [
         '============ ROTEIRISTA PRO — DIRETRIZES COMPLETAS ============',
-        ROTEIRISTA_PRO_SKILL,
+        ROTEIRISTA_PRO_SKILL.value,
         '',
         userContext,
       ].join('\n')

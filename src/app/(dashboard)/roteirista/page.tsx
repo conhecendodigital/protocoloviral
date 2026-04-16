@@ -543,11 +543,6 @@ function RoteiristaContent() {
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                     )}
                     {msg.format && <span className="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50 font-medium">{msg.format}</span>}
-                    {msg.role === 'assistant' && (
-                      <button onClick={() => navigator.clipboard.writeText(msg.content)} className="absolute -bottom-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-black/80 border border-white/10 hover:bg-white/10" title="Copiar">
-                        <span className="material-symbols-outlined text-white/60 text-xs">content_copy</span>
-                      </button>
-                    )}
                   </div>
                 </motion.div>
               ))}

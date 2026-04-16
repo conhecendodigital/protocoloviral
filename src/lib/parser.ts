@@ -258,7 +258,13 @@ export function parsePersona(text: string | null | undefined): PersonaParsed | n
   }
 }
 
-// ─── Roteiro Visual Parser ──────────────────────────────────
+// ─── Roteiro Visual Parser (PandaBay-Style) ─────────────────
+
+export interface BlockMeta {
+  text: string;
+  direction: string;
+  timeSeconds: number;
+}
 
 export interface RoteiroBlocks {
   titulo: string;
@@ -268,28 +274,58 @@ export interface RoteiroBlocks {
     direcao?: string;
   };
   gancho: string;
+  ganchoMeta?: BlockMeta;
   desenvolvimento: string;
+  desenvolvimentoMeta?: BlockMeta;
   cta: string;
+  ctaMeta?: BlockMeta;
+  totalTimeSeconds: number;
+  totalWords: number;
+  wordsPerSecond: number;
+  totalSections: number;
 }
 
-/**
- * Lê um texto que contém as marcações de roteiro [GANCHO], [DESENVOLVIMENTO] e [CTA E FINAL]
- * E retorna a divisão ou null caso não esteja formatado corretamente.
- */
+function extractDirection(blockText: string): string {
+  const match = blockText.match(/🎤\s*(.+)/);
+  return match ? match[1].trim() : '';
+}
+
+function extractTime(blockText: string): number {
+  const match = blockText.match(/⏱\s*(\d+)\s*s/i);
+  return match ? parseInt(match[1]) : 0;
+}
+
+function stripBlockMeta(blockText: string): string {
+  return blockText
+    .replace(/🎤\s*.+/g, '')
+    .replace(/⏱\s*\d+\s*s/gi, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function countWords(text: string): number {
+  if (!text) return 0;
+  const clean = text
+    .replace(/\[.*?\]/g, '')
+    .replace(/🎤\s*.+/g, '')
+    .replace(/⏱\s*\d+\s*s/gi, '')
+    .replace(/\*\*/g, '')
+    .replace(/["""""]/g, '')
+    .trim();
+  return clean.split(/\s+/).filter(w => w.length > 0).length;
+}
+
 export function parseRoteiroBlocks(text: string): RoteiroBlocks | null {
   if (!text) return null;
 
-  // Busca o título - a primeira linha com **
-  const lines = text.split('\\n');
+  const lines = text.split('\n');
   let titulo = '';
   if (lines[0] && lines[0].includes('**')) {
-    titulo = lines[0].replace(/\\*\\*/g, '').trim();
+    titulo = lines[0].replace(/\*\*/g, '').trim();
   } else {
-    // Tenta pegar a primeira linha sem estar vazia
-    titulo = lines.find(l => l.trim().length > 0 && !l.includes('[GANCHO]'))?.replace(/\\*\\*/g, '').trim() || 'Roteiro';
+    titulo = lines.find(l => l.trim().length > 0 && !l.includes('[GANCHO]'))?.replace(/\*\*/g, '').trim() || 'Roteiro';
   }
 
-  // Regex para achar os blocos (tratando negrito opcional e espaços)
   const regexMetadata = /(?:\*\*)?\[METADADOS(.*?)\](?:\*\*)?/i;
   const regexGancho = /(?:\*\*)?\[GANCHO\](?:\*\*)?[\s\S]*?(?=(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?)/i;
   const regexDev = /(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?[\s\S]*?(?=(?:\*\*)?\[CTA E FINAL\](?:\*\*)?|$)/i;
@@ -302,70 +338,101 @@ export function parseRoteiroBlocks(text: string): RoteiroBlocks | null {
 
   let metadata;
   if (mMetadata && mMetadata[1]) {
-     const metaString = mMetadata[1];
-     const hash1Match = metaString.match(/hash1="([^"]+)"/);
-     const hash2Match = metaString.match(/hash2="([^"]+)"/);
-     const direcaoMatch = metaString.match(/direcao="([^"]+)"/);
-     metadata = {
-       hash1: hash1Match ? hash1Match[1] : undefined,
-       hash2: hash2Match ? hash2Match[1] : undefined,
-       direcao: direcaoMatch ? direcaoMatch[1] : undefined,
-     };
+    const metaString = mMetadata[1];
+    const hash1Match = metaString.match(/hash1="([^"]+)"/);
+    const hash2Match = metaString.match(/hash2="([^"]+)"/);
+    const direcaoMatch = metaString.match(/direcao="([^"]+)"/);
+    metadata = {
+      hash1: hash1Match ? hash1Match[1] : undefined,
+      hash2: hash2Match ? hash2Match[1] : undefined,
+      direcao: direcaoMatch ? direcaoMatch[1] : undefined,
+    };
   }
 
   if (!mGancho && !mDev) {
-    // FALLBACK HEURÍSTICO P/ ROTEIRO ORIGINAL SCRAPEADO (Sem Tags)
     let cleanText = text.replace(titulo, '').trim();
     if (!cleanText) cleanText = text.trim();
 
     const firstPuncResult = cleanText.match(/[.?!]+[\s\n]+/);
-    if (!firstPuncResult) return null; // Sem pontuação, sem divisão
+    if (!firstPuncResult) return null;
 
     let ganchoEndIndex = firstPuncResult.index! + firstPuncResult[0].length;
-    
-    // Se o gancho for curto (ex: Oi! / Você viu?), pegue a segunda frase para dar mais contexto
+
     if (ganchoEndIndex < 80) {
       const secondTarget = cleanText.substring(ganchoEndIndex).match(/[.?!]+[\s\n]+/);
       if (secondTarget) {
-         ganchoEndIndex += secondTarget.index! + secondTarget[0].length;
+        ganchoEndIndex += secondTarget.index! + secondTarget[0].length;
       }
     }
 
     const gancho = cleanText.substring(0, ganchoEndIndex).trim();
-
     const reversedTokens = cleanText.match(/[^.?!]+[.?!]+(?:[\s\n]|$)/g);
     let cta = '';
     let ctaLength = 0;
-    
-    // Pegar as duas últimas frases para formar o CTA (evitar falas curtas cortadas como "Tchau.")
+
     if (reversedTokens && reversedTokens.length >= 6) {
-       cta = reversedTokens[reversedTokens.length - 2].trim() + ' ' + reversedTokens[reversedTokens.length - 1].trim();
-       ctaLength = reversedTokens[reversedTokens.length - 2].length + reversedTokens[reversedTokens.length - 1].length;
+      cta = reversedTokens[reversedTokens.length - 2].trim() + ' ' + reversedTokens[reversedTokens.length - 1].trim();
+      ctaLength = reversedTokens[reversedTokens.length - 2].length + reversedTokens[reversedTokens.length - 1].length;
     } else if (reversedTokens && reversedTokens.length >= 4) {
-       cta = reversedTokens[reversedTokens.length - 1].trim();
-       ctaLength = reversedTokens[reversedTokens.length - 1].length;
+      cta = reversedTokens[reversedTokens.length - 1].trim();
+      ctaLength = reversedTokens[reversedTokens.length - 1].length;
     }
 
-    const devStart = ganchoEndIndex;
-    const devEnd = cleanText.length - ctaLength;
-    const desenvolvimento = cleanText.substring(devStart, devEnd).trim();
+    const desenvolvimento = cleanText.substring(ganchoEndIndex, cleanText.length - ctaLength).trim();
+    const totalWords = countWords(gancho + ' ' + desenvolvimento + ' ' + cta);
+    const estimatedTime = Math.round(totalWords / 2.5);
 
     return {
       titulo,
       gancho,
       desenvolvimento,
-      cta
+      cta,
+      totalTimeSeconds: estimatedTime,
+      totalWords,
+      wordsPerSecond: totalWords > 0 && estimatedTime > 0 ? parseFloat((totalWords / estimatedTime).toFixed(1)) : 2.5,
+      totalSections: 3,
     }
   }
 
-  const pureText = (blockMatch: RegExpMatchArray | null, tagName: RegExp) => 
+  const rawPureText = (blockMatch: RegExpMatchArray | null, tagName: RegExp) =>
     blockMatch ? blockMatch[0].replace(tagName, '').replace(/\*\*/g, '').trim() : '';
+
+  const rawGancho = rawPureText(mGancho, /(?:\*\*)?\[GANCHO\](?:\*\*)?/i);
+  const rawDev = rawPureText(mDev, /(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?/i);
+  const rawCta = rawPureText(mCta, /(?:\*\*)?\[CTA E FINAL\](?:\*\*)?/i);
+
+  const ganchoMeta: BlockMeta = {
+    text: stripBlockMeta(rawGancho),
+    direction: extractDirection(rawGancho),
+    timeSeconds: extractTime(rawGancho),
+  };
+  const devMeta: BlockMeta = {
+    text: stripBlockMeta(rawDev),
+    direction: extractDirection(rawDev),
+    timeSeconds: extractTime(rawDev),
+  };
+  const ctaMeta: BlockMeta = {
+    text: stripBlockMeta(rawCta),
+    direction: extractDirection(rawCta),
+    timeSeconds: extractTime(rawCta),
+  };
+
+  const totalTime = ganchoMeta.timeSeconds + devMeta.timeSeconds + ctaMeta.timeSeconds;
+  const totalWords = countWords(ganchoMeta.text + ' ' + devMeta.text + ' ' + ctaMeta.text);
 
   return {
     titulo,
     metadata,
-    gancho: pureText(mGancho, /(?:\*\*)?\[GANCHO\](?:\*\*)?/i),
-    desenvolvimento: pureText(mDev, /(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?/i),
-    cta: pureText(mCta, /(?:\*\*)?\[CTA E FINAL\](?:\*\*)?/i),
+    gancho: ganchoMeta.text,
+    ganchoMeta,
+    desenvolvimento: devMeta.text,
+    desenvolvimentoMeta: devMeta,
+    cta: ctaMeta.text,
+    ctaMeta,
+    totalTimeSeconds: totalTime > 0 ? totalTime : Math.round(totalWords / 2.5),
+    totalWords,
+    wordsPerSecond: totalWords > 0 && totalTime > 0 ? parseFloat((totalWords / totalTime).toFixed(1)) : 2.5,
+    totalSections: 3,
   };
 }
+

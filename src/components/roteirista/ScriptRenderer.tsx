@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react'
-import { parseRoteiroBlocks } from '@/lib/parser'
+import React, { useMemo, useState } from 'react'
+import { parseRoteiroBlocks, BlockMeta } from '@/lib/parser'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
@@ -7,14 +7,93 @@ import Link from 'next/link'
 interface ScriptRendererProps {
   content: string;
   isUnlocked: boolean; 
-  isGenerating?: boolean; 
+  isGenerating?: boolean;
+  onSave?: () => void;
 }
 
-export function ScriptRenderer({ content, isUnlocked, isGenerating }: ScriptRendererProps) {
-  const parsed = useMemo(() => parseRoteiroBlocks(content), [content]);
+// ─── Single Block Component (PandaBay-Style) ───────────────
+function ScriptBlock({ 
+  type, 
+  emoji, 
+  text, 
+  meta, 
+  isLocked = false, 
+  colorClass = 'text-sky-500',
+  bgClass = 'bg-white dark:bg-white/5'
+}: { 
+  type: string; 
+  emoji: string; 
+  text: string; 
+  meta?: BlockMeta; 
+  isLocked?: boolean;
+  colorClass?: string;
+  bgClass?: string;
+}) {
+  return (
+    <div className={`relative border border-slate-200/80 dark:border-white/10 rounded-2xl overflow-hidden ${bgClass} shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-none transition-all hover:border-slate-300 dark:hover:border-white/15`}>
+      {/* Badge */}
+      <div className="flex items-center justify-center py-2">
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${colorClass} bg-current/[0.08]`}>
+          <span className="text-sm">{emoji}</span>
+          <span>{type}</span>
+        </span>
+      </div>
 
-  // Se o parser não achou as tags exatas do modelo visual (Ex: erro, conversa casual)
-  // ou ainda está carregando as tags
+      {/* Content */}
+      <div className={`px-5 sm:px-6 pb-4 ${isLocked ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
+        <div className="text-slate-800 dark:text-white/90 text-[16px] sm:text-[17px] leading-[1.8] font-medium whitespace-pre-wrap">
+          {text.split('\n').map((line, i) => {
+            const trimmed = line.trim();
+            if (!trimmed) return <br key={i} />;
+            // Strip quotes at start/end for cleaner display
+            const cleaned = trimmed.replace(/^[""]|[""]$/g, '');
+            return (
+              <p key={i} className="mb-1.5">
+                {cleaned}
+              </p>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Direction + Time */}
+      {meta && (meta.direction || meta.timeSeconds > 0) && (
+        <div className={`px-5 sm:px-6 pb-4 flex flex-col gap-2 ${isLocked ? 'blur-[6px] select-none pointer-events-none' : ''}`}>
+          {meta.direction && (
+            <div className="flex items-start gap-2 text-[13px] text-slate-500 dark:text-white/50">
+              <span className="text-base mt-0.5 shrink-0">🎤</span>
+              <span className="italic leading-relaxed">{meta.direction}</span>
+            </div>
+          )}
+          {meta.timeSeconds > 0 && (
+            <div className="flex items-center gap-1.5 text-[12px] text-slate-400 dark:text-white/40 font-medium tabular-nums">
+              <span className="text-sm">⏱</span>
+              <span>{meta.timeSeconds}s</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Locked Overlay */}
+      {isLocked && (
+        <div className="absolute inset-0 flex items-center justify-center z-10 bg-[#FFFCF5]/30 dark:bg-slate-900/30">
+          <Link href="/assinatura" className="group flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white shadow-xl shadow-amber-500/30 px-6 py-3 rounded-full font-bold text-xs transition-all transform hover:scale-105 hover:-translate-y-0.5">
+            <span className="material-symbols-outlined text-[16px]">lock</span>
+            Desbloquear conteúdo
+          </Link>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Main ScriptRenderer ───────────────────────────────────
+export function ScriptRenderer({ content, isUnlocked, isGenerating, onSave }: ScriptRendererProps) {
+  const parsed = useMemo(() => parseRoteiroBlocks(content), [content]);
+  const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  // Se o parser não achou as tags exatas do modelo visual
   if (!parsed || (!parsed.gancho && !parsed.desenvolvimento && !parsed.cta)) {
     return (
       <div className="prose prose-sm dark:prose-invert max-w-none [&_p]:text-[13px] [&_p]:leading-relaxed">
@@ -23,66 +102,154 @@ export function ScriptRenderer({ content, isUnlocked, isGenerating }: ScriptRend
     )
   }
 
-  // Extrair o Thinking Block customizado (se existir)
-  const thinkingMatch = content.match(/> 🧠 \*\*Ativando Raciocínio Profundo\.\.\.\*\*(.*?)\n\n/is);
-  const thinkingText = thinkingMatch ? thinkingMatch[0] : null;
+  const handleCopy = async () => {
+    const plainText = [
+      parsed.gancho,
+      parsed.desenvolvimento,
+      parsed.cta,
+    ].filter(Boolean).join('\n\n');
+    
+    try {
+      await navigator.clipboard.writeText(plainText);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = plainText;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-  // PandaBay Style Visual Blocks
+  const handleSave = () => {
+    setSaved(true);
+    if (onSave) onSave();
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const isDevLocked = !isUnlocked && parsed.desenvolvimento && parsed.desenvolvimento.length > 30;
+
   return (
-    <div className="flex flex-col gap-4 w-[28rem] sm:w-[36rem] max-w-full text-left bg-transparent font-sans">
+    <div className="flex flex-col gap-0 w-full max-w-2xl text-left bg-transparent font-sans">
       
-      {/* GANCHO MESTRE */}
-      {parsed.gancho && (
-        <div className="border-[1.5px] border-slate-200/80 dark:border-white/10 rounded-2xl p-5 sm:p-6 bg-[#FFFCF5] dark:bg-white/5 shadow-sm transition-all hover:border-[#0ea5e9]/40 hover:shadow-md">
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-             <span className="text-[10px] uppercase font-bold text-orange-500 tracking-widest bg-orange-500/10 px-2 py-1 rounded-md">Gancho Ativo</span>
-             {parsed.metadata?.hash1 && <span className="bg-[#1C2024] text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm">{parsed.metadata.hash1}</span>}
-             {parsed.metadata?.hash2 && <span className="bg-[#1C2024] text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm">{parsed.metadata.hash2}</span>}
-          </div>
-          <p className="text-slate-800 dark:text-white/90 text-[18px] leading-relaxed font-semibold">
-            {parsed.gancho}
-          </p>
-          {parsed.metadata?.direcao && (
-            <div className="mt-5 flex items-start gap-2 border-t border-slate-200/60 dark:border-white/5 pt-4 text-[13px] text-slate-500 dark:text-white/50 font-medium">
-               <span className="material-symbols-outlined text-[18px] text-amber-500">lightbulb</span>
-               <span>{parsed.metadata.direcao.replace('💡', '').trim()}</span>
-            </div>
+      {/* HEADER — Hashtags */}
+      {parsed.metadata && (parsed.metadata.hash1 || parsed.metadata.hash2) && (
+        <div className="flex flex-wrap items-center gap-2 mb-3 px-1">
+          {parsed.metadata.hash1 && (
+            <span className="bg-slate-900 dark:bg-white/10 text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm">{parsed.metadata.hash1}</span>
+          )}
+          {parsed.metadata.hash2 && (
+            <span className="bg-slate-900 dark:bg-white/10 text-white px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm">{parsed.metadata.hash2}</span>
           )}
         </div>
       )}
 
-      {/* PAYWALL / DESENVOLVIMENTO */}
-      <div className="relative">
-        <div className={`flex flex-col gap-4 transition-all duration-700 ease-in-out ${!isUnlocked && parsed.desenvolvimento && parsed.desenvolvimento.length > 30 ? 'blur-[6px] pointer-events-none select-none opacity-50 grayscale-[30%] pb-10' : ''}`}>
-          
-          {parsed.desenvolvimento && (
-            <div className="border-[1.5px] border-slate-200/80 dark:border-white/10 rounded-2xl p-5 sm:p-6 bg-white dark:bg-white/5 shadow-sm">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-4 block">Desenvolvimento (Corpo)</span>
-              <div className="prose prose-sm dark:prose-invert max-w-none text-slate-700 dark:text-white/80 [&_p]:text-[15px] [&_p]:leading-loose">
-                 <ReactMarkdown>{parsed.desenvolvimento}</ReactMarkdown>
-              </div>
-            </div>
-          )}
+      {/* === GANCHO BLOCK === */}
+      {parsed.gancho && (
+        <ScriptBlock
+          type="Hook"
+          emoji="🪝"
+          text={parsed.gancho}
+          meta={parsed.ganchoMeta}
+          colorClass="text-orange-500"
+          bgClass="bg-[#FFFCF5] dark:bg-white/5"
+        />
+      )}
 
-          {parsed.cta && (
-            <div className="border-[1.5px] border-slate-200/80 dark:border-white/10 rounded-2xl p-5 sm:p-6 bg-gradient-to-br from-[#0ea5e9]/[0.03] to-transparent">
-              <span className="text-[10px] uppercase font-bold text-[#0ea5e9] tracking-wider mb-3 block">Chamada para Ação</span>
-              <p className="text-slate-800 dark:text-white/90 text-[15px] font-medium leading-relaxed">{parsed.cta}</p>
-            </div>
-          )}
-        </div>
-
-        {/* PAYWALL OVERLAY BUTTON */}
-        {!isUnlocked && parsed.desenvolvimento && parsed.desenvolvimento.length > 30 && (
-          <div className="absolute inset-0 flex items-center justify-center z-10 pt-10">
-            <Link href="/assinatura" className="group flex items-center gap-2.5 bg-gradient-to-r from-blue-600 to-[#0ea5e9] hover:from-blue-500 hover:to-sky-400 text-white shadow-2xl shadow-[#0ea5e9]/40 px-8 py-4 rounded-full font-bold text-sm transition-all transform hover:scale-105 hover:-translate-y-1">
-              <span className="material-symbols-outlined text-[18px]">lock_open</span>
-              Desbloquear Roteiro Completo
-            </Link>
-          </div>
-        )}
+      {/* Connector dot */}
+      <div className="flex items-center justify-center py-1">
+        <div className="w-0.5 h-4 bg-slate-200 dark:bg-white/10 rounded-full" />
       </div>
 
+      {/* === DESENVOLVIMENTO BLOCK === */}
+      {parsed.desenvolvimento && (
+        <ScriptBlock
+          type="Desenvolvimento"
+          emoji="📝"
+          text={parsed.desenvolvimento}
+          meta={parsed.desenvolvimentoMeta}
+          isLocked={!!isDevLocked}
+          colorClass="text-sky-500"
+          bgClass="bg-white dark:bg-white/5"
+        />
+      )}
+
+      {/* Connector dot */}
+      <div className="flex items-center justify-center py-1">
+        <div className="w-0.5 h-4 bg-slate-200 dark:bg-white/10 rounded-full" />
+      </div>
+
+      {/* === CTA BLOCK === */}
+      {parsed.cta && (
+        <ScriptBlock
+          type="CTA"
+          emoji="📢"
+          text={parsed.cta}
+          meta={parsed.ctaMeta}
+          isLocked={!!isDevLocked}
+          colorClass="text-emerald-500"
+          bgClass="bg-gradient-to-br from-emerald-500/[0.03] to-transparent dark:from-emerald-500/[0.02]"
+        />
+      )}
+
+      {/* ═══ METRICS FOOTER BAR ═══ */}
+      {!isGenerating && (parsed.totalTimeSeconds > 0 || parsed.totalWords > 0) && (
+        <div className="mt-4 flex items-center justify-between gap-3 bg-slate-900 dark:bg-slate-800 rounded-xl px-4 py-2.5 text-white">
+          {/* Left — Metrics */}
+          <div className="flex items-center gap-4 text-[11px] font-medium text-white/70 tabular-nums">
+            {parsed.totalTimeSeconds > 0 && (
+              <span className="flex items-center gap-1">
+                <span className="text-sm">⏱</span>
+                {parsed.totalTimeSeconds}s
+              </span>
+            )}
+            {parsed.totalWords > 0 && (
+              <span className="flex items-center gap-1">
+                <span className="text-sm">📄</span>
+                {parsed.totalWords}
+              </span>
+            )}
+            {parsed.wordsPerSecond > 0 && (
+              <span className="flex items-center gap-1 text-white/50">
+                {parsed.wordsPerSecond} p/s
+              </span>
+            )}
+          </div>
+
+          {/* Right — Actions */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/20 hover:bg-white/10 text-white/80 hover:text-white transition-all"
+            >
+              <span className="material-symbols-outlined text-[14px]">
+                {copied ? 'check' : 'content_copy'}
+              </span>
+              {copied ? 'Copiado!' : 'Copiar roteiro'}
+            </button>
+
+            {isUnlocked && (
+              <button
+                onClick={handleSave}
+                className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-all ${
+                  saved 
+                    ? 'bg-emerald-500 text-white' 
+                    : 'bg-white/10 hover:bg-white/20 text-white/80 hover:text-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[14px]">
+                  {saved ? 'check' : 'favorite'}
+                </span>
+                {saved ? 'Salvo!' : 'Gostei, salvar'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
