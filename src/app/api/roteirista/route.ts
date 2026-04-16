@@ -243,8 +243,8 @@ exigem habilidade excepcional de apresentação — a plataforma não garante es
           if (sData?.organic?.length > 0) {
             const facts = sData.organic
               .slice(0, 4)
-              .map((r: any) => `- ${r.title}: ${r.snippet}`)
-              .join('\n')
+              .map((r: any) => { return `\n- ${r.title}: ${r.snippet}` })
+              .join('')
 
             serperContext = `
 [FATOS REAIS DA INTERNET — USE PARA EMBASAR O ROTEIRO]
