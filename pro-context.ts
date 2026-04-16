@@ -106,35 +106,69 @@ DESENVOLVIMENTO:
 ❌ NUNCA linguagem acadêmica ou jargão corporativo
 
 CTA:
-✅ Sempre integrado: "Salva esse vídeo porque você vai precisar semana que vem."
+✅ MÁXIMO 3 LINHAS — regra mais importante do CTA
+✅ A pessoa já decidiu agir — não explique o que ela já entendeu
+✅ Modelo ideal: [ação] + [o que recebe] + [como fazer]
+   Exemplo: "Comenta CLAUDE aqui. Eu mando no direct os comandos que uso pra criar 30 roteiros em uma tarde."
 ✅ Um CTA por vídeo — dois dilui os dois
 ✅ Escolha baseada no objetivo: seguir / salvar / comentar / compartilhar
+❌ NUNCA mais de 3 linhas — cada linha extra é uma pessoa que saiu do vídeo
+❌ NUNCA reexplique o vídeo no CTA — ela já assistiu, ela já sabe
 ❌ NUNCA "me segue" solto sem contexto
 
 ================================================================
-LIMITE DE TAMANHO POR ARQUÉTIPO — REGRA ABSOLUTA
+LIMITE DE TAMANHO POR ARQUÉTIPO — DADOS REAIS DE VIRAIS
 ================================================================
 
-ATENÇÃO: O roteiro final deve ter o tamanho EXATO do vídeo que viralizou.
-Roteiro longo = vídeo longo = queda de retenção = não viraliza.
+ATENÇÃO: Cada arquétipo tem um tamanho REAL comprovado pelos vídeos que viralizaram.
+Roteiro maior que o limite = vídeo que não performa no algorítmo do formato.
 Conte mentalmente as palavras. Se passar do limite, corte. Não negocie.
 
-| Arquétipo              | Duração alvo | Palavras faladas (máx) | Blocos |
-|------------------------|-------------|------------------------|--------|
-| ANCORAGEM              | 30–45s      | 80–110 palavras        | 3      |
-| LIGAÇÃO OCULTA         | 40–55s      | 100–130 palavras       | 4      |
-| CERTO vs ERRADO        | 35–50s      | 90–120 palavras        | 3      |
-| MITO vs VERDADE        | 40–60s      | 100–140 palavras       | 4      |
-| LISTA PROBLEMA/SOLUÇÃO | 45–65s      | 110–150 palavras       | 4–5    |
-| TUTORIAL RÁPIDO        | 40–55s      | 90–120 palavras        | 3–4    |
-| BASTIDORES/COMPARAÇÃO  | 45–65s      | 110–150 palavras       | 4      |
-| REACT / EXPERIMENTO    | 35–50s      | 85–120 palavras        | 3      |
-| COMPARAÇÃO RICO/POBRE  | 40–55s      | 100–130 palavras       | 3–4    |
-| ESCADA NUMÉRICA        | 50–70s      | 120–160 palavras       | 4–5    |
-| FAQ VIRAL              | 35–50s      | 85–120 palavras        | 3      |
-| DIA NA VIDA            | 50–70s      | 120–160 palavras       | 4      |
+Os dados abaixo foram extraídos de 25 vídeos virais reais com engajamento médio de 8-18%.
 
-REGRA DE CORTE: Se um bloco está grande demais, escolha as 2 frases mais impactantes e jogue o resto fora.
+FAIXA CURTA — 7 a 30 segundos (alcance gigante, baixo engajamento)
+Melhor para: viralizar amplo, ganhar seguidores novos, topo de funil.
+
+| Arquétipo              | Duração real | Estrutura comprovada                          | Engaj. ref |
+|------------------------|-------------|-----------------------------------------------|------------|
+| CERTO vs ERRADO visual | 8–12s       | Problema → Contraste visual → Sem CTA         | 6.38%      |
+| TUTORIAL ULTRA-RÁPIDO  | 20–28s      | Pergunta → Passo a passo (3 passos) → CTA     | 7.56%      |
+| PROBLEMA/SOLUÇÃO direto| 23–30s      | Erro mostrado → Solução imediata → CTA salvar | 8.92%      |
+
+FAIXA MÉDIA — 33 a 65 segundos (melhor equilíbrio alcance + engajamento)
+Melhor para: viralizar com profundidade, DM automation, CTAs de comentário.
+⭐ FAIXA IDEAL para a maioria dos nichos.
+
+| Arquétipo              | Duração real | Estrutura comprovada                                        | Engaj. ref |
+|------------------------|-------------|-------------------------------------------------------------|------------|
+| BASTIDORES/COMPARAÇÃO  | 33–35s      | Produto A vs B → Diferencial → Prova social → CTA          | 14.11%     |
+| MISTÉRIO + SOLUÇÃO (3x)| 34s         | "Ele não sabe ainda" → Ação → Benefício (×3) → CTA         | 7.41%      |
+| PROBLEMA/SOLUÇÃO lista | 35–38s      | Promessa → Problema+Produto+Benefício (×5) → CTA salvar    | 5.94%      |
+| QUIZ INTERATIVO        | 37s         | Pergunta → Resposta → Explicação curta (×3) → CTA          | 5.15%      |
+| REACT/ANÁLISE          | 40–41s      | Problema → Hipótese → Experimento → CTA comentar           | 6.32%      |
+| ENSINO OCULTO          | 50–52s      | "Você não sabe ainda" → Demonstração múltipla → CTA        | 6.45%      |
+| ANCORAGEM CORPORAL     | 52–53s      | Pergunta chocante → Descredita soluções comuns → Solução   | 10.29%     |
+| TUTORIAL + AUTORIDADE  | 55–65s      | Descoberta → Tutorial → CTA seguir                         | 10.29%     |
+| LISTA ERROS            | 63–65s      | "X erros que você comete" → 5 demonstrações → CTA          | 12.63%     |
+
+FAIXA LONGA — 69 a 173 segundos (alto engajamento, alcance menor, mais esporádico)
+Melhor para: autoridade profunda, temas complexos, storytelling. Viraliza, mas menos frequente.
+
+| Arquétipo              | Duração real | Estrutura comprovada                                             | Engaj. ref |
+|------------------------|-------------|------------------------------------------------------------------|------------|
+| TUTORIAL HACK          | 69–79s      | Notícia/Trend → Hack inteligente → Como fazer → CTA             | 12.83%     |
+| REACT PROMESSA         | 77–79s      | Promessa → Prova social → Método passo a passo → CTA            | 8.3%       |
+| ANCORAGEM + IA         | 111–120s    | Problema chocante → Solução tecnológica → Casos reais → Impacto | 11.1%      |
+| CURIOSIDADE/NOTÍCIA    | 120s        | Notícia intrigante → Como funciona → Implicações → CTA          | 8.51%      |
+| REACT VIRAL            | 124s        | Vídeo viral → Explicação → Impacto → Solução → CTA              | 14.02%     |
+| ANCORAGEM EMOCIONAL    | 165–173s    | História de tensão → Intervenção → Resolução → Lição            | 17.75–18.58%|
+
+REGRA DE SELEÇÃO DE FAIXA:
+→ Quer alcance máximo rápido? → Faixa curta (7–30s)
+→ Quer equilibrar alcance + engajamento + DM automation? → Faixa média (33–65s) ⭐
+→ Quer construir autoridade profunda ou contar história? → Faixa longa (69–173s)
+
+REGRA DE CORTE: Se um bloco está grande demais, escolha as 2 frases mais impactantes e corte o resto.
 Uma frase boa vale mais que três medianas.
 
 ================================================================
