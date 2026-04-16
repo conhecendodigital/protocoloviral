@@ -167,14 +167,20 @@ Se a estrutura pedir 3 blocos, seu roteiro terá exatamente 3 blocos. Se pedir 4
       const serperKey = process.env.SERPER_API_KEY
       if (serperKey) {
         try {
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 4000)
+          
           const sRes = await fetch('https://google.serper.dev/search', {
             method: 'POST',
             headers: {
               'X-API-KEY': serperKey,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ q: topic })
+            body: JSON.stringify({ q: topic }),
+            signal: controller.signal
           })
+          
+          clearTimeout(timeoutId)
           const sData = await sRes.json()
           if (sData.organic && sData.organic.length > 0) {
             const facts = sData.organic.slice(0, 4).map((r: any) => `- ${r.title}: ${r.snippet}`).join('\n')
