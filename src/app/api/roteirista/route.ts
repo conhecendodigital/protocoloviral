@@ -290,10 +290,11 @@ INSTRUÇÕES FINAIS: Nunca responda fora desta formatação estrita. Nunca conve
     let selectedModel = openai('gpt-4o-mini')
 
     if (mode === 'premium' || mode === 'search') {
-      if (!process.env.ANTHROPIC_API_KEY) {
-        throw new Error("Chave ANTHROPIC_API_KEY ausente na Vercel. Necessário para contas Ouro/Search.")
+      if (process.env.ANTHROPIC_API_KEY) {
+        selectedModel = anthropic('claude-3-5-sonnet-20241022') as any
+      } else {
+        console.warn("Aviso: Chave ANTHROPIC_API_KEY ausente. Usando OpenAI como fallback para o modo Premium/Search.")
       }
-      selectedModel = anthropic('claude-3-5-sonnet-20241022') as any
     }
 
     // Stream out
