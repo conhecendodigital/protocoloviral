@@ -293,18 +293,46 @@ INSTRUÇÕES FINAIS: Nunca responda fora desta formatação estrita. Nunca conve
       throw new Error("Chave OPENAI_API_KEY ausente ou não confirmada na Vercel.")
     }
     
+    // Sanitize messages array explicitly for Anthropic's strict validation rules:
+    // 1. Must start with 'user'
+    // 2. Must alternate 'user' -> 'assistant' -> 'user'
+    // 3. No empty contents
+    const sanitizedMessages: typeof messages = []
+    for (const msg of messages) {
+      if (!msg.content || msg.content.trim() === '') continue; // Drop empty msgs
+      
+      if (sanitizedMessages.length === 0) {
+        if (msg.role === 'user') sanitizedMessages.push(msg)
+      } else {
+        const lastMsg = sanitizedMessages[sanitizedMessages.length - 1]
+        if (lastMsg.role === msg.role) {
+          lastMsg.content += '\n\n' + msg.content // Merge consecutive
+        } else {
+          sanitizedMessages.push(msg)
+        }
+      }
+    }
+    // Anthropic MUST end with user
+    if (sanitizedMessages.length > 0 && sanitizedMessages[sanitizedMessages.length - 1].role === 'assistant') {
+      sanitizedMessages.pop()
+    }
+
+    // Fallback to OpenAI gpt-4o-mini by default
     let selectedModel = openai('gpt-4o-mini')
 
     if (mode === 'premium' || mode === 'search') {
-      // Forçamos o GPT-4o original para evitar os congelamentos misteriosos do SDK do Anthropic na Vercel
-      selectedModel = openai('gpt-4o')
+      if (process.env.ANTHROPIC_API_KEY) {
+        selectedModel = anthropic('claude-3-5-sonnet-20241022') as any
+      } else {
+        console.warn("Aviso: Chave ANTHROPIC_API_KEY ausente. Usando OpenAI como fallback para o modo Premium/Search.")
+      }
     }
 
     // Stream out
     const result = streamText({
       model: selectedModel,
       system: systemPrompt,
-      messages: messages,
+      messages: sanitizedMessages,
       onFinish: async ({ text }) => {
         // Only save to DB and deduct exact credits if the AI actually generated the final script!
         if (!text.includes('[ROTEIRO_FINAL]') && mode !== 'analyze') {
