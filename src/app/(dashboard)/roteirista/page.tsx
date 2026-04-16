@@ -298,7 +298,7 @@ function RoteiristaContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
-          mode: activeTab === 'analisar' ? 'analyze' : 'fast',
+          mode: activeTab === 'analisar' ? 'analyze' : (isPro ? 'search' : 'fast'),
           voiceProfileId: selectedVoiceId,
           formatData: selectedFormato ? { id: selectedFormato.id, titulo: selectedFormato.titulo } : null,
         }),
