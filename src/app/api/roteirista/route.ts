@@ -171,11 +171,11 @@ O roteiro DEVE respeitar rigorosamente a quantidade e os nomes dos blocos da est
 NUNCA pule um bloco. NUNCA adicione blocos extras.
 Se a estrutura pedir 3 blocos → roteiro terá 3 blocos.
 Se pedir 5 → terá 5. Sem exceção.
-\`
+`
     } else {
       // ── Sem formato selecionado: duração automática baseada no arquétipo ──
       // Dados reais de 25 vídeos virais estudados (engajamento médio 8–18%)
-      formatContext = \`
+      formatContext = `
 [DURAÇÃO AUTOMÁTICA — BASEADA EM DADOS REAIS DE VIRAIS]
 Escolha o arquétipo mais adequado ao tema e aplique a duração correspondente.
 A duração não é sugestão — é especificação técnica do formato.
@@ -204,7 +204,7 @@ exigem habilidade excepcional de apresentação — a plataforma não garante es
 → ANCORAGEM + IA/TECH:      80–90s  | Problema chocante → Solução tech → Casos → CTA
 → REACT VIRAL:              80–90s  | Vídeo viral → Explicação → Impacto → CTA
 → ANCORAGEM EMOCIONAL:      80–90s  | História de tensão → Resolução → Lição → CTA
-\`
+`
     }
 
     // ─── 5. GROUNDING COM SERPER (mode=search) ────────────────────────────────
