@@ -132,7 +132,7 @@ Mimetize o EXATO estilo de escrita deste criador:
 - Estilo de Frases: ${st?.sentence_style || 'Variado'}
 ${palPref.length > 0 ? `- Palavras OBRIGATÓRIAS: ${palPref.join(', ')}` : ''}
 ${palEvit.length > 0 ? `- Palavras PROIBIDAS: ${palEvit.join(', ')}` : ''}
-${bordoesArr.length > 0 ? `- Bordões (use organicamente): ${bordoesArr.map((b: any) => \`"\${b.texto}"\`).join(', ')}` : ''}
+${bordoesArr.length > 0 ? `- Bordões (use organicamente): ${bordoesArr.map((b: any) => `"${b.texto}"`).join(', ')}` : ''}
 ${st?.generation_rules ? `- Regras estilísticas: ${st.generation_rules}` : ''}
 `
       }
@@ -143,12 +143,13 @@ ${st?.generation_rules ? `- Regras estilísticas: ${st.generation_rules}` : ''}
     let formatTitle: string | null = null
 
     if (formatData?.id && FORMATOS_VIRAIS_PROMPTS[formatData.id]) {
+      // ── Formato selecionado: usa duração EXATA do vídeo viral estudado ──
       formatTitle = formatData.titulo
 
-      // Calcula duração em segundos se disponível
-      const duracaoSegundos = formatData.duracao
-        ? `${Math.round(parseFloat(formatData.duracao))} segundos`
-        : 'até 60 segundos'
+      // Vídeos acima de 90s são exceção — clamp para 90s máximo
+      const duracaoRaw = formatData.duracao ? Math.round(parseFloat(formatData.duracao)) : 50
+      const duracaoClamped = Math.min(duracaoRaw, 90)
+      const duracaoSegundos = `${duracaoClamped} segundos`
 
       const engajamentoRef = formatData.engajamento
         ? `${formatData.engajamento}%`
@@ -170,7 +171,40 @@ O roteiro DEVE respeitar rigorosamente a quantidade e os nomes dos blocos da est
 NUNCA pule um bloco. NUNCA adicione blocos extras.
 Se a estrutura pedir 3 blocos → roteiro terá 3 blocos.
 Se pedir 5 → terá 5. Sem exceção.
-`
+\`
+    } else {
+      // ── Sem formato selecionado: duração automática baseada no arquétipo ──
+      // Dados reais de 25 vídeos virais estudados (engajamento médio 8–18%)
+      formatContext = \`
+[DURAÇÃO AUTOMÁTICA — BASEADA EM DADOS REAIS DE VIRAIS]
+Escolha o arquétipo mais adequado ao tema e aplique a duração correspondente.
+A duração não é sugestão — é especificação técnica do formato.
+Ritmo de fala natural: ~2,5 palavras por segundo. Conte as palavras antes de entregar.
+
+FAIXA CURTA — 7 a 30 segundos (alcance máximo, topo de funil)
+→ CERTO vs ERRADO visual:   8–12s  | Problema → Contraste visual → fim
+→ TUTORIAL ULTRA-RÁPIDO:    20–28s | Pergunta → 3 passos → CTA
+→ PROBLEMA/SOLUÇÃO direto:  23–30s | Erro → Solução imediata → CTA salvar
+
+FAIXA MÉDIA — 33 a 65 segundos ⭐ PADRÃO RECOMENDADO
+(DM automation, engajamento real, equilíbrio alcance+profundidade)
+→ BASTIDORES/COMPARAÇÃO:    33–35s | Produto A vs B → Diferencial → CTA
+→ MISTÉRIO + SOLUÇÃO (3x):  34s    | "Não sabe ainda" → Ação+Benefício ×3 → CTA
+→ PROBLEMA/SOLUÇÃO lista:   35–38s | Promessa → Problema+Solução ×5 → CTA salvar
+→ QUIZ INTERATIVO:          37s    | Pergunta+Resposta+Explicação ×3 → CTA
+→ REACT/ANÁLISE:            40–41s | Problema → Hipótese → Experimento → CTA
+→ ANCORAGEM CORPORAL:       52–53s | Pergunta chocante → Descredita → Solução → CTA
+→ TUTORIAL + AUTORIDADE:    55–65s | Descoberta → Tutorial → CTA seguir
+→ LISTA ERROS:              63–65s | "X erros" → 5 demonstrações → CTA
+
+FAIXA LONGA — 69 a 90 segundos (autoridade profunda, storytelling)
+⚠️ LIMITE MÁXIMO: 90 segundos. NUNCA ultrapasse isso. Vídeos acima de 90s
+exigem habilidade excepcional de apresentação — a plataforma não garante esse nível.
+→ TUTORIAL HACK:            69–79s  | Notícia → Hack → Como fazer → CTA
+→ ANCORAGEM + IA/TECH:      80–90s  | Problema chocante → Solução tech → Casos → CTA
+→ REACT VIRAL:              80–90s  | Vídeo viral → Explicação → Impacto → CTA
+→ ANCORAGEM EMOCIONAL:      80–90s  | História de tensão → Resolução → Lição → CTA
+\`
     }
 
     // ─── 5. GROUNDING COM SERPER (mode=search) ────────────────────────────────
@@ -419,7 +453,7 @@ TÍTULO: [título com promessa real — sem clickbait vazio]
             break
 
           } catch (err: any) {
-            console.warn(`[AI FALLBACK] Falha no provedor \${i} (\${selectedModel.modelId ?? 'unknown'}):`, err?.message)
+            console.warn(`[AI FALLBACK] Falha no provedor ${i} (${selectedModel.modelId ?? 'unknown'}):`, err?.message)
             lastError = err
 
             // Se falhou no meio do stream, avisa o usuário e para
