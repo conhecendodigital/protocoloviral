@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { useProfile } from '@/hooks/use-profile'
+import { ScriptRenderer } from '@/components/roteirista/ScriptRenderer'
 
 // ─── Types ──────────────────────────────────────────────
 interface Message {
@@ -17,6 +18,7 @@ interface Message {
   content: string
   format?: string
   timestamp: Date
+  locked?: boolean
 }
 
 interface VoiceProfile {
@@ -272,22 +274,8 @@ function RoteiristaContent() {
       return handleAnalise(text)
     }
 
-    if (!isPro && generationsToday >= 5) {
-      setMessages(prev => [...prev, {
-        id: crypto.randomUUID(),
-        role: 'user',
-        content: text,
-        format: selectedFormato?.titulo,
-        timestamp: new Date(),
-      }, {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: '🔒 **Limite Diário Atingido**\n\nVocê bateu o limite de **5 roteiros diários** do plano básico.\n\nAssine agora o nosso [Plano Premium](/assinatura) para ter acesso ilimitado!',
-        timestamp: new Date()
-      }])
-      setInput('')
-      return
-    }
+    // Teaser Paywall Logic: a cota foi extrapolada ANTES deste clique?
+    const isLockedMsg = !isPro && generationsToday >= 5;
 
     const userMsg: Message = {
       id: crypto.randomUUID(),
@@ -302,7 +290,7 @@ function RoteiristaContent() {
     setIsGenerating(true)
 
     const aiMsgId = crypto.randomUUID()
-    setMessages(prev => [...prev, { id: aiMsgId, role: 'assistant', content: '', timestamp: new Date() }])
+    setMessages(prev => [...prev, { id: aiMsgId, role: 'assistant', content: '', timestamp: new Date(), locked: isLockedMsg }])
 
     try {
       const res = await fetch('/api/roteirista', {
@@ -534,13 +522,11 @@ function RoteiristaContent() {
         <>
           <div className="flex-1 overflow-y-auto custom-scrollbar">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-              {activeMessages.map((msg) => (
+              {activeMessages.map((msg, idx) => (
                 <motion.div key={msg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-2xl px-5 py-3 relative group ${msg.role === 'user' ? 'bg-[#0ea5e9] text-white rounded-br-md' : 'bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white/90 border border-slate-200 dark:border-white/[0.06] rounded-bl-md'}`}>
                     {msg.role === 'assistant' ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-sm [&_p]:text-[13px] [&_li]:text-[13px] [&_p]:leading-relaxed [&_li]:leading-relaxed">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                      </div>
+                      <ScriptRenderer content={msg.content} isUnlocked={msg.locked === undefined ? true : !msg.locked} isGenerating={isGenerating && idx === activeMessages.length - 1} />
                     ) : (
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                     )}

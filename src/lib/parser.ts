@@ -262,6 +262,11 @@ export function parsePersona(text: string | null | undefined): PersonaParsed | n
 
 export interface RoteiroBlocks {
   titulo: string;
+  metadata?: {
+    hash1?: string;
+    hash2?: string;
+    direcao?: string;
+  };
   gancho: string;
   desenvolvimento: string;
   cta: string;
@@ -285,13 +290,28 @@ export function parseRoteiroBlocks(text: string): RoteiroBlocks | null {
   }
 
   // Regex para achar os blocos (tratando negrito opcional e espaços)
+  const regexMetadata = /(?:\*\*)?\[METADADOS(.*?)\](?:\*\*)?/i;
   const regexGancho = /(?:\*\*)?\[GANCHO\](?:\*\*)?[\s\S]*?(?=(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?)/i;
   const regexDev = /(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?[\s\S]*?(?=(?:\*\*)?\[CTA E FINAL\](?:\*\*)?|$)/i;
   const regexCta = /(?:\*\*)?\[CTA E FINAL\](?:\*\*)?[\s\S]*/i;
 
+  const mMetadata = text.match(regexMetadata);
   const mGancho = text.match(regexGancho);
   const mDev = text.match(regexDev);
   const mCta = text.match(regexCta);
+
+  let metadata;
+  if (mMetadata && mMetadata[1]) {
+     const metaString = mMetadata[1];
+     const hash1Match = metaString.match(/hash1="([^"]+)"/);
+     const hash2Match = metaString.match(/hash2="([^"]+)"/);
+     const direcaoMatch = metaString.match(/direcao="([^"]+)"/);
+     metadata = {
+       hash1: hash1Match ? hash1Match[1] : undefined,
+       hash2: hash2Match ? hash2Match[1] : undefined,
+       direcao: direcaoMatch ? direcaoMatch[1] : undefined,
+     };
+  }
 
   if (!mGancho && !mDev) {
     // FALLBACK HEURÍSTICO P/ ROTEIRO ORIGINAL SCRAPEADO (Sem Tags)
@@ -343,6 +363,7 @@ export function parseRoteiroBlocks(text: string): RoteiroBlocks | null {
 
   return {
     titulo,
+    metadata,
     gancho: pureText(mGancho, /(?:\*\*)?\[GANCHO\](?:\*\*)?/i),
     desenvolvimento: pureText(mDev, /(?:\*\*)?\[DESENVOLVIMENTO\](?:\*\*)?/i),
     cta: pureText(mCta, /(?:\*\*)?\[CTA E FINAL\](?:\*\*)?/i),
