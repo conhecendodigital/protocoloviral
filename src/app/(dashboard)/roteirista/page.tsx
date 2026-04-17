@@ -318,35 +318,50 @@ function RoteiristaContent() {
       const decoder = new TextDecoder()
       let done = false
       let currentText = ''
+      let capturedRoteiroId: string | null = null
 
       while (!done) {
         const { value, done: doneReading } = await reader.read()
         done = doneReading
         const chunk = decoder.decode(value, { stream: true })
         currentText += chunk
-        
-        // Hide the hidden tags from the UI
-        let displayText = currentText.replace(/\[ROTEIRO_FINAL\]/g, '')
-        
+
+        // Capture roteiro ID sentinel before displaying
+        const idMatch = currentText.match(/\[ROTEIRO_ID:([a-f0-9-]+)\]/i)
+        if (idMatch) capturedRoteiroId = idMatch[1]
+
+        // Strip internal tokens from display
+        let displayText = currentText
+          .replace(/\[ROTEIRO_FINAL\]/g, '')
+          .replace(/\[ROTEIRO_ID:[a-f0-9-]+\]/gi, '')
+
         // Ocultar blocos de raciocínio lógico (CoT) com uma mensagem de status atraente
         displayText = displayText.replace(/\[THINKING\][\s\S]*?(\[\/THINKING\]|$)/g, '> 🧠 **Ativando Raciocínio Profundo...**\n> Analisando formato e tom de voz antes de escrever...\n\n')
-        
+
         displayText = displayText.trim()
-        
+
         setMessages(prev =>
           prev.map(m => m.id === aiMsgId ? { ...m, content: displayText } : m)
         )
       }
-      
-      // Verifica se terminou vazio (stream fechada silenciosamente pela Vercel)
+
+      // Verifica se terminou vazio
       if (currentText.trim() === '') {
         throw new Error('A Vercel ou Inteligência Artificial fechou a conexão sem retornar nenhum texto.')
       }
-      
+
       // Increment usages today after success
       if (!isPro) {
         setGenerationsToday(prev => prev + 1)
       }
+
+      // ✅ Redirect to the dedicated PandaBay-style editor page
+      if (capturedRoteiroId) {
+        setTimeout(() => {
+          router.push(`/roteiros/${capturedRoteiroId}`)
+        }, 800) // small delay so user sees the complete script flash
+      }
+
     } catch (err: any) {
       setMessages(prev =>
         prev.map(m => m.id === aiMsgId ? { ...m, content: `❌ Erro de Conexão Frontend:\n\nUm erro impediu a resposta. Detalhes técnicos para o Eng:\n\`\`\`\n${err.message || String(err)}\n\`\`\`` } : m)

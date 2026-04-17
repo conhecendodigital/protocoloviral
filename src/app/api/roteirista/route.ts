@@ -493,13 +493,22 @@ export async function POST(req: Request) {
               }
             }
 
-            await adminSupabase.from('roteiros').insert({
-              user_id: user.id,
-              roteiro: finalScript,
-              titulo: title,
-              nicho: null,
-              formato_nome: formatTitle
-            })
+            const { data: savedRoteiro, error: saveError } = await adminSupabase
+              .from('roteiros')
+              .insert({
+                user_id: user.id,
+                roteiro: finalScript,
+                titulo: title,
+                nicho: null,
+                formato_nome: formatTitle
+              })
+              .select('id')
+              .single()
+
+            if (!saveError && savedRoteiro?.id) {
+              // Emit sentinel so frontend can redirect to the editor
+              controller.enqueue(encoder.encode(`\n[ROTEIRO_ID:${savedRoteiro.id}]`))
+            }
 
           } catch (dbErr) {
             console.error('[SAVE_ERROR]', dbErr)
