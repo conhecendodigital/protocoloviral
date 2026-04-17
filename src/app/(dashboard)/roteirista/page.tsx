@@ -355,11 +355,16 @@ function RoteiristaContent() {
         setGenerationsToday(prev => prev + 1)
       }
 
-      // ✅ Redirect to the dedicated PandaBay-style editor page
+      // ✅ If we got the ID: swap message to success state and redirect immediately
       if (capturedRoteiroId) {
-        setTimeout(() => {
-          router.push(`/roteiros/${capturedRoteiroId}`)
-        }, 800) // small delay so user sees the complete script flash
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === aiMsgId
+              ? { ...m, content: `__REDIRECT__${capturedRoteiroId}` }
+              : m
+          )
+        )
+        router.push(`/roteiros/${capturedRoteiroId}`)
       }
 
     } catch (err: any) {
@@ -552,11 +557,28 @@ function RoteiristaContent() {
               {activeMessages.map((msg, idx) => (
                 <motion.div key={msg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-2xl px-5 py-3 relative group ${msg.role === 'user' ? 'bg-[#0ea5e9] text-white rounded-br-md' : 'bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white/90 border border-slate-200 dark:border-white/[0.06] rounded-bl-md'}`}>
-                    {msg.role === 'assistant' ? (
-                      <ScriptRenderer content={msg.content} isUnlocked={msg.locked === undefined ? true : !msg.locked} isGenerating={isGenerating && idx === activeMessages.length - 1} />
+                  {msg.role === 'assistant' ? (
+                    msg.content.startsWith('__REDIRECT__') ? (
+                      // ── SUCCESS STATE — shown while redirecting ──
+                      <div className="flex flex-col items-center gap-4 py-6 px-4 text-center">
+                        <div className="size-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-emerald-400 text-4xl">check_circle</span>
+                        </div>
+                        <div>
+                          <p className="font-black text-slate-900 dark:text-white text-lg mb-1">✅ Roteiro Pronto!</p>
+                          <p className="text-sm text-slate-500 dark:text-white/50">Abrindo o editor...</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-slate-400">
+                          <span className="material-symbols-outlined animate-spin text-sm">autorenew</span>
+                          Redirecionando para o editor
+                        </div>
+                      </div>
                     ) : (
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                    )}
+                      <ScriptRenderer content={msg.content} isUnlocked={msg.locked === undefined ? true : !msg.locked} isGenerating={isGenerating && idx === activeMessages.length - 1} />
+                    )
+                  ) : (
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                  )}
                     {msg.format && <span className="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50 font-medium">{msg.format}</span>}
                   </div>
                 </motion.div>
