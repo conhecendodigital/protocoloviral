@@ -616,7 +616,9 @@ function RoteiristaContent() {
                     {msg.format && <span className="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50 font-medium">{msg.format}</span>}
                   </div>
                 </motion.div>
+                )
               })}
+
 
               <div ref={chatEndRef} />
             </div>
