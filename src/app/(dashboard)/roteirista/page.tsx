@@ -11,6 +11,27 @@ import { Suspense } from 'react'
 import { useProfile } from '@/hooks/use-profile'
 import { ScriptRenderer } from '@/components/roteirista/ScriptRenderer'
 
+// ─── Streaming text with ChatGPT-style cursor ─────────────────
+function StreamingText({ content }: { content: string }) {
+  // Strip internal tokens from display
+  const clean = content
+    .replace(/\[THINKING\][\s\S]*?(\[\/THINKING\]|$)/g, '')
+    .replace(/\[METADADOS[^\]]*\]/gi, '')
+    .replace(/\[ROTEIRO_FINAL\]/gi, '')
+    .replace(/\[ROTEIRO_ID:[^\]]+\]/gi, '')
+    .trim()
+
+  return (
+    <div className="text-sm leading-relaxed text-slate-900 dark:text-white/90 whitespace-pre-wrap font-normal">
+      {clean}
+      <span
+        className="inline-block w-[2px] h-[1.1em] ml-[1px] bg-slate-400 dark:bg-white/50 align-middle animate-pulse rounded-sm"
+        aria-hidden
+      />
+    </div>
+  )
+}
+
 // ─── Types ──────────────────────────────────────────────
 interface Message {
   id: string
@@ -554,11 +575,20 @@ function RoteiristaContent() {
         <>
           <div className="flex-1 overflow-y-auto custom-scrollbar">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-              {activeMessages.map((msg, idx) => (
+              {activeMessages.map((msg, idx) => {
+                const isStreamingThisMsg = isGenerating && idx === activeMessages.length - 1 && msg.role === 'assistant' && !msg.content.startsWith('__REDIRECT__')
+                return (
                 <motion.div key={msg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] rounded-2xl px-5 py-3 relative group ${msg.role === 'user' ? 'bg-[#0ea5e9] text-white rounded-br-md' : 'bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white/90 border border-slate-200 dark:border-white/[0.06] rounded-bl-md'}`}>
+                  <div className={`relative group ${
+                    msg.role === 'user'
+                      ? 'max-w-[80%] bg-[#0ea5e9] text-white rounded-2xl rounded-br-md px-5 py-3'
+                      : isStreamingThisMsg
+                        ? 'w-full px-1 py-2'  /* borderless full-width while streaming */
+                        : 'w-full bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white/90 border border-slate-200 dark:border-white/[0.06] rounded-2xl rounded-bl-md px-5 py-3'
+                  }`}>
                   {msg.role === 'assistant' ? (
                     msg.content.startsWith('__REDIRECT__') ? (
+
                       // ── SUCCESS STATE — shown while redirecting ──
                       <div className="flex flex-col items-center gap-4 py-6 px-4 text-center">
                         <div className="size-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
@@ -573,8 +603,12 @@ function RoteiristaContent() {
                           Redirecionando para o editor
                         </div>
                       </div>
+                    ) : isGenerating && idx === activeMessages.length - 1 ? (
+                      // ── STREAMING STATE — ChatGPT-style natural text flow ──
+                      <StreamingText content={msg.content} />
                     ) : (
-                      <ScriptRenderer content={msg.content} isUnlocked={msg.locked === undefined ? true : !msg.locked} isGenerating={isGenerating && idx === activeMessages.length - 1} />
+                      // ── DONE STATE (fallback if no redirect) ──
+                      <ScriptRenderer content={msg.content} isUnlocked={msg.locked === undefined ? true : !msg.locked} isGenerating={false} />
                     )
                   ) : (
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
@@ -582,18 +616,8 @@ function RoteiristaContent() {
                     {msg.format && <span className="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50 font-medium">{msg.format}</span>}
                   </div>
                 </motion.div>
-              ))}
-              {isGenerating && (
-                <div className="flex justify-start">
-                  <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-2xl rounded-bl-md px-5 py-4">
-                    <div className="flex gap-1.5">
-                      <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '300ms' }} />
-                    </div>
-                  </div>
-                </div>
-              )}
+              })}
+
               <div ref={chatEndRef} />
             </div>
           </div>
