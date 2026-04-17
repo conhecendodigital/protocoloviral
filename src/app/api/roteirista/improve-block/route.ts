@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+import { generateText } from 'ai'
+import { anthropic } from '@ai-sdk/anthropic'
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,12 +12,10 @@ export async function POST(req: NextRequest) {
 
     // ── HOOK with 3 variations ──
     if (blockType === 'GANCHO' && variations) {
-      const msg = await anthropic.messages.create({
-        model: 'claude-3-5-haiku-20241022',
-        max_tokens: 600,
-        messages: [{
-          role: 'user',
-          content: `Você é um expert em ganchos virais para TikTok e Instagram Reels.
+      const { text } = await generateText({
+        model: anthropic('claude-haiku-4-5-20251001'),
+        maxTokens: 600,
+        prompt: `Você é um expert em ganchos virais para TikTok e Instagram Reels.
 
 Contexto do roteiro:
 ${context}
@@ -33,21 +30,21 @@ Gere EXATAMENTE 3 versões alternativas do gancho, cada uma usando um gatilho ps
 RESPONDA APENAS neste formato JSON (sem markdown, sem explicações):
 {"variations":["gancho 1 aqui","gancho 2 aqui","gancho 3 aqui"]}
 
-Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduções.`
-        }]
+Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduções.`,
       })
 
-      const raw = (msg.content[0] as { type: string; text: string }).text.trim()
+      const raw = text.trim()
       try {
         const parsed = JSON.parse(raw)
         return NextResponse.json({ variations: parsed.variations })
       } catch {
-        // Fallback: extract lines
+        // Fallback: extract non-empty lines
         const lines = raw.split('\n').filter(l => l.trim().length > 5).slice(0, 3)
         return NextResponse.json({ variations: lines })
       }
     }
 
+    // ── Single block improvement ──
     const typeInstructions: Record<string, string> = {
       GANCHO: 'O GANCHO deve prender a atenção nos primeiros 2 segundos. Use uma pergunta provocativa, afirmação chocante, ou promessa de valor irresistível. Seja curto, direto e impactante.',
       DESENVOLVIMENTO: 'O DESENVOLVIMENTO deve entregar valor real, contar uma história envolvente, ou apresentar argumentos convincentes. Use linguagem natural e conversacional.',
@@ -59,12 +56,10 @@ Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduçõ
 
     const instruction = typeInstructions[blockType] || typeInstructions['OUTROS']
 
-    const msg = await anthropic.messages.create({
-      model: 'claude-3-5-haiku-20241022',
-      max_tokens: 400,
-      messages: [{
-        role: 'user',
-        content: `Você é um expert em roteiros virais para o TikTok e Instagram Reels.
+    const { text: improved } = await generateText({
+      model: anthropic('claude-haiku-4-5-20251001'),
+      maxTokens: 400,
+      prompt: `Você é um expert em roteiros virais para o TikTok e Instagram Reels.
 
 Contexto completo do roteiro:
 ${context}
@@ -76,15 +71,12 @@ Melhore APENAS o seguinte bloco do tipo ${blockType}:
 
 Regra: ${instruction}
 
-RESPONDA APENAS com o texto melhorado. Sem explicações, sem aspas extras, sem prefixos.`
-      }]
+RESPONDA APENAS com o texto melhorado. Sem explicações, sem aspas extras, sem prefixos.`,
     })
 
-    const improved = (msg.content[0] as { type: string; text: string }).text
-      .replace(/^[""]|[""]$/g, '')
-      .trim()
-
-    return NextResponse.json({ improved })
+    return NextResponse.json({
+      improved: improved.replace(/^[""]|[""]$/g, '').trim(),
+    })
   } catch (err: any) {
     console.error('[IMPROVE_BLOCK]', err)
     return NextResponse.json({ error: err.message || 'Erro interno' }, { status: 500 })
