@@ -5,6 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { BANCO_DE_GANCHOS, CATEGORIAS_GANCHOS, type Gancho } from '@/lib/ganchos'
+
+const CATEGORIA_ICONS: Record<string, string> = {
+  'Número + Segredo': '🔢',
+  'Erro / Armadilha': '⚠️',
+  'Verdade Chocante': '💥',
+  'Antes e Depois': '⚡',
+  'Pergunta Provocativa': '❓',
+  'Promessa Direta': '🎯',
+}
+
 
 // ────────────────────────────────────────────────────────────
 // Types
@@ -140,6 +151,28 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
   const [saved, setSaved] = useState(false)
   const [aiLoading, setAiLoading] = useState<number | null>(null)
 
+  // Hook drawer state
+  const [hookDrawerOpen, setHookDrawerOpen] = useState(false)
+  const [hookDrawerBlockIdx, setHookDrawerBlockIdx] = useState<number | null>(null)
+  const [ganchoSearch, setGanchoSearch] = useState('')
+  const [ganchoCategory, setGanchoCategory] = useState('Todos')
+
+  // AI variations for Hook
+  const [aiVariations, setAiVariations] = useState<string[] | null>(null)
+  const [variationsBlockIdx, setVariationsBlockIdx] = useState<number | null>(null)
+  const [variationsLoading, setVariationsLoading] = useState(false)
+
+  // Filtered ganchos for drawer
+  const filteredGanchos = useMemo(() => {
+    let list = BANCO_DE_GANCHOS
+    if (ganchoCategory !== 'Todos') list = list.filter(g => g.categoria === ganchoCategory)
+    if (ganchoSearch.trim()) {
+      const q = ganchoSearch.toLowerCase()
+      list = list.filter(g => g.template.toLowerCase().includes(q) || g.gatilho.toLowerCase().includes(q))
+    }
+    return list
+  }, [ganchoSearch, ganchoCategory])
+
   // Metrics
   const metrics = useMemo(() => computeMetrics(blocks), [blocks])
 
@@ -194,9 +227,37 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
 
   // ── AI improve block ──
   const improveBlock = async (idx: number) => {
+    const block = blocks[idx]
+    // For GANCHO: show 3 variations instead of auto-replacing
+    if (block.type === 'GANCHO') {
+      setVariationsLoading(true)
+      setVariationsBlockIdx(idx)
+      setAiVariations(null)
+      try {
+        const res = await fetch('/api/roteirista/improve-block', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            blockType: 'GANCHO',
+            blockText: block.text,
+            context: blocks.map(b => `[${b.type}]\n${b.text}`).join('\n\n'),
+            variations: true,
+          }),
+        })
+        if (!res.ok) throw new Error('Falha na IA')
+        const data = await res.json()
+        setAiVariations(data.variations || [data.improved])
+      } catch {
+        setAiVariations(null)
+        setVariationsBlockIdx(null)
+      } finally {
+        setVariationsLoading(false)
+      }
+      return
+    }
+    // For other blocks: auto-replace
     setAiLoading(idx)
     try {
-      const block = blocks[idx]
       const res = await fetch('/api/roteirista/improve-block', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -216,6 +277,23 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
     } finally {
       setAiLoading(null)
     }
+  }
+
+  // ── Apply a variation ──
+  const applyVariation = async (idx: number, text: string) => {
+    const updated = blocks.map((b, i) => i === idx ? { ...b, text } : b)
+    setBlocks(updated)
+    setAiVariations(null)
+    setVariationsBlockIdx(null)
+    await saveRoteiro(updated)
+  }
+
+  // ── Apply a gancho template from drawer ──
+  const applyGanchoTemplate = async (idx: number, template: string) => {
+    setHookDrawerOpen(false)
+    const updated = blocks.map((b, i) => i === idx ? { ...b, text: template } : b)
+    setBlocks(updated)
+    await saveRoteiro(updated)
   }
 
   // ── Copy all ──
@@ -409,7 +487,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
                       )}
 
                       {/* Block actions — appear on hover */}
-                      <div className="flex justify-center gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex justify-center flex-wrap gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => startEdit(idx)}
                           className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
@@ -417,19 +495,60 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
                           <span className="material-symbols-outlined text-sm">edit</span>
                           Editar
                         </button>
+                        {block.type === 'GANCHO' && (
+                          <button
+                            onClick={() => { setHookDrawerOpen(true); setHookDrawerBlockIdx(idx) }}
+                            className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors shadow-sm"
+                          >
+                            <span className="material-symbols-outlined text-sm">swap_horiz</span>
+                            Trocar Gancho
+                          </button>
+                        )}
                         <button
                           onClick={() => improveBlock(idx)}
-                          disabled={aiLoading === idx}
+                          disabled={aiLoading === idx || variationsLoading}
                           className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors shadow-sm disabled:opacity-50"
                         >
-                          {aiLoading === idx ? (
+                          {(aiLoading === idx || (variationsLoading && variationsBlockIdx === idx)) ? (
                             <span className="material-symbols-outlined animate-spin text-sm">autorenew</span>
                           ) : (
                             <span className="material-symbols-outlined text-sm">auto_awesome</span>
                           )}
-                          Melhorar com IA
+                          {block.type === 'GANCHO' ? 'Ver 3 variações' : 'Melhorar com IA'}
                         </button>
                       </div>
+
+                      {/* AI Variations panel (Hook only) */}
+                      <AnimatePresence>
+                        {variationsBlockIdx === idx && aiVariations && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 8 }}
+                            transition={{ duration: 0.3 }}
+                            className="mt-5 bg-white rounded-2xl border border-blue-100 shadow-lg p-4"
+                          >
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-xs font-bold text-slate-600">✨ Escolha uma variação:</span>
+                              <button onClick={() => { setAiVariations(null); setVariationsBlockIdx(null) }} className="text-slate-400 hover:text-slate-600">
+                                <span className="material-symbols-outlined text-base">close</span>
+                              </button>
+                            </div>
+                            <div className="space-y-2">
+                              {aiVariations.map((v, vi) => (
+                                <button
+                                  key={vi}
+                                  onClick={() => applyVariation(idx, v)}
+                                  className="w-full text-left text-sm font-bold text-slate-800 bg-slate-50 hover:bg-blue-50 border border-transparent hover:border-blue-200 rounded-xl px-4 py-3 transition-all leading-snug"
+                                >
+                                  <span className="text-blue-500 font-mono text-xs mr-2">{vi + 1}.</span>
+                                  &ldquo;{v}&rdquo;
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -489,6 +608,81 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       </div>
+      {/* ── HOOK DRAWER ── */}
+      <AnimatePresence>
+        {hookDrawerOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setHookDrawerOpen(false)}
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+            />
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-sm bg-white shadow-2xl flex flex-col"
+            >
+              {/* Drawer header */}
+              <div className="px-4 pt-5 pb-4 border-b border-slate-100">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-black text-slate-900 text-lg">🪝 Trocar Gancho</h2>
+                  <button onClick={() => setHookDrawerOpen(false)} className="text-slate-400 hover:text-slate-600">
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Buscar..."
+                  value={ganchoSearch}
+                  onChange={e => setGanchoSearch(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all mb-3"
+                />
+                {/* Category filter */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1">
+                  {['Todos', ...CATEGORIAS_GANCHOS].map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setGanchoCategory(cat)}
+                      className={`shrink-0 px-2.5 py-1 text-xs font-bold rounded-lg border transition-all ${
+                        ganchoCategory === cat
+                          ? 'bg-slate-900 text-white border-slate-900'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-400'
+                      }`}
+                    >
+                      {cat === 'Todos' ? '✨' : CATEGORIA_ICONS[cat]} {cat === 'Todos' ? 'Todos' : ''}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Drawer list */}
+              <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+                {filteredGanchos.map(gancho => (
+                  <button
+                    key={gancho.id}
+                    onClick={() => hookDrawerBlockIdx !== null && applyGanchoTemplate(hookDrawerBlockIdx, gancho.template)}
+                    className="w-full text-left bg-slate-50 hover:bg-blue-50 border border-transparent hover:border-blue-200 rounded-xl px-4 py-3 transition-all group/item"
+                  >
+                    <p className="text-sm font-bold text-slate-800 leading-snug group-hover/item:text-blue-700">
+                      {gancho.template}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">{CATEGORIA_ICONS[gancho.categoria]} {gancho.categoria} · {gancho.gatilho}</p>
+                  </button>
+                ))}
+                {filteredGanchos.length === 0 && (
+                  <p className="text-center text-sm text-slate-400 py-10">Nenhum gancho encontrado.</p>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

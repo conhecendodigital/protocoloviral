@@ -1,3 +1,5 @@
+import { GANCHOS_PARA_PROMPT } from '@/lib/ganchos'
+
 export const ROTEIRISTA_PRO_SKILL = {
     "value": `---
 name: roteirista-pro
@@ -24,6 +26,12 @@ Nunca use jargões de IA ou linguagem robótica de marketing. Sua fala no roteir
 - "No mundo de hoje" / "No cenário digital atual" / "Na era da inteligência artificial"
 - "Uma verdadeira revolução" / "Elevar seu patamar" / "Revolucionário"
 - "Bem-vindos" / "Olá a todos"
+
+---
+
+## BANCO DE GANCHOS — USE COMO REFERÊNCIA OBRIGATÓRIA PARA O BLOCO [GANCHO]
+
+${GANCHOS_PARA_PROMPT}
 
 ---
 
@@ -72,7 +80,7 @@ Resumo das suas escolhas de formatação, tom de voz e como contornou a ban-list
 [METADADOS hash1="#Palavra1" hash2="#Palavra2" direcao="💡 Dica geral de cenário ou setup"]
 
 [GANCHO]
-"(frase de impacto)"
+"(frase de impacto usando um dos padrões do banco de ganchos acima, adaptado ao nicho)"
 🎤 (direção de atuação)
 ⏱ Xs
 

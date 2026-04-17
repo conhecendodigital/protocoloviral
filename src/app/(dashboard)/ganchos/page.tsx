@@ -1,136 +1,233 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { BANCO_DE_GANCHOS, CATEGORIAS_GANCHOS, type Gancho } from '@/lib/ganchos'
+import Link from 'next/link'
 
-import { GANCHOS_VIRAIS, CATEGORIAS_GANCHOS } from '@/data/ganchos'
-import { CopyButton } from '@/components/shared/copy-button'
-import { motion } from 'framer-motion'
+const CATEGORIA_ICONS: Record<string, string> = {
+  'Número + Segredo': '🔢',
+  'Erro / Armadilha': '⚠️',
+  'Verdade Chocante': '💥',
+  'Antes e Depois': '⚡',
+  'Pergunta Provocativa': '❓',
+  'Promessa Direta': '🎯',
+}
+
+const CATEGORIA_COLORS: Record<string, string> = {
+  'Número + Segredo':   'bg-violet-100 text-violet-700 border-violet-200',
+  'Erro / Armadilha':   'bg-red-100 text-red-700 border-red-200',
+  'Verdade Chocante':   'bg-orange-100 text-orange-700 border-orange-200',
+  'Antes e Depois':     'bg-emerald-100 text-emerald-700 border-emerald-200',
+  'Pergunta Provocativa': 'bg-blue-100 text-blue-700 border-blue-200',
+  'Promessa Direta':    'bg-amber-100 text-amber-700 border-amber-200',
+}
 
 export default function GanchosPage() {
-  const [categoria, setCategoria] = useState('all')
-  const [busca, setBusca] = useState('')
+  const [activeCategory, setActiveCategory] = useState<string>('Todos')
+  const [search, setSearch] = useState('')
+  const [copiedId, setCopiedId] = useState<number | null>(null)
+  const [expandedId, setExpandedId] = useState<number | null>(null)
 
-  const filtered = GANCHOS_VIRAIS.filter(g => {
-    const matchCat = categoria === 'all' || g.cat === categoria
-    const matchBusca = !busca || g.txt.toLowerCase().includes(busca.toLowerCase())
-    return matchCat && matchBusca
-  })
+  const categories = ['Todos', ...CATEGORIAS_GANCHOS]
+
+  const filtered = useMemo(() => {
+    let list = BANCO_DE_GANCHOS
+    if (activeCategory !== 'Todos') list = list.filter(g => g.categoria === activeCategory)
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      list = list.filter(g =>
+        g.template.toLowerCase().includes(q) ||
+        g.categoria.toLowerCase().includes(q) ||
+        g.gatilho.toLowerCase().includes(q)
+      )
+    }
+    return list
+  }, [activeCategory, search])
+
+  const handleCopy = async (gancho: Gancho) => {
+    try {
+      await navigator.clipboard.writeText(gancho.template)
+    } catch {
+      const ta = document.createElement('textarea')
+      ta.value = gancho.template
+      ta.style.cssText = 'position:fixed;opacity:0'
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+    }
+    setCopiedId(gancho.id)
+    setTimeout(() => setCopiedId(null), 2000)
+  }
 
   return (
-    <>
-      <main className="flex-1 flex flex-col overflow-y-auto custom-scrollbar relative z-10">
-        <div className="p-8 lg:p-12 max-w-7xl mx-auto w-full space-y-12">
-          
-          {/* Title Section */}
-          <section>
-            <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-4xl lg:text-6xl font-black tracking-[-0.04em] mb-4 text-slate-900 dark:text-white uppercase italic">
-              BANCO DE <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">GANCHOS VIRAIS</span>
-            </motion.h1>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg max-w-3xl leading-relaxed">
-              Acesso instantâneo às melhores estratégias de abertura para prender a atenção do seu público nos primeiros segundos. ({GANCHOS_VIRAIS.length} ganchos prontos)
-            </motion.p>
-          </section>
+    <div className="min-h-screen bg-[#F5F0E8]">
+      {/* ── HEADER ── */}
+      <div className="bg-slate-900 px-4 pt-10 pb-8">
+        <div className="max-w-4xl mx-auto">
+          <Link href="/roteirista" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-6">
+            <span className="material-symbols-outlined text-sm">arrow_back</span>
+            Voltar
+          </Link>
 
-          {/* Search Bar */}
-          <section>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="relative group">
-              <div className="absolute inset-0 bg-[#0ea5e9]/5 blur-3xl opacity-0 group-focus-within:opacity-100 transition-opacity rounded-3xl pointer-events-none"></div>
-              <div className="relative flex items-center glass-card rounded-2xl border border-slate-300/10 dark:border-slate-200 dark:border-white/10 bg-white/[0.02]">
-                <div className="pl-6 text-slate-700 dark:text-white/90">
-                  <span className="material-symbols-outlined text-2xl">search</span>
-                </div>
-                <input 
-                  className="w-full bg-transparent border-none h-16 py-6 pl-4 pr-6 text-lg focus:ring-0 outline-none placeholder:text-slate-800 dark:text-white/90 text-slate-900 dark:text-white font-medium" 
-                  placeholder="Pesquise por nichos, temas ou palavras-chave..." 
-                  type="text"
-                  value={busca}
-                  onChange={e => setBusca(e.target.value)}
-                />
-              </div>
-            </motion.div>
-          </section>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">
+                🪝 Banco de Ganchos
+              </h1>
+              <p className="text-white/50 text-sm sm:text-base max-w-lg">
+                100 templates virais prontos para usar. Adapte as{' '}
+                <span className="text-blue-400 font-mono text-xs">[VARIÁVEIS]</span>{' '}
+                para o seu nicho e copie direto pro roteiro.
+              </p>
+            </div>
+            <div className="hidden sm:flex flex-col items-end gap-1 shrink-0">
+              <span className="text-5xl font-black text-white/10">100</span>
+              <span className="text-xs text-white/30 uppercase tracking-widest">ganchos</span>
+            </div>
+          </div>
 
-          {/* Filters */}
-          <section className="flex flex-wrap gap-3">
-             <button
-               onClick={() => setCategoria('all')}
-               className={`px-8 py-3 rounded-full font-black text-[11px] uppercase tracking-[0.15em] transition-all hover:scale-105 ${
-                 categoria === 'all' 
-                 ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' 
-                 : 'glass-card text-slate-700 dark:text-white/90 hover:text-slate-900 dark:text-white hover:bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-slate-200 dark:border-white/10'
-               }`}
-             >
-               Todos os Ganchos
-             </button>
+          {/* Category quick stats */}
+          <div className="flex gap-5 mt-6">
             {CATEGORIAS_GANCHOS.map(cat => (
+              <div key={cat} className="hidden sm:flex flex-col items-center">
+                <span className="text-lg">{CATEGORIA_ICONS[cat]}</span>
+                <span className="text-white/30 mt-0.5" style={{ fontSize: '10px' }}>
+                  {BANCO_DE_GANCHOS.filter(g => g.categoria === cat).length}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── SEARCH + FILTERS ── */}
+      <div className="sticky top-0 z-10 bg-[#F5F0E8]/90 backdrop-blur-sm border-b border-black/5 px-4 py-3">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+            <input
+              type="text"
+              placeholder="Buscar ganchos, gatilhos..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-800 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all"
+            />
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-1 shrink-0 scrollbar-hide">
+            {categories.map(cat => (
               <button
-                key={cat.id}
-                onClick={() => setCategoria(cat.id)}
-                className={`px-8 py-3 rounded-full font-black text-[11px] uppercase tracking-[0.15em] transition-all hover:scale-105 ${
-                 categoria === cat.id 
-                 ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' 
-                 : 'glass-card text-slate-700 dark:text-white/90 hover:text-slate-900 dark:text-white hover:bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-slate-200 dark:border-white/10'
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`shrink-0 px-3 py-2 text-xs font-bold rounded-xl border transition-all ${
+                  activeCategory === cat
+                    ? 'bg-slate-900 text-white border-slate-900'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
                 }`}
               >
-                {cat.nome}
+                {cat === 'Todos' ? '✨ Todos' : `${CATEGORIA_ICONS[cat]} ${cat}`}
               </button>
             ))}
-          </section>
+          </div>
+        </div>
+      </div>
 
-          {/* Hook Cards Grid */}
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-            {filtered.map((gancho, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, scale: 0.98, y: 15 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: Math.min(i * 0.05, 0.4) }}
-                className="glass-card tool-card p-10 rounded-3xl transition-all duration-500 flex flex-col justify-between group h-full border border-white/[0.05] relative overflow-hidden"
+      {/* ── GRID ── */}
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <p className="text-xs text-slate-400 mb-4 font-medium">
+          {filtered.length} de {BANCO_DE_GANCHOS.length} ganchos
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <AnimatePresence>
+            {filtered.map((gancho) => (
+              <motion.div
+                key={gancho.id}
+                layout
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden"
               >
-                <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-                  <span className="material-symbols-outlined text-[100px] text-[#0ea5e9]">anchor</span>
-                </div>
-                
-                <div className="relative z-10 w-full">
-                  <div className="flex justify-between items-start mb-8 w-full">
-                    <span className="px-4 py-1.5 rounded-lg bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-black uppercase tracking-[0.15em]">
-                      {gancho.cat}
-                    </span>
-                    <CopyButton text={gancho.txt} onCopy={() => {
-                      localStorage.setItem('gancho_feito_hoje', new Date().toISOString().split('T')[0]);
-                      window.dispatchEvent(new Event('task_atualizada'));
-                    }} variant="icon" className="shrink-0 text-slate-800 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors p-1" />
-                  </div>
-                  
-                  <h3 className="text-xl lg:text-2xl font-bold leading-snug text-slate-900 dark:text-white tracking-tight">
-                    {gancho.txt}
-                  </h3>
-                </div>
-                
-                <div className="relative z-10 w-full flex items-center justify-between mt-12 pt-6 border-t border-slate-200 dark:border-slate-200 dark:border-white/10">
-                  <span className="text-slate-700 dark:text-white/90 text-[11px] font-bold uppercase tracking-widest flex items-center gap-2">
-                     <span className="material-symbols-outlined text-[16px] text-[#0ea5e9]/50">visibility</span>
-                     Usado {(() => {
-                        let h = 0;
-                        for(let i=0; i<gancho.txt.length; i++) h = Math.imul(31, h) + gancho.txt.charCodeAt(i) | 0;
-                        return (1 + ((Math.abs(h) % 90) / 10)).toFixed(1) + 'k+'
-                     })()}
+                <div className="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${CATEGORIA_COLORS[gancho.categoria]}`}>
+                    {CATEGORIA_ICONS[gancho.categoria]} {gancho.categoria}
                   </span>
-                  
-                  <button onClick={() => { 
-                    navigator.clipboard.writeText(gancho.txt);
-                    localStorage.setItem('gancho_feito_hoje', new Date().toISOString().split('T')[0]);
-                    window.dispatchEvent(new Event('task_atualizada'));
-                  }} className="text-[#0ea5e9] text-[11px] font-black uppercase tracking-[0.15em] flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0 outline-none">
-                     Copiar <span className="material-symbols-outlined text-[16px]">content_copy</span>
+                  <span className="text-xs text-slate-300 font-mono font-bold shrink-0 mt-0.5">#{gancho.id}</span>
+                </div>
+
+                <div
+                  className="px-4 pb-3 cursor-pointer"
+                  onClick={() => setExpandedId(expandedId === gancho.id ? null : gancho.id)}
+                >
+                  <p className="text-slate-900 font-bold text-sm leading-snug group-hover:text-slate-700 transition-colors">
+                    {gancho.template}
+                  </p>
+                </div>
+
+                <AnimatePresence>
+                  {expandedId === gancho.id && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-4 pb-3 space-y-2 border-t border-slate-50 pt-3">
+                        <div className="flex items-start gap-2">
+                          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider w-16 shrink-0 pt-0.5">Gatilho</span>
+                          <span className="text-xs text-slate-600">{gancho.gatilho}</span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider w-16 shrink-0 pt-0.5">Visual</span>
+                          <span className="text-xs text-slate-600">{gancho.visual}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="px-4 pb-4 flex items-center gap-2">
+                  <button
+                    onClick={() => setExpandedId(expandedId === gancho.id ? null : gancho.id)}
+                    className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      {expandedId === gancho.id ? 'expand_less' : 'expand_more'}
+                    </span>
+                    {expandedId === gancho.id ? 'Ocultar' : 'Ver detalhes'}
+                  </button>
+                  <div className="flex-1" />
+                  <button
+                    onClick={() => handleCopy(gancho)}
+                    className={`inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-xl font-bold transition-all ${
+                      copiedId === gancho.id
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-slate-900 hover:bg-slate-700 text-white'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      {copiedId === gancho.id ? 'check' : 'content_copy'}
+                    </span>
+                    {copiedId === gancho.id ? 'Copiado!' : 'Copiar'}
                   </button>
                 </div>
               </motion.div>
             ))}
-          </section>
-
+          </AnimatePresence>
         </div>
-      </main>
-    </>
+
+        {filtered.length === 0 && (
+          <div className="text-center py-16">
+            <span className="text-4xl mb-3 block">🔍</span>
+            <p className="text-slate-500 text-sm">Nenhum gancho encontrado.</p>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
