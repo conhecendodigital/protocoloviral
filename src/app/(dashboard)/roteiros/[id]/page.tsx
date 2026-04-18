@@ -547,7 +547,7 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                             )}
                           </div>
                         ) : (
-                          <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">
+                          <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight tracking-tight whitespace-pre-wrap">
                             &ldquo;{block.text.replace(/^["""]|["""]$/g, '')}&rdquo;
                           </p>
                         )}
