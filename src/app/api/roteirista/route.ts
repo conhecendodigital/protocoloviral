@@ -320,8 +320,9 @@ export async function POST(req: Request) {
       '[FORMATACAO OBRIGATORIA DE CADA BLOCO]',
       'Tag do bloco isolada em linha unica, EM CAIXA ALTA e entre colchetes. Ex: [GANCHO]',
       'NUNCA use negrito ou marcacao nas tags (Ex: errado: **[GANCHO]**, certo: [GANCHO]).',
-      'PROIBIDO usar aspas ("") no texto falado do roteiro. As falas devem ser limpas.',
-      'PROIBIDO usar hifens ou travessoes (-) no inicio das frases. Nao crie listas/bullet points.',
+      'PROIBIDO usar aspas ("" ou "") ao redor do texto ou falas. As falas devem ser limpas sem aspas.',
+      'PROIBIDO usar hifens ou travessoes (-) no final do bloco ou inicio.',
+      'PROIBIDO separar os blocos com "---". Apenas a tag [NOME DE BLOCO] é suficiente.',
       'Linha em branco apos cada tag.',
       'UMA frase por linha — ENTER apos cada frase.',
       'Instrucao visual entre parenteses em linha propria.',
@@ -363,6 +364,8 @@ export async function POST(req: Request) {
       '[CTA]',
       '',
       '(maximo 3 linhas)',
+      '',
+      'Apos o CTA, PARE IMEDIATAMENTE. PROIBIDO colocar "TOTAL ESTIMADO" ou calcular metas no final.',
     ].join('\n')
 
     // ─── 8. SANITIZACAO DAS MENSAGENS ────────────────────────────────────────
