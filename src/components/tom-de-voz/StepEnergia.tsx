@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { CheckCircle } from 'lucide-react'
 
 const ENERGIAS = [
   { id: 'alta', emoji: '⚡', nome: 'Alta', desc: 'Frases curtas, ritmo rápido' },
@@ -48,7 +49,7 @@ export function StepEnergia({ energia, ritmo, onEnergiaChange, onRitmoChange }: 
           >
             {energia === e.id && (
               <div className="absolute top-2 right-2">
-                <span className="material-symbols-outlined text-[#0ea5e9] text-sm">check_circle</span>
+                <CheckCircle size={14} className="text-[#0ea5e9] text-sm" />
               </div>
             )}
             <span className="text-2xl">{e.emoji}</span>
@@ -76,7 +77,7 @@ export function StepEnergia({ energia, ritmo, onEnergiaChange, onRitmoChange }: 
           >
             {ritmo === r.id && (
               <div className="absolute top-2 right-2">
-                <span className="material-symbols-outlined text-[#0ea5e9] text-sm">check_circle</span>
+                <CheckCircle size={14} className="text-[#0ea5e9] text-sm" />
               </div>
             )}
             <p className="font-bold text-sm text-slate-900 dark:text-white">{r.nome}</p>

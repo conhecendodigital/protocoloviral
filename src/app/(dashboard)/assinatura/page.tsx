@@ -54,13 +54,13 @@ export default function AssinaturaPage() {
   }
 
   const handleCheckoutSuccess = () => {
-    alert('Assinatura ativada com sucesso! Bem-vindo(a) ao Pro!')
+    console.log('Assinatura ativada!')
     setSelectedPlanForBrick(null)
     window.location.reload() // Reload to fetch updated profile
   }
 
   const handleCheckoutError = (msg: string) => {
-    alert(msg)
+    console.error(msg)
     setSelectedPlanForBrick(null)
   }
 

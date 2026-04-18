@@ -8,7 +8,7 @@ import { PROFILE_FIELDS } from '@/types/profile'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, Loader2 } from 'lucide-react'
+import { BadgeCheck, Ban, Brain, Camera, Check, CheckCircle, CheckCircle2, Clock, CloudCheck, Compass, Lightbulb, Loader2, Map, Pencil, Rocket, Smartphone, Sparkles, User, UserCheck, Users, X, Zap } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -16,6 +16,7 @@ import { parseClareza, parsePersona } from '@/lib/parser'
 import type { ClarezaParsed, PersonaParsed } from '@/lib/parser'
 import { WIZARD_SECTIONS } from '@/components/perfil/wizard-data'
 import { GamifiedQuestion } from '@/components/perfil/GamifiedQuestion'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 // ─── Section Config ────────────────────────────────────────
 const SECTION_META = {
@@ -86,12 +87,12 @@ function ClarezaTab({ data }: { data: ClarezaParsed }) {
         <div key={sec.key} className={`glass-card rounded-3xl p-6 sm:p-8 border border-${sec.color}-500/10 relative overflow-hidden`}>
           {sec.key === 'manifesto' && (
             <div className="absolute top-0 right-0 p-6 opacity-5">
-              <span className="material-symbols-outlined text-[80px] text-[#0ea5e9]">auto_awesome</span>
+              <Sparkles size={18} className="text-[80px] text-[#0ea5e9]" />
             </div>
           )}
           <div className="flex items-center gap-3 mb-5">
             <div className={`size-10 rounded-xl bg-${sec.color}-500/10 flex items-center justify-center border border-${sec.color}-500/20`}>
-              <span className={`material-symbols-outlined text-${sec.color}-400 text-xl`}>{sec.icon}</span>
+              <DynamicIcon name={sec.icon} size={20} className="text-${sec.color}-400 text-xl`}" />
             </div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">{sec.title}</h3>
           </div>
@@ -111,11 +112,11 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
       {/* Identidade Demográfica */}
       <div className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-6 opacity-5">
-          <span className="material-symbols-outlined text-[80px] text-purple-400">person_pin</span>
+          <UserCheck size={18} className="text-[80px] text-purple-400" />
         </div>
         <div className="flex items-center gap-3 mb-5">
           <div className="size-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
-            <span className="material-symbols-outlined text-purple-400 text-xl">badge</span>
+            <BadgeCheck size={20} className="text-purple-400 text-xl" />
           </div>
           <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">Perfil Demográfico</h3>
         </div>
@@ -132,7 +133,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
           ].map((item) => item.value && (
             <div key={item.label} className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-slate-200/50 dark:border-white/5">
               <div className="flex items-center gap-1.5 mb-1.5">
-                <span className="material-symbols-outlined text-purple-400 text-[14px]">{item.icon}</span>
+                <DynamicIcon name={item.icon} size={14} className="text-purple-400 text-[14px]"" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40">{item.label}</span>
               </div>
               <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.value}</p>
@@ -146,7 +147,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
         <div className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10">
           <div className="flex items-center gap-3 mb-4">
             <div className="size-10 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
-              <span className="material-symbols-outlined text-sky-400 text-xl">schedule</span>
+              <Clock size={20} className="text-sky-400 text-xl" />
             </div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">Rotina Diária</h3>
           </div>
@@ -158,7 +159,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
       <div className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10">
         <div className="flex items-center gap-3 mb-5">
           <div className="size-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20">
-            <span className="material-symbols-outlined text-rose-400 text-xl">psychology</span>
+            <Brain size={20} className="text-rose-400 text-xl" />
           </div>
           <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">Perfil Psicológico</h3>
         </div>
@@ -171,7 +172,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
           ].map((item) => item.value && (
             <div key={item.label} className={`p-5 rounded-2xl bg-${item.color}-500/5 border border-${item.color}-500/10`}>
               <div className="flex items-center gap-2 mb-2">
-                <span className={`material-symbols-outlined text-${item.color}-400 text-lg`}>{item.icon}</span>
+                <DynamicIcon name={item.icon} size={18} className="text-${item.color}-400 text-lg`}" />
                 <div>
                   <span className={`text-[10px] font-black uppercase tracking-widest text-${item.color}-400 block`}>{item.label}</span>
                 </div>
@@ -187,7 +188,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
         <div className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10">
           <div className="flex items-center gap-3 mb-5">
             <div className="size-10 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
-              <span className="material-symbols-outlined text-cyan-400 text-xl">phone_iphone</span>
+              <Smartphone size={20} className="text-cyan-400 text-xl" />
             </div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">Comportamento Digital</h3>
           </div>
@@ -219,7 +220,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
         <div className="glass-card rounded-3xl p-6 sm:p-8 border border-orange-500/10 bg-orange-500/[0.02]">
           <div className="flex items-center gap-3 mb-4">
             <div className="size-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
-              <span className="material-symbols-outlined text-orange-400 text-xl">block</span>
+              <Ban size={20} className="text-orange-400 text-xl" />
             </div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">Objeções e Barreiras</h3>
           </div>
@@ -232,7 +233,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
         <div className="glass-card rounded-3xl p-6 sm:p-8 border border-emerald-500/10 bg-emerald-500/[0.02]">
           <div className="flex items-center gap-3 mb-4">
             <div className="size-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-              <span className="material-symbols-outlined text-emerald-400 text-xl">bolt</span>
+              <Zap size={20} className="text-emerald-400 text-xl" />
             </div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">Gatilhos de Conexão</h3>
           </div>
@@ -245,7 +246,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
         <div className="glass-card rounded-3xl p-6 sm:p-8 border border-violet-500/10 bg-violet-500/[0.02]">
           <div className="flex items-center gap-3 mb-4">
             <div className="size-10 rounded-xl bg-violet-500/10 flex items-center justify-center border border-violet-500/20">
-              <span className="material-symbols-outlined text-violet-400 text-xl">map</span>
+              <Map size={20} className="text-violet-400 text-xl" />
             </div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">Mapa de Empatia</h3>
           </div>
@@ -278,7 +279,7 @@ function EmptyInsightState({ type }: { type: 'clareza' | 'persona' }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center justify-center text-center py-16 px-6">
       <div className="size-20 rounded-full bg-[#0ea5e9]/10 flex items-center justify-center mb-6 border border-[#0ea5e9]/20">
-        <span className="material-symbols-outlined text-[40px] text-[#0ea5e9]">{c.icon}</span>
+        <DynamicIcon name={c.icon} size={40} className="text-[40px] text-[#0ea5e9]"" />
       </div>
       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{c.title}</h3>
       <p className="text-sm text-slate-700 dark:text-white/60 max-w-md mb-8 leading-relaxed">{c.desc}</p>
@@ -286,7 +287,7 @@ function EmptyInsightState({ type }: { type: 'clareza' | 'persona' }) {
         href={`/prompts/${c.step}`}
         className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-sky-400 to-[#0ea5e9] text-white font-bold text-sm hover:brightness-110 transition-all active:scale-[0.97] shadow-lg shadow-[#0ea5e9]/30"
       >
-        <span className="material-symbols-outlined text-lg">auto_awesome</span>
+        <Sparkles size={18} className="text-lg" />
         Ir para {c.stepLabel}
       </Link>
     </motion.div>
@@ -404,7 +405,7 @@ export default function PerfilPage() {
                   )}
                 </div>
                 <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={handleAvatarClick}>
-                  {uploadingAvatar ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : <span className="material-symbols-outlined text-white text-2xl">photo_camera</span>}
+                  {uploadingAvatar ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : <Camera size={24} className="text-white text-2xl" />}
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleAvatarChange} />
               </div>
@@ -414,13 +415,13 @@ export default function PerfilPage() {
                 {editingName ? (
                   <div className="flex items-center gap-2">
                     <input type="text" value={tempName} onChange={(e) => setTempName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') handleCancelEditName() }} autoFocus className="text-2xl font-black text-slate-900 dark:text-white tracking-tight bg-black/5 dark:bg-white/5 border border-slate-300/20 dark:border-white/20 rounded-xl px-4 py-2 focus:outline-none focus:border-[#0ea5e9] transition-all" />
-                    <button onClick={handleSaveName} className="text-[#0ea5e9] hover:text-white transition-colors"><span className="material-symbols-outlined">check</span></button>
-                    <button onClick={handleCancelEditName} className="text-slate-500 hover:text-white transition-colors"><span className="material-symbols-outlined">close</span></button>
+                    <button onClick={handleSaveName} className="text-[#0ea5e9] hover:text-white transition-colors"><Check size={18} /></button>
+                    <button onClick={handleCancelEditName} className="text-slate-500 hover:text-white transition-colors"><X size={18} /></button>
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 group cursor-pointer" onClick={handleStartEditName}>
                     <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{getDisplayName()}</h2>
-                    <span className="material-symbols-outlined text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity text-lg">edit</span>
+                    <Pencil size={18} className="text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity text-lg" />
                   </div>
                 )}
                 <p className="text-[#0ea5e9] font-medium tracking-wide text-sm mt-1">{profile?.email}</p>
@@ -432,18 +433,18 @@ export default function PerfilPage() {
           <Tabs defaultValue="dados" className="w-full focus-visible:outline-none">
             <TabsList className="mb-8 bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 p-1.5 rounded-2xl w-full grid grid-cols-3 !h-auto min-h-[60px] sm:min-h-[50px]">
               <TabsTrigger value="dados" className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 rounded-xl font-bold py-2 sm:py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0ea5e9]/20 data-[state=active]:text-[#0ea5e9] data-[state=active]:shadow-[0_4px_8px_rgba(0,0,0,0.05)] transition-all focus-visible:ring-0 text-[11px] sm:text-sm leading-none !h-auto">
-                <span className="material-symbols-outlined text-[18px] sm:text-base">person</span>
+                <User size={16} className="text-[18px] sm:text-base" />
                 <span>Meus Dados</span>
               </TabsTrigger>
               <TabsTrigger value="clareza" className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 rounded-xl font-bold py-2 sm:py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0ea5e9]/20 data-[state=active]:text-[#0ea5e9] data-[state=active]:shadow-[0_4px_8px_rgba(0,0,0,0.05)] transition-all focus-visible:ring-0 text-[11px] sm:text-sm leading-none !h-auto">
-                <span className="material-symbols-outlined text-[18px] sm:text-base">lightbulb</span>
+                <Lightbulb size={16} className="text-[18px] sm:text-base" />
                 <div className="flex items-center gap-1">
                   <span>Sua Clareza</span>
                   {clarezaData && <span className="size-1.5 rounded-full bg-emerald-400 inline-block animate-pulse shrink-0" />}
                 </div>
               </TabsTrigger>
               <TabsTrigger value="persona" className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 rounded-xl font-bold py-2 sm:py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0ea5e9]/20 data-[state=active]:text-[#0ea5e9] data-[state=active]:shadow-[0_4px_8px_rgba(0,0,0,0.05)] transition-all focus-visible:ring-0 text-[11px] sm:text-sm leading-none !h-auto">
-                <span className="material-symbols-outlined text-[18px] sm:text-base">groups</span>
+                <Users size={16} className="text-[18px] sm:text-base" />
                 <div className="flex items-center gap-1">
                   <span>Sua Persona</span>
                   {personaData && <span className="size-1.5 rounded-full bg-emerald-400 inline-block animate-pulse shrink-0" />}
@@ -459,7 +460,7 @@ export default function PerfilPage() {
                   {/* Progress Card */}
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-white/10 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                      <span className="material-symbols-outlined text-[80px] text-[#0ea5e9]">verified</span>
+                      <BadgeCheck size={18} className="text-[80px] text-[#0ea5e9]" />
                     </div>
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div>
@@ -483,15 +484,15 @@ export default function PerfilPage() {
 
                     {completion === 100 && (
                       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-[#0ea5e9]/10 border border-emerald-500/20 text-center relative z-10">
-                        <span className="material-symbols-outlined text-[32px] text-emerald-400 mb-2 block">rocket_launch</span>
+                        <Rocket size={18} className="text-[32px] text-emerald-400 mb-2 block" />
                         <h4 className="text-lg font-black text-slate-900 dark:text-white mb-1">Perfil Completo! 🚀</h4>
                         <p className="text-sm text-slate-700 dark:text-white/70 mb-5">Agora que temos todas as suas informações, vamos criar seu primeiro conteúdo.</p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                           <Link href="/jornada" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-[#0ea5e9] text-white font-bold text-sm hover:opacity-90 transition-opacity active:scale-[0.97]">
-                            <span className="material-symbols-outlined text-lg">explore</span> Ir para a Jornada de Conteúdo
+                            <Compass size={18} className="text-lg" /> Ir para a Jornada de Conteúdo
                           </Link>
                           <Link href="/prompts" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-bold text-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors active:scale-[0.97]">
-                            <span className="material-symbols-outlined text-lg">auto_awesome</span> Gerar meu primeiro Roteiro
+                            <Sparkles size={18} className="text-lg" /> Gerar meu primeiro Roteiro
                           </Link>
                         </div>
                       </motion.div>
@@ -505,7 +506,7 @@ export default function PerfilPage() {
                         <div className="flex items-center justify-between mb-8">
                           <div className="flex items-center gap-4">
                             <div className="size-12 rounded-xl bg-[#0ea5e9]/10 flex items-center justify-center border border-[#0ea5e9]/20 shadow-inner shrink-0">
-                              <span className="material-symbols-outlined text-[#0ea5e9] text-2xl">{section.icon}</span>
+                              <DynamicIcon name={section.icon} size={24} className="text-[#0ea5e9] text-2xl"" />
                             </div>
                             <div>
                               <h3 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight">{section.title}</h3>
@@ -513,7 +514,7 @@ export default function PerfilPage() {
                           </div>
                           {!isEditingWizard && (
                             <button onClick={() => setIsEditingWizard(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-600 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                              <span className="material-symbols-outlined text-sm">edit</span> Editar
+                              <Pencil size={14} className="text-sm" /> Editar
                             </button>
                           )}
                         </div>
@@ -578,7 +579,7 @@ export default function PerfilPage() {
                         onClick={() => setIsEditingWizard(false)} 
                         className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-[#0ea5e9] text-white font-bold text-sm shadow-lg shadow-emerald-500/20 hover:brightness-110 transition-all active:scale-95 flex items-center justify-center gap-2"
                       >
-                        <span className="material-symbols-outlined">check_circle</span>
+                        <CheckCircle size={18} />
                         {completion === 100 ? "Concluir Perfil" : "Concluir Edição"}
                       </button>
                     </div>
@@ -591,7 +592,7 @@ export default function PerfilPage() {
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-900/10 rounded-3xl p-8 border border-[#0ea5e9]/20 relative overflow-hidden">
                     <div className="relative z-10">
                       <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-[#0ea5e9]">lightbulb</span> Como preencher?
+                        <Lightbulb size={18} className="text-[#0ea5e9]" /> Como preencher?
                       </h4>
                       <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-6">Essas informações são usadas para criar textos feitos sob medida para você. Escreva do jeito mais natural possível.</p>
                       <ul className="space-y-3 text-sm text-slate-700 dark:text-white/70">
@@ -606,7 +607,7 @@ export default function PerfilPage() {
                   {/* Auto-save Status */}
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className="glass-card rounded-3xl p-8 border border-slate-200 dark:border-white/10">
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-slate-500">cloud_done</span> Salvamento
+                      <CloudCheck size={18} className="text-slate-500" /> Salvamento
                     </h4>
                     <div className="space-y-4">
                       <div>

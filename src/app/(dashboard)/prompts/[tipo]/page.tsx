@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { AlertCircle, AlertTriangle, ArrowRight, CheckCircle, FileEdit, MessageCircle, RefreshCw, Sparkles } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 const generators: Record<PromptType, (p: Parameters<typeof generateClarezaPrompt>[0]) => string> = {
   clareza: generateClarezaPrompt,
@@ -93,7 +95,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <span className="material-symbols-outlined animate-spin text-[#0ea5e9] text-4xl">autorenew</span>
+        <RefreshCw size={36} className="animate-spin text-[#0ea5e9] text-4xl" />
       </div>
     )
   }
@@ -122,7 +124,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
             {!deps.met && deps.missing && (
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-6">
                 <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-amber-500 shrink-0">warning</span>
+                  <AlertTriangle size={18} className="text-amber-500 shrink-0" />
                   <div>
                     <p className="text-sm font-bold text-amber-400">
                       Faça o Passo {PROMPT_CONFIGS[deps.missing].numero} ({PROMPT_CONFIGS[deps.missing].titulo}) antes
@@ -131,7 +133,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                       Cole a resposta que o ChatGPT te deu no campo abaixo.
                     </p>
                     <Link href={`/prompts/${deps.missing}`} className="text-xs text-[#0ea5e9] font-bold hover:underline flex items-center gap-1 w-max">
-                      Ir para Prompt {PROMPT_CONFIGS[deps.missing].numero} <span className="material-symbols-outlined text-[14px]">arrow_right_alt</span>
+                      Ir para Prompt {PROMPT_CONFIGS[deps.missing].numero} <ArrowRight size={14} className="text-[14px]" />
                     </Link>
                   </div>
                 </div>
@@ -149,7 +151,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                 return (
                   <div key={dep}>
                     <label className="text-sm font-semibold text-slate-800 dark:text-slate-300 mb-2 flex items-center gap-2 uppercase tracking-wider">
-                      {isSatisfied ? <span className="material-symbols-outlined text-emerald-500 text-[18px]">check_circle</span> : <span className="material-symbols-outlined text-amber-500 text-[18px]">error</span>}
+                      {isSatisfied ? <CheckCircle size={18} className="text-emerald-500 text-[18px]" /> : <AlertCircle size={18} className="text-amber-500 text-[18px]" />}
                       Resposta do Passo {depConfig.numero} ({depConfig.titulo})
                     </label>
                     <Textarea
@@ -183,7 +185,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
               disabled={!deps.met}
               className="shimmer-btn w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed group transition-transform hover:scale-[1.02] active:scale-95"
             >
-              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">auto_awesome</span>
+              <Sparkles size={18} className="group-hover:scale-110 transition-transform" />
               {generated ? 'Gerar de Novo' : `Gerar Meu Texto`}
             </button>
           </motion.div>
@@ -192,7 +194,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
           {generated && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-xl p-6 border-l-4 border-l-[#0ea5e9]">
               <label className="text-sm font-bold flex items-center gap-2 text-slate-900 dark:text-white mb-2 uppercase tracking-wide">
-                <span className="material-symbols-outlined text-[#0ea5e9]">chat</span>
+                <MessageCircle size={18} className="text-[#0ea5e9]" />
                 Resposta do ChatGPT
               </label>
               <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 mb-4">
@@ -219,14 +221,14 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                       className="shimmer-btn w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-lg group transition-transform hover:scale-[1.02] active:scale-95"
                     >
                       <span>Próximo Passo: {PROMPT_CONFIGS[NEXT_PROMPT[tipo]!].titulo}</span>
-                      <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                      <ArrowRight size={20} className="text-xl group-hover:translate-x-1 transition-transform" />
                     </Link>
                   ) : (
                     <Link
                       href="/prompts"
                       className="w-full py-4 rounded-xl flex items-center justify-center gap-3 text-slate-900 dark:text-white font-bold text-lg bg-gradient-to-r from-emerald-500 to-green-400 transition-transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-500/20"
                     >
-                      <span className="material-symbols-outlined text-xl">check_circle</span>
+                      <CheckCircle size={20} className="text-xl" />
                       <span>Tudo Pronto! 🎉</span>
                     </Link>
                   )}
@@ -262,7 +264,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
               </div>
               <div className="text-[10px] text-slate-700 dark:text-white/90 font-mono">gerador_texto_{config.tipo}</div>
               <button onClick={handleCopy} disabled={!generated} className="flex items-center gap-2 text-slate-800 dark:text-white/90 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors disabled:opacity-50">
-                <span className="material-symbols-outlined text-sm">{copied ? 'check' : 'content_copy'}</span>
+                <DynamicIcon name={copied ? 'check' : 'content_copy'} size={14} className="text-sm"" />
                 <span className="text-[10px] font-bold uppercase">{copied ? 'Copiado' : 'Copiar'}</span>
               </button>
             </div>
@@ -277,7 +279,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                  </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full opacity-50 space-y-4 text-center">
-                   <span className="material-symbols-outlined text-4xl">edit_note</span>
+                   <FileEdit size={36} className="text-4xl" />
                    <p>Clique em &quot;Gerar Meu Texto&quot; para começar</p>
                 </div>
               )}

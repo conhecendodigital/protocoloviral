@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
 import Link from 'next/link'
+import { Check, Copy, FileEdit, Pencil, Plus, RefreshCw, Search, SearchX, Sparkles, Trash2, Video, X } from 'lucide-react'
 
 interface Roteiro {
   id: string
@@ -164,7 +165,7 @@ export default function RoteirosPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-3">
-          <span className="material-symbols-outlined animate-spin text-[#0ea5e9] text-4xl">autorenew</span>
+          <RefreshCw size={36} className="animate-spin text-[#0ea5e9] text-4xl" />
           <span className="text-sm text-slate-400">Carregando roteiros...</span>
         </div>
       </div>
@@ -182,7 +183,7 @@ export default function RoteirosPage() {
               Minha Biblioteca 📚
             </h1>
             <Link href="/roteirista" className="flex items-center gap-1.5 bg-[#0ea5e9] hover:bg-[#0ea5e9]/90 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-[#0ea5e9]/20">
-              <span className="material-symbols-outlined text-sm">add</span>
+              <Plus size={14} className="text-sm" />
               Novo Roteiro
             </Link>
           </div>
@@ -194,7 +195,7 @@ export default function RoteirosPage() {
         {/* ═══ SEARCH BAR ═══ */}
         <div className="mb-6">
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-lg">search</span>
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-lg" />
             <input
               type="text"
               value={searchQuery}
@@ -204,7 +205,7 @@ export default function RoteirosPage() {
             />
             {searchQuery && (
               <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white/70">
-                <span className="material-symbols-outlined text-sm">close</span>
+                <X size={14} className="text-sm" />
               </button>
             )}
           </div>
@@ -213,11 +214,11 @@ export default function RoteirosPage() {
         {/* ═══ TABS ═══ */}
         <div className="flex items-center gap-1 mb-6">
           <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20">
-            <span className="material-symbols-outlined text-sm">edit_note</span>
+            <FileEdit size={14} className="text-sm" />
             Roteiros {roteiros.length}
           </span>
           <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-slate-500 dark:text-white/50 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-sm">videocam</span>
+            <Video size={14} className="text-sm" />
             Vídeos
           </span>
         </div>
@@ -235,7 +236,7 @@ export default function RoteirosPage() {
               Vá para <strong>Produzir</strong> no menu, escolha um tema e gere seu primeiro roteiro com a IA.
             </p>
             <Link href="/roteirista" className="inline-flex items-center gap-2 bg-[#0ea5e9] hover:bg-[#0ea5e9]/90 text-white text-sm font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-[#0ea5e9]/20">
-              <span className="material-symbols-outlined text-lg">auto_awesome</span>
+              <Sparkles size={18} className="text-lg" />
               Criar Primeiro Roteiro
             </Link>
           </motion.div>
@@ -273,7 +274,7 @@ export default function RoteirosPage() {
                       onClick={(e) => { e.stopPropagation(); handleDelete(r.id) }}
                       className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
                     >
-                      <span className="material-symbols-outlined text-[14px]">delete</span>
+                      <Trash2 size={14} className="text-[14px]" />
                     </button>
                   </div>
 
@@ -329,9 +330,7 @@ export default function RoteirosPage() {
                               onClick={(e) => { e.stopPropagation(); handleCopy(r.roteiro, r.id) }}
                               className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
                             >
-                              <span className="material-symbols-outlined text-[14px]">
-                                {copiedId === r.id ? 'check' : 'content_copy'}
-                              </span>
+                              {copiedId === r.id ? <Check size={14} /> : <Copy size={14} />}
                               {copiedId === r.id ? 'Copiado!' : 'Copiar'}
                             </button>
                             {isPro && (
@@ -343,9 +342,7 @@ export default function RoteirosPage() {
                                     : 'border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5'
                                 }`}
                               >
-                                <span className="material-symbols-outlined text-[14px]">
-                                  {savingId === r.id ? 'autorenew' : editingId === r.id ? 'check' : 'edit'}
-                                </span>
+{savingId === r.id ? <RefreshCw size={14} /> : editingId === r.id ? <Check size={14} /> : <Pencil size={14} />}
                                 {savingId === r.id ? 'Salvando...' : editingId === r.id ? 'Salvar' : 'Editar'}
                               </button>
                             )}
@@ -353,7 +350,7 @@ export default function RoteirosPage() {
                               onClick={(e) => { e.stopPropagation(); setExpandedId(null); setEditingId(null) }}
                               className="ml-auto text-slate-400 hover:text-slate-600 dark:hover:text-white/70 transition-colors"
                             >
-                              <span className="material-symbols-outlined text-lg">close</span>
+                              <X size={18} className="text-lg" />
                             </button>
                           </div>
 
@@ -383,7 +380,7 @@ export default function RoteirosPage() {
         {/* Search no results */}
         {searchQuery && filteredRoteiros.length === 0 && roteiros.length > 0 && (
           <div className="text-center py-12">
-            <span className="material-symbols-outlined text-4xl text-slate-300 dark:text-white/20 mb-3 block">search_off</span>
+            <SearchX size={36} className="text-4xl text-slate-300 dark:text-white/20 mb-3 block" />
             <p className="text-slate-500 dark:text-white/50 text-sm">
               Nenhum roteiro encontrado para &quot;{searchQuery}&quot;
             </p>

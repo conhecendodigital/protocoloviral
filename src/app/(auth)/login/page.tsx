@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
+import { ArrowRight, AtSign, CheckCircle, Eye, EyeOff, Lock, RefreshCw } from 'lucide-react'
 
 export default function LoginPage() {
   const [mode, setMode] = useState<'login' | 'signup'>('login')
@@ -94,7 +95,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 dark:text-white/90 ml-1">E-mail Corporativo</label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl">alternate_email</span>
+                <AtSign size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl" />
                 <input 
                   type="email" 
                   value={email}
@@ -111,11 +112,11 @@ export default function LoginPage() {
               <div className="flex justify-between items-center px-1">
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 dark:text-white/90">Senha de Acesso</label>
                 {mode === 'login' && (
-                  <a className="text-xs font-semibold text-[#0ea5e9] hover:text-[#0ea5e9]/80 transition-colors" href="#">Esqueceu?</a>
+                  <a className="text-xs font-semibold text-[#0ea5e9] hover:text-[#0ea5e9]/80 transition-colors" href="mailto:suporte@protocoloviral.com.br">Esqueceu?</a>
                 )}
               </div>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl">lock</span>
+                <Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl" />
                 <input 
                   type={showPassword ? "text" : "password"} 
                   value={password}
@@ -130,9 +131,7 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 hover:text-slate-800 dark:text-slate-300 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-xl">
-                    {showPassword ? 'visibility_off' : 'visibility'}
-                  </span>
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
@@ -142,7 +141,7 @@ export default function LoginPage() {
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-2 overflow-hidden">
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 dark:text-white/90 ml-1">Confirmar Senha</label>
                 <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl">lock</span>
+                  <Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl" />
                   <input 
                     type={showPassword ? "text" : "password"} 
                     value={confirmPassword}
@@ -160,7 +159,7 @@ export default function LoginPage() {
             {error && <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl p-3">{error}</p>}
             {success && (
               <div className="flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3">
-                <span className="material-symbols-outlined text-lg">check_circle</span>
+                <CheckCircle size={18} className="text-lg" />
                 {success}
               </div>
             )}
@@ -173,12 +172,12 @@ export default function LoginPage() {
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined animate-spin text-xl">sync</span> Processando...
+                  <RefreshCw size={20} className="animate-spin text-xl" /> Processando...
                 </span>
               ) : (
                 <>
                   <span>{mode === 'login' ? 'Entrar na Plataforma' : 'Criar Conta Agora'}</span>
-                  <span className="material-symbols-outlined text-xl">arrow_forward</span>
+                  <ArrowRight size={20} className="text-xl" />
                 </>
               )}
             </button>
@@ -199,9 +198,9 @@ export default function LoginPage() {
             </button>
           </p>
           <div className="flex justify-center gap-6 text-xs font-medium text-slate-700 dark:text-white/90">
-            <a className="hover:text-slate-800 dark:text-slate-300" href="#">Termos de Uso</a>
-            <a className="hover:text-slate-800 dark:text-slate-300" href="#">Privacidade</a>
-            <a className="hover:text-slate-800 dark:text-slate-300" href="#">Suporte</a>
+            <a className="hover:text-slate-800 dark:text-slate-300" href="/termos">Termos de Uso</a>
+            <a className="hover:text-slate-800 dark:text-slate-300" href="/privacidade">Privacidade</a>
+            <a className="hover:text-slate-800 dark:text-slate-300" href="mailto:suporte@protocoloviral.com.br">Suporte</a>
           </div>
         </div>
       </motion.div>

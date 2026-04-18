@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 export type RoteiroMode = 'fast' | 'premium' | 'search'
 
@@ -60,9 +61,7 @@ export function ModeSelector({ selected, onSelect, disabled }: Props) {
             {isActive && (
               <motion.div layoutId="mode-sel-bg" className="absolute inset-0 rounded-2xl opacity-50 pointer-events-none" />
             )}
-            <span className={cn("material-symbols-outlined text-3xl mb-3 block", mode.color)}>
-              {mode.icon}
-            </span>
+            <DynamicIcon name={mode.icon} size={30} className={cn("mb-3 block", mode.color)} />
             <h3 className="font-bold text-slate-900 dark:text-white text-sm">
               {mode.title}
             </h3>

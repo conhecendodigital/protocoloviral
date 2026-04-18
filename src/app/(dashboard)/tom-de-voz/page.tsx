@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Loader2 } from 'lucide-react'
+import { CheckCircle, ChevronLeft, ChevronRight, Clock3, Loader2, Mic, Mic2, Plus, Save, Star, Trash2 } from 'lucide-react'
 import { useVoiceProfiles } from '@/hooks/use-voice-profiles'
 import { StepRelacao } from '@/components/tom-de-voz/StepRelacao'
 import { StepEnergia } from '@/components/tom-de-voz/StepEnergia'
@@ -117,7 +117,7 @@ export default function TomDeVozPage() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pt-4">
           <div className="flex items-center gap-4 mb-1">
             <div className="size-14 bg-gradient-to-br from-violet-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-              <span className="material-symbols-outlined text-white text-3xl">record_voice_over</span>
+              <Mic2 size={30} className="text-white text-3xl" />
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -230,7 +230,7 @@ export default function TomDeVozPage() {
                       onClick={() => step === 1 ? setShowWizard(false) : setStep(s => s - 1)}
                       className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
-                      <span className="material-symbols-outlined text-lg">chevron_left</span>
+                      <ChevronLeft size={18} className="text-lg" />
                       Voltar
                     </button>
 
@@ -241,7 +241,7 @@ export default function TomDeVozPage() {
                         className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#0ea5e9] text-white font-bold text-sm hover:bg-[#0ea5e9]/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#0ea5e9]/20"
                       >
                         Próximo
-                        <span className="material-symbols-outlined text-lg">chevron_right</span>
+                        <ChevronRight size={18} className="text-lg" />
                       </button>
                     ) : (
                       <button
@@ -256,12 +256,12 @@ export default function TomDeVozPage() {
                           </>
                         ) : saveSuccess ? (
                           <>
-                            <span className="material-symbols-outlined text-lg">check_circle</span>
+                            <CheckCircle size={18} className="text-lg" />
                             Salvo!
                           </>
                         ) : (
                           <>
-                            <span className="material-symbols-outlined text-lg">save</span>
+                            <Save size={18} className="text-lg" />
                             Salvar Tom de Voz
                           </>
                         )}
@@ -297,7 +297,7 @@ export default function TomDeVozPage() {
                 className="w-full p-6 rounded-2xl border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-[#0ea5e9] dark:hover:border-[#0ea5e9] bg-white/50 dark:bg-white/[0.02] hover:bg-[#0ea5e9]/5 transition-all group flex items-center justify-center gap-3"
               >
                 <div className="size-12 rounded-xl bg-[#0ea5e9]/10 flex items-center justify-center group-hover:bg-[#0ea5e9]/20 transition-colors">
-                  <span className="material-symbols-outlined text-[#0ea5e9] text-2xl">add</span>
+                  <Plus size={24} className="text-[#0ea5e9] text-2xl" />
                 </div>
                 <div className="text-left">
                   <p className="font-bold text-slate-900 dark:text-white">Criar Novo Tom de Voz</p>
@@ -313,7 +313,7 @@ export default function TomDeVozPage() {
                   className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-8 sm:p-12 text-center"
                 >
                   <div className="size-20 mx-auto mb-6 bg-gradient-to-br from-violet-500/20 to-pink-500/20 rounded-full flex items-center justify-center">
-                    <span className="material-symbols-outlined text-violet-400 text-4xl">mic</span>
+                    <Mic size={36} className="text-violet-400 text-4xl" />
                   </div>
                   <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
                     Nenhum tom de voz configurado
@@ -337,7 +337,7 @@ export default function TomDeVozPage() {
                         {profile.is_default && (
                           <div className="absolute top-3 right-3">
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#0ea5e9]/10 text-[#0ea5e9] text-[10px] font-bold uppercase tracking-wider border border-[#0ea5e9]/20">
-                              <span className="material-symbols-outlined text-xs">star</span>
+                              <Star size={18} className="text-xs" />
                               Padrão
                             </span>
                           </div>
@@ -345,7 +345,7 @@ export default function TomDeVozPage() {
 
                         <div className="flex items-center gap-3 mb-4">
                           <div className="size-10 rounded-xl bg-gradient-to-br from-violet-500/20 to-pink-500/20 flex items-center justify-center border border-violet-500/20">
-                            <span className="material-symbols-outlined text-violet-400 text-lg">record_voice_over</span>
+                            <Mic2 size={18} className="text-violet-400 text-lg" />
                           </div>
                           <div>
                             <h3 className="font-bold text-slate-900 dark:text-white">{profile.name}</h3>
@@ -378,12 +378,12 @@ export default function TomDeVozPage() {
                         <div className="flex items-center gap-1.5 mb-4">
                           {profile.enriched_profile?.schema_version ? (
                             <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-medium">
-                              <span className="material-symbols-outlined text-sm">check_circle</span>
+                              <CheckCircle size={14} className="text-sm" />
                               Perfil enriquecido pela IA
                             </span>
                           ) : (
                             <span className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1 font-medium">
-                              <span className="material-symbols-outlined text-sm">pending</span>
+                              <Clock3 size={14} className="text-sm" />
                               Aguardando enriquecimento
                             </span>
                           )}
@@ -403,7 +403,7 @@ export default function TomDeVozPage() {
                             onClick={() => handleDeleteProfile(profile.id)}
                             className="py-2 px-4 rounded-xl bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors"
                           >
-                            <span className="material-symbols-outlined text-sm">delete</span>
+                            <Trash2 size={14} className="text-sm" />
                           </button>
                         </div>
                       </motion.div>

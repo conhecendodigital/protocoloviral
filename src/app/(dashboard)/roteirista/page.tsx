@@ -10,6 +10,8 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { useProfile } from '@/hooks/use-profile'
 import { ScriptRenderer } from '@/components/roteirista/ScriptRenderer'
+import { ArrowUp, BarChart3, Brain, CheckCircle, ChevronLeft, ChevronRight, FileEdit, LayoutDashboard, Mic2, Plus, RefreshCw, SlidersHorizontal, Sparkles, X } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 // ─── Streaming text with ChatGPT-style cursor ─────────────────
 function StreamingText({ content }: { content: string }) {
@@ -96,6 +98,7 @@ function RoteiristaContent() {
   const [activeTab, setActiveTab] = useState<'roteiro' | 'analisar'>('roteiro')
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
 
+  const [urlError, setUrlError] = useState<string | null>(null)
   const activeMessages = activeTab === 'roteiro' ? messages : analisarMessages
   const hasMessages = activeMessages.length > 0
 
@@ -218,10 +221,11 @@ function RoteiristaContent() {
   // ─── Handle Analyze Flow ─────────────────────────────
   const handleAnalise = async (urlStr: string) => {
     if (!urlStr.startsWith('http')) {
-      alert('Por favor, insira uma URL válida (http/https).')
+      setUrlError('Insira uma URL válida começando com http ou https.')
       setIsGenerating(false)
       return;
     }
+    setUrlError(null)
 
     const userMsg: Message = {
       id: crypto.randomUUID(),
@@ -422,14 +426,14 @@ function RoteiristaContent() {
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="flex flex-wrap gap-2 mb-3">
             {selectedFormato && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-500/10 text-violet-400 text-xs font-bold border border-violet-500/20">
-                <span className="material-symbols-outlined text-sm">view_carousel</span>
+                <LayoutDashboard size={14} className="text-sm" />
                 {selectedFormato.titulo}
-                <button onClick={() => setSelectedFormato(null)} className="hover:text-red-400 transition-colors ml-1"><span className="material-symbols-outlined text-sm">close</span></button>
+                <button onClick={() => setSelectedFormato(null)} className="hover:text-red-400 transition-colors ml-1"><X size={14} className="text-sm" /></button>
               </span>
             )}
             {selectedVoice && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
-                <span className="material-symbols-outlined text-sm">record_voice_over</span>
+                <Mic2 size={14} className="text-sm" />
                 {selectedVoice.name}
               </span>
             )}
@@ -440,10 +444,10 @@ function RoteiristaContent() {
       {/* Tabs */}
       <div className="flex items-center gap-1 mb-3">
         <button onClick={() => setActiveTab('roteiro')} className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${activeTab === 'roteiro' ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' : 'text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}>
-          <span className="material-symbols-outlined text-sm">edit_note</span> Roteiro
+          <FileEdit size={14} className="text-sm" /> Roteiro
         </button>
         <button onClick={() => setActiveTab('analisar')} className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${activeTab === 'analisar' ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' : 'text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}>
-          <span className="material-symbols-outlined text-sm">analytics</span> Analisar
+          <BarChart3 size={14} className="text-sm" /> Analisar
         </button>
       </div>
 
@@ -453,24 +457,24 @@ function RoteiristaContent() {
         {activeTab === 'roteiro' && (
           <div className="relative" ref={plusMenuRef}>
             <button onClick={() => { setShowPlusMenu(!showPlusMenu); setShowVoiceMenu(false); setShowFormatMenu(false) }} className="size-9 rounded-xl bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/15 flex items-center justify-center transition-colors shrink-0 mb-0.5">
-              <span className={`material-symbols-outlined text-slate-600 dark:text-white/60 text-lg transition-transform ${showPlusMenu ? 'rotate-45' : ''}`}>add</span>
+              <Plus size={18} className={`text-slate-600 dark:text-white/60 text-lg transition-transform ${showPlusMenu ? 'rotate-45' : ''}`} />
             </button>
 
             <AnimatePresence>
               {showPlusMenu && !showVoiceMenu && !showFormatMenu && (
                 <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute bottom-12 left-0 w-56 bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl shadow-black/10 dark:shadow-black/40 overflow-hidden z-50">
                   <button onClick={() => { setShowFormatMenu(true); setShowPlusMenu(false) }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                    <span className="material-symbols-outlined text-[#0ea5e9] text-lg">view_carousel</span>
+                    <LayoutDashboard size={18} className="text-[#0ea5e9] text-lg" />
                     <div className="text-left"><p className="font-semibold">Formato Viral</p><p className="text-[10px] text-slate-400 dark:text-white/40">Escolher estrutura</p></div>
-                    <span className="material-symbols-outlined text-slate-400 ml-auto text-sm">chevron_right</span>
+                    <ChevronRight size={14} className="text-slate-400 ml-auto text-sm" />
                   </button>
                   <button onClick={() => { setShowVoiceMenu(true); setShowPlusMenu(false) }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                    <span className="material-symbols-outlined text-violet-400 text-lg">record_voice_over</span>
+                    <Mic2 size={18} className="text-violet-400 text-lg" />
                     <div className="text-left"><p className="font-semibold">Tom de Voz</p><p className="text-[10px] text-slate-400 dark:text-white/40">Alterar estilo</p></div>
-                    <span className="material-symbols-outlined text-slate-400 ml-auto text-sm">chevron_right</span>
+                    <ChevronRight size={14} className="text-slate-400 ml-auto text-sm" />
                   </button>
                   <Link href="/tom-de-voz" className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors border-t border-slate-100 dark:border-white/5">
-                    <span className="material-symbols-outlined text-emerald-400 text-lg">tune</span>
+                    <SlidersHorizontal size={18} className="text-emerald-400 text-lg" />
                     <div className="text-left"><p className="font-semibold">Configurar Tom</p><p className="text-[10px] text-slate-400 dark:text-white/40">Criar novo perfil</p></div>
                   </Link>
                 </motion.div>
@@ -479,12 +483,12 @@ function RoteiristaContent() {
               {showFormatMenu && (
                 <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute bottom-12 left-0 w-64 max-h-72 overflow-y-auto bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl shadow-black/10 dark:shadow-black/40 z-50 custom-scrollbar">
                   <div className="sticky top-0 bg-white dark:bg-[#141926] px-4 py-2.5 border-b border-slate-100 dark:border-white/5">
-                    <button onClick={() => { setShowFormatMenu(false); setShowPlusMenu(true) }} className="flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-white/50 hover:text-[#0ea5e9]"><span className="material-symbols-outlined text-sm">chevron_left</span> Voltar</button>
+                    <button onClick={() => { setShowFormatMenu(false); setShowPlusMenu(true) }} className="flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-white/50 hover:text-[#0ea5e9]"><ChevronLeft size={14} className="text-sm" /> Voltar</button>
                   </div>
-                  <button onClick={() => { setSelectedFormato(null); setShowFormatMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!selectedFormato ? 'text-[#0ea5e9]' : 'text-slate-600 dark:text-white/70'}`}><span className="material-symbols-outlined text-sm">close</span> Sem formato</button>
+                  <button onClick={() => { setSelectedFormato(null); setShowFormatMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!selectedFormato ? 'text-[#0ea5e9]' : 'text-slate-600 dark:text-white/70'}`}><X size={14} className="text-sm" /> Sem formato</button>
                   {formatos.map(f => (
                     <button key={f.id} onClick={() => { setSelectedFormato(f); setShowFormatMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${selectedFormato?.id === f.id ? 'text-[#0ea5e9] bg-[#0ea5e9]/5' : 'text-slate-600 dark:text-white/70'}`}>
-                      <span className="material-symbols-outlined text-lg opacity-70">{f.icone}</span>
+                      <DynamicIcon name={f.icone} size={18} className="text-lg opacity-70"" />
                       {f.titulo}
                     </button>
                   ))}
@@ -494,9 +498,9 @@ function RoteiristaContent() {
               {showVoiceMenu && (
                 <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }} className="absolute bottom-12 left-0 w-64 max-h-72 overflow-y-auto bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl shadow-xl shadow-black/10 dark:shadow-black/40 z-50 custom-scrollbar">
                   <div className="sticky top-0 bg-white dark:bg-[#141926] px-4 py-2.5 border-b border-slate-100 dark:border-white/5">
-                    <button onClick={() => { setShowVoiceMenu(false); setShowPlusMenu(true) }} className="flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-white/50 hover:text-[#0ea5e9]"><span className="material-symbols-outlined text-sm">chevron_left</span> Voltar</button>
+                    <button onClick={() => { setShowVoiceMenu(false); setShowPlusMenu(true) }} className="flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-white/50 hover:text-[#0ea5e9]"><ChevronLeft size={14} className="text-sm" /> Voltar</button>
                   </div>
-                  <button onClick={() => { setSelectedVoiceId(null); setShowVoiceMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!selectedVoiceId ? 'text-[#0ea5e9]' : 'text-slate-600 dark:text-white/70'}`}><span className="material-symbols-outlined text-sm">auto_awesome</span> Automático (Neutro)</button>
+                  <button onClick={() => { setSelectedVoiceId(null); setShowVoiceMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!selectedVoiceId ? 'text-[#0ea5e9]' : 'text-slate-600 dark:text-white/70'}`}><Sparkles size={14} className="text-sm" /> Automático (Neutro)</button>
                   {voiceProfiles.map(v => (
                     <button key={v.id} onClick={() => { setSelectedVoiceId(v.id); setShowVoiceMenu(false) }} className={`w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors flex items-center justify-between ${selectedVoiceId === v.id ? 'text-[#0ea5e9] bg-[#0ea5e9]/5' : 'text-slate-600 dark:text-white/70'}`}>
                       <span>{v.name}</span>
@@ -522,9 +526,17 @@ function RoteiristaContent() {
         />
 
         <button onClick={handleSend} disabled={!input.trim() || isGenerating} className={`size-9 rounded-xl flex items-center justify-center shrink-0 mb-0.5 transition-all ${input.trim() && !isGenerating ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/30 hover:bg-[#0ea5e9]/90 scale-100' : 'bg-slate-200 dark:bg-white/10 text-slate-400 dark:text-white/30 scale-95'}`}>
-          {isGenerating ? <span className="material-symbols-outlined text-lg animate-spin">refresh</span> : <span className="material-symbols-outlined text-lg">arrow_upward</span>}
+          {isGenerating ? <RefreshCw size={18} className="text-lg animate-spin" /> : <ArrowUp size={18} className="text-lg" />}
         </button>
       </div>
+
+      {urlError && (
+        <div className="flex items-center gap-2 mt-2 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-500 font-medium">
+          <X size={14} className="shrink-0" />
+          {urlError}
+          <button onClick={() => setUrlError(null)} className="ml-auto"><X size={12} /></button>
+        </div>
+      )}
 
       <p className="text-center text-[11px] text-slate-400 dark:text-white/30 mt-2">Roteirista pode cometer erros. Revise o conteúdo gerado.</p>
     </div>
@@ -538,10 +550,9 @@ function RoteiristaContent() {
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
             <div className={`size-20 mx-auto mb-6 rounded-3xl flex items-center justify-center shadow-[0_0_40px_rgba(14,165,233,0.15)] ${activeTab === 'analisar' ? 'bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-500/20 border border-[#0ea5e9]/20' : 'bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-500/20 border border-[#0ea5e9]/20'}`}>
-              <span className="material-symbols-outlined text-[#0ea5e9] text-4xl">
-                {activeTab === 'analisar' ? 'analytics' : 'auto_awesome'}
-              </span>
+              {activeTab === 'analisar' ? <BarChart3 size={36} className="text-[#0ea5e9]" /> : <Sparkles size={36} className="text-[#0ea5e9]" />}
             </div>
+
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
               {activeTab === 'analisar' ? 'Extrair Formato de um Vídeo' : 'O que vamos criar hoje?'}
             </h1>
@@ -557,7 +568,7 @@ function RoteiristaContent() {
           {activeTab === 'analisar' && (
             <div className="mb-8 p-6 max-w-xl mx-auto flex items-center gap-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.05] rounded-3xl text-left">
               <div className="size-12 shrink-0 rounded-2xl bg-violet-500/10 text-violet-500 flex items-center justify-center">
-                 <span className="material-symbols-outlined">psychology</span>
+                 <Brain size={18} />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1">Como funciona a engenharia?</h3>
@@ -592,14 +603,14 @@ function RoteiristaContent() {
                       // ── SUCCESS STATE — shown while redirecting ──
                       <div className="flex flex-col items-center gap-4 py-6 px-4 text-center">
                         <div className="size-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-emerald-400 text-4xl">check_circle</span>
+                          <CheckCircle size={36} className="text-emerald-400 text-4xl" />
                         </div>
                         <div>
                           <p className="font-black text-slate-900 dark:text-white text-lg mb-1">✅ Roteiro Pronto!</p>
                           <p className="text-sm text-slate-500 dark:text-white/50">Abrindo o editor...</p>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-slate-400">
-                          <span className="material-symbols-outlined animate-spin text-sm">autorenew</span>
+                          <RefreshCw size={14} className="animate-spin text-sm" />
                           Redirecionando para o editor
                         </div>
                       </div>

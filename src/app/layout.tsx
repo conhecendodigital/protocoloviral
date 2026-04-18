@@ -25,7 +25,6 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Mapa do Engajamento — Crie conteúdo com direção",
   description: "Gere prompts personalizados, use IA como apoio estratégico e crie conteúdo que conecta e vende. Por @omatheus.ai",
-  keywords: ["instagram", "conteúdo", "engajamento", "prompts", "IA", "marketing digital"],
   icons: {
     icon: '/icon.svg',
   },
@@ -38,10 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <head>
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-      </head>
+      <head />
       <body className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}

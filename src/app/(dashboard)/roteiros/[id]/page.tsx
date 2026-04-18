@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { BANCO_DE_GANCHOS, CATEGORIAS_GANCHOS, type Gancho } from '@/lib/ganchos'
+import { ArrowLeft, ArrowLeftRight, BookOpen, Check, Clock, Copy, Mic, Pencil, RefreshCw, Sparkles, Type, X } from 'lucide-react'
 
 const CATEGORIA_ICONS: Record<string, string> = {
   'Número + Segredo': '🔢',
@@ -324,7 +325,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen bg-[#F5F0E8]">
       <div className="flex flex-col items-center gap-3">
-        <span className="material-symbols-outlined animate-spin text-[#0ea5e9] text-4xl">autorenew</span>
+        <RefreshCw size={36} className="animate-spin text-[#0ea5e9] text-4xl" />
         <span className="text-sm text-slate-500">Carregando roteiro...</span>
       </div>
     </div>
@@ -347,18 +348,18 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
       {/* ── TOP BAR ── */}
       <div className="sticky top-0 z-20 bg-[#F5F0E8]/80 backdrop-blur-sm border-b border-black/5 px-4 py-3 flex items-center gap-3">
         <Link href="/roteirista" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors">
-          <span className="material-symbols-outlined text-lg">arrow_back</span>
+          <ArrowLeft size={18} className="text-lg" />
           <span className="hidden sm:inline">Voltar</span>
         </Link>
         <div className="flex-1" />
         {saving && (
           <span className="text-xs text-slate-400 flex items-center gap-1">
-            <span className="material-symbols-outlined animate-spin text-sm">autorenew</span>
+            <RefreshCw size={14} className="animate-spin text-sm" />
             Salvando...
           </span>
         )}
         <Link href="/roteiros" className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
-          <span className="material-symbols-outlined text-sm">library_books</span>
+          <BookOpen size={14} className="text-sm" />
           <span className="hidden sm:inline">Biblioteca</span>
         </Link>
       </div>
@@ -388,17 +389,17 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
           {/* Metrics row */}
           <div className="flex justify-center gap-8">
             <div className="text-center">
-              <span className="material-symbols-outlined text-white/50 text-xl block">schedule</span>
+              <Clock size={20} className="text-white/50 text-xl block" />
               <span className="text-2xl font-black text-white">{metrics.totalTime > 0 ? `${metrics.totalTime}s` : `${Math.round(metrics.wordCount / 2.5)}s`}</span>
               <span className="text-xs text-white/40 uppercase tracking-wider">Duração</span>
             </div>
             <div className="text-center">
-              <span className="material-symbols-outlined text-white/50 text-xl block">mic</span>
+              <Mic size={20} className="text-white/50 text-xl block" />
               <span className="text-2xl font-black text-white">{blocks.length}</span>
               <span className="text-xs text-white/40 uppercase tracking-wider">Seções</span>
             </div>
             <div className="text-center">
-              <span className="material-symbols-outlined text-white/50 text-xl block">text_fields</span>
+              <Type size={20} className="text-white/50 text-xl block" />
               <span className="text-2xl font-black text-white">{metrics.wordCount}</span>
               <span className="text-xs text-white/40 uppercase tracking-wider">Palavras</span>
             </div>
@@ -479,7 +480,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
                           )}
                           {block.timeSeconds > 0 && (
                             <p className="text-sm text-slate-400 flex items-center gap-1">
-                              <span className="material-symbols-outlined text-sm">schedule</span>
+                              <Clock size={14} className="text-sm" />
                               {block.timeSeconds}s
                             </p>
                           )}
@@ -492,7 +493,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
                           onClick={() => startEdit(idx)}
                           className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
                         >
-                          <span className="material-symbols-outlined text-sm">edit</span>
+                          <Pencil size={14} className="text-sm" />
                           Editar
                         </button>
                         {block.type === 'GANCHO' && (
@@ -500,7 +501,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
                             onClick={() => { setHookDrawerOpen(true); setHookDrawerBlockIdx(idx) }}
                             className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors shadow-sm"
                           >
-                            <span className="material-symbols-outlined text-sm">swap_horiz</span>
+                            <ArrowLeftRight size={14} className="text-sm" />
                             Trocar Gancho
                           </button>
                         )}
@@ -510,9 +511,9 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
                           className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors shadow-sm disabled:opacity-50"
                         >
                           {(aiLoading === idx || (variationsLoading && variationsBlockIdx === idx)) ? (
-                            <span className="material-symbols-outlined animate-spin text-sm">autorenew</span>
+                            <RefreshCw size={14} className="animate-spin text-sm" />
                           ) : (
-                            <span className="material-symbols-outlined text-sm">auto_awesome</span>
+                            <Sparkles size={14} className="text-sm" />
                           )}
                           {block.type === 'GANCHO' ? 'Ver 3 variações' : 'Melhorar com IA'}
                         </button>
@@ -531,7 +532,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
                             <div className="flex items-center justify-between mb-3">
                               <span className="text-xs font-bold text-slate-600">✨ Escolha uma variação:</span>
                               <button onClick={() => { setAiVariations(null); setVariationsBlockIdx(null) }} className="text-slate-400 hover:text-slate-600">
-                                <span className="material-symbols-outlined text-base">close</span>
+                                <X size={16} className="text-base" />
                               </button>
                             </div>
                             <div className="space-y-2">
@@ -569,11 +570,11 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
           {/* Metrics */}
           <div className="flex items-center gap-3 text-xs text-white/40 font-medium">
             <span className="flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm text-white/30">schedule</span>
+              <Clock size={14} className="text-sm text-white/30" />
               {metrics.totalTime > 0 ? `${metrics.totalTime}s` : `~${Math.round(metrics.wordCount / 2.5)}s`}
             </span>
             <span className="hidden sm:flex items-center gap-1">
-              <span className="material-symbols-outlined text-sm text-white/30">text_fields</span>
+              <Type size={14} className="text-sm text-white/30" />
               {metrics.wordCount} palavras
             </span>
             {metrics.wps !== '-' && (
@@ -587,9 +588,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
               onClick={handleCopy}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-all border border-white/10"
             >
-              <span className="material-symbols-outlined text-sm">
-                {copied ? 'check' : 'content_copy'}
-              </span>
+              {copied ? <Check size={14} /> : <Copy size={14} />}
               {copied ? 'Copiado!' : 'Copiar roteiro'}
             </button>
 
@@ -600,9 +599,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
               }}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-bold transition-all shadow-lg shadow-blue-500/20"
             >
-              <span className="material-symbols-outlined text-sm">
-                {saved ? 'check' : 'edit'}
-              </span>
+              {saved ? <Check size={14} /> : <Pencil size={14} />}
               {saved ? 'Salvo!' : 'Editar roteiro'}
             </button>
           </div>
@@ -633,7 +630,7 @@ export default function RoteiroEditorPage({ params }: { params: Promise<{ id: st
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="font-black text-slate-900 text-lg">🪝 Trocar Gancho</h2>
                   <button onClick={() => setHookDrawerOpen(false)} className="text-slate-400 hover:text-slate-600">
-                    <span className="material-symbols-outlined">close</span>
+                    <X size={18} />
                   </button>
                 </div>
                 <input

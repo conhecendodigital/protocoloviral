@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { AlertCircle, AlertTriangle, BadgeCheck, BarChart3, Brain, Check, CheckCircle, Copy, Loader2, Sparkles, Wand2, Zap } from 'lucide-react'
 
 interface AnalysisItem {
   label: string
@@ -124,25 +125,25 @@ export default function BioAnalyzerPage() {
                   >
                     {loading ? (
                       <>
-                        <span className="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+                        <Loader2 size={20} className="text-[20px] animate-spin" />
                         ANALISANDO COM IA...
                       </>
                     ) : (
                       <>
-                        <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">bolt</span>
+                        <Zap size={20} className="text-[20px] group-hover:scale-110 transition-transform" />
                         ANALISAR BIO COM IA
                       </>
                     )}
                   </button>
                   <button onClick={() => { navigator.clipboard.writeText(bio) }} className="size-14 glass-card rounded-xl flex items-center justify-center text-slate-800 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors">
-                    <span className="material-symbols-outlined">content_copy</span>
+                    <Copy size={18} />
                   </button>
                 </div>
 
                 {/* Error State */}
                 {error && (
                   <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium flex items-center gap-2">
-                    <span className="material-symbols-outlined text-lg">error</span>
+                    <AlertCircle size={18} className="text-lg" />
                     {error}
                   </motion.div>
                 )}
@@ -153,7 +154,7 @@ export default function BioAnalyzerPage() {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-5">
               <div className="glass-card p-8 rounded-xl h-full flex flex-col items-center justify-center relative overflow-hidden group min-h-[400px]">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-                  <span className="material-symbols-outlined text-[140px] text-[#0ea5e9]">monitoring</span>
+                  <BarChart3 size={18} className="text-[140px] text-[#0ea5e9]" />
                 </div>
                 <h3 className="text-xs font-bold text-slate-700 dark:text-white/90 uppercase tracking-widest mb-10 text-center relative z-10">Score de Conversão</h3>
                 
@@ -173,7 +174,7 @@ export default function BioAnalyzerPage() {
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center pb-2">
                     {loading ? (
-                      <span className="material-symbols-outlined text-5xl text-[#0ea5e9] animate-pulse">neurology</span>
+                      <Brain size={48} className="text-5xl text-[#0ea5e9] animate-pulse" />
                     ) : (
                       <>
                         <span className={cn("text-6xl font-black", result ? getScoreColor(result.score) : "text-slate-900 dark:text-white")}>{result ? result.score : '--'}</span>
@@ -220,7 +221,7 @@ export default function BioAnalyzerPage() {
                 {/* Recommendations Section */}
                 <section className="space-y-6 mb-12">
                   <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#0ea5e9]">analytics</span>
+                    <BarChart3 size={18} className="text-[#0ea5e9]" />
                     Diagnóstico da IA — 7 Critérios
                   </h2>
                   
@@ -238,12 +239,7 @@ export default function BioAnalyzerPage() {
                           "size-10 rounded-full flex items-center justify-center shrink-0 border",
                           item.status === 'good' ? "bg-emerald-500/10 border-emerald-500/20" : item.status === 'warning' ? "bg-orange-500/10 border-orange-500/20" : "bg-rose-500/10 border-rose-500/20"
                         )}>
-                          <span className={cn(
-                            "material-symbols-outlined",
-                            item.status === 'good' ? "text-emerald-500" : item.status === 'warning' ? "text-orange-500" : "text-rose-500"
-                          )}>
-                            {item.status === 'good' ? 'check_circle' : item.status === 'warning' ? 'warning' : 'error'}
-                          </span>
+                          {item.status === 'good' ? <CheckCircle size={18} className="text-emerald-500" /> : item.status === 'warning' ? <AlertTriangle size={18} className="text-orange-500" /> : <AlertCircle size={18} className="text-rose-500" />}
                         </div>
                         <div className="space-y-1">
                           <h4 className="text-slate-900 dark:text-white font-bold">{item.label}</h4>
@@ -265,13 +261,13 @@ export default function BioAnalyzerPage() {
                     className="glass-card p-8 rounded-xl relative overflow-hidden group"
                   >
                     <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-                      <span className="material-symbols-outlined text-[100px] text-[#0ea5e9]">auto_fix</span>
+                      <Wand2 size={18} className="text-[100px] text-[#0ea5e9]" />
                     </div>
                     
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-[#0ea5e9]">auto_awesome</span>
+                          <Sparkles size={18} className="text-[#0ea5e9]" />
                           <h3 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Bio Reescrita pela IA</h3>
                         </div>
                         {result.explicacao && (
@@ -282,9 +278,7 @@ export default function BioAnalyzerPage() {
                         onClick={handleCopySuggestion} 
                         className="shimmer-btn text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 transition-all shadow-lg shadow-[#0ea5e9]/20 md:w-auto w-full justify-center group/btn"
                       >
-                        <span className="material-symbols-outlined text-sm group-hover/btn:scale-110 transition-transform">
-                          {copied ? 'check' : 'content_copy'}
-                        </span>
+                        {copied ? <Check size={14} /> : <Copy size={14} />}
                         {copied ? 'COPIADA!' : 'COPIAR BIO'}
                       </button>
                     </div>
@@ -294,7 +288,7 @@ export default function BioAnalyzerPage() {
                     </div>
 
                     <div className="mt-4 flex items-center gap-2 text-xs text-slate-700 dark:text-white/90">
-                      <span className="material-symbols-outlined text-sm text-emerald-500">verified</span>
+                      <BadgeCheck size={14} className="text-sm text-emerald-500" />
                       <span>{result.sugestao.length} caracteres — {result.sugestao.length <= 150 ? 'Dentro do limite ideal' : 'Excede 150 caracteres, ajuste manualmente'}</span>
                     </div>
                   </motion.section>

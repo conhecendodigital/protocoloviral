@@ -6,6 +6,7 @@ import { STORIES_FRAMEWORKS, STORIES_DICAS, CATEGORIAS_STORIES } from '@/data/st
 import { CopyButton } from '@/components/shared/copy-button'
 import { Badge } from '@/components/ui/badge'
 import { motion } from 'framer-motion'
+import { Layers, Lightbulb } from 'lucide-react'
 
 export default function StoriesPage() {
   const [activeTab, setActiveTab] = useState('vendas')
@@ -22,7 +23,7 @@ export default function StoriesPage() {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0ea5e9] to-indigo-600 flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.3)]">
-                  <span className="material-symbols-outlined text-slate-900 dark:text-white text-2xl">amp_stories</span>
+                  <Layers size={24} className="text-slate-900 dark:text-white text-2xl" />
                 </div>
                 <div>
                   <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">
@@ -99,7 +100,7 @@ export default function StoriesPage() {
                               </div>
                               <p className="text-sm font-semibold text-slate-900 dark:text-white mb-2 leading-relaxed">{story.texto}</p>
                               <p className="text-xs text-[#0ea5e9] font-medium flex items-center gap-1.5">
-                                <span className="material-symbols-outlined text-sm">tips_and_updates</span> 
+                                <Lightbulb size={14} className="text-sm" /> 
                                 {story.dica}
                               </p>
                             </div>
@@ -126,7 +127,7 @@ export default function StoriesPage() {
             <div className="lg:col-span-4 space-y-8">
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card rounded-3xl p-8 border border-[#0ea5e9]/20 bg-gradient-to-b from-[#0ea5e9]/10 to-transparent">
                 <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-6 flex items-center gap-3">
-                  <span className="material-symbols-outlined text-[#0ea5e9] text-2xl">emoji_objects</span>
+                  <Lightbulb size={24} className="text-[#0ea5e9] text-2xl" />
                   Dicas de Ouro
                 </h3>
                 

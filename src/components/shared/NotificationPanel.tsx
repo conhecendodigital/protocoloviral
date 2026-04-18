@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Notification, TYPE_COLORS, TYPE_LABELS } from '@/data/notifications'
+import { Bell, BellOff } from 'lucide-react'
 
 interface NotificationPanelProps {
   notifications: Notification[]
@@ -73,7 +74,7 @@ export function NotificationPanel({
             : 'bg-black/5 dark:bg-white/5 text-slate-800 dark:text-slate-300 hover:text-slate-900 dark:text-white border-slate-300/10 dark:border-slate-200 dark:border-white/10 hover:border-slate-300/20 dark:border-white/20'
         }`}
       >
-        <span className="material-symbols-outlined text-xl">notifications</span>
+        <Bell size={20} className="text-xl" />
         
         {/* Badge */}
         {unreadCount > 0 && (
@@ -96,7 +97,7 @@ export function NotificationPanel({
             {/* Header */}
             <div className="px-5 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#0ea5e9] text-xl">notifications</span>
+                <Bell size={20} className="text-[#0ea5e9] text-xl" />
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm">Notificações</h3>
                 {unreadCount > 0 && (
                   <span className="text-[10px] font-bold bg-[#0ea5e9]/15 text-[#0ea5e9] px-2 py-0.5 rounded-full">
@@ -118,7 +119,7 @@ export function NotificationPanel({
             <div className="overflow-y-auto flex-1 custom-scrollbar">
               {notifications.length === 0 ? (
                 <div className="py-12 text-center">
-                  <span className="material-symbols-outlined text-4xl text-slate-800 dark:text-white/90 mb-3 block">notifications_off</span>
+                  <BellOff size={36} className="text-4xl text-slate-800 dark:text-white/90 mb-3 block" />
                   <p className="text-sm text-slate-700 dark:text-white/90">Nenhuma notificação no momento.</p>
                 </div>
               ) : (
@@ -145,9 +146,7 @@ export function NotificationPanel({
                           }}
                         >
                           <span 
-                            className="material-symbols-outlined text-lg"
-                            style={{ color: typeColor }}
-                          >
+
                             {n.icon}
                           </span>
                         </div>

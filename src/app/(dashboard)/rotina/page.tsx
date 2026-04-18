@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { motion } from 'framer-motion'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Check, CheckCircle2, ExternalLink, PlayCircle, RotateCcw, Timer } from 'lucide-react'
 
 const HOTMART_AULAS_URL = 'https://go.hotmart.com/I99444830U'
 
@@ -112,7 +113,7 @@ export default function RotinaPage() {
           {/* Weekly Progress Card */}
           <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8 lg:p-10 rounded-3xl w-full relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
-              <span className="material-symbols-outlined text-[120px] text-[#0ea5e9]">task_alt</span>
+              <CheckCircle2 size={18} className="text-[120px] text-[#0ea5e9]" />
             </div>
             
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 mb-8 relative z-10">
@@ -130,7 +131,7 @@ export default function RotinaPage() {
                 onClick={resetAll}
                 className="flex items-center gap-2 px-8 py-4 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 transition-all text-sm font-bold border border-slate-300/10 dark:border-slate-200 dark:border-white/10 shrink-0 shadow-lg"
               >
-                <span className="material-symbols-outlined text-lg">restart_alt</span>
+                <RotateCcw size={18} className="text-lg" />
                 Resetar Semana
               </button>
             </div>
@@ -185,9 +186,7 @@ export default function RotinaPage() {
                             className="sr-only"
                           />
                           <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors shadow-inner ${isChecked ? 'bg-[#0ea5e9]/20 border-[#0ea5e9]/50' : 'border-[#0ea5e9]/40 group-hover:border-[#0ea5e9]'}`}>
-                            <span className={`material-symbols-outlined text-[16px] text-[#0ea5e9] transition-opacity ${isChecked ? 'opacity-100' : 'opacity-0'}`}>
-                              check
-                            </span>
+                            <Check size={16} className={`text-[16px] text-[#0ea5e9] transition-opacity ${isChecked ? 'opacity-100' : 'opacity-0'}`} />
                           </div>
                         </div>
                         
@@ -203,7 +202,7 @@ export default function RotinaPage() {
                                </span>
                              )}
                             <span className={`text-[11px] font-medium flex items-center gap-1 ${isChecked ? 'text-slate-800 dark:text-white/90' : 'text-slate-800 dark:text-white/90 dark:text-white/90'}`}>
-                              <span className="material-symbols-outlined text-[14px]">timer</span>
+                              <Timer size={14} className="text-[14px]" />
                               {item.tempo}
                             </span>
                             {item.href && !isChecked && (
@@ -214,9 +213,9 @@ export default function RotinaPage() {
                                 onClick={(e) => e.stopPropagation()}
                                 className="inline-flex items-center gap-1 text-[11px] font-bold text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2.5 py-1 rounded-full border border-violet-500/20 transition-all"
                               >
-                                <span className="material-symbols-outlined text-[13px]">play_circle</span>
+                                <PlayCircle size={18} className="text-[13px]" />
                                 Acessar Aula
-                                <span className="material-symbols-outlined text-[11px]">open_in_new</span>
+                                <ExternalLink size={18} className="text-[11px]" />
                               </a>
                             )}
                           </div>

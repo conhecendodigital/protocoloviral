@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { useParams } from 'next/navigation'
 import { parseRoteiroBlocks, parsePersona } from '@/lib/parser'
 import Link from 'next/link'
+import { AlertCircle, AlignLeft, ArrowLeft, ArrowRight, BadgeCheck, Copy, ExternalLink, Eye, Heart, Lock, MessageCircle, PlayCircle, Quote, RefreshCw, Sparkles, Timer, TrendingUp, Wand2 } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface Formato {
   id: string
@@ -69,7 +71,7 @@ function AnaliseSection({ icon, title, children }: { icon: string; title: string
   return (
     <div className="border-l-2 border-[#0ea5e9]/40 pl-5 relative before:absolute before:w-2 before:h-2 before:rounded-full before:bg-[#0ea5e9] before:-left-[5px] before:top-1.5">
       <p className="text-xs font-black text-slate-500 dark:text-white/40 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-        <span className="material-symbols-outlined text-[14px] text-[#0ea5e9]">{icon}</span>
+        <DynamicIcon name={icon} size={14} className="text-[14px] text-[#0ea5e9]"" />
         {title}
       </p>
       {children}
@@ -102,7 +104,7 @@ function PremiumOverlay({ title, desc }: { title: string; desc: string }) {
   return (
     <div className="absolute inset-0 z-50 flex flex-col items-center justify-center p-6 text-center backdrop-blur-[8px] bg-white/20 dark:bg-black/60 rounded-2xl border border-slate-200/50 dark:border-white/5">
       <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(245,158,11,0.4)] mb-4">
-        <span className="material-symbols-outlined text-white text-3xl">lock</span>
+        <Lock size={30} className="text-white text-3xl" />
       </div>
       <h4 className="text-xl font-black text-slate-900 dark:text-white mb-2">{title}</h4>
       <p className="text-sm font-medium text-slate-700 dark:text-white/80 max-w-sm mb-6 leading-relaxed">{desc}</p>
@@ -314,7 +316,7 @@ export default function FormatoViewPage() {
         {/* ── Left Column ─────────────────────────────────────────── */}
         <div className="w-full xl:w-[400px] shrink-0 space-y-6">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-800 dark:text-white/60 dark:hover:text-white transition-colors">
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            <ArrowLeft size={18} className="text-[18px]" />
             Voltar ao Início
           </Link>
 
@@ -345,7 +347,7 @@ export default function FormatoViewPage() {
             {formato.link_original && (
               <a href={formato.link_original} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-xs w-full justify-center bg-black/5 dark:bg-white/5 py-3 px-4 rounded-xl border border-slate-300/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 dark:text-white transition-all font-bold">
-                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                <ExternalLink size={16} className="text-[16px]" />
                 Assistir Original
               </a>
             )}
@@ -360,42 +362,42 @@ export default function FormatoViewPage() {
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {formato.curtidas != null && (
                 <div className="glass-card rounded-xl p-3 text-center">
-                  <span className="material-symbols-outlined text-red-400 text-xl block mb-1">favorite</span>
+                  <Heart size={20} className="text-red-400 text-xl block mb-1" />
                   <p className="text-slate-900 dark:text-white font-bold text-sm">{formatNumber(formato.curtidas)}</p>
                   <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Curtidas</p>
                 </div>
               )}
               {formato.views != null && (
                 <div className="glass-card rounded-xl p-3 text-center">
-                  <span className="material-symbols-outlined text-blue-400 text-xl block mb-1">visibility</span>
+                  <Eye size={20} className="text-blue-400 text-xl block mb-1" />
                   <p className="text-slate-900 dark:text-white font-bold text-sm">{formatNumber(formato.views)}</p>
                   <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Views</p>
                 </div>
               )}
               {formato.reproducoes != null && (
                 <div className="glass-card rounded-xl p-3 text-center">
-                  <span className="material-symbols-outlined text-purple-400 text-xl block mb-1">play_circle</span>
+                  <PlayCircle size={20} className="text-purple-400 text-xl block mb-1" />
                   <p className="text-slate-900 dark:text-white font-bold text-sm">{formatNumber(formato.reproducoes)}</p>
                   <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Plays</p>
                 </div>
               )}
               {formato.comentarios != null && (
                 <div className="glass-card rounded-xl p-3 text-center">
-                  <span className="material-symbols-outlined text-amber-400 text-xl block mb-1">chat_bubble</span>
+                  <MessageCircle size={20} className="text-amber-400 text-xl block mb-1" />
                   <p className="text-slate-900 dark:text-white font-bold text-sm">{formatNumber(formato.comentarios)}</p>
                   <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Coment.</p>
                 </div>
               )}
               {formato.duracao != null && (
                 <div className="glass-card rounded-xl p-3 text-center">
-                  <span className="material-symbols-outlined text-slate-800 dark:text-white/90 text-xl block mb-1">timer</span>
+                  <Timer size={20} className="text-slate-800 dark:text-white/90 text-xl block mb-1" />
                   <p className="text-slate-900 dark:text-white font-bold text-sm">{formatDuration(formato.duracao)}</p>
                   <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Duração</p>
                 </div>
               )}
               {formato.engajamento != null && (
                 <div className="glass-card rounded-xl p-3 text-center border-green-500/20">
-                  <span className="material-symbols-outlined text-green-400 text-xl block mb-1">trending_up</span>
+                  <TrendingUp size={20} className="text-green-400 text-xl block mb-1" />
                   <p className="text-green-400 font-bold text-sm">{formato.engajamento.toFixed(2)}%</p>
                   <p className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-wider">Engaj.</p>
                 </div>
@@ -419,7 +421,7 @@ export default function FormatoViewPage() {
                 onClick={() => copyToClipboard(buildCopyText())}
                 className="ml-auto flex items-center gap-1.5 text-[10px] text-slate-800 dark:text-white/90 hover:text-slate-900 glass-card px-3 py-1.5 rounded-lg border-white/10 transition-all font-bold uppercase tracking-widest"
               >
-                <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                <Copy size={14} className="text-[14px]" />
                 Copiar
               </button>
             </div>
@@ -533,20 +535,20 @@ export default function FormatoViewPage() {
                               <div className="space-y-4 pt-2">
                                 <div className="bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 rounded-xl p-5 shadow-inner">
                                   <h4 className="text-[11px] font-black text-[#0ea5e9] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-[16px]">format_quote</span>Gancho
+                                    <Quote size={16} className="text-[16px]" />Gancho
                                   </h4>
                                   <p className="text-[15px] font-semibold text-slate-900 dark:text-white leading-[1.7] whitespace-pre-wrap">{parsed.gancho}</p>
                                 </div>
                                 <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-inner">
                                   <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-[16px]">subject</span>Desenvolvimento
+                                    <AlignLeft size={16} className="text-[16px]" />Desenvolvimento
                                   </h4>
                                   <p className="text-[15px] text-slate-900 dark:text-white/90 leading-[1.7] whitespace-pre-wrap">{parsed.desenvolvimento}</p>
                                 </div>
                                 {parsed.cta?.trim() && (
                                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5 shadow-inner">
                                   <h4 className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-[16px]">smart_button</span>CTA e Final
+                                    <Wand2 size={16} className="text-[16px]" />CTA e Final
                                   </h4>
                                   <p className="text-[15px] font-semibold text-emerald-900 dark:text-emerald-100 leading-[1.7] whitespace-pre-wrap">{parsed.cta}</p>
                                 </div>
@@ -652,7 +654,7 @@ export default function FormatoViewPage() {
             <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#0ea5e9]">flare</span>
+                  <Sparkles size={18} className="text-[#0ea5e9]" />
                   Usar com Inteligência
                 </h3>
                 <p className="text-sm text-slate-700 dark:text-white/80 leading-relaxed max-w-xl">
@@ -663,7 +665,7 @@ export default function FormatoViewPage() {
                 href={`/roteirista?formato_id=${getFormatoIdParaRoteirista(formato.tipo, formato.nicho)}`}
                 className="w-full sm:w-auto shimmer-btn px-8 py-4 rounded-xl flex items-center justify-center gap-3 text-white font-bold text-base shadow-xl shadow-[#0ea5e9]/20 hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
               >
-                <span className="material-symbols-outlined">arrow_forward</span>
+                <ArrowRight size={18} />
                 Levar para o Roteirista
               </Link>
             </div>
@@ -685,7 +687,7 @@ export default function FormatoViewPage() {
 
               <div className="space-y-2 relative z-10">
                 <h3 className="text-2xl font-black flex items-center gap-2 text-slate-900 dark:text-white">
-                  <span className="material-symbols-outlined text-[#0ea5e9] text-3xl">flare</span>
+                  <Sparkles size={30} className="text-[#0ea5e9] text-3xl" />
                   Crie seu Roteiro Modelado
                 </h3>
                 <p className="text-sm text-slate-700 dark:text-white/80 leading-relaxed max-w-xl">
@@ -750,7 +752,7 @@ export default function FormatoViewPage() {
                     </>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined">auto_fix_high</span>
+                      <Wand2 size={18} />
                       Gerar Meu Roteiro Viral
                     </>
                   )}
@@ -760,7 +762,7 @@ export default function FormatoViewPage() {
 
             {generateError && (
               <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 text-sm font-bold flex items-center gap-2 relative z-10">
-                <span className="material-symbols-outlined">error</span>
+                <AlertCircle size={18} />
                 {generateError}
               </div>
             )}
@@ -773,7 +775,7 @@ export default function FormatoViewPage() {
               >
                 <div className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-slate-900/50 dark:bg-black/50">
                   <label className="text-[10px] sm:text-[11px] font-black text-slate-200 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[#0ea5e9] text-[18px]">verified</span>
+                    <BadgeCheck size={18} className="text-[#0ea5e9] text-[18px]" />
                     Roteiro Disponível
                   </label>
                   <div className="flex items-center gap-2">
@@ -782,14 +784,14 @@ export default function FormatoViewPage() {
                       disabled={generatingReel}
                       className="flex items-center gap-1.5 text-[10px] text-white/70 hover:text-white bg-white/5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all font-bold uppercase tracking-widest disabled:opacity-50"
                     >
-                      <span className="material-symbols-outlined text-[14px]">refresh</span>
+                      <RefreshCw size={14} className="text-[14px]" />
                       {generatingReel ? 'Gerando...' : 'Reescrever'}
                     </button>
                     <button
                       onClick={() => copyToClipboard(generatedReel)}
                       className="bg-[#0ea5e9] hover:bg-sky-400 text-white flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-lg transition-all font-bold uppercase tracking-widest"
                     >
-                      <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                      <Copy size={14} className="text-[14px]" />
                       Copiar
                     </button>
                   </div>
@@ -807,7 +809,7 @@ export default function FormatoViewPage() {
                         <div className="space-y-6">
                           <div className="space-y-2">
                             <h4 className="text-[11px] font-black text-[#0ea5e9] uppercase tracking-[0.2em] flex items-center gap-2">
-                              <span className="material-symbols-outlined text-[16px]">format_quote</span>Gancho
+                              <Quote size={16} className="text-[16px]" />Gancho
                             </h4>
                             <Textarea
                               value={parsed.gancho}
@@ -818,7 +820,7 @@ export default function FormatoViewPage() {
 
                           <div className="space-y-2">
                             <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                              <span className="material-symbols-outlined text-[16px]">subject</span>Desenvolvimento
+                              <AlignLeft size={16} className="text-[16px]" />Desenvolvimento
                             </h4>
                             <Textarea
                               value={parsed.desenvolvimento}
@@ -829,7 +831,7 @@ export default function FormatoViewPage() {
 
                           <div className="space-y-2">
                             <h4 className="text-[11px] font-black text-emerald-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                              <span className="material-symbols-outlined text-[16px]">smart_button</span>CTA e Final
+                              <Wand2 size={16} className="text-[16px]" />CTA e Final
                             </h4>
                             <Textarea
                               value={parsed.cta}

@@ -7,6 +7,8 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, UIMessage } from 'ai';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { AlertCircle, AlertTriangle, ArrowLeft, ArrowUp, BadgeCheck, Bot, Camera, Check, CheckCircle, ChevronDown, CloudUpload, Code2, Cpu, Eye, EyeOff, FileText, FolderOpen, LayoutGrid, ListX, Loader2, Save, ToggleRight, Trash2, X, Zap } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 /* ── AI Provider & Model Definitions ── */
 interface AIModelOption {
@@ -258,14 +260,14 @@ export default function EditarAgentePage() {
             const allowedExtensions = ['.pdf', '.txt'];
             const ext = '.' + (f.name.split('.').pop()?.toLowerCase() || '');
             if (!allowedTypes.includes(f.type) && !allowedExtensions.includes(ext)) {
-                alert('Formato não suportado. Envie apenas PDF ou TXT.');
+                console.error('Formato não suportado');
                 return;
             }
 
             // ── Security: Validate file size (max 20MB) ──
             const MAX_RAG_SIZE = 20 * 1024 * 1024;
             if (f.size > MAX_RAG_SIZE) {
-                alert('Arquivo muito grande. Máximo: 20MB.');
+                console.error('Arquivo muito grande');
                 return;
             }
 
@@ -398,7 +400,7 @@ export default function EditarAgentePage() {
         } catch (error) {
             console.error("Erro ao alterar status:", error);
             setStatus(status); // revert
-            alert("Erro ao alterar status.");
+            console.error("Erro ao alterar status.");
         }
     };
 
@@ -417,7 +419,7 @@ export default function EditarAgentePage() {
             router.push('/agentes');
         } catch (error) {
             console.error("Erro ao excluir agente:", error);
-            alert("Erro ao excluir agente.");
+            console.error("Erro ao excluir agente.");
         }
     };
 
@@ -438,7 +440,7 @@ export default function EditarAgentePage() {
                 <motion.header initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/agentes" className="p-2 rounded-xl bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors border border-border">
-                            <span className="material-symbols-outlined text-xl">arrow_back</span>
+                            <ArrowLeft size={20} className="text-xl" />
                         </Link>
                         
                         {/* Avatar Picker */}
@@ -449,12 +451,12 @@ export default function EditarAgentePage() {
                             {avatarPreview ? (
                                 <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover" />
                             ) : (
-                                <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-3xl">robot_2</span>
+                                <Bot size={30} className="text-indigo-500 dark:text-indigo-400" />
                             )}
                             
                             {/* Overlay hover */}
                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                <span className="material-symbols-outlined text-white text-xl">photo_camera</span>
+                                <Camera size={20} className="text-white text-xl" />
                             </div>
                             
                             <input 
@@ -478,7 +480,7 @@ export default function EditarAgentePage() {
                             className="flex items-center justify-center rounded-xl bg-secondary hover:bg-secondary/80 transition-colors w-12 h-12 text-muted-foreground hover:text-foreground border border-border shadow-lg"
                             title={status === 'inativo' ? 'Ativar Agente' : 'Desativar Agente'}
                         >
-                            <span className="material-symbols-outlined text-[20px]">{status === 'inativo' ? 'visibility' : 'visibility_off'}</span>
+                            {status === 'inativo' ? <Eye size={18} /> : <EyeOff size={18} />}
                         </button>
                         
                         <button 
@@ -486,7 +488,7 @@ export default function EditarAgentePage() {
                             className="flex items-center justify-center rounded-xl bg-secondary hover:bg-destructive/20 transition-colors w-12 h-12 text-muted-foreground hover:text-destructive border border-border shadow-lg"
                             title="Excluir Permanentemente"
                         >
-                            <span className="material-symbols-outlined text-[20px]">delete</span>
+                            <Trash2 size={20} className="text-[20px]" />
                         </button>
                         
                         <button
@@ -498,11 +500,11 @@ export default function EditarAgentePage() {
                                 }`}
                         >
                             {saving ? (
-                                <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                                <Loader2 size={18} className="animate-spin text-[18px]" />
                             ) : saved ? (
-                                <span className="material-symbols-outlined text-[18px] text-emerald-500">check</span>
+                                <Check size={18} className="text-[18px] text-emerald-500" />
                             ) : (
-                                <span className="material-symbols-outlined text-[18px]">save</span>
+                                <Save size={18} className="text-[18px]" />
                             )}
                             {saving ? 'Atualizando...' : saved ? 'Salvo!' : 'Salvar Alterações'}
                         </button>
@@ -511,7 +513,7 @@ export default function EditarAgentePage() {
 
                 {errorMsg && (
                     <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center gap-3">
-                        <span className="material-symbols-outlined">error</span>
+                        <AlertCircle size={18} />
                         <p className="font-medium text-sm">{errorMsg}</p>
                     </div>
                 )}
@@ -532,7 +534,7 @@ export default function EditarAgentePage() {
                                         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Nome do Agente</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                <span className="material-symbols-outlined text-muted-foreground text-lg">badge</span>
+                                                <BadgeCheck size={18} className="text-muted-foreground text-lg" />
                                             </div>
                                             <input
                                                 type="text"
@@ -546,7 +548,7 @@ export default function EditarAgentePage() {
                                         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Categoria</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                <span className="material-symbols-outlined text-muted-foreground text-lg">category</span>
+                                                <LayoutGrid size={18} className="text-muted-foreground text-lg" />
                                             </div>
                                             <select
                                                 value={category}
@@ -558,7 +560,7 @@ export default function EditarAgentePage() {
                                                 ))}
                                             </select>
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                <span className="material-symbols-outlined text-muted-foreground text-lg">expand_more</span>
+                                                <ChevronDown size={18} className="text-muted-foreground text-lg" />
                                             </div>
                                         </div>
                                     </div>
@@ -568,7 +570,7 @@ export default function EditarAgentePage() {
                                         <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Descrição Curta</label>
                                         <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#141926] focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
                                             <div className="absolute left-4 top-3 pointer-events-none">
-                                                <span className="material-symbols-outlined text-muted-foreground text-lg">description</span>
+                                                <FileText size={18} className="text-muted-foreground text-lg" />
                                             </div>
                                             <textarea
                                                 value={description}
@@ -582,7 +584,7 @@ export default function EditarAgentePage() {
                                          <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2 block">Status</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                <span className="material-symbols-outlined text-muted-foreground text-lg">toggle_on</span>
+                                                <ToggleRight size={18} className="text-muted-foreground text-lg" />
                                             </div>
                                             <select
                                                 value={status}
@@ -604,7 +606,7 @@ export default function EditarAgentePage() {
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-slate-50 dark:bg-white/[0.03] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08] relative z-20">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="bg-indigo-500/10 p-2 rounded-lg">
-                                    <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-xl">memory</span>
+                                    <Cpu size={20} className="text-indigo-500 dark:text-indigo-400 text-xl" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold text-foreground">Motor de Inteligência</h3>
@@ -623,7 +625,7 @@ export default function EditarAgentePage() {
                                     {selectedModelInfo ? (
                                         <>
                                             <div className={`${selectedModelInfo.provider.bg} p-1.5 rounded-lg flex-shrink-0`}>
-                                                <span className={`material-symbols-outlined text-[16px] ${selectedModelInfo.provider.color}`}>{selectedModelInfo.provider.icon}</span>
+                                                <DynamicIcon name={selectedModelInfo.provider.icon} size={16} className="text-[16px] ${selectedModelInfo.provider.color}`}" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-bold text-foreground truncate">{selectedModelInfo.model.name}</p>
@@ -632,11 +634,11 @@ export default function EditarAgentePage() {
                                         </>
                                     ) : (
                                         <>
-                                            <span className="material-symbols-outlined text-muted-foreground text-lg">memory</span>
+                                            <Cpu size={18} className="text-muted-foreground text-lg" />
                                             <span className="text-sm text-muted-foreground">Selecionar modelo...</span>
                                         </>
                                     )}
-                                    <span className={`material-symbols-outlined text-muted-foreground text-lg ml-auto transition-transform ${modelDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
+                                    <ChevronDown size={18} className={`text-muted-foreground text-lg ml-auto transition-transform ${modelDropdownOpen ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {modelDropdownOpen && (
@@ -646,7 +648,7 @@ export default function EditarAgentePage() {
                                                 <div key={provider.id}>
                                                     <div className={`sticky top-0 z-10 bg-popover/95 backdrop-blur-sm px-4 py-2 flex items-center gap-2 ${pi > 0 ? 'border-t border-border' : ''}`}>
                                                         <div className={`${provider.bg} p-1 rounded-md`}>
-                                                            <span className={`material-symbols-outlined text-[14px] ${provider.color}`}>{provider.icon}</span>
+                                                            <DynamicIcon name={provider.icon} size={14} className="text-[14px] ${provider.color}`}" />
                                                         </div>
                                                         <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{provider.label}</span>
                                                     </div>
@@ -662,7 +664,7 @@ export default function EditarAgentePage() {
                                                                     }`}
                                                             >
                                                                 <span className={`text-sm ${isSelected ? 'font-bold' : 'font-medium'}`}>{model.name}</span>
-                                                                {isSelected && <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-[16px]">check_circle</span>}
+                                                                {isSelected && <CheckCircle size={16} className="text-indigo-500 dark:text-indigo-400 text-[16px]" />}
                                                             </button>
                                                         );
                                                     })}
@@ -678,7 +680,7 @@ export default function EditarAgentePage() {
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-slate-50 dark:bg-white/[0.03] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08]">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="bg-amber-500/10 p-2 rounded-lg">
-                                    <span className="material-symbols-outlined text-amber-500 dark:text-amber-400 text-xl">code</span>
+                                    <Code2 size={20} className="text-amber-500 dark:text-amber-400 text-xl" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold text-foreground">System Prompt</h3>
@@ -700,7 +702,7 @@ export default function EditarAgentePage() {
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-slate-50 dark:bg-white/[0.03] rounded-3xl p-6 border border-slate-200 dark:border-white/[0.08]">
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="bg-blue-500/10 p-2 rounded-lg">
-                                    <span className="material-symbols-outlined text-blue-400 text-xl">folder_open</span>
+                                    <FolderOpen size={20} className="text-blue-400 text-xl" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold text-foreground">Base de Treinamento (RAG)</h3>
@@ -719,7 +721,7 @@ export default function EditarAgentePage() {
                                     }`}
                             >
                                 <div className={`mx-auto size-12 rounded-full flex items-center justify-center mb-3 transition-colors ${dragOver ? 'bg-indigo-500/20' : 'bg-secondary'}`}>
-                                    <span className={`material-symbols-outlined text-2xl ${dragOver ? 'text-indigo-400' : 'text-muted-foreground'}`}>cloud_upload</span>
+                                    <CloudUpload size={24} className={`text-2xl ${dragOver ? 'text-indigo-400' : 'text-muted-foreground'}`} />
                                 </div>
                                 <p className="text-sm font-bold text-foreground mb-1">
                                     {dragOver ? 'Solte para enviar!' : 'Arraste arquivos ou clique aqui'}
@@ -735,9 +737,7 @@ export default function EditarAgentePage() {
                                         <div key={file.id} className="flex items-center justify-between bg-white dark:bg-[#141926] border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 group">
                                             <div className="flex items-center gap-3">
                                                 <div className={`p-1.5 rounded-lg ${file.type === 'PDF' ? 'bg-rose-500/15 text-rose-400' : 'bg-blue-500/15 text-blue-400'}`}>
-                                                    <span className="material-symbols-outlined text-[16px]">
-                                                        {file.type === 'PDF' ? 'picture_as_pdf' : 'description'}
-                                                    </span>
+{file.type === 'PDF' ? <FileText size={16} /> : <FileText size={16} />}
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-medium text-foreground">{file.name}</p>
@@ -749,7 +749,7 @@ export default function EditarAgentePage() {
                                                 className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                                                 title="Remover arquivo"
                                             >
-                                                <span className="material-symbols-outlined text-[18px]">close</span>
+                                                <X size={18} className="text-[18px]" />
                                             </button>
                                         </div>
                                     ))}
@@ -771,7 +771,7 @@ export default function EditarAgentePage() {
                             <div className="px-5 py-4 border-b border-border bg-secondary/30 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="size-8 rounded-lg bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
-                                        <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-[16px]">visibility</span>
+                                        <Eye size={16} className="text-indigo-500 dark:text-indigo-400 text-[16px]" />
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-foreground">Live Preview</p>
@@ -782,7 +782,7 @@ export default function EditarAgentePage() {
                                     </div>
                                 </div>
                                 <button onClick={() => setMessages([])} className="text-muted-foreground hover:text-foreground transition-colors" title="Limpar Chat">
-                                    <span className="material-symbols-outlined text-[18px]">clear_all</span>
+                                    <ListX size={18} className="text-[18px]" />
                                 </button>
                             </div>
 
@@ -791,7 +791,7 @@ export default function EditarAgentePage() {
                                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                         {msg.role === 'assistant' && (
                                             <div className="size-7 rounded-lg bg-indigo-500/20 flex items-center justify-center mr-2 flex-shrink-0 mt-1 border border-indigo-500/20">
-                                                <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-[14px]">smart_toy</span>
+                                                <Bot size={14} className="text-indigo-500 dark:text-indigo-400 text-[14px]" />
                                             </div>
                                         )}
                                         <div
@@ -808,7 +808,7 @@ export default function EditarAgentePage() {
                                 {isLoading && (
                                     <div className="flex justify-start">
                                         <div className="size-7 rounded-lg bg-indigo-500/20 flex items-center justify-center mr-2 mt-1 border border-indigo-500/20">
-                                            <span className="material-symbols-outlined text-indigo-500 dark:text-indigo-400 text-[14px]">smart_toy</span>
+                                            <Bot size={14} className="text-indigo-500 dark:text-indigo-400 text-[14px]" />
                                         </div>
                                         <div className="bg-secondary border border-border px-4 py-4 rounded-2xl rounded-tl-sm">
                                             <div className="flex items-center gap-1">
@@ -836,11 +836,11 @@ export default function EditarAgentePage() {
                                         disabled={!(input || '').trim() || isLoading}
                                         className="absolute right-2 flex-shrink-0 size-8 rounded-lg flex items-center justify-center transition-all bg-indigo-500 text-white hover:bg-indigo-400 disabled:bg-muted disabled:text-muted-foreground shadow-md"
                                     >
-                                        <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
+                                        <ArrowUp size={16} className="text-[16px]" />
                                     </button>
                                 </form>
                                 <p className="text-[10px] text-indigo-500 dark:text-indigo-400 mt-3 text-center flex items-center justify-center gap-1 font-medium">
-                                    <span className="material-symbols-outlined text-[12px]">bolt</span>
+                                    <Zap size={12} className="text-[12px]" />
                                     Vercel AI SDK • {selectedModelInfo?.model.name || selectedModel}
                                 </p>
                             </div>
@@ -857,7 +857,7 @@ export default function EditarAgentePage() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="w-full max-w-md bg-card border border-border shadow-2xl rounded-3xl p-6 relative m-4">
                         <div className="w-12 h-12 rounded-2xl bg-destructive/10 border border-destructive/20 flex items-center justify-center mb-5">
-                            <span className="material-symbols-outlined text-destructive text-2xl">warning</span>
+                            <AlertTriangle size={24} className="text-destructive text-2xl" />
                         </div>
                         <h3 className="text-xl font-bold tracking-tight text-foreground mb-2">Excluir Agente?</h3>
                         <p className="text-sm text-muted-foreground leading-relaxed mb-8">
@@ -874,7 +874,7 @@ export default function EditarAgentePage() {
                                 onClick={executeDelete}
                                 className="px-5 py-2.5 rounded-xl font-bold text-sm bg-destructive hover:bg-destructive/90 text-destructive-foreground transition-colors shadow-lg shadow-destructive/20 flex items-center gap-2"
                             >
-                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                                <Trash2 size={18} className="text-[18px]" />
                                 Excluir Permanentemente
                             </button>
                         </div>

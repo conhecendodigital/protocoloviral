@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
-import { Send, Sparkles, Loader2, ArrowLeft, MoreVertical, Paperclip } from 'lucide-react'
+import { ArrowLeft, ArrowUp, Bot, Copy, History, Loader2, MoreVertical, Paperclip, RefreshCw, Send, Sparkles } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
@@ -169,14 +169,14 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
               onClick={() => router.push('/agentes')}
               className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100/50 hover:bg-slate-200/50 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-white/70 transition-colors backdrop-blur-md"
           >
-            <span className="material-symbols-outlined text-lg">arrow_back</span>
+            <ArrowLeft size={18} className="text-lg" />
           </button>
           
           <div className="flex items-center gap-2 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md px-3 py-1.5 rounded-xl">
              {agent?.avatar_url ? (
                  <img src={agent.avatar_url} alt={agent.name || ''} className="size-[22px] rounded-full object-cover border border-[#0ea5e9]/20" />
              ) : (
-                 <span className="material-symbols-outlined text-[#0ea5e9] text-[18px]">smart_toy</span>
+                 <Bot size={18} className="text-[#0ea5e9] text-[18px]" />
              )}
              <h1 className="text-sm font-bold text-slate-800 dark:text-white/90">
                {agent?.name || 'Carregando...'}
@@ -188,7 +188,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
         </div>
         <div className="flex items-center">
            <button onClick={() => router.push('/agentes/historico')} className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-white/60 dark:hover:text-white transition-colors bg-slate-100/50 hover:bg-slate-200/50 dark:bg-white/5 dark:hover:bg-white/10 px-3 py-2 rounded-xl backdrop-blur-md">
-              <span className="material-symbols-outlined text-sm">history</span>
+              <History size={14} className="text-sm" />
               <span>Histórico</span>
            </button>
         </div>
@@ -197,7 +197,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
       {/* Área de Mensagens */}
       {isInitializing ? (
           <div className="flex-1 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[#0ea5e9] text-3xl animate-spin">refresh</span>
+              <RefreshCw size={30} className="text-[#0ea5e9] text-3xl animate-spin" />
           </div>
       ) : messages.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center px-6 mt-10">
@@ -206,7 +206,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
                      {agent?.avatar_url ? (
                          <img src={agent.avatar_url} alt={agent.name || ''} className="w-full h-full object-cover" />
                      ) : (
-                         <span className="material-symbols-outlined text-[#0ea5e9] text-4xl">smart_toy</span>
+                         <Bot size={36} className="text-[#0ea5e9] text-4xl" />
                      )}
                  </div>
                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">{agent?.name || 'Novo Agente'}</h2>
@@ -230,7 +230,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
                             )}
                             {message.role === 'assistant' && (
                                 <button onClick={() => navigator.clipboard.writeText(message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || '')} className="absolute -bottom-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-black/80 border border-white/10 hover:bg-white/10" title="Copiar">
-                                    <span className="material-symbols-outlined text-white/60 text-xs">content_copy</span>
+                                    <Copy size={18} className="text-white/60 text-xs" />
                                 </button>
                             )}
                         </div>
@@ -258,7 +258,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
            <form onSubmit={onSubmit} className="relative flex items-end gap-2 bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-2xl px-3 py-2 focus-within:border-[#0ea5e9]/50 focus-within:ring-2 focus-within:ring-[#0ea5e9]/10 transition-all">
              
              <button type="button" className="size-9 rounded-xl flex items-center justify-center shrink-0 mb-0.5 transition-all text-slate-400 hover:text-slate-600 dark:hover:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10">
-               <span className="material-symbols-outlined text-lg">attach_file</span>
+               <Paperclip size={18} className="text-lg" />
              </button>
 
              <textarea 
@@ -281,7 +281,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
                disabled={!(input || '').trim() || isLoading}
                className={`size-9 rounded-xl flex items-center justify-center shrink-0 mb-0.5 transition-all ${(input || '').trim() && !isLoading ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/30 hover:bg-[#0ea5e9]/90 scale-100' : 'bg-slate-200 dark:bg-white/10 text-slate-400 dark:text-white/30 scale-95'}`}
              >
-               {isLoading ? <span className="material-symbols-outlined text-lg animate-spin">refresh</span> : <span className="material-symbols-outlined text-lg">arrow_upward</span>}
+               {isLoading ? <RefreshCw size={18} className="text-lg animate-spin" /> : <ArrowUp size={18} className="text-lg" />}
              </button>
            </form>
            

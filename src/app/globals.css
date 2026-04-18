@@ -153,7 +153,9 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    /* Apple silky easing for all default transitions */
+  }
+  /* Apple silky easing only on interactive elements */
+  a, button, input, textarea, select, [role="button"] {
     transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
   body {

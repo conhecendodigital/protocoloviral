@@ -4,6 +4,8 @@ import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { createClient } from '@/lib/supabase/client'
+import { ArrowLeft, ArrowRight, Check, CheckCircle, Hand, RefreshCw } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface OnboardingModalProps {
   userId: string
@@ -127,7 +129,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             className="size-24 rounded-full bg-gradient-to-br from-emerald-400 to-[#0ea5e9] flex items-center justify-center mb-8 shadow-[0_0_60px_rgba(16,185,129,0.4)]"
           >
-            <span className="material-symbols-outlined text-[48px] text-slate-900 dark:text-white">check_circle</span>
+            <CheckCircle size={48} className="text-[48px] text-slate-900 dark:text-white" />
           </motion.div>
           <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Perfil Completo!</h2>
           <p className="text-lg text-slate-800 dark:text-white/90 dark:text-white/90 max-w-md">
@@ -139,7 +141,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             transition={{ delay: 0.6 }}
             className="mt-6 text-sm text-[#0ea5e9] font-bold uppercase tracking-widest flex items-center gap-2"
           >
-            <span className="material-symbols-outlined animate-spin text-base">sync</span>
+            <RefreshCw size={16} className="animate-spin text-base" />
             Preparando sua experiência...
           </motion.div>
         </motion.div>
@@ -165,7 +167,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
               className="size-20 bg-gradient-to-br from-[#0ea5e9] to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(14,165,233,0.3)]"
             >
-              <span className="material-symbols-outlined text-[40px] text-slate-900 dark:text-white">waving_hand</span>
+              <Hand size={40} className="text-[40px] text-slate-900 dark:text-white" />
             </motion.div>
 
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
@@ -196,7 +198,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
               className="onboarding-next-btn inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-slate-900 dark:text-white font-bold text-base transition-all active:scale-[0.97]"
             >
               <span>Vamos começar</span>
-              <span className="material-symbols-outlined text-xl">arrow_forward</span>
+              <ArrowRight size={20} className="text-xl" />
             </motion.button>
 
             <button
@@ -268,9 +270,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                 borderColor: `${currentSection.color}30`,
               }}
             >
-              <span className="material-symbols-outlined text-base" style={{ color: currentSection.color }}>
-                {currentSection.icon}
-              </span>
+              <DynamicIcon name={currentSection.icon} size={16} style={{ color: currentSection.color }} />
             </div>
             <span className="text-xs font-bold uppercase tracking-widest" style={{ color: currentSection.color }}>
               {currentSection.label}
@@ -341,7 +341,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             disabled={currentStep < 0}
             className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none px-4 py-3"
           >
-            <span className="material-symbols-outlined text-xl">arrow_back</span>
+            <ArrowLeft size={20} className="text-xl" />
             Voltar
           </button>
 
@@ -363,12 +363,12 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
               {currentStep === totalSteps - 1 ? (
                 <>
                   <span>Concluir</span>
-                  <span className="material-symbols-outlined text-xl">check</span>
+                  <Check size={20} className="text-xl" />
                 </>
               ) : (
                 <>
                   <span>Próximo</span>
-                  <span className="material-symbols-outlined text-xl">arrow_forward</span>
+                  <ArrowRight size={20} className="text-xl" />
                 </>
               )}
             </button>

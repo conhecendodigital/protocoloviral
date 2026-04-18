@@ -1,6 +1,7 @@
 'use client'
 
 import { useCredits } from '@/hooks/use-credits'
+import { AlertTriangle, Star } from 'lucide-react'
 
 export function CreditBar() {
   const { availableCredits, isLoading } = useCredits()
@@ -24,9 +25,7 @@ export function CreditBar() {
       : isWarning ? 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400'
       : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/80'}`}
     >
-      <span className="material-symbols-outlined text-[18px]">
-        {isDanger ? 'warning' : 'stars'}
-      </span>
+      {isDanger ? <AlertTriangle size={18} /> : <Star size={18} />}
       <span className="text-xs font-bold font-mono">
         {availableCredits} CRÉDITOS
       </span>

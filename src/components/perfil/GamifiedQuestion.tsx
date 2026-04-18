@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { WizardQuestion } from './wizard-data'
+import { Check, Circle, FileEdit, Pencil, Plus } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface GamifiedQuestionProps {
   question: WizardQuestion
@@ -170,9 +172,7 @@ export function GamifiedQuestion({ question, value, onChange }: GamifiedQuestion
                 <div className={`size-8 rounded-full flex items-center justify-center transition-colors shrink-0 ${
                   isSelected ? 'bg-[#0ea5e9] text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/50'
                 }`}>
-                  <span className="material-symbols-outlined text-sm">
-                    {opt.icon || (isSelected ? 'check' : 'radio_button_unchecked')}
-                  </span>
+{opt.icon ? <DynamicIcon name={opt.icon} size={14} /> : isSelected ? <Check size={14} /> : <Circle size={14} />}
                 </div>
                 <span className={`text-sm font-bold leading-tight ${isSelected ? 'text-[#0ea5e9]' : 'text-slate-700 dark:text-white/80'}`}>
                   {opt.label}
@@ -195,9 +195,7 @@ export function GamifiedQuestion({ question, value, onChange }: GamifiedQuestion
               <div className={`size-8 rounded-full flex items-center justify-center transition-colors shrink-0 ${
                 isCustom ? 'bg-violet-500 text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/50'
               }`}>
-                <span className="material-symbols-outlined text-sm">
-                  {isCustom ? 'edit' : 'add'}
-                </span>
+                {isCustom ? <Pencil size={14} /> : <Plus size={14} />}
               </div>
               <span className={`text-sm font-bold leading-tight ${isCustom ? 'text-violet-500' : 'text-slate-700 dark:text-white/80'}`}>
                 Personalizado
@@ -216,7 +214,7 @@ export function GamifiedQuestion({ question, value, onChange }: GamifiedQuestion
             className="overflow-hidden"
           >
             <div className="p-4 rounded-2xl bg-violet-500/5 border border-violet-500/20 flex gap-3">
-              <span className="material-symbols-outlined text-violet-400 mt-2">edit_note</span>
+              <FileEdit size={18} className="text-violet-400 mt-2" />
               <textarea
                 value={customValue}
                 onChange={e => setCustomValue(e.target.value)}

@@ -3,6 +3,7 @@ import { parseRoteiroBlocks, BlockMeta } from '@/lib/parser'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
+import { Check, Copy, Heart, Lock } from 'lucide-react'
 
 interface ScriptRendererProps {
   content: string;
@@ -78,7 +79,7 @@ function ScriptBlock({
       {isLocked && (
         <div className="absolute inset-0 flex items-center justify-center z-10 bg-[#FFFCF5]/30 dark:bg-slate-900/30">
           <Link href="/assinatura" className="group flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white shadow-xl shadow-amber-500/30 px-6 py-3 rounded-full font-bold text-xs transition-all transform hover:scale-105 hover:-translate-y-0.5">
-            <span className="material-symbols-outlined text-[16px]">lock</span>
+            <Lock size={16} className="text-[16px]" />
             Desbloquear conteúdo
           </Link>
         </div>
@@ -232,9 +233,7 @@ export function ScriptRenderer({ content, isUnlocked, isGenerating, onSave }: Sc
               onClick={handleCopy}
               className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/20 hover:bg-white/10 text-white/80 hover:text-white transition-all"
             >
-              <span className="material-symbols-outlined text-[14px]">
-                {copied ? 'check' : 'content_copy'}
-              </span>
+              {copied ? <Check size={14} /> : <Copy size={14} />}
               {copied ? 'Copiado!' : 'Copiar roteiro'}
             </button>
 
@@ -247,9 +246,7 @@ export function ScriptRenderer({ content, isUnlocked, isGenerating, onSave }: Sc
                     : 'bg-white/10 hover:bg-white/20 text-white/80 hover:text-white'
                 }`}
               >
-                <span className="material-symbols-outlined text-[14px]">
-                  {saved ? 'check' : 'favorite'}
-                </span>
+                {saved ? <Check size={14} /> : <Heart size={14} />}
                 {saved ? 'Salvo!' : 'Gostei, salvar'}
               </button>
             )}

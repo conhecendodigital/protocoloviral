@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { Camera, ChevronsUpDown, Clock, Eye, Flame, Heart, Search, TrendingUp } from 'lucide-react'
 
 interface Formato {
   id: string
@@ -212,7 +213,7 @@ export default function FormatosPage() {
         <section className="sticky top-0 z-50 pt-4 pb-6 backdrop-blur-xl mx-[-16px] sm:mx-[-24px] px-4 sm:px-6">
            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between max-w-7xl mx-auto">
              <div className="flex-1 w-full relative">
-               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xl pointer-events-none">search</span>
+               <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xl pointer-events-none" />
                <input 
                  autoFocus
                  value={busca}
@@ -234,7 +235,7 @@ export default function FormatosPage() {
                        <span>{formatoEmojis[filtroFormato] || '📁'}</span>
                        <span className="truncate">{filtroFormato === 'Todos' ? 'Todos Formatos' : filtroFormato}</span>
                     </div>
-                    <span className="material-symbols-outlined text-slate-400 text-lg shrink-0">unfold_more</span>
+                    <ChevronsUpDown size={18} className="text-slate-400 text-lg shrink-0" />
                   </button>
                   <AnimatePresence>
                     {formatoMenuAtivo && (
@@ -263,14 +264,12 @@ export default function FormatosPage() {
                     className="w-full flex items-center justify-between gap-2 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 py-3.5 px-4 rounded-2xl text-sm font-bold text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                   >
                     <div className="flex items-center gap-2 truncate">
-                       <span className="material-symbols-outlined text-[#0ea5e9] text-[18px]">
-                         {ordenacao === 'recente' ? 'schedule' : ordenacao === 'engajamento' ? 'trending_up' : 'visibility'}
-                       </span>
+{ordenacao === 'recente' ? <Clock size={18} className="text-[#0ea5e9]" /> : ordenacao === 'engajamento' ? <TrendingUp size={18} className="text-[#0ea5e9]" /> : <Eye size={18} className="text-[#0ea5e9]" />}
                        <span className="truncate">
                          {ordenacao === 'recente' ? 'Mais Recente' : ordenacao === 'engajamento' ? 'Top Engajamento' : 'Mais Vistos'}
                        </span>
                     </div>
-                    <span className="material-symbols-outlined text-slate-400 text-lg shrink-0">unfold_more</span>
+                    <ChevronsUpDown size={18} className="text-slate-400 text-lg shrink-0" />
                   </button>
                   <AnimatePresence>
                     {ordemMenuAtivo && (
@@ -279,13 +278,13 @@ export default function FormatosPage() {
                          className="absolute top-full right-0 w-48 mt-2 bg-white dark:bg-[#0a0f1e] border border-slate-200 dark:border-white/10 shadow-2xl rounded-2xl p-2 z-50 transform origin-top"
                       >
                          <button onClick={() => { setOrdenacao('recente'); setOrdemMenuAtivo(false); }} className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-colors ${ordenacao === 'recente' ? 'bg-[#0ea5e9]/10 text-[#0ea5e9] font-bold' : 'text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5'}`}>
-                           <span className="material-symbols-outlined text-[16px]">schedule</span> Mais Recente
+                           <Clock size={16} className="text-[16px]" /> Mais Recente
                          </button>
                          <button onClick={() => { setOrdenacao('engajamento'); setOrdemMenuAtivo(false); }} className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-colors ${ordenacao === 'engajamento' ? 'bg-[#0ea5e9]/10 text-[#0ea5e9] font-bold' : 'text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5'}`}>
-                           <span className="material-symbols-outlined text-[16px]">trending_up</span> Maior Engajamento
+                           <TrendingUp size={16} className="text-[16px]" /> Maior Engajamento
                          </button>
                          <button onClick={() => { setOrdenacao('views'); setOrdemMenuAtivo(false); }} className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-colors ${ordenacao === 'views' ? 'bg-[#0ea5e9]/10 text-[#0ea5e9] font-bold' : 'text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5'}`}>
-                           <span className="material-symbols-outlined text-[16px]">visibility</span> Mais Views
+                           <Eye size={16} className="text-[16px]" /> Mais Views
                          </button>
                       </motion.div>
                     )}
@@ -305,7 +304,7 @@ export default function FormatosPage() {
         {/* Empty State */}
         {!loading && formatosProcessados.length === 0 && (
           <div className="text-center py-20">
-            <span className="material-symbols-outlined text-6xl text-slate-800 dark:text-white/30 mb-4 block">video_camera_back</span>
+            <Camera size={18} className="text-6xl text-slate-800 dark:text-white/30 mb-4 block" />
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Nenhum formato viral.</h3>
             <p className="text-slate-800 dark:text-white/60 text-sm max-w-md mx-auto leading-relaxed">
                Tente limpar os filtros, ou aguarde nossa inteligência injetar novas atualizações na base.
@@ -336,7 +335,7 @@ export default function FormatosPage() {
 
                 {formato.destaque && (
                   <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-gradient-to-r from-amber-500/90 to-orange-600/90 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md shadow-black/30 backdrop-blur-sm opacity-100">
-                    <span className="material-symbols-outlined text-[10px] sm:text-[12px]">local_fire_department</span>
+                    <Flame size={12} className="text-[10px] sm:text-[12px]" />
                     Hot
                   </div>
                 )}
@@ -359,17 +358,17 @@ export default function FormatosPage() {
                    {/* Micro-Metrics e Avatar placeholder */}
                    <div className="flex items-center justify-between mt-auto w-full pt-1 border-t border-white/10">
                      <div className="flex items-center gap-1.5 px-1 py-1 text-[11px] sm:text-[12px] font-bold text-white mt-1">
-                        <span className="material-symbols-outlined text-[14px] sm:text-[15px] text-green-400">trending_up</span>
+                        <TrendingUp size={14} className="text-[14px] sm:text-[15px] text-green-400" />
                         {formato.engajamento ? `${formato.engajamento.toFixed(1)}%` : 'Alto'}
                      </div>
 
                      {(formato.views || formato.curtidas) && (
                        <div className="flex items-center gap-3 sm:gap-4 text-white/90 drop-shadow-md text-[11px] sm:text-[13px] font-bold mt-1">
                          {formato.views != null && (
-                           <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[14px] sm:text-[16px] text-[#0ea5e9]">visibility</span> {formatNumber(formato.views)}</span>
+                           <span className="flex items-center gap-1.5"><Eye size={14} className="text-[14px] sm:text-[16px] text-[#0ea5e9]" /> {formatNumber(formato.views)}</span>
                          )}
                          {formato.views == null && formato.curtidas != null && (
-                           <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[14px] sm:text-[16px] text-rose-400">favorite</span> {formatNumber(formato.curtidas)}</span>
+                           <span className="flex items-center gap-1.5"><Heart size={14} className="text-[14px] sm:text-[16px] text-rose-400" /> {formatNumber(formato.curtidas)}</span>
                          )}
                        </div>
                      )}

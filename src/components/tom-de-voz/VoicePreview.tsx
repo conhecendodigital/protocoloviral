@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { getPreview, getRegistroLabel, getEnergiaLabel } from './previews'
+import { Eye, Target } from 'lucide-react'
 
 interface VoicePreviewProps {
   relacao?: string
@@ -25,7 +26,7 @@ export function VoicePreview({ relacao, energia, registro }: VoicePreviewProps) 
       className="bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-6 sticky top-8"
     >
       <div className="flex items-center gap-2 mb-5">
-        <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-lg">visibility</span>
+        <Eye size={18} className="text-amber-600 dark:text-amber-400 text-lg" />
         <h3 className="font-bold text-sm text-amber-900 dark:text-amber-200">Preview do seu tom de voz</h3>
       </div>
 
@@ -36,7 +37,7 @@ export function VoicePreview({ relacao, energia, registro }: VoicePreviewProps) 
           {registroLabel}
         </span>
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-100 dark:bg-pink-500/10 text-pink-700 dark:text-pink-400 text-xs font-bold border border-pink-200 dark:border-pink-500/20">
-          <span className="material-symbols-outlined text-[12px]">target</span>
+          <Target size={12} className="text-[12px]" />
           {energiaLabel}
         </span>
       </div>

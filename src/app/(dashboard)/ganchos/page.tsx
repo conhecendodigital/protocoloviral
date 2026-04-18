@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BANCO_DE_GANCHOS, CATEGORIAS_GANCHOS, type Gancho } from '@/lib/ganchos'
 import Link from 'next/link'
+import { ArrowLeft, Check, ChevronDown, ChevronUp, Copy, Search } from 'lucide-react'
 
 const CATEGORIA_ICONS: Record<string, string> = {
   'Número + Segredo': '🔢',
@@ -67,7 +68,7 @@ export default function GanchosPage() {
       <div className="bg-slate-900 px-4 pt-10 pb-8">
         <div className="max-w-4xl mx-auto">
           <Link href="/roteirista" className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/70 transition-colors mb-6">
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
+            <ArrowLeft size={14} className="text-sm" />
             Voltar
           </Link>
 
@@ -106,7 +107,7 @@ export default function GanchosPage() {
       <div className="sticky top-0 z-10 bg-[#F5F0E8]/90 backdrop-blur-sm border-b border-black/5 px-4 py-3">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
             <input
               type="text"
               placeholder="Buscar ganchos, gatilhos..."
@@ -196,9 +197,7 @@ export default function GanchosPage() {
                     onClick={() => setExpandedId(expandedId === gancho.id ? null : gancho.id)}
                     className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
                   >
-                    <span className="material-symbols-outlined text-sm">
-                      {expandedId === gancho.id ? 'expand_less' : 'expand_more'}
-                    </span>
+                    {expandedId === gancho.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     {expandedId === gancho.id ? 'Ocultar' : 'Ver detalhes'}
                   </button>
                   <div className="flex-1" />
@@ -210,9 +209,7 @@ export default function GanchosPage() {
                         : 'bg-slate-900 hover:bg-slate-700 text-white'
                     }`}
                   >
-                    <span className="material-symbols-outlined text-sm">
-                      {copiedId === gancho.id ? 'check' : 'content_copy'}
-                    </span>
+                    {copiedId === gancho.id ? <Check size={14} /> : <Copy size={14} />}
                     {copiedId === gancho.id ? 'Copiado!' : 'Copiar'}
                   </button>
                 </div>

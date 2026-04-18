@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
+import { VideoIcon, X } from 'lucide-react'
 
 export interface FormatoMinimal {
   id: string
@@ -48,7 +49,7 @@ export function FormatPicker({ selectedId, onSelect, disabled }: Props) {
   return (
     <div className="space-y-2">
       <label className="text-xs font-bold text-slate-700 dark:text-white/80 flex items-center justify-between uppercase tracking-wider">
-        <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-[14px] text-[#0ea5e9]">video_library</span> Estrutura Viral</span>
+        <span className="flex items-center gap-1.5"><VideoIcon size={14} className="text-[14px] text-[#0ea5e9]" /> Estrutura Viral</span>
         {selectedId && (
            <button onClick={() => onSelect(null)} className="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-white uppercase font-bold">Limpar</button>
         )}
@@ -86,7 +87,7 @@ export function FormatPicker({ selectedId, onSelect, disabled }: Props) {
             onClick={() => onSelect(null)} 
             className="text-slate-400 hover:text-red-500 transition-colors"
           >
-             <span className="material-symbols-outlined">close</span>
+             <X size={18} />
           </button>
         </div>
       )}

@@ -5,13 +5,14 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
+import { Bot, EyeOff, Frown, History, Lock, MessageSquare, Plus, Settings } from 'lucide-react'
 
 // ─── Paywall Overlay ────────────────────────────────────────────────
 function PremiumOverlay({ title, desc }: { title: string; desc: string }) {
   return (
     <div className="absolute inset-0 z-50 flex flex-col items-center top-[15%] p-6 text-center">
       <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.4)] mb-4">
-        <span className="material-symbols-outlined text-white text-3xl">lock</span>
+        <Lock size={30} className="text-white text-3xl" />
       </div>
       <h4 className="text-2xl font-black text-foreground mb-2">{title}</h4>
       <p className="text-sm font-medium text-muted-foreground max-w-sm mb-6 leading-relaxed">{desc}</p>
@@ -77,7 +78,7 @@ export default function AgentesLibraryPage() {
               {agente.avatar_url ? (
                 <img src={agente.avatar_url} alt={agente.name} className="size-12 rounded-xl object-cover" />
               ) : (
-                <span className={`material-symbols-outlined ${agente.status === 'inativo' ? 'text-amber-400' : 'text-indigo-400'} text-2xl`}>robot_2</span>
+                <Bot size={24} className="${agente.status === 'inativo' ? 'text-amber-400' : 'text-indigo-400'} text-2xl" />
               )}
             </div>
           </div>
@@ -95,7 +96,7 @@ export default function AgentesLibraryPage() {
                 href={`/agentes/${agente.id}/chat`}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl ${agente.status === 'inativo' ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/20' : 'bg-indigo-500 hover:bg-indigo-600 shadow-indigo-500/20'} transition-colors text-sm font-bold text-white shadow-lg`}
               >
-                <span className="material-symbols-outlined text-[18px]">forum</span>
+                <MessageSquare size={18} className="text-[18px]" />
                 Conversar
               </Link>
             ) : null}
@@ -106,7 +107,7 @@ export default function AgentesLibraryPage() {
                   className="flex items-center justify-center rounded-xl bg-card hover:bg-accent transition-colors w-11 text-muted-foreground hover:text-foreground border border-border"
                   title="Editar Agente"
                 >
-                  <span className="material-symbols-outlined text-[18px]">settings</span>
+                  <Settings size={18} className="text-[18px]" />
                 </Link>
             )}
           </div>
@@ -125,7 +126,7 @@ export default function AgentesLibraryPage() {
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.3)]">
-                <span className="material-symbols-outlined text-white text-3xl">smart_toy</span>
+                <Bot size={30} className="text-white text-3xl" />
               </div>
               <div>
                 <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter uppercase italic"><span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9] pr-2">BIBLIOTECA <span className="ml-1.5">DE</span></span> AGENTES</h1>
@@ -144,7 +145,7 @@ export default function AgentesLibraryPage() {
               href="/agentes/historico" 
               className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-secondary hover:bg-secondary/80 border border-border transition-colors w-full sm:w-auto"
             >
-              <span className="material-symbols-outlined text-muted-foreground text-sm">history</span>
+              <History size={14} className="text-muted-foreground text-sm" />
               <span className="text-sm font-bold text-foreground">Histórico</span>
             </Link>
 
@@ -153,7 +154,7 @@ export default function AgentesLibraryPage() {
                 href="/agentes/novo" 
                 className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20 w-full sm:w-auto"
               >
-                <span className="material-symbols-outlined text-white text-sm">add</span>
+                <Plus size={14} className="text-white text-sm" />
                 <span className="text-sm font-bold text-white">Novo Agente</span>
               </Link>
             )}
@@ -168,7 +169,7 @@ export default function AgentesLibraryPage() {
           </div>
         ) : agentes.length === 0 ? (
           <div className="text-center py-20 bg-slate-50 dark:bg-white/[0.03] rounded-3xl border border-slate-200 dark:border-white/[0.08]">
-            <span className="material-symbols-outlined text-4xl text-muted-foreground mb-2">sentiment_dissatisfied</span>
+            <Frown size={36} className="text-4xl text-muted-foreground mb-2" />
             <p className="text-muted-foreground">Nenhum agente disponível no momento.</p>
           </div>
         ) : (
@@ -197,7 +198,7 @@ export default function AgentesLibraryPage() {
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-px bg-border flex-1"></div>
                     <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px]">visibility_off</span>
+                      <EyeOff size={16} className="text-[16px]" />
                       Agentes Inativos (Visão Admin)
                     </span>
                     <div className="h-px bg-border flex-1"></div>

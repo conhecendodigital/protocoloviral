@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { CheckCircle } from 'lucide-react'
 
 const REGISTROS = [
   {
@@ -57,7 +58,7 @@ export function StepRegistro({ value, onChange }: StepRegistroProps) {
           >
             {value === r.id && (
               <div className="absolute top-3 right-3">
-                <span className="material-symbols-outlined text-[#0ea5e9] text-lg">check_circle</span>
+                <CheckCircle size={18} className="text-[#0ea5e9] text-lg" />
               </div>
             )}
             <div className="flex items-center gap-2">

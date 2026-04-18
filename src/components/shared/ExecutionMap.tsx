@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { ArrowRight, Check, CheckCircle, ExternalLink, Eye, Lock, MapPin, RefreshCw } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 type StepStatus = 'done' | 'current' | 'locked'
 
@@ -179,7 +181,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
       className="mb-10"
     >
       <div className="flex items-center gap-3 mb-2">
-        <span className="material-symbols-outlined text-[#0ea5e9] text-2xl">pin_drop</span>
+        <MapPin size={24} className="text-[#0ea5e9] text-2xl" />
         <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
           Sua Prioridade Agora
         </h3>
@@ -216,9 +218,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
               borderColor: isDone ? '#10b98140' : activeStep.status === 'locked' ? 'rgba(255,255,255,0.1)' : `${activeStep.color}40`,
             }}
           >
-            <span className="material-symbols-outlined text-3xl sm:text-4xl">
-              {isDone ? 'check' : activeStep.icon}
-            </span>
+            {isDone ? <Check size={36} className="sm:text-4xl" /> : <DynamicIcon name={activeStep.icon} size={36} className="sm:size-10" />}
           </div>
 
           <div className="flex-1 space-y-2">
@@ -251,7 +251,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 dark:text-white transition-all shadow-lg hover:scale-105 active:scale-95"
                     style={{ background: `linear-gradient(135deg, ${activeStep.color}, ${activeStep.color}dd)` }}
                   >
-                    <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                    <ExternalLink size={18} className="text-[18px]" />
                     {activeStep.btnLabel}
                   </a>
                 ) : (
@@ -260,7 +260,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-slate-900 dark:text-white transition-all shadow-lg hover:scale-105 active:scale-95"
                     style={{ background: `linear-gradient(135deg, ${activeStep.color}, ${activeStep.color}dd)` }}
                   >
-                    <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                    <ArrowRight size={18} className="text-[18px]" />
                     {activeStep.btnLabel}
                   </Link>
                 )}
@@ -272,9 +272,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                      disabled={confirming}
                      className="inline-flex justify-center items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all disabled:opacity-60"
                    >
-                     <span className="material-symbols-outlined text-[16px]">
-                       {confirming ? 'sync' : 'check_circle'}
-                     </span>
+                     {confirming ? <RefreshCw size={16} /> : <CheckCircle size={16} />}
                      {confirming ? 'Salvando...' : 'Marcar como feito'}
                    </motion.button>
                 )}
@@ -286,7 +284,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                 href={activeStep.href}
                 className="inline-flex justify-center items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
               >
-                <span className="material-symbols-outlined">visibility</span>
+                <Eye size={18} />
                 Revisar Etapa
               </Link>
             )}
@@ -294,7 +292,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
             {activeStep.status === 'locked' && (
               <div className="inline-flex justify-center flex-col items-center gap-1">
                 <div className="w-12 h-12 rounded-full border border-slate-300 dark:border-white/10 flex items-center justify-center mb-2">
-                  <span className="material-symbols-outlined text-slate-400">lock</span>
+                  <Lock size={18} className="text-slate-400" />
                 </div>
                 <span className="text-xs uppercase tracking-widest text-slate-500 font-bold block text-center">
                   Cumpra a etapa anterior

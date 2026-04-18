@@ -45,7 +45,7 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
             <span className="text-xs font-bold uppercase tracking-widest text-[#0ea5e9]">
               {loading ? '...' : `Nível ${nivel.nivel}`}
             </span>
-            <span className="text-xs font-medium text-slate-800 dark:text-white/90 dark:text-white/90">
+            <span className="text-xs font-medium text-slate-800 dark:text-white/90">
               {loading ? '' : `${xp} / ${nivel.xp_max} XP`}
             </span>
           </div>
@@ -61,7 +61,7 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
         {title && (
           <div className="ml-2 sm:ml-4 min-w-0">
             <h1 className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate">{title}</h1>
-            {subtitle && <p className="text-xs sm:text-sm text-slate-800 dark:text-white/90 dark:text-white/90 truncate">{subtitle}</p>}
+            {subtitle && <p className="text-xs sm:text-sm text-slate-800 dark:text-white/90 truncate">{subtitle}</p>}
           </div>
         )}
       </div>

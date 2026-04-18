@@ -4,6 +4,7 @@
 import { PROMPT_CONFIGS, type PromptType } from '@/types/prompt'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { ArrowRight, Link, Sparkles } from 'lucide-react'
 
 const PROMPT_ORDER: PromptType[] = ['clareza', 'persona', 'ideias', 'vendas']
 
@@ -42,7 +43,7 @@ export default function PromptsIndexPage() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
             <div className="flex items-center gap-4 mb-4">
               <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#0ea5e9] to-indigo-600 flex items-center justify-center shadow-[0_0_30px_rgba(14,165,233,0.3)]">
-                <span className="material-symbols-outlined text-slate-900 dark:text-white text-3xl">auto_awesome</span>
+                <Sparkles size={30} className="text-slate-900 dark:text-white text-3xl" />
               </div>
               <div>
                 <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic">
@@ -103,7 +104,7 @@ export default function PromptsIndexPage() {
                       {/* Dependencies */}
                       {hasDeps && (
                         <div className="flex items-center gap-2 mb-4">
-                          <span className="material-symbols-outlined text-slate-800 dark:text-white/90 text-sm">link</span>
+                          <Link size={14} className="text-slate-800 dark:text-white/90 text-sm" />
                           <span className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-widest font-bold">
                             Precisa fazer antes: {config.dependencias.map(d => PROMPT_CONFIGS[d].titulo).join(', ')}
                           </span>
@@ -113,7 +114,7 @@ export default function PromptsIndexPage() {
                       {/* CTA */}
                       <div className={`flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r ${COLORS[tipo]} opacity-80 group-hover:opacity-100 transition-opacity`}>
                         <span className="text-sm font-bold text-slate-900 dark:text-white">Começar</span>
-                        <span className="material-symbols-outlined text-slate-900 dark:text-white text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        <ArrowRight size={18} className="text-slate-900 dark:text-white text-lg group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
                   </Link>

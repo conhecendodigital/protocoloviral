@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { CheckCircle } from 'lucide-react'
 
 const RELACOES = [
   { id: 'professor', emoji: '🎓', nome: 'Professor', desc: 'Ensina com paciência, guia passo a passo' },
@@ -42,7 +43,7 @@ export function StepRelacao({ value, onChange }: StepRelacaoProps) {
           >
             {value === r.id && (
               <div className="absolute top-3 right-3">
-                <span className="material-symbols-outlined text-[#0ea5e9] text-lg">check_circle</span>
+                <CheckCircle size={18} className="text-[#0ea5e9] text-lg" />
               </div>
             )}
             <span className="text-2xl">{r.emoji}</span>

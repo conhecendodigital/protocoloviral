@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BarChart3, Calculator, Lightbulb, RefreshCw, TrendingUp } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 type Formato = 'reels' | 'carrossel' | 'imagem' | 'stories'
 
@@ -159,7 +161,7 @@ export default function CalculadoraPage() {
                 <div key={field.label}>
                   <label className="text-xs font-bold text-slate-700 dark:text-white/90 uppercase tracking-widest mb-1.5 block ml-1">{field.label}</label>
                   <div className="relative">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-800 dark:text-white/90 text-lg">{field.icon}</span>
+                    <DynamicIcon name={field.icon} size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-800 dark:text-white/90 text-lg"" />
                     <input
                       type="number"
                       inputMode="numeric"
@@ -179,7 +181,7 @@ export default function CalculadoraPage() {
                 disabled={!canCalculate}
                 className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-[#0ea5e9] to-sky-400 text-slate-900 dark:text-white font-bold text-sm transition-all active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(14,165,233,0.3)]"
               >
-                <span className="material-symbols-outlined text-lg">calculate</span>
+                <Calculator size={18} className="text-lg" />
                 Calcular
               </button>
               {shouldShowResults && (
@@ -187,7 +189,7 @@ export default function CalculadoraPage() {
                   onClick={handleReset}
                   className="py-3.5 px-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-slate-200 dark:border-white/10 text-slate-800 dark:text-white/90 dark:text-white/90 font-bold text-sm hover:bg-black/10 dark:bg-white/10 transition-all active:scale-[0.97]"
                 >
-                  <span className="material-symbols-outlined text-lg">refresh</span>
+                  <RefreshCw size={18} className="text-lg" />
                 </button>
               )}
             </div>
@@ -205,7 +207,7 @@ export default function CalculadoraPage() {
                 exit={{ opacity: 0 }}
                 className="glass-card rounded-3xl p-12 border border-slate-200 dark:border-slate-200 dark:border-white/10 flex flex-col items-center justify-center min-h-[400px] text-center"
               >
-                <span className="material-symbols-outlined text-[80px] text-slate-700 mb-4">analytics</span>
+                <BarChart3 size={18} className="text-[80px] text-slate-700 mb-4" />
                 <h3 className="text-xl font-bold text-slate-700 dark:text-white/90 mb-2">Preencha os dados do post</h3>
                 <p className="text-sm text-slate-800 dark:text-white/90 max-w-sm">
                   Digite os números que aparecem nos Insights do seu post e clique em Calcular para ver sua performance.
@@ -222,7 +224,7 @@ export default function CalculadoraPage() {
                 {/* Overall Score */}
                 <div className={`glass-card rounded-3xl p-8 border ${overallClass.border} relative overflow-hidden`}>
                   <div className="absolute top-0 right-0 p-6 opacity-10">
-                    <span className="material-symbols-outlined text-[80px] text-[#0ea5e9]">insights</span>
+                    <TrendingUp size={18} className="text-[80px] text-[#0ea5e9]" />
                   </div>
                   <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
@@ -270,7 +272,7 @@ export default function CalculadoraPage() {
                 {/* Tips */}
                 <div className="bg-gradient-to-br from-[#0ea5e9]/15 to-indigo-900/10 rounded-3xl p-6 border border-[#0ea5e9]/20">
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[#0ea5e9]">lightbulb</span>
+                    <Lightbulb size={18} className="text-[#0ea5e9]" />
                     Dicas para melhorar
                   </h3>
                   <ul className="space-y-3">

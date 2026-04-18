@@ -2,6 +2,7 @@
 
 import { useVoiceProfiles } from '@/hooks/use-voice-profiles'
 import { cn } from '@/lib/utils'
+import { Mic2, Star } from 'lucide-react'
 
 interface Props {
   selectedId: string | null
@@ -26,7 +27,7 @@ export function VoiceSelector({ selectedId, onSelect, disabled }: Props) {
     <div>
       <div className="flex items-center justify-between mb-2">
         <label className="text-xs font-bold text-slate-700 dark:text-white/80 flex items-center gap-1.5 uppercase tracking-wider">
-          <span className="material-symbols-outlined text-[14px] text-violet-500">record_voice_over</span>
+          <Mic2 size={14} className="text-[14px] text-violet-500" />
           Tom de Voz
         </label>
         {profiles.length === 0 && (
@@ -60,7 +61,7 @@ export function VoiceSelector({ selectedId, onSelect, disabled }: Props) {
                 : "bg-white dark:bg-black/40 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5"
             )}
           >
-            {profile.is_default && <span className="material-symbols-outlined text-[12px]">star</span>}
+            {profile.is_default && <Star size={12} className="text-[12px]" />}
             {profile.name}
           </button>
         ))}

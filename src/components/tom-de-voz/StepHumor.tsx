@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Plus, X } from 'lucide-react'
 
 interface Bordao {
   texto: string
@@ -106,7 +107,7 @@ export function StepHumor({ humor, bordoes, onHumorChange, onBordoesChange }: St
             disabled={!newBordao.trim()}
             className="size-11 rounded-xl bg-[#0ea5e9] text-white flex items-center justify-center hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           >
-            <span className="material-symbols-outlined text-lg">add</span>
+            <Plus size={18} className="text-lg" />
           </button>
         </div>
 
@@ -131,7 +132,7 @@ export function StepHumor({ humor, bordoes, onHumorChange, onBordoesChange }: St
                   onClick={() => removeBordao(i)}
                   className="text-slate-400 hover:text-red-400 transition-colors shrink-0"
                 >
-                  <span className="material-symbols-outlined text-lg">close</span>
+                  <X size={18} className="text-lg" />
                 </button>
               </motion.div>
             ))}
