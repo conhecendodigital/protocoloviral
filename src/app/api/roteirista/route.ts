@@ -320,6 +320,8 @@ export async function POST(req: Request) {
       '[FORMATACAO OBRIGATORIA DE CADA BLOCO]',
       'Tag do bloco isolada em linha unica, EM CAIXA ALTA e entre colchetes. Ex: [GANCHO]',
       'NUNCA use negrito ou marcacao nas tags (Ex: errado: **[GANCHO]**, certo: [GANCHO]).',
+      'PROIBIDO usar aspas ("") no texto falado do roteiro. As falas devem ser limpas.',
+      'PROIBIDO usar hifens ou travessoes (-) no inicio das frases. Nao crie listas/bullet points.',
       'Linha em branco apos cada tag.',
       'UMA frase por linha — ENTER apos cada frase.',
       'Instrucao visual entre parenteses em linha propria.',
