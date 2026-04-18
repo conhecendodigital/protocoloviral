@@ -7,8 +7,8 @@ import { useProfile } from '@/hooks/use-profile'
 import { ExecutionMap } from '@/components/shared/ExecutionMap'
 import { OnboardingModal } from '@/components/shared/OnboardingModal'
 import { createClient } from '@/lib/supabase/client'
-import FormatosPage from './formatos/page'
 import { Brain, Flame, ArrowRight } from 'lucide-react'
+import { FormatosFeed } from '@/components/formatos/FormatosFeed'
 
 // Supabase client created outside component (not in useMemo)
 const supabase = createClient()
@@ -147,7 +147,7 @@ export default function HomePage() {
             Feed de <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">Formatos</span>
           </h3>
         </div>
-        <FormatosPage />
+        <FormatosFeed />
       </motion.section>
     </>
   )
