@@ -22,7 +22,7 @@ const CATEGORIA_ICONS: Record<string, string> = {
 // Types
 // ────────────────────────────────────────────────────────────
 interface Block {
-  type: 'GANCHO' | 'DESENVOLVIMENTO' | 'CTA' | 'PROBLEMA' | 'SOLUCAO' | 'OUTROS'
+  type: string
   label: string
   emoji: string
   color: string
@@ -42,13 +42,13 @@ interface Roteiro {
 // ────────────────────────────────────────────────────────────
 // Parser — extrai blocos com direção e tempo
 // ────────────────────────────────────────────────────────────
-const BLOCK_DEFS: Record<string, { label: string; emoji: string; color: string }> = {
-  GANCHO:          { label: 'Hook',        emoji: '🪝', color: 'bg-blue-500' },
-  DESENVOLVIMENTO: { label: 'Development', emoji: '📝', color: 'bg-blue-500' },
-  PROBLEMA:        { label: 'Problema',    emoji: '⚠️', color: 'bg-blue-500' },
-  SOLUCAO:         { label: 'Solução',     emoji: '💡', color: 'bg-blue-500' },
-  CTA:             { label: 'CTA',         emoji: '📢', color: 'bg-blue-500' },
-  OUTROS:          { label: 'Trecho',      emoji: '📄', color: 'bg-blue-500' },
+const BLOCK_DEFS: Record<string, { label: string; emoji: string; color: string; guide: string }> = {
+  GANCHO:          { label: 'Hook',        emoji: '🪝', color: 'bg-blue-500', guide: 'O objetivo deste bloco é prender a atenção nos primeiros 3s. Edite para ser mais impactante ou gere variações.' },
+  DESENVOLVIMENTO: { label: 'Development', emoji: '📝', color: 'bg-blue-500', guide: 'Este é o corpo do conteúdo. Mantenha o ritmo rápido e vá direto ao ponto, cortando palavras desnecessárias.' },
+  PROBLEMA:        { label: 'Problema',    emoji: '⚠️', color: 'bg-blue-500', guide: 'Identifique a dor do seu público aqui. Quanto mais específico, maior a identificação.' },
+  SOLUCAO:         { label: 'Solução',     emoji: '💡', color: 'bg-blue-500', guide: 'Apresente a sua solução de forma clara. Use demonstrações visuais se possível.' },
+  CTA:             { label: 'CTA',         emoji: '📢', color: 'bg-blue-500', guide: 'A chamada para ação deve ser clara e rápida (ex: "Comenta EU QUERO", "Segue para mais").' },
+  OUTROS:          { label: 'Trecho',      emoji: '📄', color: 'bg-blue-500', guide: 'Modifique este trecho para adicionar sua própria voz e ajustar o tempo do roteiro.' },
 }
 
 function parseBlocks(text: string): Block[] {
@@ -58,30 +58,58 @@ function parseBlocks(text: string): Block[] {
     .replace(/\[ROTEIRO_FINAL\]/gi, '')
     .replace(/\[ROTEIRO_ID:[^\]]+\]/gi, '')
 
-  const re = /\[?(GANCHO|DESENVOLVIMENTO|PROBLEMA|SOLUCAO|SOLUÇÃO|CTA E FINAL|CTA|FINAL|OUTROS)\]?/gi
+  // Identify any bracketed tag on its own line like [TÍTULO] or [DESENVOLVIMENTO]
+  const re = /\[([A-ZÀ-Ú0-9\s-]+)\]/gim
   const segments: { type: string; content: string }[] = []
   let lastIndex = 0
   let lastType = ''
   let match: RegExpExecArray | null
 
-  const re2 = new RegExp(re.source, 'gi')
-  while ((match = re2.exec(cleaned)) !== null) {
-    if (lastType) segments.push({ type: lastType, content: cleaned.slice(lastIndex, match.index) })
+  while ((match = re.exec(cleaned)) !== null) {
+    if (lastType) {
+      segments.push({ type: lastType, content: cleaned.slice(lastIndex, match.index) })
+    } else if (match.index > 0) {
+      const preContent = cleaned.slice(0, match.index)
+      if (preContent.trim()) {
+        segments.push({ type: 'CONTEXTO', content: preContent })
+      }
+    }
     lastType = match[1].toUpperCase()
+      .trim()
       .replace('SOLUÇÃO', 'SOLUCAO')
       .replace('CTA E FINAL', 'CTA')
       .replace('FINAL', 'CTA')
-    lastIndex = re2.lastIndex
+    lastIndex = re.lastIndex
   }
-  if (lastType && lastIndex < cleaned.length) segments.push({ type: lastType, content: cleaned.slice(lastIndex) })
+  if (lastType && lastIndex < cleaned.length) {
+    segments.push({ type: lastType, content: cleaned.slice(lastIndex) })
+  }
 
   if (segments.length === 0 && cleaned.trim()) {
     return [{ type: 'OUTROS', ...BLOCK_DEFS['OUTROS'], text: cleaned.trim(), direction: '', timeSeconds: 0 }]
   }
 
   return segments.map(seg => {
-    const defKey = Object.keys(BLOCK_DEFS).includes(seg.type) ? seg.type : 'OUTROS'
-    const def = BLOCK_DEFS[defKey as keyof typeof BLOCK_DEFS]
+    // Dynamic mapping for unknown tags
+    let label = seg.type
+    let def = BLOCK_DEFS[seg.type]
+    if (!def) {
+      if (seg.type.includes('GANCHO') || seg.type.includes('INÍCIO')) {
+        def = BLOCK_DEFS['GANCHO']
+      } else if (seg.type.includes('CTA') || seg.type.includes('CHAMADA')) {
+        def = BLOCK_DEFS['CTA']
+      } else if (seg.type.includes('PROBLEMA')) {
+        def = BLOCK_DEFS['PROBLEMA']
+      } else if (seg.type.includes('SOLUCAO') || seg.type.includes('SOLUÇÃO')) {
+        def = BLOCK_DEFS['SOLUCAO']
+      } else {
+        def = { label: seg.type, emoji: '✨', color: 'bg-blue-500', guide: 'Modifique este trecho para adicionar sua própria voz e ajustar o tempo do roteiro.' }
+      }
+      label = seg.type
+    } else {
+      label = def.label
+    }
+
     const dirMatch = seg.content.match(/🎤\s*(.+)/m)
     const direction = dirMatch ? dirMatch[1].trim() : ''
     const timeMatch = seg.content.match(/⏱\s*(\d+)\s*s/i)
@@ -92,7 +120,7 @@ function parseBlocks(text: string): Block[] {
       .replace(/["""„‟]/g, (c) => (c === '"' || c === '"' || c === '„' || c === '‟' ? '"' : c))
       .replace(/\n{3,}/g, '\n\n')
       .trim()
-    return { type: defKey as Block['type'], ...def, text, direction, timeSeconds }
+    return { type: seg.type, label, emoji: def.emoji, color: def.color, text, direction, timeSeconds }
   }).filter(b => b.text.length > 0)
 }
 
@@ -539,6 +567,13 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                             </p>
                           )}
                         </div>
+                      )}
+
+                      {/* Block Guide (Always visible but subtle) */}
+                      {Object.values(BLOCK_DEFS).find(d => d.emoji === block.emoji)?.guide && (
+                        <p className="text-xs text-slate-400 text-center mt-4 max-w-md mx-auto leading-relaxed">
+                          💡 {Object.values(BLOCK_DEFS).find(d => d.emoji === block.emoji)?.guide || BLOCK_DEFS['OUTROS'].guide}
+                        </p>
                       )}
 
                       {/* Block actions — hover */}
