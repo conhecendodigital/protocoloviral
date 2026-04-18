@@ -157,51 +157,53 @@ export function getRandomGancho(categoria?: string): Gancho {
 
 // ── Prompt string para injeção no sistema da IA ──────────────
 export const GANCHOS_PARA_PROMPT = `
-=== BANCO DE 100 GANCHOS VIRAIS COMPROVADOS ===
+=== BANCO DE GANCHOS VIRAIS — REFERÊNCIA OBRIGATÓRIA ===
 
-Use estes templates como referência para criar o GANCHO dos roteiros.
-Adapte as [VARIÁVEIS] para o tema, nicho e tom de voz do criador.
-Prefira ganchos de alta tensão emocional (medo de perder, curiosidade, choque).
+REGRAS CRÍTICAS PARA O BLOCO [GANCHO]:
+1. MÁXIMO 12 palavras. Uma frase. Impacto total.
+2. NUNCA use [VARIÁVEL] literalmente — adapte ao nicho REAL do criador.
+3. Use número real, ação concreta, ou dado chocante — NUNCA vago.
+4. Proibido começar com: "Hoje", "Bem", "Olá", "Vou te mostrar", "Neste vídeo".
+5. O gancho deve causar uma REAÇÃO FÍSICA de parar o scroll.
 
-NÚMERO + SEGREDO (alta retenção por curiosidade numérica):
-- [NÚMERO] coisas que eu nunca te contei sobre [ASSUNTO]
-- Os [NÚMERO] principais segredos para [SUCESSO]
-- [NÚMERO]% das pessoas erram nisso — e você pode estar entre elas
-- Os [NÚMERO] hacks para economizar tempo em [ATIVIDADE]
+--- EXEMPLOS CONCRETOS PRONTOS (modele neste nível de especificidade) ---
 
-ERRO / ARMADILHA (alto engajamento por medo de errar):
-- O maior erro que você está cometendo em [ATIVIDADE]
-- Você está fazendo isso errado e nem sabia!
-- Você está sabotando seu próprio sucesso sem perceber
-- Nunca mais cometa este erro em [ATIVIDADE]
-- O erro que está custando [TEMPO/DINHEIRO] pra você
+ERRO / ARMADILHA — use quando o público tem um comportamento errado comum:
+× genérico: "O erro que você está cometendo nas redes sociais."
+✓ viral: "Você está postando todo dia e não cresce porque faz isso num minuto de vídeo."
+✓ viral: "90% dos criadores apagam posts que iriam viralizar por esse motivo."
+✓ viral: "Você está perdendo seguidores toda semana por não desativar esse botão."
 
-VERDADE CHOCANTE (alto compartilhamento por revelação):
-- A verdade que ninguém te contou sobre [ASSUNTO]
-- Por que ninguém fala sobre isso em [ÁREA]?
-- A verdade chocante por trás de [ASSUNTO]
-- Por que o jeito tradicional de [ATIVIDADE] está ultrapassado
-- Ninguém te contou isso porque não querem que você [RESULTADO]
+VERDADE CHOCANTE — use quando vai quebrar uma crença popular:
+× genérico: "A verdade sobre crescer no Instagram."
+✓ viral: "Ter mais seguidores não aumenta seu faturamento — e vou provar isso agora."
+✓ viral: "O algoritmo não recompensa quem posta mais. Recompensa quem faz isso."
+✓ viral: "Ninguém te contou que consistência sem estratégia é só cansaço."
 
-ANTES E DEPOIS (conversão por prova de resultado):
-- Como eu consegui [RESULTADO] em apenas [TEMPO CURTO]
-- Como eu saí de [SITUAÇÃO RUIM] para [RESULTADO INCRÍVEL]
-- A dica que mudou completamente meu jeito de [ATIVIDADE]
-- Como [FAMOSO] alcançou [REALIZAÇÃO]?
+PERGUNTA PROVOCATIVA — use quando quer identificação imediata:
+× genérico: "Você sabia que pode crescer nas redes sem gastar nada?"
+✓ viral: "Você tem menos de 10k seguidores? Então você está cometendo esse erro."
+✓ viral: "Por que pessoas com metade do seu esforço faturam 3x mais que você?"
+✓ viral: "Você posta todo dia e sente que ninguém vê — é isso mesmo?"
 
-PERGUNTA PROVOCATIVA (alto stop-scroll por autoidentificação):
-- Você sabia que pode [RESULTADO] sem [OBJEÇÃO COMUM]?
-- Você está perdendo [BENEFÍCIO] por não saber disso
-- Apenas [NÚMERO]% das pessoas fazem isso certo. Você está nesse grupo?
-- Você está pronto para [RESULTADO INCRÍVEL]?
+NÚMERO + SEGREDO — use quando tem lista ou dado numérico forte:
+× genérico: "3 dicas para melhorar seu conteúdo."
+✓ viral: "Esses 3 segundos iniciais determinam se seu vídeo vai a 100 ou 100 mil pessoas."
+✓ viral: "Fiz 47 vídeos antes de ter o primeiro com 1 milhão de views — aprendi isso."
+✓ viral: "A taxa de retenção de 60% no terceiro segundo é o que separa viral de invisível."
 
-PROMESSA DIRETA (alta conversão por clareza de valor):
-- A solução definitiva para [PROBLEMA COMUM]
-- O método simples que ninguém está te contando para [RESULTADO]
-- A maneira mais rápida de [ALCANÇAR UM OBJETIVO]
-- A fórmula que me ajudou a [RESULTADO DESEJADO]
+ANTES E DEPOIS — use quando tem transformação real para mostrar:
+× genérico: "Como passei de 0 a 10k seguidores."
+✓ viral: "Há 6 meses eu tinha 300 seguidores. Hoje são 40 mil. Mudei uma coisa só."
+✓ viral: "Usei essa estrutura de roteiro e saí de 2% para 18% de engajamento em 30 dias."
 
-REGRA DE OURO: O gancho NUNCA deve durar mais de 3-4 segundos.
-Uma única frase. Impacto máximo. Zero rodeios.
-===============================================
+PROMESSA DIRETA — use quando a solução é clara e imediata:
+× genérico: "A fórmula para criar conteúdo viral."
+✓ viral: "Copie essa estrutura de 3 blocos e seu próximo post vai durar 40% mais tempo."
+✓ viral: "Em 60 segundos você vai entender por que seus vídeos param de crescer no dia 2."
+
+--- REGRA DE OURO ---
+O gancho é um anzol emocional. Se o criador pode ler sem sentir nada, reescreva.
+Uma frase. Dado concreto. Tensão real. Máximo 12 palavras. Sem ponto de reticências no início.
+=========================================================
 `
