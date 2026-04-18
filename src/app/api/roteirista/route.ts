@@ -226,16 +226,29 @@ export async function POST(req: Request) {
 
           clearTimeout(timeoutId)
 
-          if (sData?.organic?.length > 0) {
-            const facts = sData.organic
-              .slice(0, 4)
-              .map((r: any) => '- ' + r.title + ': ' + r.snippet)
-              .join('\n')
+          let factsArray: string[] = []
 
+          if (sData?.answerBox) {
+            factsArray.push(`[RESPOSTA DIRETA] ${sData.answerBox.title || ''}: ${sData.answerBox.snippet || sData.answerBox.answer || ''}`)
+          }
+
+          if (sData?.news?.length > 0) {
+            sData.news.slice(0, 2).forEach((n: any) => {
+              factsArray.push(`[NOTÍCIA - ${n.source}] ${n.title}: ${n.snippet}`)
+            })
+          }
+
+          if (sData?.organic?.length > 0) {
+            sData.organic.slice(0, 3).forEach((r: any) => {
+              factsArray.push(`[ARTIGO] ${r.title}: ${r.snippet}`)
+            })
+          }
+
+          if (factsArray.length > 0) {
             serperContext = [
-              '[FATOS REAIS — USE PARA EMBASAR O ROTEIRO]',
-              'Integre esses dados atuais para dar credibilidade:',
-              facts,
+              '[FATOS REAIS E NOTÍCIAS ENCONTRADAS AGORA NO GOOGLE SOBRE ISSO]',
+              'Use APENAS SE ÚTIL, para embasar o roteiro com dados reais ou criar ganchos de autoridade:',
+              factsArray.join('\n'),
             ].join('\n')
           }
         } catch (e) {
