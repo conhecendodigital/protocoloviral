@@ -448,7 +448,9 @@ export async function POST(req: Request) {
         }
 
         // ─── 11. POS-GERACAO: credito + salvar ───────────────────────────────
-        if (success && fullGeneratedText.includes('[ROTEIRO_FINAL]') && mode !== 'analyze') {
+        // Save always when generation succeeded (even if [ROTEIRO_FINAL] token wasn't emitted)
+        const hasContent = fullGeneratedText.trim().length > 100
+        if (success && hasContent && mode !== 'analyze') {
           try {
             const adminSupabase = createClient(
               process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -472,10 +474,17 @@ export async function POST(req: Request) {
 
             const parts = fullGeneratedText.split('[ROTEIRO_FINAL]')
             const scriptPart = parts.length > 1 ? parts[parts.length - 1] : fullGeneratedText
-            const scriptLines = scriptPart.trim().split('\n')
+
+            // Strip internal tokens before saving
+            const cleanedScript = scriptPart
+              .replace(/\[THINKING\][\s\S]*?(\[\/THINKING\]|$)/gi, '')
+              .replace(/\[ROTEIRO_ID:[^\]]+\]/gi, '')
+              .trim()
+
+            const scriptLines = cleanedScript.split('\n')
 
             let title = 'Roteiro Gerado'
-            let finalScript = scriptPart.trim()
+            let finalScript = cleanedScript
 
             const firstContentIdx = scriptLines.findIndex((line: string) => line.trim() !== '')
             if (firstContentIdx !== -1) {
