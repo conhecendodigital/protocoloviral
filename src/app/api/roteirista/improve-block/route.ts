@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     // ── HOOK with 3 variations ──
     if (blockType === 'GANCHO' && variations) {
       const { text } = await generateText({
-        model: anthropic('claude-3-5-haiku-latest'),
+        model: anthropic('claude-haiku-4-5-20251001'),
         maxTokens: 600,
         prompt: `Você é um expert em ganchos virais para TikTok e Instagram Reels.
 
@@ -58,7 +58,7 @@ Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduçõ
       const instructionLine = instruction ? `\n\nInstrução adicional do criador: "${instruction}"` : ''
 
       const { text: improved } = await generateText({
-        model: anthropic('claude-3-5-haiku-latest'),
+        model: anthropic('claude-haiku-4-5-20251001'),
         maxTokens: 500,
         prompt: `Você é um expert em roteiros virais para TikTok e Instagram Reels.
 
@@ -91,7 +91,7 @@ RESPONDA APENAS com o novo texto. Sem explicações, sem aspas, sem prefixos.`,
     const blockInstruction = typeInstructions[blockType] || typeInstructions['OUTROS']
 
     const { text: improved } = await generateText({
-      model: anthropic('claude-3-5-haiku-latest'),
+      model: anthropic('claude-haiku-4-5-20251001'),
       maxTokens: 400,
       prompt: `Você é um expert em roteiros virais para o TikTok e Instagram Reels.
 

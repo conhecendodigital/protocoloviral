@@ -384,7 +384,7 @@ export async function POST(req: Request) {
     } else {
       if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o-mini'))
       if (process.env.GEMINI_API_KEY) fallbackModels.push(google('gemini-2.0-flash'))
-      if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-3-5-haiku-latest'))
+      if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-haiku-4-5-20251001'))
     }
 
     if (fallbackModels.length === 0) {
