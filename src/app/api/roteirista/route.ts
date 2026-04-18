@@ -377,7 +377,7 @@ export async function POST(req: Request) {
     const fallbackModels: any[] = []
 
     if (mode === 'premium' || mode === 'search') {
-      if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-sonnet-4-6-20250514'))
+      if (process.env.ANTHROPIC_API_KEY) fallbackModels.push(anthropic('claude-sonnet-4-5-20251001'))
       if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o'))
       if (process.env.GEMINI_API_KEY) fallbackModels.push(google('gemini-2.0-flash'))
       if (process.env.OPENAI_API_KEY) fallbackModels.push(openai('gpt-4o-mini'))
@@ -394,6 +394,7 @@ export async function POST(req: Request) {
     // ─── 10. STREAM COM FALLBACK AUTOMATICO ──────────────────────────────────
     const customStream = new ReadableStream({
       async start(controller) {
+        const encoder = new TextEncoder()
         let success = false
         let lastError: any = null
         let fullGeneratedText = ''
@@ -414,7 +415,7 @@ export async function POST(req: Request) {
 
             for await (const chunk of result.textStream) {
               fullGeneratedText += chunk
-              controller.enqueue(new TextEncoder().encode(chunk))
+              controller.enqueue(encoder.encode(chunk))
             }
 
             if (fullGeneratedText.trim() === '') {
