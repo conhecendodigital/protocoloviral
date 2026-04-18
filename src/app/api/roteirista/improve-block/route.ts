@@ -4,7 +4,7 @@ import { anthropic } from '@ai-sdk/anthropic'
 
 export async function POST(req: NextRequest) {
   try {
-    const { blockType, blockText, context, variations } = await req.json()
+    const { blockType, blockText, context, variations, mode, instruction } = await req.json()
 
     if (!blockText || !blockType) {
       return NextResponse.json({ error: 'Missing params' }, { status: 400 })
@@ -38,13 +38,47 @@ Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduçõ
         const parsed = JSON.parse(raw)
         return NextResponse.json({ variations: parsed.variations })
       } catch {
-        // Fallback: extract non-empty lines
-        const lines = raw.split('\n').filter(l => l.trim().length > 5).slice(0, 3)
+        const lines = raw.split('\n').filter((l: string) => l.trim().length > 5).slice(0, 3)
         return NextResponse.json({ variations: lines })
       }
     }
 
-    // ── Single block improvement ──
+    // ── REGENERATE — reescreve do zero ──
+    if (mode === 'regenerate') {
+      const typeGoals: Record<string, string> = {
+        GANCHO: 'Crie um novo GANCHO poderoso que prenda atenção nos primeiros 2 segundos. Use pergunta provocativa, afirmação chocante ou promessa irresistível. Máximo 15 palavras.',
+        DESENVOLVIMENTO: 'Escreva um novo DESENVOLVIMENTO que entregue valor real e seja envolvente. Use linguagem conversacional e natural. Expanda com clareza.',
+        PROBLEMA: 'Escreva um PROBLEMA que identifique uma dor específica do público. Seja empático e preciso. Máximo 3 frases.',
+        SOLUCAO: 'Escreva uma SOLUÇÃO clara e direta para o problema apresentado. Seja objetivo e mostre o caminho natural. Máximo 3 frases.',
+        CTA: 'Escreva um CTA direto e amigável que gere urgência. Diga exatamente o que fazer agora. Máximo 2 frases.',
+        OUTROS: 'Escreva um trecho novo, fluido e impactante que se encaixe no roteiro. Mantenha o mesmo tema.',
+      }
+
+      const goal = typeGoals[blockType] || typeGoals['OUTROS']
+      const instructionLine = instruction ? `\n\nInstrução adicional do criador: "${instruction}"` : ''
+
+      const { text: improved } = await generateText({
+        model: anthropic('claude-haiku-4-5-20251001'),
+        maxTokens: 500,
+        prompt: `Você é um expert em roteiros virais para TikTok e Instagram Reels.
+
+Contexto completo do roteiro:
+${context}
+
+---
+
+TAREFA: Reescreva completamente o bloco do tipo ${blockType} do zero (ignore o texto atual).
+${goal}${instructionLine}
+
+RESPONDA APENAS com o novo texto. Sem explicações, sem aspas, sem prefixos.`,
+      })
+
+      return NextResponse.json({
+        improved: improved.replace(/^["""„‟]|["""„‟]$/g, '').trim(),
+      })
+    }
+
+    // ── IMPROVE — refina o bloco existente ──
     const typeInstructions: Record<string, string> = {
       GANCHO: 'O GANCHO deve prender a atenção nos primeiros 2 segundos. Use uma pergunta provocativa, afirmação chocante, ou promessa de valor irresistível. Seja curto, direto e impactante.',
       DESENVOLVIMENTO: 'O DESENVOLVIMENTO deve entregar valor real, contar uma história envolvente, ou apresentar argumentos convincentes. Use linguagem natural e conversacional.',
@@ -54,7 +88,7 @@ Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduçõ
       OUTROS: 'Melhore a clareza, fluidez e impacto deste trecho de roteiro. Mantenha o mesmo tema e intenção.',
     }
 
-    const instruction = typeInstructions[blockType] || typeInstructions['OUTROS']
+    const blockInstruction = typeInstructions[blockType] || typeInstructions['OUTROS']
 
     const { text: improved } = await generateText({
       model: anthropic('claude-haiku-4-5-20251001'),
@@ -69,13 +103,13 @@ ${context}
 Melhore APENAS o seguinte bloco do tipo ${blockType}:
 "${blockText}"
 
-Regra: ${instruction}
+Regra: ${blockInstruction}
 
 RESPONDA APENAS com o texto melhorado. Sem explicações, sem aspas extras, sem prefixos.`,
     })
 
     return NextResponse.json({
-      improved: improved.replace(/^[""]|[""]$/g, '').trim(),
+      improved: improved.replace(/^["""„‟]|["""„‟]$/g, '').trim(),
     })
   } catch (err: any) {
     console.error('[IMPROVE_BLOCK]', err)

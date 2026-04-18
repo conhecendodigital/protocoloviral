@@ -380,7 +380,7 @@ function RoteiristaContent() {
         setGenerationsToday(prev => prev + 1)
       }
 
-      // ✅ If we got the ID: swap message to success state and redirect immediately
+      // ✅ If we got the ID: swap message to success state and redirect with delay
       if (capturedRoteiroId) {
         setMessages(prev =>
           prev.map(m =>
@@ -389,7 +389,9 @@ function RoteiristaContent() {
               : m
           )
         )
-        router.push(`/roteiros/${capturedRoteiroId}`)
+        // Small pause so user sees the success state before switching page
+        await new Promise(r => setTimeout(r, 1200))
+        router.push(`/roteiros/${capturedRoteiroId}?new=true`)
       }
 
     } catch (err: any) {
