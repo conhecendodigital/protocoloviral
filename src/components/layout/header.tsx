@@ -41,19 +41,24 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
         
         {/* Level Progress (hidden on mobile) */}
         <div className="hidden md:flex flex-col min-w-[200px]">
-          <div className="flex justify-between items-end mb-1.5">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#0ea5e9]">
+          <div className="flex justify-between items-end mb-2">
+            <span className="text-xs font-black uppercase tracking-widest text-[#0ea5e9]">
               {loading ? '...' : `Nível ${nivel.nivel}`}
             </span>
-            <span className="text-xs font-medium text-slate-800 dark:text-white/90">
-              {loading ? '' : `${xp} / ${nivel.xp_max} XP`}
+            <span className="text-xs font-bold text-slate-700 dark:text-white/70">
+              {loading ? '' : `${xp.toLocaleString()} / ${nivel.xp_max.toLocaleString()} XP`}
             </span>
           </div>
-          <div className="h-1.5 w-full bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+          <div className="h-2.5 w-full bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-sky-400 to-[#0ea5e9] rounded-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" 
-              style={{ width: `${Math.max(progresso, 2)}%` }}
-            ></div>
+              className="h-full rounded-full transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              style={{
+                width: `${Math.max(progresso, 2)}%`,
+                background: completion === 100
+                  ? 'linear-gradient(90deg, #10b981, #34d399)'
+                  : 'linear-gradient(90deg, #0ea5e9, #8b5cf6)',
+              }}
+            />
           </div>
         </div>
 

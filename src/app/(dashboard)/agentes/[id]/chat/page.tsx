@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { ArrowLeft, ArrowUp, Bot, Copy, History, Loader2, MoreVertical, Paperclip, RefreshCw, Send, Sparkles } from 'lucide-react'
+import Image from 'next/image'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
@@ -174,7 +175,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
           
           <div className="flex items-center gap-2 bg-slate-100/50 dark:bg-white/5 backdrop-blur-md px-3 py-1.5 rounded-xl">
              {agent?.avatar_url ? (
-                 <img src={agent.avatar_url} alt={agent.name || ''} className="size-[22px] rounded-full object-cover border border-[#0ea5e9]/20" />
+                 <Image src={agent.avatar_url} alt={agent.name || ''} width={22} height={22} className="size-[22px] rounded-full object-cover border border-[#0ea5e9]/20" unoptimized />
              ) : (
                  <Bot size={18} className="text-[#0ea5e9] text-[18px]" />
              )}
@@ -204,7 +205,7 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
               <div className="text-center mb-6">
                  <div className="size-20 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-500/20 border border-[#0ea5e9]/20 flex items-center justify-center shadow-[0_0_40px_rgba(14,165,233,0.15)] overflow-hidden">
                      {agent?.avatar_url ? (
-                         <img src={agent.avatar_url} alt={agent.name || ''} className="w-full h-full object-cover" />
+                         <Image src={agent.avatar_url} alt={agent.name || ''} width={80} height={80} className="w-full h-full object-cover" unoptimized />
                      ) : (
                          <Bot size={36} className="text-[#0ea5e9] text-4xl" />
                      )}

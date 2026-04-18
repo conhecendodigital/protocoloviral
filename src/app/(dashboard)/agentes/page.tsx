@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
+import Image from 'next/image'
 import { Bot, EyeOff, Frown, History, Lock, MessageSquare, Plus, Settings } from 'lucide-react'
 
 // ─── Paywall Overlay ────────────────────────────────────────────────
@@ -25,7 +26,7 @@ function PremiumOverlay({ title, desc }: { title: string; desc: string }) {
 
 export default function AgentesLibraryPage() {
   const { profile } = useProfile()
-  const supabase = useMemo(() => createClient(), [])
+  const supabase = createClient()
   const [agentes, setAgentes] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -76,7 +77,7 @@ export default function AgentesLibraryPage() {
           <div className="flex items-center justify-between mb-5">
             <div className={`size-12 rounded-xl bg-gradient-to-br ${agente.status === 'inativo' ? 'from-amber-500/20 to-orange-600/20 ring-amber-500/50' : 'from-indigo-500/20 to-purple-600/20 ring-indigo-500/50'} flex items-center justify-center ring-1`}>
               {agente.avatar_url ? (
-                <img src={agente.avatar_url} alt={agente.name} className="size-12 rounded-xl object-cover" />
+                <Image src={agente.avatar_url} alt={agente.name} width={48} height={48} className="size-12 rounded-xl object-cover" unoptimized />
               ) : (
                 <Bot size={24} className="${agente.status === 'inativo' ? 'text-amber-400' : 'text-indigo-400'} text-2xl" />
               )}

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, Clock, MessageSquare, Sparkles, Trash2, ArrowRight, FolderOpen } from 'lucide-react'
+import Image from 'next/image'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -188,7 +189,7 @@ export default function HistoricoAgentesPage() {
                  <div className="flex items-center gap-4">
                     <div className="size-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-600/20 flex items-center justify-center ring-1 ring-border overflow-hidden">
                        {agent.avatar ? (
-                         <img src={agent.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                         <Image src={agent.avatar} alt="Avatar" width={56} height={56} className="w-full h-full object-cover" unoptimized />
                        ) : (
                          <Sparkles className="w-6 h-6 text-sky-500 dark:text-sky-400" />
                        )}

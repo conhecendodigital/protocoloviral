@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef, memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { Camera, ChevronsUpDown, Clock, Eye, Flame, Heart, Search, TrendingUp } from 'lucide-react'
+import { Camera, ChevronsUpDown, Clock, Eye, Flame, Heart, Search, TrendingUp, Anchor, MessageCircle, Sofa, Smartphone, Clapperboard, Star, HelpCircle, BookOpen, Globe, FolderOpen, type LucideIcon } from 'lucide-react'
 
 // ─── Supabase client fora do componente (sem useMemo anti-pattern) ───
 const supabase = createClient()
@@ -40,16 +40,24 @@ const formatNumber = (n: number | null): string => {
   return n.toString()
 }
 
-const HARDCODED_FORMAT_TYPES = [
-  'Todos', 'Ancoragem', 'Perguntas e Respostas', 'Preguiçoso',
-  'Tela dividida', 'Varias Cenas', 'Reação (react)',
-  'Caixinha de Perguntas', 'Tutorial (passo a passo)',
-]
+const formatoIconMap: Record<string, LucideIcon> = {
+  'Ancoragem': Anchor,
+  'Perguntas e Respostas': MessageCircle,
+  'Preguiçoso': Sofa,
+  'Tela dividida': Smartphone,
+  'Varias Cenas': Clapperboard,
+  'Reação (react)': Star,
+  'Caixinha de Perguntas': HelpCircle,
+  'Tutorial (passo a passo)': BookOpen,
+  'Todos': Globe,
+}
 
-const formatoEmojis: Record<string, string> = {
-  'Ancoragem': '⚓', 'Perguntas e Respostas': '💬', 'Preguiçoso': '🛋️',
-  'Tela dividida': '📱', 'Varias Cenas': '🎬', 'Reação (react)': '😲',
-  'Caixinha de Perguntas': '❓', 'Tutorial (passo a passo)': '📋', 'Todos': '🔥',
+const FORMATO_TYPES = Object.keys(formatoIconMap)
+const ALL_TYPES = ['Todos', ...FORMATO_TYPES]
+
+const FormatoIcon = ({ name, size = 14, className = '' }: { name: string; size?: number; className?: string }) => {
+  const Icon = formatoIconMap[name] || FolderOpen
+  return <Icon size={size} className={className} />
 }
 
 export const normalizeFormato = (tipo: string | null, nicho: string | null): string => {
@@ -176,7 +184,7 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
         <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 z-10">
           <div className="flex items-center gap-2 mb-3 flex-wrap text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-[#0ea5e9]">
             <span className="bg-[#0ea5e9]/20 backdrop-blur-md px-2.5 py-1 rounded text-white flex gap-1 items-center border border-white/10">
-              <span>{formatoEmojis[formato.formato_normalizado] || '📁'}</span>
+              <FormatoIcon name={formato.formato_normalizado} size={12} />
               {formato.formato_normalizado || 'Geral'}
             </span>
             <span>•</span>
@@ -280,7 +288,7 @@ export function FormatosFeed() {
                   className="w-full flex items-center justify-between gap-2 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 py-3.5 px-4 rounded-2xl text-sm font-bold text-slate-800 dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                 >
                   <div className="flex items-center gap-2 truncate">
-                    <span>{formatoEmojis[filtroFormato] || '📁'}</span>
+                    <FormatoIcon name={filtroFormato} size={16} className="text-[#0ea5e9] shrink-0" />
                     <span className="truncate">{filtroFormato === 'Todos' ? 'Todos Formatos' : filtroFormato}</span>
                   </div>
                   <ChevronsUpDown size={18} className="text-slate-400 shrink-0" />
@@ -291,13 +299,13 @@ export function FormatosFeed() {
                       initial={{ opacity: 0, scaleY: 0.9, y: 5 }} animate={{ opacity: 1, scaleY: 1, y: 0 }} exit={{ opacity: 0, scaleY: 0.9, y: 5 }}
                       className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0a0f1e] border border-slate-200 dark:border-white/10 shadow-2xl rounded-2xl p-2 z-50 origin-top max-h-64 overflow-y-auto custom-scrollbar"
                     >
-                      {HARDCODED_FORMAT_TYPES.map((opt) => (
+                      {ALL_TYPES.map((opt) => (
                         <button
                           key={opt}
                           onClick={() => { setFiltroFormato(opt); setFormatoMenuAtivo(false) }}
                           className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-colors ${filtroFormato === opt ? 'bg-[#0ea5e9]/10 text-[#0ea5e9] font-bold' : 'text-slate-700 dark:text-white/80 hover:bg-black/5 dark:hover:bg-white/5'}`}
                         >
-                          <span className="text-base">{opt === 'Todos' ? '🌐' : formatoEmojis[opt] || '📁'}</span>
+                          <FormatoIcon name={opt} size={14} />
                           {opt === 'Todos' ? 'Todos Formatos' : opt}
                         </button>
                       ))}

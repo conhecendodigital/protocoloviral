@@ -87,9 +87,9 @@
 }
 
 :root {
-  --background: #FFFCF5;
+  --background: #F8FAFC; /* Slate-50: neutral white with slight blue tint — clean contrast with white cards */
   --foreground: #1c2024;
-  --card: oklch(1 0 0);
+  --card: oklch(1 0 0); /* Pure white cards — now pop against slate-50 background */
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
