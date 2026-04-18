@@ -4,7 +4,7 @@
 import { PROMPT_CONFIGS, type PromptType } from '@/types/prompt'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, Link, Sparkles } from 'lucide-react'
+import { ArrowRight, Link as LinkIcon, Sparkles } from 'lucide-react'
 
 const PROMPT_ORDER: PromptType[] = ['clareza', 'persona', 'ideias', 'vendas']
 
@@ -104,7 +104,7 @@ export default function PromptsIndexPage() {
                       {/* Dependencies */}
                       {hasDeps && (
                         <div className="flex items-center gap-2 mb-4">
-                          <Link size={14} className="text-slate-800 dark:text-white/90 text-sm" />
+                          <LinkIcon size={14} className="text-slate-800 dark:text-white/90 text-sm" />
                           <span className="text-[10px] text-slate-700 dark:text-white/90 uppercase tracking-widest font-bold">
                             Precisa fazer antes: {config.dependencias.map(d => PROMPT_CONFIGS[d].titulo).join(', ')}
                           </span>

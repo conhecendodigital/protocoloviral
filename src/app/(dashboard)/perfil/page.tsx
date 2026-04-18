@@ -133,7 +133,7 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
           ].map((item) => item.value && (
             <div key={item.label} className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-slate-200/50 dark:border-white/5">
               <div className="flex items-center gap-1.5 mb-1.5">
-                <DynamicIcon name={item.icon} size={14} className="text-purple-400 text-[14px]"" />
+                <DynamicIcon name={item.icon} size={14} className="text-purple-400 text-[14px]" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/40">{item.label}</span>
               </div>
               <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.value}</p>
@@ -279,7 +279,7 @@ function EmptyInsightState({ type }: { type: 'clareza' | 'persona' }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center justify-center text-center py-16 px-6">
       <div className="size-20 rounded-full bg-[#0ea5e9]/10 flex items-center justify-center mb-6 border border-[#0ea5e9]/20">
-        <DynamicIcon name={c.icon} size={40} className="text-[40px] text-[#0ea5e9]"" />
+        <DynamicIcon name={c.icon} size={40} className="text-[40px] text-[#0ea5e9]" />
       </div>
       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{c.title}</h3>
       <p className="text-sm text-slate-700 dark:text-white/60 max-w-md mb-8 leading-relaxed">{c.desc}</p>
@@ -506,7 +506,7 @@ export default function PerfilPage() {
                         <div className="flex items-center justify-between mb-8">
                           <div className="flex items-center gap-4">
                             <div className="size-12 rounded-xl bg-[#0ea5e9]/10 flex items-center justify-center border border-[#0ea5e9]/20 shadow-inner shrink-0">
-                              <DynamicIcon name={section.icon} size={24} className="text-[#0ea5e9] text-2xl"" />
+                              <DynamicIcon name={section.icon} size={24} className="text-[#0ea5e9] text-2xl" />
                             </div>
                             <div>
                               <h3 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight">{section.title}</h3>

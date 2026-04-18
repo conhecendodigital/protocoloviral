@@ -71,7 +71,7 @@ function AnaliseSection({ icon, title, children }: { icon: string; title: string
   return (
     <div className="border-l-2 border-[#0ea5e9]/40 pl-5 relative before:absolute before:w-2 before:h-2 before:rounded-full before:bg-[#0ea5e9] before:-left-[5px] before:top-1.5">
       <p className="text-xs font-black text-slate-500 dark:text-white/40 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-        <DynamicIcon name={icon} size={14} className="text-[14px] text-[#0ea5e9]"" />
+        <DynamicIcon name={icon} size={14} className="text-[14px] text-[#0ea5e9]" />
         {title}
       </p>
       {children}

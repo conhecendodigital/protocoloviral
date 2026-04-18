@@ -161,7 +161,7 @@ export default function CalculadoraPage() {
                 <div key={field.label}>
                   <label className="text-xs font-bold text-slate-700 dark:text-white/90 uppercase tracking-widest mb-1.5 block ml-1">{field.label}</label>
                   <div className="relative">
-                    <DynamicIcon name={field.icon} size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-800 dark:text-white/90 text-lg"" />
+                    <DynamicIcon name={field.icon} size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-800 dark:text-white/90 text-lg" />
                     <input
                       type="number"
                       inputMode="numeric"

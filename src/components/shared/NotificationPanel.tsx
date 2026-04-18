@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Notification, TYPE_COLORS, TYPE_LABELS } from '@/data/notifications'
 import { Bell, BellOff } from 'lucide-react'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface NotificationPanelProps {
   notifications: Notification[]
@@ -145,10 +146,7 @@ export function NotificationPanel({
                             borderColor: `${typeColor}30`,
                           }}
                         >
-                          <span 
-
-                            {n.icon}
-                          </span>
+                          <DynamicIcon name={n.icon} size={18} style={{ color: typeColor }} />
                         </div>
 
                         {/* Content */}

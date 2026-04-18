@@ -264,7 +264,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
               </div>
               <div className="text-[10px] text-slate-700 dark:text-white/90 font-mono">gerador_texto_{config.tipo}</div>
               <button onClick={handleCopy} disabled={!generated} className="flex items-center gap-2 text-slate-800 dark:text-white/90 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors disabled:opacity-50">
-                <DynamicIcon name={copied ? 'check' : 'content_copy'} size={14} className="text-sm"" />
+                <DynamicIcon name={copied ? 'check' : 'content_copy'} size={14} className="text-sm" />
                 <span className="text-[10px] font-bold uppercase">{copied ? 'Copiado' : 'Copiar'}</span>
               </button>
             </div>
