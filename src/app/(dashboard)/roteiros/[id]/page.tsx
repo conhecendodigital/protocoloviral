@@ -362,26 +362,26 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
 
   // ────────── Render ──────────
   if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-[#F5F0E8]">
+    <div className="flex items-center justify-center min-h-[80vh] bg-transparent">
       <div className="flex flex-col items-center gap-3">
         <RefreshCw size={36} className="animate-spin text-[#0ea5e9]" />
-        <span className="text-sm text-slate-500">Carregando roteiro...</span>
+        <span className="text-sm text-slate-500 dark:text-white/50">Carregando roteiro...</span>
       </div>
     </div>
   )
 
   if (notFound) return (
-    <div className="flex items-center justify-center min-h-screen bg-[#F5F0E8]">
+    <div className="flex items-center justify-center min-h-[80vh] bg-transparent">
       <div className="text-center">
         <span className="text-5xl mb-4 block">😕</span>
-        <h2 className="text-xl font-bold text-slate-800 mb-2">Roteiro não encontrado</h2>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Roteiro não encontrado</h2>
         <Link href="/roteiros" className="text-[#0ea5e9] underline text-sm">Voltar para biblioteca</Link>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-[#F5F0E8] flex flex-col relative">
+    <div className="flex-1 w-full relative z-10 overflow-y-auto custom-scrollbar flex flex-col">
 
       {/* ── BANNER "Roteiro gerado!" ── */}
       <AnimatePresence>
@@ -403,19 +403,19 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
       </AnimatePresence>
 
       {/* ── TOP BAR ── */}
-      <div className="sticky top-0 z-20 bg-[#F5F0E8]/80 backdrop-blur-sm border-b border-black/5 px-4 py-3 flex items-center gap-3">
-        <Link href="/roteirista" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors">
+      <div className="sticky top-0 z-20 bg-slate-50/80 dark:bg-[#0B0F19]/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 px-4 py-3 flex items-center gap-3">
+        <Link href="/roteirista" className="inline-flex items-center gap-1.5 text-sm text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white transition-colors">
           <ArrowLeft size={18} />
           <span className="hidden sm:inline">Voltar</span>
         </Link>
         <div className="flex-1" />
         {saving && (
-          <span className="text-xs text-slate-400 flex items-center gap-1">
+          <span className="text-xs text-slate-400 dark:text-white/40 flex items-center gap-1">
             <RefreshCw size={14} className="animate-spin" />
             Salvando...
           </span>
         )}
-        <Link href="/roteiros" className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1">
+        <Link href="/roteiros" className="text-xs text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white transition-colors flex items-center gap-1">
           <BookOpen size={14} />
           <span className="hidden sm:inline">Biblioteca</span>
         </Link>
@@ -427,7 +427,7 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-2xl bg-slate-900 rounded-3xl p-8 text-center shadow-2xl"
+          className="w-full max-w-2xl bg-slate-900 dark:bg-white/[0.04] border border-transparent dark:border-white/10 rounded-3xl p-8 text-center shadow-2xl"
         >
           <div className="text-6xl mb-5">🎬</div>
           <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight mb-4">
@@ -482,17 +482,17 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                   {editingBlockIdx === idx ? (
                     /* ── EDIT MODE ── */
                     <motion.div key="edit" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="bg-white rounded-2xl border-2 border-blue-400 shadow-xl p-4"
+                      className="bg-white dark:bg-[#151b2b] rounded-2xl border-2 border-blue-400 shadow-xl p-4"
                     >
                       <textarea
                         value={editText}
                         onChange={e => setEditText(e.target.value)}
                         autoFocus
-                        className="w-full min-h-[160px] text-lg leading-relaxed text-slate-800 font-medium resize-none outline-none bg-transparent"
+                        className="w-full min-h-[160px] text-lg leading-relaxed text-slate-800 dark:text-white/90 font-medium resize-none outline-none bg-transparent placeholder:text-slate-400 dark:placeholder:text-white/30"
                         placeholder="Texto do bloco..."
                       />
-                      <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-slate-100">
-                        <button onClick={() => setEditingBlockIdx(null)} className="px-4 py-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors">Cancelar</button>
+                      <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-white/10">
+                        <button onClick={() => setEditingBlockIdx(null)} className="px-4 py-1.5 text-sm text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white transition-colors">Cancelar</button>
                         <button onClick={confirmEdit} className="px-5 py-1.5 text-sm font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors flex items-center gap-1.5">
                           <Check size={14} /> Salvar bloco
                         </button>
@@ -501,23 +501,23 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                   ) : regenIdx === idx ? (
                     /* ── REGENERAR COM IA — input mode ── */
                     <motion.div key="regen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="bg-white rounded-2xl border-2 border-violet-400 shadow-xl p-4"
+                      className="bg-white dark:bg-[#151b2b] rounded-2xl border-2 border-violet-400 shadow-xl p-4"
                     >
                       <div className="flex items-center gap-2 mb-3">
                         <WandSparkles size={16} className="text-violet-500" />
-                        <span className="text-sm font-bold text-slate-700">Regenerar bloco com IA</span>
+                        <span className="text-sm font-bold text-slate-700 dark:text-white">Regenerar bloco com IA</span>
                       </div>
                       <textarea
                         value={regenPrompt}
                         onChange={e => setRegenPrompt(e.target.value)}
                         autoFocus
                         rows={3}
-                        className="w-full text-sm leading-relaxed text-slate-800 resize-none outline-none bg-slate-50 rounded-xl px-3 py-2 border border-slate-200 focus:border-violet-300 focus:ring-2 focus:ring-violet-100 transition-all"
+                        className="w-full text-sm leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none bg-slate-50 dark:bg-[#0B0F19] rounded-xl px-3 py-2 border border-slate-200 dark:border-white/10 focus:border-violet-300 focus:ring-2 focus:ring-violet-100 dark:focus:ring-violet-500/30 transition-all placeholder:text-slate-400 dark:placeholder:text-white/30"
                         placeholder="Instrução opcional — ex: 'Mais direto', 'Use tom de humor', 'Começa com uma pergunta'..."
                       />
-                      <p className="text-xs text-slate-400 mt-1.5 mb-3">Deixe em branco para regenerar com base no contexto do roteiro.</p>
+                      <p className="text-xs text-slate-400 dark:text-white/40 mt-1.5 mb-3">Deixe em branco para regenerar com base no contexto do roteiro.</p>
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => { setRegenIdx(null); setRegenPrompt('') }} className="px-4 py-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors">Cancelar</button>
+                        <button onClick={() => { setRegenIdx(null); setRegenPrompt('') }} className="px-4 py-1.5 text-sm text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white transition-colors">Cancelar</button>
                         <button
                           onClick={() => regenerateBlock(idx)}
                           className="px-5 py-1.5 text-sm font-bold bg-violet-500 hover:bg-violet-600 text-white rounded-xl transition-colors flex items-center gap-1.5"
@@ -533,21 +533,21 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                       <div className="text-center px-2">
                         {aiLoading === idx ? (
                           /* Streaming live preview */
-                          <div className="bg-white/60 rounded-2xl p-6 border border-slate-200">
+                          <div className="bg-slate-100 dark:bg-white/5 rounded-2xl p-6 border border-slate-200 dark:border-white/10">
                             {regenStreaming ? (
-                              <p className="text-xl sm:text-2xl font-black text-slate-900 leading-tight tracking-tight text-left whitespace-pre-wrap">
+                              <p className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight text-left whitespace-pre-wrap">
                                 {regenStreaming}
                                 <span className="inline-block w-[2px] h-[1.1em] ml-[1px] bg-violet-400 align-middle animate-pulse rounded-sm" />
                               </p>
                             ) : (
-                              <div className="flex items-center justify-center gap-2 py-4 text-slate-500 text-sm">
+                              <div className="flex items-center justify-center gap-2 py-4 text-slate-500 dark:text-white/50 text-sm">
                                 <RefreshCw size={16} className="animate-spin text-violet-500" />
                                 <span>Gerando com IA...</span>
                               </div>
                             )}
                           </div>
                         ) : (
-                          <p className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight tracking-tight">
+                          <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">
                             &ldquo;{block.text.replace(/^["""]|["""]$/g, '')}&rdquo;
                           </p>
                         )}
@@ -557,12 +557,12 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                       {(block.direction || block.timeSeconds > 0) && (
                         <div className="flex flex-col items-center gap-1 mt-4">
                           {block.direction && (
-                            <p className="text-sm text-slate-500 italic flex items-center gap-1.5">
+                            <p className="text-sm text-slate-500 dark:text-white/50 italic flex items-center gap-1.5">
                               <span className="text-base">🎙️</span>{block.direction}
                             </p>
                           )}
                           {block.timeSeconds > 0 && (
-                            <p className="text-sm text-slate-400 flex items-center gap-1">
+                            <p className="text-sm text-slate-400 dark:text-white/40 flex items-center gap-1">
                               <Clock size={14} />{block.timeSeconds}s
                             </p>
                           )}
@@ -571,7 +571,7 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
 
                       {/* Block Guide (Always visible but subtle) */}
                       {Object.values(BLOCK_DEFS).find(d => d.emoji === block.emoji)?.guide && (
-                        <p className="text-xs text-slate-400 text-center mt-4 max-w-md mx-auto leading-relaxed">
+                        <p className="text-xs text-slate-500 dark:text-white/30 text-center mt-4 max-w-md mx-auto leading-relaxed">
                           💡 {Object.values(BLOCK_DEFS).find(d => d.emoji === block.emoji)?.guide || BLOCK_DEFS['OUTROS'].guide}
                         </p>
                       )}
@@ -581,7 +581,7 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                         {/* Editar manualmente */}
                         <button
                           onClick={() => startEdit(idx)}
-                          className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+                          className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors shadow-sm"
                         >
                           <Pencil size={13} /> Editar
                         </button>
@@ -590,7 +590,7 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                         {block.type === 'GANCHO' && (
                           <button
                             onClick={() => { setHookDrawerOpen(true); setHookDrawerBlockIdx(idx) }}
-                            className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors shadow-sm"
+                            className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors shadow-sm"
                           >
                             <ArrowLeftRight size={13} /> Trocar Gancho
                           </button>
@@ -600,7 +600,7 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                         <button
                           onClick={() => improveBlock(idx)}
                           disabled={aiLoading === idx || variationsLoading}
-                          className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors shadow-sm disabled:opacity-50"
+                          className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors shadow-sm disabled:opacity-50"
                         >
                           {(aiLoading === idx && !regenStreaming) || (variationsLoading && variationsBlockIdx === idx) ? (
                             <RefreshCw size={13} className="animate-spin" />
