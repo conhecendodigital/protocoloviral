@@ -4,8 +4,9 @@ import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Check, Copy, FileEdit, Pencil, Plus, RefreshCw, Search, SearchX, Sparkles, Trash2, Video, X } from 'lucide-react'
+import { Plus, RefreshCw, Search, SearchX, Sparkles, Trash2, Video, X } from 'lucide-react'
 
 interface Roteiro {
   id: string
@@ -76,11 +77,7 @@ export default function RoteirosPage() {
   const [roteiros, setRoteiros] = useState<Roteiro[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editText, setEditText] = useState('')
-  const [savingId, setSavingId] = useState<string | null>(null)
+  const router = useRouter()
 
   const supabase = useMemo(() => createClient(), [])
   const { profile } = useProfile()
@@ -114,47 +111,6 @@ export default function RoteirosPage() {
       (r.formato_nome && r.formato_nome.toLowerCase().includes(q))
     );
   }, [roteiros, searchQuery])
-
-  const handleCopy = async (texto: string, id: string) => {
-    try {
-      await navigator.clipboard.writeText(texto)
-    } catch {
-      const ta = document.createElement('textarea')
-      ta.value = texto
-      ta.style.position = 'fixed'
-      ta.style.opacity = '0'
-      document.body.appendChild(ta)
-      ta.select()
-      document.execCommand('copy')
-      document.body.removeChild(ta)
-    }
-    setCopiedId(id)
-    setTimeout(() => setCopiedId(null), 2000)
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!userId || !confirm('Tem certeza que quer deletar este roteiro?')) return
-    await supabase.from('roteiros').delete().eq('id', id).eq('user_id', userId)
-    setRoteiros(prev => prev.filter(r => r.id !== id))
-    if (expandedId === id) setExpandedId(null)
-  }
-
-  const handleEdit = (r: Roteiro) => {
-    setEditingId(r.id)
-    setEditText(r.roteiro)
-    setExpandedId(r.id)
-  }
-
-  const handleSaveEdit = async (id: string) => {
-    if (!userId) return
-    setSavingId(id)
-    const primeiraLinha = editText.split('\n').find(l => l.trim().length > 0) || ''
-    const titulo = primeiraLinha.replace(/\*\*/g, '').replace(/TÍTULO:/i, '').replace(/TITULO:/i, '').trim().substring(0, 100) || 'Roteiro sem título'
-    await supabase.from('roteiros').update({ roteiro: editText, titulo }).eq('id', id).eq('user_id', userId)
-    setRoteiros(prev => prev.map(r => r.id === id ? { ...r, roteiro: editText, titulo } : r))
-    setEditingId(null)
-    setSavingId(null)
-  }
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr)
@@ -251,8 +207,6 @@ export default function RoteirosPage() {
               const sections = countSections(r.roteiro);
               const accent = CARD_ACCENTS[i % CARD_ACCENTS.length];
               const emoji = CARD_EMOJIS[i % CARD_EMOJIS.length];
-              const isExpanded = expandedId === r.id;
-
               return (
                 <motion.div
                   key={r.id}
@@ -260,8 +214,8 @@ export default function RoteirosPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: i * 0.03, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className={`group relative bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-lg hover:border-slate-300 dark:hover:border-white/15 transition-all cursor-pointer ${isExpanded ? 'sm:col-span-2 lg:col-span-3' : ''}`}
-                  onClick={() => !isExpanded && setExpandedId(r.id)}
+                  className="group relative bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-none hover:shadow-lg hover:border-slate-300 dark:hover:border-white/15 transition-all cursor-pointer"
+                  onClick={() => router.push(`/roteiros/${r.id}`)}
                 >
                   {/* Card Illustration Header */}
                   <div className={`h-24 bg-gradient-to-br ${accent} flex items-center justify-center relative overflow-hidden`}>
@@ -313,64 +267,7 @@ export default function RoteirosPage() {
                     </div>
                   </div>
 
-                  {/* ═══ EXPANDED VIEW ═══ */}
-                  <AnimatePresence>
-                    {isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                        className="overflow-hidden border-t border-slate-100 dark:border-white/5"
-                      >
-                        <div className="p-4 sm:p-6">
-                          {/* Action Buttons */}
-                          <div className="flex items-center gap-2 mb-4">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleCopy(r.roteiro, r.id) }}
-                              className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
-                            >
-                              {copiedId === r.id ? <Check size={14} /> : <Copy size={14} />}
-                              {copiedId === r.id ? 'Copiado!' : 'Copiar'}
-                            </button>
-                            {isPro && (
-                              <button
-                                onClick={(e) => { e.stopPropagation(); editingId === r.id ? handleSaveEdit(r.id) : handleEdit(r) }}
-                                className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg transition-all ${
-                                  editingId === r.id 
-                                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' 
-                                    : 'border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/5'
-                                }`}
-                              >
-{savingId === r.id ? <RefreshCw size={14} /> : editingId === r.id ? <Check size={14} /> : <Pencil size={14} />}
-                                {savingId === r.id ? 'Salvando...' : editingId === r.id ? 'Salvar' : 'Editar'}
-                              </button>
-                            )}
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setExpandedId(null); setEditingId(null) }}
-                              className="ml-auto text-slate-400 hover:text-slate-600 dark:hover:text-white/70 transition-colors"
-                            >
-                              <X size={18} className="text-lg" />
-                            </button>
-                          </div>
 
-                          {/* Script Content */}
-                          {editingId === r.id ? (
-                            <textarea
-                              value={editText}
-                              onChange={(e) => setEditText(e.target.value)}
-                              className="w-full bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-slate-200 dark:border-white/10 p-4 font-sans text-sm leading-relaxed text-slate-800 dark:text-white/90 resize-none outline-none focus:ring-2 focus:ring-[#0ea5e9]/20 focus:border-[#0ea5e9]/50 min-h-[300px]"
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                          ) : (
-                            <div className="bg-slate-50 dark:bg-white/[0.02] rounded-xl border border-slate-100 dark:border-white/5 p-4 sm:p-5 text-sm leading-relaxed text-slate-700 dark:text-white/80 whitespace-pre-wrap max-h-[500px] overflow-y-auto custom-scrollbar" onClick={(e) => e.stopPropagation()}>
-                              {r.roteiro}
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </motion.div>
               )
             })}
