@@ -39,8 +39,8 @@ const NAV_SECTIONS: NavSection[] = [
     collapsible: false,
     items: [
       { label: 'Início', href: '/', icon: Home },
-      { label: 'Formatos', href: '/formatos', icon: Clapperboard, badge: '🔥', badgeHot: true },
-      { label: 'Roteirista', href: '/roteirista', icon: FileEdit, badge: '⭐', badgeHot: true },
+      { label: 'Formatos', href: '/formatos', icon: Clapperboard, badge: 'HOT', badgeHot: true },
+      { label: 'Roteirista', href: '/roteirista', icon: FileEdit, badge: 'NEW', badgeHot: true },
       { label: 'Escritório de IA', href: '/agentes', icon: Bot, badge: 'IA', badgeHot: true },
     ],
   },
@@ -66,7 +66,7 @@ const NAV_SECTIONS: NavSection[] = [
     icon: Mic2,
     collapsible: false,
     items: [
-      { label: 'Tom de Voz', href: '/tom-de-voz', icon: Mic2, badge: '⭐', badgeHot: true },
+      { label: 'Tom de Voz', href: '/tom-de-voz', icon: Mic2, badge: 'NEW', badgeHot: true },
     ],
   },
   {

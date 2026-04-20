@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import {
   Menu, LogOut, Home, Clapperboard, FileEdit, Bot, MonitorPlay,
   FileText, Anchor, Camera, BarChart3, Calculator, User, Compass,
-  Calendar, Mic2, Crown, ChevronDown
+  Calendar, Mic2, Crown, ChevronDown, Map
 } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { createClient } from '@/lib/supabase/client'
@@ -38,8 +38,8 @@ const NAV_SECTIONS: NavSection[] = [
     collapsible: false,
     items: [
       { label: 'Início', href: '/', icon: Home },
-      { label: 'Formatos', href: '/formatos', icon: Clapperboard, badge: '🔥', badgeHot: true },
-      { label: 'Roteirista', href: '/roteirista', icon: FileEdit, badge: '⭐', badgeHot: true },
+      { label: 'Formatos', href: '/formatos', icon: Clapperboard, badge: 'HOT', badgeHot: true },
+      { label: 'Roteirista', href: '/roteirista', icon: FileEdit, badge: 'NEW', badgeHot: true },
       { label: 'Escritório de IA', href: '/agentes', icon: Bot, badge: 'IA', badgeHot: true },
     ],
   },
@@ -65,7 +65,7 @@ const NAV_SECTIONS: NavSection[] = [
     icon: Mic2,
     collapsible: false,
     items: [
-      { label: 'Tom de Voz', href: '/tom-de-voz', icon: Mic2, badge: '⭐', badgeHot: true },
+      { label: 'Tom de Voz', href: '/tom-de-voz', icon: Mic2, badge: 'NEW', badgeHot: true },
     ],
   },
   {
@@ -112,7 +112,7 @@ export function MobileNav() {
         {/* ── Logo unificado com Sidebar ── */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-white/[0.08]">
           <div className="size-9 bg-[#0ea5e9] rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#0ea5e9]/20">
-            <span className="text-sm font-black">ME</span>
+            <Map size={18} />
           </div>
           <span className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
             Mapa do Engajamento

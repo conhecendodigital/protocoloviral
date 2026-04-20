@@ -12,8 +12,8 @@ export default function DashboardLayout({
     <div className="bg-slate-50 dark:bg-[#000000] text-slate-900 dark:text-slate-100 min-h-screen font-sans">
       {/* Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-500/10 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-blue-600/10 rounded-full blur-[120px]"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-500/5 rounded-full blur-[80px]"></div>
+        <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-blue-600/5 rounded-full blur-[80px]"></div>
       </div>
       
       <div className="relative z-10 flex h-screen overflow-hidden">

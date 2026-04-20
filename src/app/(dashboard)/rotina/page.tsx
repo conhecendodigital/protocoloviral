@@ -107,7 +107,7 @@ export default function RotinaPage() {
             <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic mb-2">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">ROTINA SEMANAL</span> NOEIXO
             </h1>
-            <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg">Gerencie seu progresso e mantenha o foco na estratégia de conteúdo.</p>
+            <p className="text-slate-800 dark:text-white/90 text-lg">Gerencie seu progresso e mantenha o foco na estratégia de conteúdo.</p>
           </div>
 
           {/* Weekly Progress Card */}
@@ -118,7 +118,7 @@ export default function RotinaPage() {
             
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 mb-8 relative z-10">
               <div>
-                <span className="text-slate-800 dark:text-white/90 dark:text-white/90 text-sm font-bold uppercase tracking-widest">Status Geral</span>
+                <span className="text-slate-800 dark:text-white/90 text-sm font-bold uppercase tracking-widest">Status Geral</span>
                 <h2 className="text-5xl font-black text-slate-900 dark:text-white mt-2 tracking-tight">
                   {progresso}% <span className="text-2xl font-medium text-slate-700 dark:text-white/90 tracking-normal">Concluído</span>
                 </h2>
@@ -129,14 +129,14 @@ export default function RotinaPage() {
               
               <button 
                 onClick={resetAll}
-                className="flex items-center gap-2 px-8 py-4 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 transition-all text-sm font-bold border border-slate-300/10 dark:border-slate-200 dark:border-white/10 shrink-0 shadow-lg"
+                className="flex items-center gap-2 px-8 py-4 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:bg-white/10 transition-all text-sm font-bold border border-slate-300/10 dark:border-white/10 shrink-0 shadow-lg"
               >
                 <RotateCcw size={18} className="text-lg" />
                 Resetar Semana
               </button>
             </div>
             
-            <div className="w-full h-4 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden border border-slate-300/10 dark:border-slate-200 dark:border-white/10 relative z-10">
+            <div className="w-full h-4 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden border border-slate-300/10 dark:border-white/10 relative z-10">
               <div 
                 className="h-full bg-gradient-to-r from-sky-400 to-[#0ea5e9] shadow-[0_0_20px_rgba(14,165,233,0.5)] transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" 
                 style={{ width: `${Math.max(progresso, 2)}%` }} 
@@ -168,7 +168,7 @@ export default function RotinaPage() {
                       DESCANSO
                     </span>
                   ) : (
-                    <span className="px-3 py-1 bg-black/10 dark:bg-white/10 border border-slate-300/10 dark:border-slate-200 dark:border-white/10 rounded-full text-[10px] font-black tracking-widest text-slate-800 dark:text-slate-300 uppercase">
+                    <span className="px-3 py-1 bg-black/10 dark:bg-white/10 border border-slate-300/10 dark:border-white/10 rounded-full text-[10px] font-black tracking-widest text-slate-800 dark:text-slate-300 uppercase">
                       NOEIXO
                     </span>
                   )}
@@ -178,7 +178,7 @@ export default function RotinaPage() {
                   {dia.items.map(item => {
                     const isChecked = checked[item.id] || false;
                     return (
-                      <label key={item.id} className={`flex items-start gap-4 p-4 rounded-xl hover:bg-black/5 dark:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-slate-200 dark:border-slate-200 dark:border-white/10 ${item.href ? 'bg-violet-500/[0.03] border-violet-500/10' : ''}`}>
+                      <label key={item.id} className={`flex items-start gap-4 p-4 rounded-xl hover:bg-black/5 dark:bg-white/5 transition-colors cursor-pointer group border border-transparent hover:border-slate-200 dark:border-white/10 ${item.href ? 'bg-violet-500/[0.03] border-violet-500/10' : ''}`}>
                         <div className="mt-0.5 shrink-0 relative">
                           <Checkbox
                             checked={isChecked}
@@ -197,11 +197,11 @@ export default function RotinaPage() {
                           
                           <div className="flex flex-wrap items-center gap-2 mt-2">
                              {item.noeixo !== '-' && (
-                               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold tracking-widest uppercase border ${isChecked ? 'bg-black/5 dark:bg-white/5 text-slate-700 dark:text-white/90 border-slate-200 dark:border-slate-200 dark:border-white/10' : 'bg-black/10 dark:bg-white/10 text-slate-800 dark:text-slate-300 border-slate-300/10 dark:border-slate-200 dark:border-white/10'}`}>
+                               <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold tracking-widest uppercase border ${isChecked ? 'bg-black/5 dark:bg-white/5 text-slate-700 dark:text-white/90 border-slate-200 dark:border-white/10' : 'bg-black/10 dark:bg-white/10 text-slate-800 dark:text-slate-300 border-slate-300/10 dark:border-white/10'}`}>
                                  Pilar: {item.noeixo}
                                </span>
                              )}
-                            <span className={`text-[11px] font-medium flex items-center gap-1 ${isChecked ? 'text-slate-800 dark:text-white/90' : 'text-slate-800 dark:text-white/90 dark:text-white/90'}`}>
+                            <span className={`text-[11px] font-medium flex items-center gap-1 ${isChecked ? 'text-slate-800 dark:text-white/90' : 'text-slate-800 dark:text-white/90'}`}>
                               <Timer size={14} className="text-[14px]" />
                               {item.tempo}
                             </span>

@@ -52,7 +52,7 @@ export default function PromptsIndexPage() {
                 <p className="text-[#0ea5e9] font-medium mt-1">Escolha o que você quer criar</p>
               </div>
             </div>
-            <p className="text-slate-800 dark:text-white/90 dark:text-white/90 max-w-2xl leading-relaxed mt-4">
+            <p className="text-slate-800 dark:text-white/90 max-w-2xl leading-relaxed mt-4">
               Comece pelo <strong className="text-slate-900 dark:text-white">Passo 1 (Clareza)</strong> para saber 
               sobre o que falar. Depois siga para os próximos. Cada um usa as informações do seu perfil para 
               criar textos feitos sob medida para você.
@@ -85,7 +85,7 @@ export default function PromptsIndexPage() {
                         <div className={`size-12 rounded-xl bg-gradient-to-br ${COLORS[tipo]} flex items-center justify-center shadow-lg ${GLOW_COLORS[tipo]}`}>
                           <span className="text-2xl">{config.icone}</span>
                         </div>
-                        <span className="text-xs font-black text-slate-700 dark:text-white/90 uppercase tracking-widest bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-200 dark:border-white/10">
+                        <span className="text-xs font-black text-slate-700 dark:text-white/90 uppercase tracking-widest bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-full border border-slate-200 dark:border-white/10">
                           Passo {config.numero}
                         </span>
                       </div>
@@ -97,7 +97,7 @@ export default function PromptsIndexPage() {
                       <p className="text-sm text-[#0ea5e9] font-semibold mb-3">{config.subtitulo}</p>
                       
                       {/* Description */}
-                      <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 leading-relaxed mb-5">
+                      <p className="text-xs text-slate-800 dark:text-white/90 leading-relaxed mb-5">
                         {config.descricao}
                       </p>
 
