@@ -589,18 +589,43 @@ export default function PerfilPage() {
                 {/* Right Sidebar */}
                 <div className="lg:col-span-4 space-y-8">
                   {/* Tips */}
-                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="bg-gradient-to-br from-[#0ea5e9]/20 to-indigo-900/10 rounded-3xl p-8 border border-[#0ea5e9]/20 relative overflow-hidden">
+                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="glass-card rounded-3xl p-6 sm:p-8 border border-[#0ea5e9]/20 relative overflow-hidden bg-gradient-to-b from-[#0ea5e9]/10 to-transparent">
                     <div className="relative z-10">
-                      <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                        <Lightbulb size={18} className="text-[#0ea5e9]" /> Como preencher?
+                      <h4 className="text-lg font-black text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+                        <Lightbulb size={20} className="text-[#0ea5e9]" /> Dicas Rápidas
                       </h4>
-                      <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-6">Essas informações são usadas para criar textos feitos sob medida para você. Escreva do jeito mais natural possível.</p>
-                      <ul className="space-y-3 text-sm text-slate-700 dark:text-white/70">
-                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Imagine que está contando sobre seu trabalho para alguém que acabou de conhecer.</li>
-                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Quanto mais detalhes sobre o seu público, melhores ficam os textos.</li>
-                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Use o botão <strong className="text-violet-400">&quot;Melhorar Tudo com IA&quot;</strong> para deixar suas respostas mais completas.</li>
-                        <li className="flex gap-2 items-start"><span className="text-[#0ea5e9] mt-0.5">•</span> Você pode mudar essas informações quando quiser!</li>
-                      </ul>
+                      
+                      <div className="space-y-6">
+                        <div className="flex gap-4 items-start">
+                           <div className="mt-0.5 size-8 rounded-full bg-sky-500/10 flex items-center justify-center shrink-0 border border-sky-500/20">
+                             <CheckCircle2 size={16} className="text-sky-500" />
+                           </div>
+                           <div>
+                             <h5 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Clique e Pronto</h5>
+                             <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed">Navegue pelas seções e apenas selecione os cards que mais combinam com você.</p>
+                           </div>
+                        </div>
+
+                        <div className="flex gap-4 items-start">
+                           <div className="mt-0.5 size-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                             <Sparkles size={16} className="text-emerald-500" />
+                           </div>
+                           <div>
+                             <h5 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Seja Natural</h5>
+                             <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed">Nos campos de texto escrito, fale como se estivesse conversando. Não precisa de textão.</p>
+                           </div>
+                        </div>
+
+                        <div className="flex gap-4 items-start">
+                           <div className="mt-0.5 size-8 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0 border border-violet-500/20">
+                             <Rocket size={16} className="text-violet-500" />
+                           </div>
+                           <div>
+                             <h5 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Busque os 100%</h5>
+                             <p className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed">Sua IA só descobre o máximo de sua inteligência quando tem todos os dados preenchidos.</p>
+                           </div>
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
 
