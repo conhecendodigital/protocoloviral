@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Plus, RefreshCw, Search, SearchX, Sparkles, Trash2, Video, X } from 'lucide-react'
+import { Plus, RefreshCw, Search, SearchX, Sparkles, Trash2, Video, X, FileEdit } from 'lucide-react'
 
 interface Roteiro {
   id: string
