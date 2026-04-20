@@ -7,7 +7,7 @@ import { useProfile } from '@/hooks/use-profile'
 import { ExecutionMap } from '@/components/shared/ExecutionMap'
 import { OnboardingModal } from '@/components/shared/OnboardingModal'
 import { createClient } from '@/lib/supabase/client'
-import { Brain, Flame, ArrowRight } from 'lucide-react'
+import { Flame } from 'lucide-react'
 import { FormatosFeed } from '@/components/formatos/FormatosFeed'
 
 // Supabase client created outside component (not in useMemo)
@@ -93,46 +93,7 @@ export default function HomePage() {
         />
       )}
 
-      {/* Premium CTA Banner */}
-      {!loading && completion === 100 && (
-        <motion.section
-          initial={{ opacity: 0, y: 20, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mb-10 w-full relative group cursor-pointer"
-        >
-          <Link href="/roteirista" className="block relative overflow-hidden rounded-[2rem] p-8 sm:p-12 transition-all duration-500 shadow-2xl hover:shadow-[#0ea5e9]/40 border border-[#0ea5e9]/30">
-            {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#060a12] via-[#0284c7] to-[#0ea5e9] opacity-90 transition-opacity duration-500 group-hover:opacity-100" />
 
-            {/* Single decorative blur (reduced from 2× blur-[100px]) */}
-            <div className="absolute -top-10 right-0 w-80 h-80 bg-white/5 blur-3xl rounded-full pointer-events-none" />
-
-            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-8">
-              <div className="flex-1 flex flex-col items-center sm:items-start text-center sm:text-left">
-                <span className="inline-flex items-center gap-2 text-[11px] sm:text-[13px] font-black tracking-[0.2em] text-white/80 uppercase mb-3 bg-white/10 px-4 py-1.5 rounded-full border border-white/10">
-                  <Brain size={14} />
-                  Escritório de IA
-                </span>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-lg mb-2">
-                  Acesse seus Agentes Premium
-                </h2>
-                <p className="text-white/80 font-medium text-sm sm:text-base max-w-lg">
-                  Transforme conhecimento em conteúdo viral que atrai, retém e converte seguidores com o nosso Roteirista inteligente, 100% anti-alucinação.
-                </p>
-              </div>
-
-              <div className="shrink-0 relative">
-                <div className="absolute inset-0 bg-white blur-xl opacity-20 group-hover:opacity-40 transition-opacity rounded-full" />
-                <div className="bg-white text-[#0ea5e9] px-8 py-4 sm:px-10 sm:py-5 rounded-full font-black text-lg sm:text-xl shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10 w-full sm:w-auto">
-                  Iniciar Agora
-                  <ArrowRight size={20} />
-                </div>
-              </div>
-            </div>
-          </Link>
-        </motion.section>
-      )}
 
       {/* Feed de Formatos */}
       <motion.section
