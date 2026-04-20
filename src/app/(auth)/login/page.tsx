@@ -1,12 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
 import { ArrowRight, AtSign, CheckCircle, Eye, EyeOff, Lock, RefreshCw } from 'lucide-react'
 
 export default function LoginPage() {
-  const [mode, setMode] = useState<'login' | 'signup'>('login')
+  const searchParams = useSearchParams()
+  const planParam = searchParams.get('plan')  // ex: 'mensal' | 'trimestral' | 'semestral'
+  const modeParam = searchParams.get('mode')  // ex: 'signup'
+
+  const [mode, setMode] = useState<'login' | 'signup'>(
+    modeParam === 'signup' ? 'signup' : 'login'
+  )
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -33,7 +40,7 @@ export default function LoginPage() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) setError(translateError(error.message))
-      else window.location.href = '/'
+      else window.location.href = planParam ? `/assinatura?plan=${planParam}` : '/'
     } catch {
       setError('Erro ao fazer login. Tente novamente.')
     } finally {
@@ -49,7 +56,7 @@ export default function LoginPage() {
     try {
       const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) setError(translateError(error.message))
-      else if (data.session) window.location.href = '/'
+      else if (data.session) window.location.href = planParam ? `/assinatura?plan=${planParam}` : '/'
       else setSuccess('Conta criada! Verifique seu email (caixa de entrada ou spam).')
     } catch {
       setError('Erro ao criar conta. Tente novamente.')
@@ -85,6 +92,16 @@ export default function LoginPage() {
           <p className="text-slate-800 dark:text-white/90 font-medium">
             {mode === 'login' ? 'Sua jornada premium começa aqui' : 'Crie sua conta e decole agora'}
           </p>
+
+          {/* Banner do plano escolhido */}
+          {planParam && (
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0ea5e9]/10 border border-[#0ea5e9]/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9] animate-pulse" />
+              <span className="text-xs font-bold text-[#0ea5e9]">
+                Plano {planParam.charAt(0).toUpperCase() + planParam.slice(1)} selecionado
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Glass Login Card */}

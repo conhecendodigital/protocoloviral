@@ -97,7 +97,7 @@ const PLANS = [
     highlight: false,
     perDay: 'R$ 3,23 por dia',
     cta: 'Começar agora',
-    ctaHref: '/login',
+    ctaHref: '/login?plan=mensal&mode=signup',
   },
   {
     id: 'trimestral',
@@ -108,7 +108,7 @@ const PLANS = [
     highlight: false,
     perDay: 'R$ 2,19 por dia',
     cta: 'Quero o trimestral',
-    ctaHref: '/login',
+    ctaHref: '/login?plan=trimestral&mode=signup',
   },
   {
     id: 'semestral',
@@ -120,7 +120,7 @@ const PLANS = [
     perDay: 'R$ 1,65 por dia',
     saving: 'Você economiza 49%',
     cta: 'Quero o melhor plano',
-    ctaHref: '/login',
+    ctaHref: '/login?plan=semestral&mode=signup',
   },
 ]
 

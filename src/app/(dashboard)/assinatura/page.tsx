@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useProfile } from '@/hooks/use-profile'
 import { Loader2, CheckCircle2, Shield, Star, Zap, Crown, ArrowRightLeft } from 'lucide-react'
@@ -43,11 +44,22 @@ const PLANS = [
 ]
 
 export default function AssinaturaPage() {
+  const searchParams = useSearchParams()
+  const planFromUrl = searchParams.get('plan') // ex: 'mensal' | 'trimestral' | 'semestral'
+
   const { profile, loading } = useProfile()
   const [checkingOut, setCheckingOut] = useState<string | null>(null)
   const [selectedPlanForBrick, setSelectedPlanForBrick] = useState<{ id: string, price: number } | null>(null)
   const [cancelStatus, setCancelStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [cancelMessage, setCancelMessage] = useState('')
+
+  // Auto-abre checkout se veio da landing com plano selecionado
+  useEffect(() => {
+    if (!loading && planFromUrl && !profile?.plan_tier?.match(/mensal|trimestral|semestral/)) {
+      const found = PLANS.find(p => p.id === planFromUrl)
+      if (found) setSelectedPlanForBrick({ id: found.id, price: Number(found.price) })
+    }
+  }, [loading, planFromUrl, profile?.plan_tier])
 
   const handleCheckoutClick = (planId: string, price: string) => {
     setSelectedPlanForBrick({ id: planId, price: Number(price) })
