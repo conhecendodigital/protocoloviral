@@ -186,7 +186,7 @@ export default function LandingPage() {
             <div className="size-8 bg-gradient-to-br from-[#0ea5e9] to-[#6d28d9] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#0ea5e9]/30">
               <Zap size={15} />
             </div>
-            <span className="font-black text-sm tracking-tight text-slate-900 dark:text-white">Protocolo Viral</span>
+            <span className="font-black text-sm tracking-tight text-slate-900 dark:text-white">Mapa do Engajamento</span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login" className="hidden sm:block text-sm font-medium text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white transition-colors">
@@ -275,7 +275,7 @@ export default function LandingPage() {
             <div className="rounded-3xl p-6 bg-red-50 dark:bg-red-500/[0.06] border border-red-200 dark:border-red-500/20">
               <p className="text-xs font-black uppercase tracking-widest text-red-500 mb-4 flex items-center gap-2">
                 <span className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-white text-[10px]">✕</span>
-                Sem o Protocolo Viral
+                Sem o Mapa do Engajamento
               </p>
               <ul className="space-y-3">
                 {BEFORE_AFTER.map(b => (
@@ -290,7 +290,7 @@ export default function LandingPage() {
             <div className="rounded-3xl p-6 bg-emerald-50 dark:bg-emerald-500/[0.06] border border-emerald-200 dark:border-emerald-500/20">
               <p className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
                 <span className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">✓</span>
-                Com o Protocolo Viral
+                Com o Mapa do Engajamento
               </p>
               <ul className="space-y-3">
                 {BEFORE_AFTER.map(b => (
@@ -527,7 +527,7 @@ export default function LandingPage() {
             <br />que realmente vende?
           </h2>
           <p className="text-blue-100/80 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-            Mais de 500 criadores já usam o Protocolo Viral para crescer mais rápido,
+            Mais de 500 criadores já usam o Mapa do Engajamento para crescer mais rápido,
             com mais consistência e muito menos esforço.
           </p>
 
@@ -548,9 +548,9 @@ export default function LandingPage() {
             <div className="size-7 bg-gradient-to-br from-[#0ea5e9] to-[#6d28d9] rounded-lg flex items-center justify-center">
               <Zap size={13} className="text-white" />
             </div>
-            <span className="text-sm font-black text-slate-700 dark:text-white/70">Protocolo Viral</span>
+            <span className="text-sm font-black text-slate-700 dark:text-white/70">Mapa do Engajamento</span>
           </div>
-          <p className="text-xs text-slate-400 dark:text-white/25">© 2025 Protocolo Viral · Todos os direitos reservados</p>
+          <p className="text-xs text-slate-400 dark:text-white/25">© 2025 Mapa do Engajamento · Todos os direitos reservados</p>
           <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-white/25">
             <Link href="/login" className="hover:text-slate-700 dark:hover:text-white/60 transition-colors">Entrar</Link>
             <span>·</span>
