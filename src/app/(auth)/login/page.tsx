@@ -205,15 +205,30 @@ export default function LoginPage() {
 
         {/* Footer Links — OUTSIDE the card */}
         <div className="mt-8 text-center space-y-4">
-          <p className="text-slate-800 dark:text-white/90 text-sm">
-            {mode === 'login' ? 'Não possui conta? ' : 'Já possui conta? '}
-            <button 
-              onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setSuccess(''); }} 
-              className="text-[#0ea5e9] font-bold hover:underline"
+          {/* Toggle entre Login e Criar Conta */}
+          <div className="inline-flex rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 p-1 gap-1">
+            <button
+              onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
+                mode === 'login'
+                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+              }`}
             >
-              {mode === 'login' ? 'Solicite acesso' : 'Fazer login'}
+              Entrar
             </button>
-          </p>
+            <button
+              onClick={() => { setMode('signup'); setError(''); setSuccess(''); }}
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
+                mode === 'signup'
+                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+              }`}
+            >
+              Criar conta
+            </button>
+          </div>
+
           <div className="flex justify-center gap-6 text-xs font-medium text-slate-700 dark:text-white/90">
             <a className="hover:text-slate-800 dark:text-slate-300" href="/termos">Termos de Uso</a>
             <a className="hover:text-slate-800 dark:text-slate-300" href="/privacidade">Privacidade</a>
