@@ -82,7 +82,7 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2">Mapa do Engajamento</h1>
-          <p className="text-slate-800 dark:text-white/90 dark:text-white/90 font-medium">
+          <p className="text-slate-800 dark:text-white/90 font-medium">
             {mode === 'login' ? 'Sua jornada premium começa aqui' : 'Crie sua conta e decole agora'}
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function LoginPage() {
             
             {/* Email Input */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 dark:text-white/90 ml-1">E-mail Corporativo</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">E-mail Corporativo</label>
               <div className="relative">
                 <AtSign size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl" />
                 <input 
@@ -101,7 +101,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-slate-200 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
+                  className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
                   placeholder="nome@empresa.com" 
                 />
               </div>
@@ -110,7 +110,7 @@ export default function LoginPage() {
             {/* Password Input */}
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 dark:text-white/90">Senha de Acesso</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90">Senha de Acesso</label>
                 {mode === 'login' && (
                   <a className="text-xs font-semibold text-[#0ea5e9] hover:text-[#0ea5e9]/80 transition-colors" href="mailto:suporte@protocoloviral.com.br">Esqueceu?</a>
                 )}
@@ -123,7 +123,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   minLength={6}
                   required
-                  className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-slate-200 dark:border-white/10 rounded-xl py-4 pl-12 pr-12 text-slate-900 dark:text-white placeholder:text-slate-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
+                  className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 pl-12 pr-12 text-slate-900 dark:text-white placeholder:text-slate-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
                   placeholder={mode === 'signup' ? "No mínimo 6 caracteres" : "••••••••"} 
                 />
                 <button 
@@ -139,7 +139,7 @@ export default function LoginPage() {
             {/* Confirm Password (signup only) */}
             {mode === 'signup' && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-2 overflow-hidden">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 dark:text-white/90 ml-1">Confirmar Senha</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">Confirmar Senha</label>
                 <div className="relative">
                   <Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl" />
                   <input 
@@ -148,7 +148,7 @@ export default function LoginPage() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     minLength={6}
                     required
-                    className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-slate-200 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
+                    className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
                     placeholder="Repita sua senha" 
                   />
                 </div>
@@ -188,7 +188,7 @@ export default function LoginPage() {
 
         {/* Footer Links — OUTSIDE the card */}
         <div className="mt-8 text-center space-y-4">
-          <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-sm">
+          <p className="text-slate-800 dark:text-white/90 text-sm">
             {mode === 'login' ? 'Não possui conta? ' : 'Já possui conta? '}
             <button 
               onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setSuccess(''); }} 

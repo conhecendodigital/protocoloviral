@@ -45,7 +45,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
     return (
       <>
         <div className="p-8 text-center mt-20">
-          <p className="text-slate-800 dark:text-white/90 dark:text-white/90 text-lg">Este tipo de prompt não existe.</p>
+          <p className="text-slate-800 dark:text-white/90 text-lg">Este tipo de prompt não existe.</p>
           <Link href="/" className="text-[#0ea5e9] text-sm mt-4 font-bold hover:underline inline-block">Voltar ao início</Link>
         </div>
       </>
@@ -115,10 +115,10 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">PASSO {config.numero}:</span> {config.titulo}
               </h1>
             </div>
-            <p className="text-slate-800 dark:text-white/90 dark:text-white/90">{config.descricao}</p>
+            <p className="text-slate-800 dark:text-white/90">{config.descricao}</p>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="glass-card p-6 lg:p-8 rounded-xl flex flex-col gap-6 shadow-2xl shadow-[#0ea5e9]/10 border border-slate-200 dark:border-slate-200 dark:border-white/10">
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="glass-card p-6 lg:p-8 rounded-xl flex flex-col gap-6 shadow-2xl shadow-[#0ea5e9]/10 border border-slate-200 dark:border-white/10">
             
             {/* Dependencies Warning */}
             {!deps.met && deps.missing && (
@@ -129,7 +129,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                     <p className="text-sm font-bold text-amber-400">
                       Faça o Passo {PROMPT_CONFIGS[deps.missing].numero} ({PROMPT_CONFIGS[deps.missing].titulo}) antes
                     </p>
-                    <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 mt-1 mb-3">
+                    <p className="text-xs text-slate-800 dark:text-white/90 mt-1 mb-3">
                       Cole a resposta que o ChatGPT te deu no campo abaixo.
                     </p>
                     <Link href={`/prompts/${deps.missing}`} className="text-xs text-[#0ea5e9] font-bold hover:underline flex items-center gap-1 w-max">
@@ -197,7 +197,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                 <MessageCircle size={18} className="text-[#0ea5e9]" />
                 Resposta do ChatGPT
               </label>
-              <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 mb-4">
+              <p className="text-xs text-slate-800 dark:text-white/90 mb-4">
                 Copie o texto acima, cole no ChatGPT, e depois cole aqui a resposta que ele te der.
               </p>
               <Textarea
@@ -263,7 +263,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
                 <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
               </div>
               <div className="text-[10px] text-slate-700 dark:text-white/90 font-mono">gerador_texto_{config.tipo}</div>
-              <button onClick={handleCopy} disabled={!generated} className="flex items-center gap-2 text-slate-800 dark:text-white/90 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors disabled:opacity-50">
+              <button onClick={handleCopy} disabled={!generated} className="flex items-center gap-2 text-slate-800 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors disabled:opacity-50">
                 <DynamicIcon name={copied ? 'check' : 'content_copy'} size={14} className="text-sm" />
                 <span className="text-[10px] font-bold uppercase">{copied ? 'Copiado' : 'Copiar'}</span>
               </button>
@@ -285,7 +285,7 @@ export default function PromptPage({ params }: { params: Promise<{ tipo: string 
               )}
             </div>
 
-            <div className="p-4 border-t border-slate-200 dark:border-slate-200 dark:border-white/10 bg-white/[0.02]">
+            <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <span className="text-[#0ea5e9] font-bold">➜</span>
                 <span className="text-slate-700 dark:text-white/90 text-xs">Copie o texto acima e cole no ChatGPT</span>

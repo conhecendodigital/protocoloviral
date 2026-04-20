@@ -49,7 +49,7 @@ export default function StoriesPage() {
                     className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 ${
                       activeTab === cat.id
                         ? 'bg-[#0ea5e9] text-white shadow-[0_0_20px_rgba(14,165,233,0.4)] scale-105'
-                        : 'glass-card text-slate-800 dark:text-slate-300 hover:bg-black/10 dark:bg-white/10 hover:text-slate-900 dark:text-white border border-slate-200 dark:border-slate-200 dark:border-white/10'
+                        : 'glass-card text-slate-800 dark:text-slate-300 hover:bg-black/10 dark:bg-white/10 hover:text-slate-900 dark:text-white border border-slate-200 dark:border-white/10'
                     }`}
                   >
                     <span className="text-xl">{cat.icone}</span>
@@ -66,7 +66,7 @@ export default function StoriesPage() {
                     initial={{ opacity: 0, y: 20, scale: 0.98 }} 
                     animate={{ opacity: 1, y: 0, scale: 1 }} 
                     transition={{ delay: i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }} 
-                    className="glass-card rounded-3xl p-6 lg:p-8 border border-slate-200 dark:border-slate-200 dark:border-white/10 relative overflow-hidden group"
+                    className="glass-card rounded-3xl p-6 lg:p-8 border border-slate-200 dark:border-white/10 relative overflow-hidden group"
                   >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#0ea5e9]/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none transition-opacity opacity-0 group-hover:opacity-100"></div>
                     
@@ -76,7 +76,7 @@ export default function StoriesPage() {
                           <span className="text-3xl">{fw.icone}</span>
                           <h3 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight">{fw.nome}</h3>
                         </div>
-                        <p className="text-sm text-slate-800 dark:text-white/90 dark:text-white/90 leading-relaxed font-medium">{fw.descricao}</p>
+                        <p className="text-sm text-slate-800 dark:text-white/90 leading-relaxed font-medium">{fw.descricao}</p>
                       </div>
                       <Badge variant="outline" className="shrink-0 font-bold bg-[#0ea5e9]/10 text-[#0ea5e9] border-[#0ea5e9]/30 rounded-full px-4 py-1.5 uppercase tracking-wider text-[10px]">
                         {fw.stories.length} stories
@@ -110,7 +110,7 @@ export default function StoriesPage() {
                       })}
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-slate-300/10 dark:border-slate-200 dark:border-white/10 relative z-10">
+                    <div className="mt-8 pt-6 border-t border-slate-300/10 dark:border-white/10 relative z-10">
                       <CopyButton
                         text={fw.stories.map(s => `Story ${s.ordem} (${s.tipo}): ${s.texto}\nDica: ${s.dica}`).join('\n\n')}
                         className="w-full justify-center bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/30 hover:bg-[#0ea5e9] hover:text-slate-900 dark:text-white rounded-xl py-6 font-bold uppercase tracking-widest text-xs transition-all"

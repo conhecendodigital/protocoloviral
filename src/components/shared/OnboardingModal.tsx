@@ -132,7 +132,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             <CheckCircle size={48} className="text-[48px] text-slate-900 dark:text-white" />
           </motion.div>
           <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Perfil Completo!</h2>
-          <p className="text-lg text-slate-800 dark:text-white/90 dark:text-white/90 max-w-md">
+          <p className="text-lg text-slate-800 dark:text-white/90 max-w-md">
             Agora a Inteligência Artificial tem o contexto ideal para gerar conteúdos personalizados para você.
           </p>
           <motion.div
@@ -175,11 +175,11 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">preciso te conhecer melhor!</span>
             </h2>
 
-            <p className="text-base text-slate-800 dark:text-white/90 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
+            <p className="text-base text-slate-800 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
               Vou te fazer algumas perguntas rápidas sobre você, seu público e seus objetivos.
             </p>
 
-            <p className="text-base text-slate-800 dark:text-white/90 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
+            <p className="text-base text-slate-800 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
               Essas respostas vão alimentar diretamente a <span className="font-bold text-slate-900 dark:text-white">Inteligência Artificial</span> que gera seus prompts, roteiros, ideias de conteúdo e estratégias de vendas.
             </p>
 
@@ -203,7 +203,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
 
             <button
               onClick={onComplete}
-              className="block mx-auto mt-6 text-sm font-medium text-slate-800 dark:text-white/90 hover:text-slate-800 dark:text-white/90 dark:text-white/90 transition-colors"
+              className="block mx-auto mt-6 text-sm font-medium text-slate-800 dark:text-white/90 hover:text-slate-800 dark:text-white/90 transition-colors"
             >
               Preencher depois
             </button>
@@ -349,7 +349,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             {/* Skip */}
             <button
               onClick={handleSkip}
-              className="text-sm font-medium text-slate-800 dark:text-white/90 hover:text-slate-800 dark:text-white/90 dark:text-white/90 transition-colors px-4 py-3"
+              className="text-sm font-medium text-slate-800 dark:text-white/90 hover:text-slate-800 dark:text-white/90 transition-colors px-4 py-3"
             >
               Pular
             </button>

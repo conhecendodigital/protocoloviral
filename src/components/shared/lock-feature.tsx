@@ -26,11 +26,11 @@ export function LockFeature({ name, description }: LockFeatureProps) {
         className="group relative flex items-center gap-3 w-full p-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 opacity-60 hover:opacity-80 hover:border-amber-400/50 transition-all cursor-pointer"
       >
         <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-700">
-          <Lock className="w-5 h-5 text-slate-800 dark:text-white/90 dark:text-white/90" />
+          <Lock className="w-5 h-5 text-slate-800 dark:text-white/90" />
         </div>
         <div className="flex-1 text-left">
-          <p className="text-sm font-medium text-slate-700 dark:text-white/90 dark:text-slate-800 dark:text-white/90 dark:text-white/90">{name}</p>
-          <p className="text-xs text-slate-800 dark:text-white/90 dark:text-white/90 dark:text-slate-700 dark:text-white/90">Disponível na Chave AI</p>
+          <p className="text-sm font-medium text-slate-700 dark:text-white/90">{name}</p>
+          <p className="text-xs text-slate-800 dark:text-white/90 dark:text-slate-700 dark:text-white/90">Disponível na Chave AI</p>
         </div>
         <div className="px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider">
           Pro
