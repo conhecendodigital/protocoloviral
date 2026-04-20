@@ -121,14 +121,17 @@ const getFormatoIdParaRoteirista = (tipo: string | null, nicho: string | null): 
   const combo = t + ' ' + n;
   
   if (combo.includes('ancorag') || combo.includes('story')) return 'ancoragem';
-  if (combo.includes('pergunta') || combo.includes('resposta') || combo.includes('dual')) return 'perguntas-e-respostas';
-  if (combo.includes('caixinha')) return 'caixinha-perguntas';
+  if (combo.includes('pergunta') || combo.includes('resposta') || combo.includes('dual') || combo.includes('caixinha')) return 'pergunta-resposta';
   if (combo.includes('preguiçoso') || combo.includes('preguicoso') || combo.includes('certo') || combo.includes('errado')) return 'preguicoso';
-  if (combo.includes('tela') || combo.includes('dividida') || combo.includes('comparação') || combo.includes('lado a lado')) return 'tela-dividida';
-  if (combo.includes('tutorial') || combo.includes('dica') || combo.includes('passo')) return 'tutorial';
-  if (combo.includes('react') || combo.includes('reação') || combo.includes('experimento')) return 'reacao';
+  if (combo.includes('tela') || combo.includes('dividida') || combo.includes('comparação') || combo.includes('lado a lado') || combo.includes('bastidor')) return 'bastidores';
+  if (combo.includes('tutorial') || combo.includes('passo')) return 'tutorial';
+  if (combo.includes('dica')) return 'dica-util';
+  if (combo.includes('react') || combo.includes('reação') || combo.includes('experimento')) return 'react';
+  if (combo.includes('problema') || combo.includes('solução') || combo.includes('solucao')) return 'problema-solucao';
+  if (combo.includes('curiosidade')) return 'curiosidade';
+  if (combo.includes('lista')) return 'lista';
   
-  return 'varias-cenas';
+  return 'geral';
 }
 
 export default function FormatoViewPage() {
