@@ -145,7 +145,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
         key={item.href}
         href={item.href}
         className={cn(
-          'relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group/item',
+          'relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group/item',
           isActive
             ? 'bg-[#0ea5e9]/15 text-[#0ea5e9]'
             : 'text-slate-700 dark:text-white/80 hover:bg-slate-100 dark:hover:bg-white/6 hover:text-slate-900 dark:hover:text-white'
@@ -200,7 +200,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
       onMouseLeave={handleMouseLeave}
     >
       {/* ── LOGO ── */}
-      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden">
+      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden transition-all duration-200">
         <div className="size-9 bg-[#0ea5e9] rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#0ea5e9]/20">
           <Map size={18} />
         </div>
@@ -218,15 +218,9 @@ export function Sidebar({ className = '' }: SidebarProps) {
           const SectionIcon = section.icon
           return (
             <div key={section.id} className="mb-1">
-              {hovered ? (
-                <div className="px-3 pt-3 pb-1">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/25 whitespace-nowrap">
-                    {section.label}
-                  </span>
-                </div>
-              ) : (
-                <div className="px-3 pt-3 pb-1">
-                  <div className="h-px bg-slate-200 dark:bg-white/8" />
+              {section.id !== 'menu' && (
+                <div className="px-3 pt-2 pb-1">
+                  <div className="h-px bg-slate-200 dark:bg-white/5 transition-colors" />
                 </div>
               )}
 
@@ -235,7 +229,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
                   <button
                     onClick={() => toggleSection(section.id)}
                     className={cn(
-                      'w-full relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group/toggle',
+                      'w-full relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group/toggle',
                       expandedSections[section.id]
                         ? 'text-slate-900 dark:text-white'
                         : 'text-slate-500 dark:text-white/50 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
@@ -294,7 +288,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
           </div>
         )}
 
-        <div className="flex items-center gap-2.5 px-1 py-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+        <div className="flex items-center gap-2.5 px-1 py-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-200">
           <Link href="/perfil" className="shrink-0">
             <div className="size-9 rounded-full overflow-hidden ring-2 ring-[#0ea5e9]/20 hover:ring-[#0ea5e9]/50 transition-all">
               {profile?.avatar_url ? (
