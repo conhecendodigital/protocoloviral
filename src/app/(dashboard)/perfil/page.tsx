@@ -8,14 +8,12 @@ import { PROFILE_FIELDS } from '@/types/profile'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BadgeCheck, Ban, Brain, Camera, Check, CheckCircle, CheckCircle2, Clock, CloudCheck, Compass, Lightbulb, Loader2, Map, Pencil, Rocket, Smartphone, Sparkles, User, UserCheck, Users, X, Zap } from 'lucide-react'
+import { BadgeCheck, Ban, Brain, Camera, Check, CheckCircle2, Clock, CloudCheck, Compass, Lightbulb, Loader2, Map, Pencil, Rocket, Smartphone, Sparkles, User, UserCheck, Users, X, Zap } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { parseClareza, parsePersona } from '@/lib/parser'
 import type { ClarezaParsed, PersonaParsed } from '@/lib/parser'
-import { WIZARD_SECTIONS } from '@/components/perfil/wizard-data'
-import { GamifiedQuestion } from '@/components/perfil/GamifiedQuestion'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 // ─── Section Config ────────────────────────────────────────
@@ -305,18 +303,8 @@ export default function PerfilPage() {
   const [tempName, setTempName] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
-  const [isEditingWizard, setIsEditingWizard] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
   const completion = getCompletionPercent()
-
-  // Initialize wizard edit state
-  useEffect(() => {
-    if (!loading) {
-      setIsEditingWizard(completion < 100)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading])
 
   // ─── Real-time Parser (computed from profile) ──────────
   const clarezaData = useMemo<ClarezaParsed | null>(
@@ -499,91 +487,51 @@ export default function PerfilPage() {
                     )}
                   </motion.div>
 
-                  {/* All 13 Fields Gamified or Readonly */}
-                  {WIZARD_SECTIONS.map((section) => {
+                  {/* Campos de Perfil — Input/Textarea por seção */}
+                  {(['sobre', 'publico', 'objetivos'] as const).map((sectionKey) => {
+                    const sectionMeta = SECTION_META[sectionKey]
+                    const fields = PROFILE_FIELDS.filter(f => f.section === sectionKey)
                     return (
-                      <motion.div key={section.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10">
-                        <div className="flex items-center justify-between mb-8">
-                          <div className="flex items-center gap-4">
-                            <div className="size-12 rounded-xl bg-[#0ea5e9]/10 flex items-center justify-center border border-[#0ea5e9]/20 shadow-inner shrink-0">
-                              <DynamicIcon name={section.icon} size={24} className="text-[#0ea5e9] text-2xl" />
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight">{section.title}</h3>
-                            </div>
+                      <motion.div key={sectionKey} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-white/10">
+                        <div className="flex items-center gap-4 mb-8">
+                          <div className="size-12 rounded-xl bg-[#0ea5e9]/10 flex items-center justify-center border border-[#0ea5e9]/20 shadow-inner shrink-0">
+                            <DynamicIcon name={sectionMeta.icon} size={24} className="text-[#0ea5e9] text-2xl" />
                           </div>
-                          {!isEditingWizard && (
-                            <button onClick={() => setIsEditingWizard(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-600 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                              <Pencil size={14} className="text-sm" /> Editar
-                            </button>
-                          )}
+                          <div>
+                            <h3 className="font-bold text-xl text-slate-900 dark:text-white tracking-tight">{sectionMeta.title}</h3>
+                            <p className="text-sm text-slate-500 dark:text-white/50">{sectionMeta.desc}</p>
+                          </div>
                         </div>
-
-                        {isEditingWizard ? (
-                          <div className="space-y-4">
-                            {section.questions.map(question => {
-                              const fieldValue = profile?.[question.id as keyof typeof profile] as string || ''
-                              const status = saveStatus[question.id] || 'idle'
-
-                              return (
-                                <div key={question.id} className="pt-6 border-t border-slate-100 dark:border-white/5 first:border-0 first:pt-0">
-                                  <div className="flex justify-end h-4 mb-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {fields.map(field => {
+                            const fieldValue = profile?.[field.id] as string || ''
+                            const status = saveStatus[field.id] || 'idle'
+                            const isTextarea = field.type === 'textarea'
+                            return (
+                              <div key={field.id} className={`space-y-2 ${isTextarea ? 'md:col-span-2' : ''}`}>
+                                <div className="flex items-center justify-between">
+                                  <label htmlFor={field.id} className="text-xs font-bold text-slate-600 dark:text-white/60 uppercase tracking-widest ml-1">{field.label}</label>
+                                  <div className="h-4 flex items-center gap-2">
                                     {status === 'saving' && <span className="text-[10px] text-slate-500 flex items-center gap-1 uppercase tracking-widest font-bold"><Loader2 className="w-3 h-3 animate-spin" />Salvando</span>}
                                     {status === 'saved' && <span className="text-[10px] text-[#0ea5e9] flex items-center gap-1 uppercase tracking-widest font-bold"><CheckCircle2 className="w-3 h-3" />Salvo</span>}
                                     {status === 'error' && <span className="text-[10px] text-red-400 flex items-center gap-1 uppercase tracking-widest font-bold">Erro ao salvar</span>}
                                   </div>
-                                  <GamifiedQuestion
-                                    question={question}
-                                    value={fieldValue}
-                                    onChange={(val) => handleFieldChange(question.id, val)}
-                                  />
                                 </div>
-                              )
-                            })}
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {section.questions.map(question => {
-                              const fieldValue = profile?.[question.id as keyof typeof profile] as string || ''
-                              if (!fieldValue) return null
-
-                              // Attempt to find the matched option for better labeling
-                              const match = question.options.find(o => o.id === fieldValue)
-                              const displayLabel = match ? match.label : fieldValue
-
-                              return (
-                                <div key={question.id} className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-[#0ea5e9] block mb-1">
-                                    {question.title.replace(/\?/g, '')}
-                                  </span>
-                                  <p className="text-sm font-semibold text-slate-800 dark:text-white/90 leading-relaxed">
-                                    {displayLabel}
-                                  </p>
+                                <div className="group relative">
+                                  <div className="absolute inset-0 bg-black/5 dark:bg-white/5 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none border border-[#0ea5e9]/50" />
+                                  {isTextarea ? (
+                                    <Textarea id={field.id} placeholder={field.placeholder} value={fieldValue} onChange={e => handleFieldChange(field.id, e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 rounded-2xl px-5 py-4 focus-visible:ring-0 focus-visible:border-[#0ea5e9] outline-none transition-all resize-none text-slate-900 dark:text-white text-sm leading-relaxed min-h-[100px] relative z-10 placeholder:text-slate-400 dark:placeholder:text-white/30" rows={4} />
+                                  ) : (
+                                    <Input id={field.id} placeholder={field.placeholder} value={fieldValue} onChange={e => handleFieldChange(field.id, e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 rounded-2xl px-5 py-6 h-auto focus-visible:ring-0 focus-visible:border-[#0ea5e9] outline-none transition-all text-slate-900 dark:text-white text-sm relative z-10 placeholder:text-slate-400 dark:placeholder:text-white/30" />
+                                  )}
                                 </div>
-                              )
-                            })}
-                          </div>
-                        )}
+                              </div>
+                            )
+                          })}
+                        </div>
                       </motion.div>
                     )
                   })}
-
-                  {isEditingWizard && (
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-10 border-t border-slate-100 dark:border-white/10 mt-10">
-                      <p className="text-sm text-slate-500 dark:text-white/60">
-                        {completion === 100 
-                          ? "Perfil 100% completo! Seus roteiros estão prontos para máxima personalização." 
-                          : "Preencha tudo que puder. Quanto mais dados, melhores serão seus roteiros!"}
-                      </p>
-                      <button 
-                        onClick={() => setIsEditingWizard(false)} 
-                        className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-[#0ea5e9] text-white font-bold text-sm shadow-lg shadow-emerald-500/20 hover:brightness-110 transition-all active:scale-95 flex items-center justify-center gap-2"
-                      >
-                        <CheckCircle size={18} />
-                        {completion === 100 ? "Concluir Perfil" : "Concluir Edição"}
-                      </button>
-                    </div>
-                  )}
                 </div>
 
                 {/* Right Sidebar */}
