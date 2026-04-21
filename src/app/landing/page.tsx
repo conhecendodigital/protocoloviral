@@ -42,10 +42,34 @@ const STEPS = [
 ]
 
 const TESTIMONIALS = [
-  { name: 'Mariana Costa', quote: '"Eu passava horas tentando criar algo do zero. Com o Mapa, escolho a estrutura, adapto em 5 minutos e gravo. Meu perfil bateu 1M de contas alcançadas esse mês."', badge: '+48k seguidores', badgeColor: '#0ea5e9', initials: 'MC' },
-  { name: 'Rafael Diniz', quote: '"O que mais me impressionou não foram as visualizações, mas a qualidade do público. Usei os roteiros de funil e fechei minha mentoria na primeira semana."', badge: 'R$40k faturados', badgeColor: '#d3bbff', initials: 'RD' },
-  { name: 'Ana Silva', quote: '"Achei que meu nicho de contabilidade não dava certo no Reels. Peguei uma estrutura de storytelling do Mapa e adaptei. Foi meu primeiro vídeo com mais de 100k."', badge: 'Viral no B2B', badgeColor: '#22d3ee', initials: 'AS' },
-  { name: 'Carlos Mendes', quote: '"O investimento se pagou no primeiro dia. Parei de assinar banco de ideias inúteis e agora tenho um direcionamento real e prático."', badge: 'ROI 10x', badgeColor: '#0ea5e9', initials: 'CM' },
+  {
+    name: 'Mariana Costa',
+    handle: '@marianacosta • Estilo de vida',
+    quote: '"Eu passava horas tentando criar algo do zero. Com o Mapa, escolho a estrutura, adapto em 5 minutos e gravo. Meu perfil bateu 1M de contas alcançadas esse mês."',
+    badge: '+48k seguidores', badgeColor: '#0ea5e9',
+    avatar: 'https://api.dicebear.com/9.x/notionists/svg?seed=Mariana&backgroundColor=0ea5e9,6d28d9&scale=110',
+  },
+  {
+    name: 'Rafael Diniz',
+    handle: '@rafaeldiniz • Marketing Digital',
+    quote: '"O que mais me impressionou não foram as visualizações, mas a qualidade do público. Usei os roteiros de funil e fechei minha mentoria na primeira semana."',
+    badge: 'R$40k faturados', badgeColor: '#a78bfa',
+    avatar: 'https://api.dicebear.com/9.x/notionists/svg?seed=Rafael&backgroundColor=6d28d9,0ea5e9&scale=110',
+  },
+  {
+    name: 'Ana Silva',
+    handle: '@anasilva.contabil • Contabilidade',
+    quote: '"Achei que meu nicho de contabilidade não dava certo no Reels. Peguei uma estrutura de storytelling do Mapa, adaptei e fiz meu primeiro vídeo com mais de 100k views."',
+    badge: '100k no nicho B2B', badgeColor: '#22d3ee',
+    avatar: 'https://api.dicebear.com/9.x/notionists/svg?seed=Ana&backgroundColor=0ea5e9,22d3ee&scale=110',
+  },
+  {
+    name: 'Carlos Mendes',
+    handle: '@carlosmendes • Finanças Pessoais',
+    quote: '"O investimento se pagou no primeiro dia. Parei de assinar banco de ideias inúteis e agora tenho um direcionamento real e prático para cada vídeo."',
+    badge: 'ROI no 1º dia', badgeColor: '#0ea5e9',
+    avatar: 'https://api.dicebear.com/9.x/notionists/svg?seed=Carlos&backgroundColor=1e3a5f,0ea5e9&scale=110',
+  },
 ]
 
 const PLANS = [
@@ -276,7 +300,7 @@ export default function LandingPage() {
           <section className="max-w-7xl mx-auto px-6 mb-32 relative" id="depoimentos">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>A matemática não mente.</h2>
-              <p className="text-[#bec8d2] text-lg">Resultados de quem aplicou a engenharia de retenção.</p>
+              <p className="text-[#bec8d2] text-lg">Resultados reais de criadores reais — em nichos diferentes.</p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
               {TESTIMONIALS.map(t => (
@@ -288,13 +312,16 @@ export default function LandingPage() {
                     <p className="text-[#bec8d2] text-sm mb-6 leading-relaxed">{t.quote}</p>
                   </div>
                   <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#0ea5e9] to-[#6d28d9] flex items-center justify-center text-[11px] font-black text-white shrink-0">
-                      {t.initials}
-                    </div>
+                    <img
+                      src={t.avatar}
+                      alt={t.name}
+                      className="w-11 h-11 rounded-full shrink-0 bg-gradient-to-br from-[#0ea5e9] to-[#6d28d9]"
+                    />
                     <div>
                       <p className="text-white font-bold text-sm">{t.name}</p>
+                      <p className="text-[#bec8d2]/60 text-[10px] font-medium mb-0.5">{t.handle}</p>
                       <span
-                        className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
                         style={{ backgroundColor: `${t.badgeColor}20`, color: t.badgeColor }}
                       >
                         {t.badge}
