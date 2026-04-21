@@ -107,10 +107,36 @@ function LoginContent() {
         {/* Glass Login Card */}
         <div className="glass-card-login rounded-xl p-8 shadow-2xl">
           <form className="space-y-6" onSubmit={mode === 'login' ? handleLogin : handleSignup}>
-            
+
+            {/* Toggle Entrar / Criar conta — dentro do card */}
+            <div className="flex rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 p-1 gap-1 mb-2">
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                  mode === 'login'
+                    ? 'bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+                }`}
+              >
+                Entrar
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMode('signup'); setError(''); setSuccess(''); }}
+                className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                  mode === 'signup'
+                    ? 'bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+                }`}
+              >
+                Criar conta
+              </button>
+            </div>
+
             {/* Email Input */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">E-mail Corporativo</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">E-mail</label>
               <div className="relative">
                 <AtSign size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl" />
                 <input 
@@ -118,8 +144,8 @@ function LoginContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
-                  placeholder="nome@empresa.com" 
+                  className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
+                  placeholder="seu@email.com" 
                 />
               </div>
             </div>
@@ -203,36 +229,12 @@ function LoginContent() {
           </form>
         </div>
 
-        {/* Footer Links — OUTSIDE the card */}
-        <div className="mt-8 text-center space-y-4">
-          {/* Toggle entre Login e Criar Conta */}
-          <div className="inline-flex rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 p-1 gap-1">
-            <button
-              onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
-              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
-                mode === 'login'
-                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
-                  : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
-              }`}
-            >
-              Entrar
-            </button>
-            <button
-              onClick={() => { setMode('signup'); setError(''); setSuccess(''); }}
-              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
-                mode === 'signup'
-                  ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
-                  : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
-              }`}
-            >
-              Criar conta
-            </button>
-          </div>
-
-          <div className="flex justify-center gap-6 text-xs font-medium text-slate-700 dark:text-white/90">
-            <a className="hover:text-slate-800 dark:text-slate-300" href="/termos">Termos de Uso</a>
-            <a className="hover:text-slate-800 dark:text-slate-300" href="/privacidade">Privacidade</a>
-            <a className="hover:text-slate-800 dark:text-slate-300" href="mailto:suporte@protocoloviral.com.br">Suporte</a>
+        {/* Footer Links */}
+        <div className="mt-6 text-center">
+          <div className="flex justify-center gap-6 text-xs font-medium text-slate-500 dark:text-white/40">
+            <a className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors" href="/termos">Termos de Uso</a>
+            <a className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors" href="/privacidade">Privacidade</a>
+            <a className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors" href="mailto:suporte@protocoloviral.com.br">Suporte</a>
           </div>
         </div>
       </motion.div>
