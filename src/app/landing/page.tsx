@@ -5,7 +5,7 @@ import {
   Search, PenLine, Video, BookOpen, Brain, TrendingUp, Rocket, X,
 } from 'lucide-react'
 
-const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400','500','600','700','800','900'], variable: '--font-jakarta' })
+const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400','500','600','700','800'], variable: '--font-jakarta' })
 const manrope = Manrope({ subsets: ['latin'], weight: ['400','500','600','700'], variable: '--font-manrope' })
 
 /* ── DATA ── */
