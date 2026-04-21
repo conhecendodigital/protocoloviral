@@ -11,9 +11,9 @@ const manrope = Manrope({ subsets: ['latin'], weight: ['400','500','600','700'],
 /* ── DATA ── */
 const STATS = [
   { value: '1400+', label: 'Roteiros Prontos' },
-  { value: '430+',  label: 'Vídeos Analisados' },
+  { value: '47%',   label: 'mais retenção média' },
   { value: '500+',  label: 'Criadores Ativos' },
-  { value: '100+',  label: 'Ganchos Virais' },
+  { value: '10M+',  label: 'views geradas pelos alunos' },
 ]
 
 const BEFORE = [
@@ -23,16 +23,16 @@ const BEFORE = [
 ]
 
 const AFTER = [
-  'Usa engenharia reversa para aplicar apenas o que já está validado no seu nicho.',
-  'Abre a plataforma, escolhe um roteiro, adapta e grava em minutos.',
-  'Cria funis de conteúdo que preparam a audiência e geram vendas automáticas.',
+  'Abre a plataforma, escolhe um roteiro que já viralizou no seu nicho, adapta em 5 minutos e grava sabendo exatamente o que falar.',
+  'Posta com estratégia: cada vídeo tem uma função — atrair, qualificar ou converter. Sem improviso.',
+  'Os comentários MAPA e CRESCER começam a aparecer. Você responde e fecha no direct.',
 ]
 
 const FEATURES = [
-  { icon: BookOpen, title: 'Biblioteca de Roteiros Validada', desc: 'Mais de 1.400 roteiros decupados dos maiores virais do mundo, prontos para adaptar para o seu nicho.', span: 2, popular: true, color: '#0ea5e9' },
+  { icon: BookOpen, title: 'Biblioteca de Roteiros Validada', desc: 'Mais de 1.400 roteiros decupados dos maiores virais do mundo, prontos para adaptar para o seu nicho e gravar em menos de 15 minutos.', span: 2, popular: true, color: '#0ea5e9' },
   { icon: Brain, title: 'Ganchos Hipnóticos', desc: 'Os primeiros 3 segundos decidem o jogo. Acesse nosso cofre de ganchos de alta retenção.', span: 1, popular: false, color: '#d3bbff' },
-  { icon: Video, title: 'Estrutura de Edição', desc: 'Não é só o texto. Aprenda o ritmo visual que prende a atenção do início ao fim.', span: 1, popular: false, color: '#22d3ee' },
-  { icon: TrendingUp, title: 'Funis de Conversão Orgânica', desc: 'Estratégias detalhadas de como transformar a visualização do Reels/TikTok em um lead qualificado na sua base.', span: 2, popular: false, color: '#ffb86e' },
+  { icon: Video, title: 'Ritmo Visual que Prende', desc: 'Não é só o texto. O ritmo de edição é o que mantém o dedo parado. Aprenda a estrutura visual que retém do primeiro ao último segundo.', span: 1, popular: false, color: '#22d3ee' },
+  { icon: TrendingUp, title: 'Como Transformar View em Cliente', desc: 'Como fazer com que cada vídeo funcione como uma etapa do seu funil — sem anúncio, sem link na bio forçado.', span: 2, popular: false, color: '#ffb86e' },
 ]
 
 const STEPS = [
@@ -63,7 +63,7 @@ const PLANS = [
   },
   {
     id: 'anual', label: 'Anual', price: 'R$497', period: '/ano',
-    desc: 'Comprometimento de longo prazo.',
+    desc: 'Para criadores que jogam pra ganhar.',
     features: ['Tudo do plano Semestral', 'Mentoria em grupo trimestral'],
     highlight: false, cta: 'Assinar Anual',
   },
@@ -112,16 +112,19 @@ export default function LandingPage() {
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_,i) => <Star key={i} size={11} className="fill-amber-400 text-amber-400" />)}
               </div>
-              <span className="text-sm font-medium text-[#bec8d2]">Junte-se a 5.000+ criadores</span>
+              <span className="text-sm font-medium text-[#bec8d2]">5.000+ criadores que pararam de postar no escuro</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[1.1]" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>
-              <span className="block text-[#e2e2e2]">Domine a Atenção.</span>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600">Escale suas Vendas.</span>
+              <span className="block text-[#e2e2e2]">Chega de criar conteúdo</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600">que ninguém vê.</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-[#bec8d2] max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
-              O único ecossistema focado em engenharia de retenção que transforma visualizações rasas em audiência compradora e fiel.
+            <p className="text-lg md:text-xl text-[#bec8d2] max-w-2xl mx-auto mb-4 leading-relaxed font-medium">
+              1.400 roteiros de vídeos que já viralizaram, prontos pra você adaptar no seu nicho e gravar em menos de 15 minutos.
+            </p>
+            <p className="text-base text-[#bec8d2]/70 max-w-xl mx-auto mb-10 leading-relaxed">
+              Você não precisa criar do zero. Só adaptar o que já funciona e gravar com confiança.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 w-full sm:w-auto">
@@ -364,7 +367,7 @@ export default function LandingPage() {
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Garantia 7 dias incondicional</h3>
                 <p className="text-[#bec8d2] text-sm leading-relaxed">
-                  Acesse todo o ecossistema, explore os roteiros e frameworks. Se você achar que a plataforma não vai acelerar seus resultados de forma imediata, basta um clique para receber 100% do seu dinheiro de volta. Sem perguntas, sem atrito.
+                  Se em 7 dias você achar que não valeu, manda uma mensagem e devolvemos 100%. Sem pergunta, sem burocracia. Acesse tudo, teste de verdade, e decide depois.
                 </p>
               </div>
             </div>
@@ -381,7 +384,7 @@ export default function LandingPage() {
                 Chega de criar conteúdo que ninguém vê.
               </h2>
               <p className="text-white/80 text-xl font-medium mb-10 max-w-2xl mx-auto leading-relaxed">
-                Junte-se à revolução da retenção e comece a escalar sua audiência e faturamento hoje mesmo.
+                Mais de 5.000 criadores já pararam de postar no escuro. Você é o próximo.
               </p>
               <Link
                 href="/login?mode=signup"
