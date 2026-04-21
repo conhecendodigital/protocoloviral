@@ -4,9 +4,11 @@ import { createServerSupabase } from '@/lib/supabase/server'
 export async function POST(req: Request) {
   try {
     const supabase = await createServerSupabase()
-    const { data: { session } } = await supabase.auth.getSession()
+    // ✅ SECURITY: getUser() validates the JWT server-side. getSession() only reads the cookie
+    // and can be spoofed if the session cookie is tampered with.
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (!session?.user) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -65,8 +67,8 @@ export async function POST(req: Request) {
       const { count } = await supabase
         .from('roteiros')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', session.user.id)
-        .eq('titulo', 'SYSTEM_ANALYSIS_LOG') // Usamos roteiros como log temporário para não quebrar o banco
+        .eq('user_id', user.id)
+        .eq('titulo', 'SYSTEM_ANALYSIS_LOG')
         .gte('created_at', startOfDay.toISOString())
 
       if (count !== null && count >= 3) {
@@ -95,7 +97,7 @@ export async function POST(req: Request) {
     // Grava log de uso para controle de franquia gratuita
     if (!isPro) {
       await supabase.from('roteiros').insert({
-        user_id: session.user.id,
+        user_id: user.id,
         titulo: 'SYSTEM_ANALYSIS_LOG',
         roteiro: `Análise: ${normalizedUrl}`,
         nicho: 'system'
@@ -111,10 +113,9 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     console.error('[ANALYZE_TRIGGER_ERROR]', error)
+    // ✅ SECURITY: Never expose internal error details (stack, message) to the client.
     return NextResponse.json({ 
       error: 'Ocorreu um erro interno inesperado. Por favor, tente novamente.',
-      details: error?.message || String(error),
-      debug_stack: error?.stack || 'no stack'
     }, { status: 500 })
   }
 }

@@ -233,11 +233,11 @@ ${agent.system_prompt}
     return result.toUIMessageStreamResponse()
     
   } catch (error: any) {
+    // ✅ SECURITY: Never expose stack traces or internal error details to the client.
+    // Log the full error server-side only.
     console.error('Chat Error:', error)
     return new Response(JSON.stringify({ 
-      error: 'Erro interno do servidor',
-      details: error?.message || String(error),
-      debug_stack: error?.stack || 'no stack'
+      error: 'Erro interno do servidor. Tente novamente em instantes.',
     }), { status: 500 })
   }
 }
