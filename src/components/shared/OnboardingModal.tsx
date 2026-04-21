@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, ArrowRight, Check, CheckCircle, Hand, RefreshCw, Zap } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, CheckCircle, Hand, RefreshCw } from 'lucide-react'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface OnboardingModalProps {
@@ -18,65 +18,65 @@ const SECTION_LABELS: Record<string, { icon: string; label: string; color: strin
   publico: { icon: 'groups', label: 'Seu Público', color: '#8b5cf6' },
   objetivos: { icon: 'rocket_launch', label: 'Seus Objetivos', color: '#10b981' },
 }
-// ── Chips de sugestão — somente nos campos onde ajuda, não nos pessoais ──
-// nicho, assunto, formacoes, diferencial, concorrentes = só digitar (muito pessoal)
-// publico, dor, tentou, resultado, proposito, receio, tempo, naoquer = chips
-const CHIPS: Record<string, { label: string; value: string }[]> = {
+// ── Opções clicaveis (apenas nesses campos — sem campo de texto)
+// Campos SEM opções: nicho, assunto, formacoes, diferencial, concorrentes → texto livre
+// Campos COM opções: cards clicaveis, sem textarea
+const OPTIONS: Record<string, { emoji: string; label: string; desc: string; value: string }[]> = {
   resultado: [
-    { label: '10k+ seguidores', value: 'Cresci de 0 para mais de 10 mil seguidores' },
-    { label: 'Primeiros clientes', value: 'Fechei meus primeiros clientes pelas redes sociais' },
-    { label: 'Virei referência', value: 'Me tornei referência no meu nicho local' },
-    { label: 'Largue emprego', value: 'Consegui viver 100% do meu negócio online' },
-    { label: 'Ainda construindo', value: 'Ainda estou construindo meus primeiros resultados' },
+    { emoji: '📱', label: '10k+ seguidores', desc: 'Cresci de 0 para mais de 10 mil seguidores', value: 'Cresci de 0 para mais de 10 mil seguidores' },
+    { emoji: '💰', label: 'Primeiros clientes', desc: 'Fechei os primeiros clientes pelas redes', value: 'Fechei meus primeiros clientes pelas redes sociais' },
+    { emoji: '🏆', label: 'Virei referência', desc: 'Me tornei referência reconhecida no nicho', value: 'Me tornei referência no meu nicho local' },
+    { emoji: '🚀', label: 'Largue o emprego', desc: 'Vivo 100% do meu negócio online', value: 'Consegui viver 100% do meu negócio online' },
+    { emoji: '🌱', label: 'Ainda construindo', desc: 'Estou dando os primeiros passos agora', value: 'Ainda estou construindo meus primeiros resultados' },
   ],
   publico: [
-    { label: 'Iniciantes do zero', value: 'Iniciantes que estão começando do zero' },
-    { label: 'Intermediários travados', value: 'Pessoas no nível intermediário que não conseguem escalar' },
-    { label: 'Mães sem tempo', value: 'Mães ou pessoas com rotina corrida e pouco tempo livre' },
-    { label: 'Empreendedores', value: 'Empreendedores e donos de negócio que querem mais clientes' },
-    { label: 'Transição de carreira', value: 'Profissionais buscando transição de carreira' },
-    { label: 'Profissionais liberais', value: 'Profissionais liberais que querem atrair clientes pelo digital' },
+    { emoji: '🎯', label: 'Iniciantes', desc: 'Pessoas começando completamente do zero', value: 'Iniciantes que estão começando do zero' },
+    { emoji: '📈', label: 'Intermediários', desc: 'Estagnados no meio, não conseguem escalar', value: 'Pessoas no nível intermediário que não conseguem escalar' },
+    { emoji: '👩‍👧', label: 'Mães sem tempo', desc: 'Mães ou quem tem rotina corrida', value: 'Mães ou pessoas com rotina corrida e pouco tempo livre' },
+    { emoji: '💼', label: 'Empreendedores', desc: 'Donos de negócio buscando mais clientes', value: 'Empreendedores e donos de negócio que querem mais clientes' },
+    { emoji: '🔄', label: 'Transição de carreira', desc: 'Profissionais mudando de área', value: 'Profissionais buscando transição de carreira' },
+    { emoji: '🏥', label: 'Liberal / especialista', desc: 'Médico, advogado, coach, consultor...', value: 'Profissionais liberais que querem atrair clientes pelo digital' },
   ],
   dor: [
-    { label: 'Overdose de info', value: 'Consome muito conteúdo mas não consegue colocar em prática' },
-    { label: 'Falta de tempo', value: 'Falta de tempo e consistência para criar conteúdo' },
-    { label: 'Sem vendas', value: 'Não sabe como transformar seguidores em clientes pagantes' },
-    { label: 'Medo de aparecer', value: 'Medo de se expor e ser julgado pelas pessoas que conhece' },
-    { label: 'Sem direção', value: 'Perdido, sem saber qual o próximo passo concreto' },
+    { emoji: '🤯', label: 'Overdose de info', desc: 'Consome muito, mas não executa nada', value: 'Consome muito conteúdo mas não consegue colocar em prática' },
+    { emoji: '⏳', label: 'Falta de tempo', desc: 'Rotina intensa impede a consistência', value: 'Falta de tempo e consistência para criar conteúdo' },
+    { emoji: '📉', label: 'Sem vendas', desc: 'Seguidores que nunca compram nada', value: 'Não sabe como transformar seguidores em clientes pagantes' },
+    { emoji: '😨', label: 'Medo de aparecer', desc: 'Vergonha e medo do julgamento alheio', value: 'Medo de se expor e ser julgado pelas pessoas que conhece' },
+    { emoji: '😵', label: 'Sem direção', desc: 'Perdido, sem saber o próximo passo', value: 'Perdido, sem saber qual o próximo passo concreto' },
   ],
   tentou: [
-    { label: 'Cursos teóricos', value: 'Comprou cursos, começou empolgado e parou no meio' },
-    { label: 'Métodos antigos', value: 'Tentou métodos que já não funcionam mais no algoritmo atual' },
-    { label: 'Conteúdo gratuito', value: 'Consumiu muito conteúdo gratuito no YouTube sem resultado concreto' },
-    { label: 'Agência/terceiros', value: 'Pagou agência ou freelancer e não teve retorno' },
+    { emoji: '📚', label: 'Cursos teóricos', desc: 'Comprou, empolgou, parou no meio', value: 'Comprou cursos, começou empolgado e parou no meio' },
+    { emoji: '🗓️', label: 'Métodos antigos', desc: 'Estratégias que não funcionam mais', value: 'Tentou métodos que já não funcionam mais no algoritmo atual' },
+    { emoji: '📺', label: 'Conteúdo gratuito', desc: 'YouTube e redes sem resultado concreto', value: 'Consumiu muito conteúdo gratuito no YouTube sem resultado concreto' },
+    { emoji: '🏢', label: 'Agência / terceiros', desc: 'Pagou profissional e não teve retorno', value: 'Pagou agência ou freelancer e não teve retorno' },
   ],
   proposito: [
-    { label: 'Vender produto', value: 'Vender meu produto ou serviço pelas redes sociais' },
-    { label: 'Lançar curso', value: 'Lançar um curso ou mentoria online' },
-    { label: 'Atrair clientes', value: 'Atrair novos clientes para meu negócio físico ou online' },
-    { label: 'Construir autoridade', value: 'Construir autoridade e reconhecimento no meu nicho' },
-    { label: 'Audiencia + renda futura', value: 'Crescer uma audiência e monetizar no futuro' },
+    { emoji: '🛒', label: 'Vender produto', desc: 'Produto ou serviço pelas redes sociais', value: 'Vender meu produto ou serviço pelas redes sociais' },
+    { emoji: '🎓', label: 'Lançar curso', desc: 'Curso ou mentoria online', value: 'Lançar um curso ou mentoria online' },
+    { emoji: '📞', label: 'Atrair clientes', desc: 'Clientes para negócio físico ou online', value: 'Atrair novos clientes para meu negócio físico ou online' },
+    { emoji: '👑', label: 'Construir autoridade', desc: 'Ser referência e ganhar reconhecimento', value: 'Construir autoridade e reconhecimento no meu nicho' },
+    { emoji: '🌱', label: 'Audiência + renda futura', desc: 'Crescer audiência e monetizar depois', value: 'Crescer uma audiência e monetizar no futuro' },
   ],
   receio: [
-    { label: 'Vergonha da câmera', value: 'Sinto vergonha de aparecer na câmera' },
-    { label: 'Medo de julgamento', value: 'Medo de ser julgado(a) pelas pessoas que me conhecem' },
-    { label: 'Não sei o que falar', value: 'Não sei o que falar nem como me comunicar nos vídeos' },
-    { label: 'Consistência', value: 'Medo de começar e não conseguir manter a consistência' },
-    { label: 'Nenhum receio', value: 'Não tenho receios, quero apenas melhorar meu conteúdo' },
+    { emoji: '🎥', label: 'Vergonha da câmera', desc: 'Fico travado(a) na frente da câmera', value: 'Sinto vergonha de aparecer na câmera' },
+    { emoji: '👀', label: 'Medo de julgamento', desc: 'O que pessoas próximas vão achar', value: 'Medo de ser julgado(a) pelas pessoas que me conhecem' },
+    { emoji: '🤔', label: 'Não sei o que falar', desc: 'Não tenho clareza do que comunicar', value: 'Não sei o que falar nem como me comunicar nos vídeos' },
+    { emoji: '📅', label: 'Consistência', desc: 'Começo e não consigo manter o ritmo', value: 'Medo de começar e não conseguir manter a consistência' },
+    { emoji: '✅', label: 'Nenhum receio', desc: 'Estou pronto(a), só quero melhorar', value: 'Não tenho receios, quero apenas melhorar meu conteúdo' },
   ],
   tempo: [
-    { label: '15 a 30 min/dia', value: '15 a 30 minutos por dia' },
-    { label: '1 hora/dia', value: 'Cerca de 1 hora por dia' },
-    { label: '2 horas/dia', value: 'Cerca de 2 horas por dia' },
-    { label: 'Fins de semana', value: 'Apenas nos finais de semana' },
-    { label: '3h+ por dia', value: 'Mais de 3 horas por dia, estou 100% focado nisso' },
+    { emoji: '⚡', label: '15 a 30 min', desc: 'Poucos minutos por dia', value: '15 a 30 minutos por dia' },
+    { emoji: '🕐', label: '1 hora/dia', desc: 'Uma hora bem focada por dia', value: 'Cerca de 1 hora por dia' },
+    { emoji: '🕑', label: '2 horas/dia', desc: 'Bom tempo para criar com calma', value: 'Cerca de 2 horas por dia' },
+    { emoji: '📅', label: 'Fins de semana', desc: 'Só tenho tempo livre no final de semana', value: 'Apenas nos finais de semana' },
+    { emoji: '🔥', label: 'Full time (3h+)', desc: 'Dedicado(a) de verdade nisso', value: 'Mais de 3 horas por dia, estou 100% focado nisso' },
   ],
   naoquer: [
-    { label: 'Política e religião', value: 'Política e religião' },
-    { label: 'Promessas milagrosas', value: 'Promessas de dinheiro fácil ou resultado sem esforço' },
-    { label: 'Vida pessoal/família', value: 'Expor minha vida pessoal ou minha família' },
-    { label: 'Atacar concorrentes', value: 'Atacar concorrentes ou me envolver em polêmicas' },
-    { label: 'Sem restrições', value: 'Não tenho restrições, falo o que precisar' },
+    { emoji: '🚫', label: 'Política e religião', desc: 'Esses temas ficam fora do meu conteúdo', value: 'Política e religião' },
+    { emoji: '💊', label: 'Promessas milagrosas', desc: 'Não vendo ilusão de dinheiro fácil', value: 'Promessas de dinheiro fácil ou resultado sem esforço' },
+    { emoji: '🔒', label: 'Vida pessoal / família', desc: 'Minha vida privada fica fora da internet', value: 'Expor minha vida pessoal ou minha família' },
+    { emoji: '🥊', label: 'Atacar concorrentes', desc: 'Não entro em brigas ou polêmicas', value: 'Atacar concorrentes ou me envolver em polêmicas' },
+    { emoji: '✅', label: 'Sem restrições', desc: 'Faço o que precisar para crescer', value: 'Não tenho restrições, falo o que precisar' },
   ],
 }
 
@@ -362,57 +362,62 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                   {currentField.placeholder}
                 </p>
 
-                {/* Input */}
-                {currentField.type === 'textarea' ? (
-                  <textarea
-                    value={answers[currentField.id] || ''}
-                    onChange={(e) => handleAnswer(e.target.value)}
-                    placeholder="Digite sua resposta aqui..."
-                    className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all resize-none text-base leading-relaxed min-h-[160px] shadow-sm"
-                    rows={5}
-                    autoFocus
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    value={answers[currentField.id] || ''}
-                    onChange={(e) => handleAnswer(e.target.value)}
-                    placeholder="Digite sua resposta aqui..."
-                    className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-5 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all text-base shadow-sm"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleNext()
-                    }}
-                  />
-                )}
-                {/* Chips de sugestão — apenas para campos com opções comuns */}
-                {CHIPS[currentField.id] && (
-                  <div className="mt-5">
-                    <div className="flex items-center gap-1.5 mb-2.5">
-                      <Zap size={11} className="text-[#0ea5e9]" />
-                      <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Sugestões</p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {CHIPS[currentField.id].map((chip) => {
-                        const isSelected = answers[currentField.id] === chip.value
-                        return (
-                          <button
-                            key={chip.label}
-                            type="button"
-                            onClick={() => handleAnswer(chip.value)}
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                              isSelected
-                                ? 'bg-[#0ea5e9]/10 border-[#0ea5e9]/50 text-[#0ea5e9]'
-                                : 'bg-black/5 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/50 hover:border-[#0ea5e9]/40 hover:text-[#0ea5e9]'
-                            }`}
-                          >
-                            {chip.label}
-                            {isSelected && <Check size={11} />}
-                          </button>
-                        )
-                      })}
-                    </div>
+                {/* Renderização: cards clicaveis OU texto livre — nunca os dois */}
+                {OPTIONS[currentField.id] ? (
+                  // ── Cards clicaveis (igual Tom de Voz) ──
+                  <div className="grid grid-cols-2 gap-3">
+                    {OPTIONS[currentField.id].map((opt) => {
+                      const isSelected = answers[currentField.id] === opt.value
+                      return (
+                        <motion.button
+                          key={opt.value}
+                          type="button"
+                          initial={{ opacity: 0, scale: 0.97 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={() => handleAnswer(opt.value)}
+                          className={`relative flex flex-col items-start gap-1.5 p-4 rounded-2xl border text-left transition-all ${
+                            isSelected
+                              ? 'bg-[#0ea5e9]/10 border-[#0ea5e9] shadow-[0_0_16px_rgba(14,165,233,0.2)]'
+                              : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-[#0ea5e9]/50 hover:bg-[#0ea5e9]/5'
+                          }`}
+                        >
+                          {isSelected && (
+                            <span className="absolute top-3 right-3 size-5 rounded-full bg-[#0ea5e9] flex items-center justify-center">
+                              <Check size={11} className="text-white" />
+                            </span>
+                          )}
+                          <span className="text-2xl leading-none">{opt.emoji}</span>
+                          <span className={`text-sm font-bold leading-tight ${
+                            isSelected ? 'text-[#0ea5e9]' : 'text-slate-900 dark:text-white'
+                          }`}>{opt.label}</span>
+                          <span className="text-xs text-slate-500 dark:text-white/50 leading-snug">{opt.desc}</span>
+                        </motion.button>
+                      )
+                    })}
                   </div>
+                ) : (
+                  // ── Texto livre ──
+                  currentField.type === 'textarea' ? (
+                    <textarea
+                      value={answers[currentField.id] || ''}
+                      onChange={(e) => handleAnswer(e.target.value)}
+                      placeholder="Digite sua resposta aqui..."
+                      className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all resize-none text-base leading-relaxed min-h-[160px] shadow-sm"
+                      rows={5}
+                      autoFocus
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={answers[currentField.id] || ''}
+                      onChange={(e) => handleAnswer(e.target.value)}
+                      placeholder="Digite sua resposta aqui..."
+                      className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-5 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all text-base shadow-sm"
+                      autoFocus
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleNext() }}
+                    />
+                  )
                 )}
 
               </div>
