@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, ArrowRight, Check, CheckCircle, Hand, RefreshCw } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, CheckCircle, Hand, RefreshCw, Zap } from 'lucide-react'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface OnboardingModalProps {
@@ -18,7 +18,67 @@ const SECTION_LABELS: Record<string, { icon: string; label: string; color: strin
   publico: { icon: 'groups', label: 'Seu Público', color: '#8b5cf6' },
   objetivos: { icon: 'rocket_launch', label: 'Seus Objetivos', color: '#10b981' },
 }
-
+// ── Chips de sugestão — somente nos campos onde ajuda, não nos pessoais ──
+// nicho, assunto, formacoes, diferencial, concorrentes = só digitar (muito pessoal)
+// publico, dor, tentou, resultado, proposito, receio, tempo, naoquer = chips
+const CHIPS: Record<string, { label: string; value: string }[]> = {
+  resultado: [
+    { label: '10k+ seguidores', value: 'Cresci de 0 para mais de 10 mil seguidores' },
+    { label: 'Primeiros clientes', value: 'Fechei meus primeiros clientes pelas redes sociais' },
+    { label: 'Virei referência', value: 'Me tornei referência no meu nicho local' },
+    { label: 'Largue emprego', value: 'Consegui viver 100% do meu negócio online' },
+    { label: 'Ainda construindo', value: 'Ainda estou construindo meus primeiros resultados' },
+  ],
+  publico: [
+    { label: 'Iniciantes do zero', value: 'Iniciantes que estão começando do zero' },
+    { label: 'Intermediários travados', value: 'Pessoas no nível intermediário que não conseguem escalar' },
+    { label: 'Mães sem tempo', value: 'Mães ou pessoas com rotina corrida e pouco tempo livre' },
+    { label: 'Empreendedores', value: 'Empreendedores e donos de negócio que querem mais clientes' },
+    { label: 'Transição de carreira', value: 'Profissionais buscando transição de carreira' },
+    { label: 'Profissionais liberais', value: 'Profissionais liberais que querem atrair clientes pelo digital' },
+  ],
+  dor: [
+    { label: 'Overdose de info', value: 'Consome muito conteúdo mas não consegue colocar em prática' },
+    { label: 'Falta de tempo', value: 'Falta de tempo e consistência para criar conteúdo' },
+    { label: 'Sem vendas', value: 'Não sabe como transformar seguidores em clientes pagantes' },
+    { label: 'Medo de aparecer', value: 'Medo de se expor e ser julgado pelas pessoas que conhece' },
+    { label: 'Sem direção', value: 'Perdido, sem saber qual o próximo passo concreto' },
+  ],
+  tentou: [
+    { label: 'Cursos teóricos', value: 'Comprou cursos, começou empolgado e parou no meio' },
+    { label: 'Métodos antigos', value: 'Tentou métodos que já não funcionam mais no algoritmo atual' },
+    { label: 'Conteúdo gratuito', value: 'Consumiu muito conteúdo gratuito no YouTube sem resultado concreto' },
+    { label: 'Agência/terceiros', value: 'Pagou agência ou freelancer e não teve retorno' },
+  ],
+  proposito: [
+    { label: 'Vender produto', value: 'Vender meu produto ou serviço pelas redes sociais' },
+    { label: 'Lançar curso', value: 'Lançar um curso ou mentoria online' },
+    { label: 'Atrair clientes', value: 'Atrair novos clientes para meu negócio físico ou online' },
+    { label: 'Construir autoridade', value: 'Construir autoridade e reconhecimento no meu nicho' },
+    { label: 'Audiencia + renda futura', value: 'Crescer uma audiência e monetizar no futuro' },
+  ],
+  receio: [
+    { label: 'Vergonha da câmera', value: 'Sinto vergonha de aparecer na câmera' },
+    { label: 'Medo de julgamento', value: 'Medo de ser julgado(a) pelas pessoas que me conhecem' },
+    { label: 'Não sei o que falar', value: 'Não sei o que falar nem como me comunicar nos vídeos' },
+    { label: 'Consistência', value: 'Medo de começar e não conseguir manter a consistência' },
+    { label: 'Nenhum receio', value: 'Não tenho receios, quero apenas melhorar meu conteúdo' },
+  ],
+  tempo: [
+    { label: '15 a 30 min/dia', value: '15 a 30 minutos por dia' },
+    { label: '1 hora/dia', value: 'Cerca de 1 hora por dia' },
+    { label: '2 horas/dia', value: 'Cerca de 2 horas por dia' },
+    { label: 'Fins de semana', value: 'Apenas nos finais de semana' },
+    { label: '3h+ por dia', value: 'Mais de 3 horas por dia, estou 100% focado nisso' },
+  ],
+  naoquer: [
+    { label: 'Política e religião', value: 'Política e religião' },
+    { label: 'Promessas milagrosas', value: 'Promessas de dinheiro fácil ou resultado sem esforço' },
+    { label: 'Vida pessoal/família', value: 'Expor minha vida pessoal ou minha família' },
+    { label: 'Atacar concorrentes', value: 'Atacar concorrentes ou me envolver em polêmicas' },
+    { label: 'Sem restrições', value: 'Não tenho restrições, falo o que precisar' },
+  ],
+}
 
 
 export function OnboardingModal({ userId, onComplete, updateField }: OnboardingModalProps) {
@@ -325,7 +385,35 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                     }}
                   />
                 )}
-
+                {/* Chips de sugestão — apenas para campos com opções comuns */}
+                {CHIPS[currentField.id] && (
+                  <div className="mt-5">
+                    <div className="flex items-center gap-1.5 mb-2.5">
+                      <Zap size={11} className="text-[#0ea5e9]" />
+                      <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">Sugestões</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {CHIPS[currentField.id].map((chip) => {
+                        const isSelected = answers[currentField.id] === chip.value
+                        return (
+                          <button
+                            key={chip.label}
+                            type="button"
+                            onClick={() => handleAnswer(chip.value)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                              isSelected
+                                ? 'bg-[#0ea5e9]/10 border-[#0ea5e9]/50 text-[#0ea5e9]'
+                                : 'bg-black/5 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/50 hover:border-[#0ea5e9]/40 hover:text-[#0ea5e9]'
+                            }`}
+                          >
+                            {chip.label}
+                            {isSelected && <Check size={11} />}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
 
               </div>
             </motion.div>
@@ -378,7 +466,6 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             </button>
           </div>
         </motion.div>
-
         {/* Step Dots */}
         <div className="flex items-center gap-1.5 mt-8">
           {PROFILE_FIELDS.map((_, i) => (
