@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, ArrowRight, Check, CheckCircle, Hand, RefreshCw } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, CheckCircle, Hand, RefreshCw, Zap } from 'lucide-react'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface OnboardingModalProps {
@@ -17,6 +17,67 @@ const SECTION_LABELS: Record<string, { icon: string; label: string; color: strin
   sobre: { icon: 'person', label: 'Sobre Você', color: '#0ea5e9' },
   publico: { icon: 'groups', label: 'Seu Público', color: '#8b5cf6' },
   objetivos: { icon: 'rocket_launch', label: 'Seus Objetivos', color: '#10b981' },
+}
+
+// ── Sugestões clicaveis por pergunta ────────────────────────────────────
+const CHIPS: Record<string, { emoji: string; label: string; value: string }[]> = {
+  nicho: [
+    { emoji: '📱', label: 'Marketing Digital', value: 'Marketing Digital' },
+    { emoji: '💰', label: 'Finanças Pessoais', value: 'Finanças Pessoais' },
+    { emoji: '🏋️', label: 'Saúde e Bem-estar', value: 'Saúde e Bem-estar' },
+    { emoji: '📚', label: 'Educação', value: 'Educação e Aprendizado' },
+    { emoji: '🍽️', label: 'Gastronomia', value: 'Gastronomia' },
+    { emoji: '🏠', label: 'Imobiliário', value: 'Mercado Imobiliário' },
+    { emoji: '⚖️', label: 'Jurídico', value: 'Área Jurídica' },
+    { emoji: '🎨', label: 'Criativo/Design', value: 'Design e Criatividade' },
+  ],
+  assunto: [
+    { emoji: '🎯', label: 'Instagram para negócios', value: 'Instagram para negócios locais' },
+    { emoji: '📈', label: 'Crescimento orgânico', value: 'Crescimento orgânico no Instagram' },
+    { emoji: '🤑', label: 'Renda extra online', value: 'Como gerar renda extra pela internet' },
+    { emoji: '🍏', label: 'Alimentação saudável', value: 'Alimentação saudável no dia a dia' },
+    { emoji: '🧘', label: 'Saúde mental', value: 'Saúde mental e equilíbrio emocional' },
+    { emoji: '💸', label: 'Investimentos simples', value: 'Investimentos para iniciantes' },
+  ],
+  resultado: [
+    { emoji: '👥', label: '10k+ seguidores', value: 'Cresci de 0 para 10 mil seguidores em 3 meses' },
+    { emoji: '💰', label: 'Primeiras vendas', value: 'Fechei meus primeiros clientes pelo Instagram' },
+    { emoji: '🎓', label: 'Virei referência', value: 'Tornei-me referência no meu nicho local' },
+    { emoji: '📊', label: 'Atingi 1M de alcance', value: 'Alcancei mais de 1 milhão de pessoas' },
+    { emoji: '🚀', label: 'Largue o emprego', value: 'Consegui viver 100% do meu negócio online' },
+    { emoji: '⭐', label: 'Ainda construindo', value: 'Ainda estou construindo meus resultados' },
+  ],
+  proposito: [
+    { emoji: '🛒', label: 'Vender meu produto', value: 'Vender meu produto/serviço pelas redes' },
+    { emoji: '🎓', label: 'Lançar um curso', value: 'Lançar um curso ou mentoria online' },
+    { emoji: '💼', label: 'Atrair clientes', value: 'Atrair novos clientes para meu negócio' },
+    { emoji: '🏆', label: 'Construir autoridade', value: 'Construir autoridade e reconhecimento no meu nicho' },
+    { emoji: '🤳', label: 'Audiencia + renda', value: 'Crescer uma audiência e monetizar no futuro' },
+    { emoji: '🌐', label: 'Me tornar digital', value: 'Profissional liberal que quer atrair clientes pelo digital' },
+  ],
+  receio: [
+    { emoji: '🎥', label: 'Vergonha da câmera', value: 'Sinto vergonha de aparecer na câmera' },
+    { emoji: '🤷', label: 'Não sei o que falar', value: 'Não sei o que falar nem por onde começar' },
+    { emoji: '👎', label: 'Medo de julgamento', value: 'Medo de ser julgado(a) pelas pessoas que me conhecem' },
+    { emoji: '😩', label: 'Não tenho tempo', value: 'Acho que não vou conseguir manter consistência' },
+    { emoji: '📉', label: 'Ninguém vai ver', value: 'Medo de criar e ninguém assistir ou curtir' },
+    { emoji: '✅', label: 'Nenhum receio', value: 'Não tenho receios, quero apenas melhorar meu conteúdo' },
+  ],
+  tempo: [
+    { emoji: '⚡', label: '15-30 min/dia', value: '15 a 30 minutos por dia' },
+    { emoji: '🕐', label: '1 hora/dia', value: 'Cerca de 1 hora por dia' },
+    { emoji: '🕑', label: '2 horas/dia', value: '2 horas por dia' },
+    { emoji: '📅', label: 'Só fins de semana', value: 'Apenas nos finais de semana' },
+    { emoji: '🔥', label: '3h+/dia', value: 'Mais de 3 horas por dia, estou 100% dedicado' },
+  ],
+  naoquer: [
+    { emoji: '🚫', label: 'Política', value: 'Política e religioão' },
+    { emoji: '💊', label: 'Promessas milagrosas', value: 'Promessas de resultado rápido sem esforço' },
+    { emoji: '😢', label: 'Conteúdo negativo', value: 'Conteúdo negativo, doom ou catastrofôfico' },
+    { emoji: '🎰', label: 'Apostas e jogos', value: 'Apostas esportivas e jogos de azar' },
+    { emoji: '😡', label: 'Polêmica e briga', value: 'Polêmicas, brigas e cancel culture' },
+    { emoji: '✅', label: 'Sem restrições', value: 'Sem temas proibidos, sou flexível' },
+  ],
 }
 
 export function OnboardingModal({ userId, onComplete, updateField }: OnboardingModalProps) {
@@ -306,8 +367,8 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                     value={answers[currentField.id] || ''}
                     onChange={(e) => handleAnswer(e.target.value)}
                     placeholder="Digite sua resposta aqui..."
-                    className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all resize-none text-base leading-relaxed min-h-[160px] shadow-sm"
-                    rows={5}
+                    className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all resize-none text-base leading-relaxed min-h-[120px] shadow-sm"
+                    rows={4}
                     autoFocus
                   />
                 ) : (
@@ -322,6 +383,41 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                       if (e.key === 'Enter') handleNext()
                     }}
                   />
+                )}
+
+                {/* ── Chips / Sugestões clicaveis ── */}
+                {CHIPS[currentField.id] && (
+                  <div className="mt-5">
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <Zap size={12} className="text-[#0ea5e9]" />
+                      <p className="text-xs font-bold text-slate-500 dark:text-white/40 uppercase tracking-widest">Sugestões rápidas</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {CHIPS[currentField.id].map((chip) => {
+                        const isSelected = answers[currentField.id] === chip.value
+                        return (
+                          <motion.button
+                            key={chip.label}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            type="button"
+                            onClick={() => {
+                              handleAnswer(chip.value)
+                            }}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium border transition-all ${
+                              isSelected
+                                ? 'bg-[#0ea5e9]/10 border-[#0ea5e9]/50 text-[#0ea5e9] ring-1 ring-[#0ea5e9]/20'
+                                : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:border-[#0ea5e9]/40 hover:text-[#0ea5e9] hover:bg-[#0ea5e9]/5'
+                            }`}
+                          >
+                            <span>{chip.emoji}</span>
+                            <span>{chip.label}</span>
+                            {isSelected && <Check size={12} className="text-[#0ea5e9]" />}
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
             </motion.div>
