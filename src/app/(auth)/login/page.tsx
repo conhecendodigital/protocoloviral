@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
-import { ArrowRight, AtSign, CheckCircle, Eye, EyeOff, Lock, RefreshCw } from 'lucide-react'
+import { ArrowRight, AtSign, CheckCircle, Eye, EyeOff, Lock, Phone, RefreshCw } from 'lucide-react'
 
 function LoginContent() {
   const searchParams = useSearchParams()
@@ -15,6 +15,7 @@ function LoginContent() {
     modeParam === 'signup' ? 'signup' : 'login'
   )
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -54,7 +55,11 @@ function LoginContent() {
     if (password !== confirmPassword) { setError('As senhas não coincidem'); return }
     setLoading(true)
     try {
-      const { data, error } = await supabase.auth.signUp({ email, password })
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { phone } },
+      })
       if (error) setError(translateError(error.message))
       else if (data.session) window.location.href = planParam ? `/assinatura?plan=${planParam}` : '/'
       else setSuccess('Conta criada! Verifique seu email (caixa de entrada ou spam).')
@@ -181,19 +186,39 @@ function LoginContent() {
 
             {/* Confirm Password (signup only) */}
             {mode === 'signup' && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-2 overflow-hidden">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">Confirmar Senha</label>
-                <div className="relative">
-                  <Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl" />
-                  <input 
-                    type={showPassword ? "text" : "password"} 
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    minLength={6}
-                    required
-                    className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-800 dark:text-white/90 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all" 
-                    placeholder="Repita sua senha" 
-                  />
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 overflow-hidden">
+
+                {/* Phone */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">Telefone / WhatsApp</label>
+                  <div className="relative">
+                    <Phone size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90" />
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                      className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all"
+                      placeholder="(11) 99999-9999"
+                    />
+                  </div>
+                </div>
+
+                {/* Confirm Password */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">Confirmar Senha</label>
+                  <div className="relative">
+                    <Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 dark:text-white/90 text-xl" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      minLength={6}
+                      required
+                      className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 pl-12 pr-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all"
+                      placeholder="Repita sua senha"
+                    />
+                  </div>
                 </div>
               </motion.div>
             )}
