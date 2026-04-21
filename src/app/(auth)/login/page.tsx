@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { motion } from 'framer-motion'
 import { ArrowRight, AtSign, CheckCircle, Eye, EyeOff, Lock, RefreshCw } from 'lucide-react'
 
-export default function LoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams()
   const planParam = searchParams.get('plan')  // ex: 'mensal' | 'trimestral' | 'semestral'
   const modeParam = searchParams.get('mode')  // ex: 'signup'
@@ -247,5 +247,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="fixed inset-0 bg-slate-50 dark:bg-black flex items-center justify-center"><div className="w-6 h-6 border-2 border-[#0ea5e9] border-t-transparent rounded-full animate-spin" /></div>}>
+      <LoginContent />
+    </Suspense>
   )
 }

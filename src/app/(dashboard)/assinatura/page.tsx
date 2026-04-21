@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { Suspense, useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useProfile } from '@/hooks/use-profile'
@@ -43,7 +43,7 @@ const PLANS = [
   }
 ]
 
-export default function AssinaturaPage() {
+function AssinaturaContent() {
   const searchParams = useSearchParams()
   const planFromUrl = searchParams.get('plan') // ex: 'mensal' | 'trimestral' | 'semestral'
 
@@ -287,5 +287,13 @@ export default function AssinaturaPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function AssinaturaPage() {
+  return (
+    <Suspense fallback={<div className="flex-1 flex items-center justify-center"><div className="w-6 h-6 border-2 border-[#0ea5e9] border-t-transparent rounded-full animate-spin" /></div>}>
+      <AssinaturaContent />
+    </Suspense>
   )
 }
