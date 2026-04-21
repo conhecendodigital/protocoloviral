@@ -15,6 +15,8 @@ function LoginContent() {
     modeParam === 'signup' ? 'signup' : 'login'
   )
   const [email, setEmail] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -58,7 +60,7 @@ function LoginContent() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { phone } },
+        options: { data: { phone, full_name: `${firstName} ${lastName}`.trim() } },
       })
       if (error) setError(translateError(error.message))
       else if (data.session) window.location.href = planParam ? `/assinatura?plan=${planParam}` : '/'
@@ -184,9 +186,35 @@ function LoginContent() {
               </div>
             </div>
 
-            {/* Confirm Password (signup only) */}
+            {/* Campos extras (signup only) */}
             {mode === 'signup' && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 overflow-hidden">
+
+                {/* Nome e Sobrenome — grid 2 colunas */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">Nome</label>
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                      className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 px-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all"
+                      placeholder="João"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-white/90 ml-1">Sobrenome</label>
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                      className="w-full bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 rounded-xl py-4 px-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#0ea5e9]/50 transition-all"
+                      placeholder="Silva"
+                    />
+                  </div>
+                </div>
 
                 {/* Phone */}
                 <div className="space-y-2">
