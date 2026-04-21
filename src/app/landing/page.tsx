@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { Plus_Jakarta_Sans, Manrope } from 'next/font/google'
 import {
-  ArrowRight, CheckCircle, Shield, Star, Zap,
-  Search, PenLine, Video, BookOpen, Brain, TrendingUp, Rocket, X,
+  ArrowRight, CheckCircle, Shield, Zap,
+  Mic2, BookOpen, Brain, Sparkles, Rocket, X,
+  MessageSquare, Play, Layers,
 } from 'lucide-react'
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400','500','600','700','800'], variable: '--font-jakarta' })
@@ -10,86 +11,119 @@ const manrope = Manrope({ subsets: ['latin'], weight: ['400','500','600','700'],
 
 /* ── DATA ── */
 const STATS = [
-  { value: '1400+', label: 'Roteiros Prontos' },
-  { value: '47%',   label: 'mais retenção média' },
-  { value: '500+',  label: 'Criadores Ativos' },
-  { value: '10M+',  label: 'views geradas pelos alunos' },
+  { value: '100+',  label: 'Ganchos prontos pra copiar' },
+  { value: '15',    label: 'formatos virais estruturados' },
+  { value: '5',     label: 'roteiros grátis por dia' },
+  { value: '< 15m', label: 'do zero ao roteiro gravável' },
 ]
 
 const BEFORE = [
-  'Posta todo dia sem saber o que funciona, torcendo para o algoritmo ajudar.',
-  'Gasta horas pensando no que gravar e acaba travando na hora H.',
-  'Muitas visualizações, mas ninguém clica no link da bio ou compra de você.',
+  'Abre o celular, fica 20 minutos olhando a câmera sem saber o que falar.',
+  'Posta na esperança — sem saber se aquele vídeo vai atrair cliente ou só view vazia.',
+  'Sente que cria muito e não chega a lugar nenhum. Burnout de conteúdo real.',
 ]
 
 const AFTER = [
-  'Abre a plataforma, escolhe um roteiro que já viralizou no seu nicho, adapta em 5 minutos e grava sabendo exatamente o que falar.',
-  'Posta com estratégia: cada vídeo tem uma função — atrair, qualificar ou converter. Sem improviso.',
-  'Os comentários MAPA e CRESCER começam a aparecer. Você responde e fecha no direct.',
+  'Abre o Mapa, descreve o tema do vídeo, escolhe o formato — e recebe o roteiro pronto em segundos.',
+  'Cada vídeo tem intenção: atrair, qualificar ou converter. A IA entende isso e escreve de acordo.',
+  'Você para de improvisar e começa a executar. Com confiança. E no seu tom de voz.',
 ]
 
 const FEATURES = [
-  { icon: BookOpen, title: 'Biblioteca de Roteiros Validada', desc: 'Mais de 1.400 roteiros decupados dos maiores virais do mundo, prontos para adaptar para o seu nicho e gravar em menos de 15 minutos.', span: 2, popular: true, color: '#0ea5e9' },
-  { icon: Brain, title: 'Ganchos Hipnóticos', desc: 'Os primeiros 3 segundos decidem o jogo. Acesse nosso cofre de ganchos de alta retenção.', span: 1, popular: false, color: '#d3bbff' },
-  { icon: Video, title: 'Ritmo Visual que Prende', desc: 'Não é só o texto. O ritmo de edição é o que mantém o dedo parado. Aprenda a estrutura visual que retém do primeiro ao último segundo.', span: 1, popular: false, color: '#22d3ee' },
-  { icon: TrendingUp, title: 'Como Transformar View em Cliente', desc: 'Como fazer com que cada vídeo funcione como uma etapa do seu funil — sem anúncio, sem link na bio forçado.', span: 2, popular: false, color: '#ffb86e' },
+  {
+    icon: Sparkles,
+    title: 'Roteirista IA',
+    desc: 'Chat igual ao ChatGPT, mas especializado em roteiros de Reels e TikTok. Você descreve o tema, escolhe o formato e recebe o roteiro completo — gancho, desenvolvimento e CTA — em menos de 30 segundos.',
+    span: 2,
+    tag: 'O coração da plataforma',
+    color: '#0ea5e9',
+  },
+  {
+    icon: Brain,
+    title: 'Banco de Ganchos',
+    desc: '100+ aberturas de vídeo organizadas por tipo (Verdade Chocante, Pergunta Provocativa, Promessa Direta...). Clicou, copiou, gravou.',
+    span: 1,
+    tag: null,
+    color: '#a78bfa',
+  },
+  {
+    icon: Layers,
+    title: 'Formatos Virais',
+    desc: '15 estruturas de vídeo que funcionam — Storytelling, Lista Chocante, Problema/Solução, Bastidores e mais. A IA usa o formato escolhido para montar seu roteiro.',
+    span: 1,
+    tag: null,
+    color: '#22d3ee',
+  },
+  {
+    icon: Mic2,
+    title: 'Tom de Voz',
+    desc: 'Configure uma vez o seu nicho, sua personalidade e seu estilo. A IA passa a escrever como você — não como um robô genérico.',
+    span: 1,
+    tag: null,
+    color: '#34d399',
+  },
+  {
+    icon: Play,
+    title: 'Analisar Vídeo Viral',
+    desc: 'Cole a URL de qualquer Reels ou TikTok viral. A IA desmonta o vídeo, extrai a estrutura e salva como formato reutilizável no seu acervo.',
+    span: 1,
+    tag: null,
+    color: '#fb923c',
+  },
 ]
 
 const STEPS = [
-  { n: '01', icon: Search, title: 'Mapeamento', desc: 'Acesse a plataforma e filtre os roteiros mais adequados para o seu objetivo atual (venda, autoridade ou alcance).', from: '#0ea5e9', to: '#2563eb', mt: '' },
-  { n: '02', icon: PenLine, title: 'Adaptação', desc: 'Use nossos frameworks para injetar o contexto do seu nicho e a sua personalidade na estrutura validada.', from: '#3b82f6', to: '#7c3aed', mt: 'md:mt-12' },
-  { n: '03', icon: Video, title: 'Ação', desc: 'Grave com confiança sabendo exatamente o que falar para reter a atenção nos momentos cruciais do vídeo.', from: '#7c3aed', to: '#d3bbff', mt: 'md:mt-24' },
-]
-
-const TESTIMONIALS = [
   {
-    name: 'Mariana Costa',
-    handle: '@marianacosta • Estilo de vida',
-    quote: '"Eu passava horas tentando criar algo do zero. Com o Mapa, escolho a estrutura, adapto em 5 minutos e gravo. Meu perfil bateu 1M de contas alcançadas esse mês."',
-    badge: '+48k seguidores', badgeColor: '#0ea5e9',
-    avatar: 'https://api.dicebear.com/9.x/notionists/svg?seed=Mariana&backgroundColor=0ea5e9,6d28d9&scale=110',
+    n: '01', icon: Mic2, title: 'Configure seu Tom de Voz',
+    desc: 'Conta pra IA qual é o seu nicho, quem é sua audiência e como você prefere se comunicar. Isso leva 2 minutos e muda tudo nos roteiros gerados.',
+    from: '#0ea5e9', to: '#2563eb', mt: '',
   },
   {
-    name: 'Rafael Diniz',
-    handle: '@rafaeldiniz • Marketing Digital',
-    quote: '"O que mais me impressionou não foram as visualizações, mas a qualidade do público. Usei os roteiros de funil e fechei minha mentoria na primeira semana."',
-    badge: 'R$40k faturados', badgeColor: '#a78bfa',
-    avatar: 'https://api.dicebear.com/9.x/notionists/svg?seed=Rafael&backgroundColor=6d28d9,0ea5e9&scale=110',
+    n: '02', icon: MessageSquare, title: 'Descreva o tema do vídeo',
+    desc: 'No chat do Roteirista, escreva sua ideia em linguagem natural. Ex: "quero falar sobre os erros que iniciantes cometem no Instagram". Pronto.',
+    from: '#3b82f6', to: '#7c3aed', mt: 'md:mt-12',
   },
   {
-    name: 'Ana Silva',
-    handle: '@anasilva.contabil • Contabilidade',
-    quote: '"Achei que meu nicho de contabilidade não dava certo no Reels. Peguei uma estrutura de storytelling do Mapa, adaptei e fiz meu primeiro vídeo com mais de 100k views."',
-    badge: '100k no nicho B2B', badgeColor: '#22d3ee',
-    avatar: 'https://api.dicebear.com/9.x/notionists/svg?seed=Ana&backgroundColor=0ea5e9,22d3ee&scale=110',
-  },
-  {
-    name: 'Carlos Mendes',
-    handle: '@carlosmendes • Finanças Pessoais',
-    quote: '"O investimento se pagou no primeiro dia. Parei de assinar banco de ideias inúteis e agora tenho um direcionamento real e prático para cada vídeo."',
-    badge: 'ROI no 1º dia', badgeColor: '#0ea5e9',
-    avatar: 'https://api.dicebear.com/9.x/notionists/svg?seed=Carlos&backgroundColor=1e3a5f,0ea5e9&scale=110',
+    n: '03', icon: BookOpen, title: 'Escolha o formato e receba o roteiro',
+    desc: 'Selecione a estrutura (Storytelling, Lista, Problema/Solução...) e a IA entrega o roteiro completo — gancho, corpo e CTA. Adapte e grave.',
+    from: '#7c3aed', to: '#a78bfa', mt: 'md:mt-24',
   },
 ]
 
 const PLANS = [
   {
     id: 'mensal', label: 'Mensal', price: 'R$97', period: '/mês',
-    desc: 'Acesso básico à plataforma.',
-    features: ['Acesso à biblioteca principal', 'Atualizações mensais'],
-    highlight: false, cta: 'Assinar Mensal',
+    desc: 'Acesso completo, sem limitações.',
+    features: [
+      'Roteirista IA sem limite diário',
+      'Banco de 100+ ganchos',
+      '15 formatos virais estruturados',
+      'Tom de Voz personalizado',
+      'Analisar vídeos virais',
+    ],
+    highlight: false, cta: 'Começar agora',
   },
   {
     id: 'semestral', label: 'Semestral', price: 'R$297', period: '/6 meses',
-    desc: 'O plano mais escolhido pelos criadores.',
-    features: ['Tudo do plano mensal', 'Análises de virais premium', 'Módulo de Funis de Venda', 'Suporte prioritário'],
-    highlight: true, badge: 'Economiza 49%', cta: 'Assinar Semestral',
+    desc: 'Mais escolhido — equivale a R$49/mês.',
+    features: [
+      'Tudo do plano Mensal',
+      'Agentes de IA especializados',
+      'Analisador de Bio',
+      'Planejador de Rotina',
+      'Suporte prioritário',
+    ],
+    highlight: true, badge: 'Economiza 49%', cta: 'Quero o Semestral',
   },
   {
     id: 'anual', label: 'Anual', price: 'R$497', period: '/ano',
     desc: 'Para criadores que jogam pra ganhar.',
-    features: ['Tudo do plano Semestral', 'Mentoria em grupo trimestral'],
-    highlight: false, cta: 'Assinar Anual',
+    features: [
+      'Tudo do plano Semestral',
+      'Mentoria em grupo trimestral',
+      'Acesso antecipado a novidades',
+    ],
+    highlight: false, cta: 'Garantir Anual',
   },
 ]
 
@@ -106,14 +140,14 @@ export default function LandingPage() {
               Mapa do Engajamento
             </div>
             <div className="hidden md:flex items-center gap-8">
-              {[['#recursos','Recursos'],['#depoimentos','Depoimentos'],['#precos','Preços']].map(([href,label]) => (
+              {[['#como-funciona','Como funciona'],['#recursos','Ferramentas'],['#precos','Preços']].map(([href,label]) => (
                 <a key={href} href={href} className="text-[#bec8d2] font-medium hover:text-white transition-colors text-sm">{label}</a>
               ))}
             </div>
             <div className="flex items-center gap-4">
               <Link href="/login" className="hidden md:block text-[#bec8d2] font-medium hover:text-white transition-colors text-sm">Entrar</Link>
-              <Link href="#precos" className="bg-gradient-to-r from-[#0ea5e9] to-[#6d28d9] text-white rounded-xl px-5 py-2.5 text-sm font-bold hover:opacity-90 transition-opacity flex items-center gap-2">
-                Começar grátis
+              <Link href="/login?mode=signup" className="bg-gradient-to-r from-[#0ea5e9] to-[#6d28d9] text-white rounded-xl px-5 py-2.5 text-sm font-bold hover:opacity-90 transition-opacity flex items-center gap-2">
+                Testar grátis
               </Link>
             </div>
           </div>
@@ -126,17 +160,10 @@ export default function LandingPage() {
           {/* ══ HERO ══ */}
           <section className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center mb-32 relative">
 
-            {/* Social proof badge */}
-            <div className="inline-flex items-center gap-3 bg-white/10 border border-white/15 backdrop-blur-md rounded-full px-4 py-1.5 mb-8">
-              <div className="flex -space-x-2">
-                {['MC','RD','AS'].map(i => (
-                  <div key={i} className="w-6 h-6 rounded-full border border-[#131313] bg-gradient-to-br from-[#0ea5e9] to-[#6d28d9] flex items-center justify-center text-[9px] font-black text-white">{i}</div>
-                ))}
-              </div>
-              <div className="flex gap-0.5">
-                {[...Array(5)].map((_,i) => <Star key={i} size={11} className="fill-amber-400 text-amber-400" />)}
-              </div>
-              <span className="text-sm font-medium text-[#bec8d2]">5.000+ criadores que pararam de postar no escuro</span>
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-[#0ea5e9]/10 border border-[#0ea5e9]/30 backdrop-blur-md rounded-full px-4 py-1.5 mb-8">
+              <Zap size={14} className="text-[#0ea5e9]" />
+              <span className="text-sm font-bold text-[#0ea5e9]">Roteirista IA para criadores de conteúdo</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[1.1]" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>
@@ -144,20 +171,20 @@ export default function LandingPage() {
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-600">que ninguém vê.</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-[#bec8d2] max-w-2xl mx-auto mb-4 leading-relaxed font-medium">
-              1.400 roteiros de vídeos que já viralizaram, prontos pra você adaptar no seu nicho e gravar em menos de 15 minutos.
+            <p className="text-lg md:text-xl text-[#bec8d2] max-w-2xl mx-auto mb-3 leading-relaxed font-medium">
+              Você descreve o tema. A IA escreve o roteiro completo — no seu tom de voz, no formato certo, pronto pra gravar em menos de 15 minutos.
             </p>
-            <p className="text-base text-[#bec8d2]/70 max-w-xl mx-auto mb-10 leading-relaxed">
-              Você não precisa criar do zero. Só adaptar o que já funciona e gravar com confiança.
+            <p className="text-base text-[#bec8d2]/60 max-w-xl mx-auto mb-10 leading-relaxed">
+              5 roteiros por dia gratuitos. Sem precisar de cartão pra começar.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 w-full sm:w-auto">
               <Link
-                href="#precos"
+                href="/login?mode=signup"
                 className="w-full sm:w-auto bg-gradient-to-r from-[#0ea5e9] to-[#6d28d9] text-white rounded-xl px-8 py-4 font-bold text-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
                 style={{ boxShadow: '0 0 40px -10px rgba(14,165,233,0.4)' }}
               >
-                Desbloquear Acesso Agora <ArrowRight size={20} />
+                Gerar meu primeiro roteiro <ArrowRight size={20} />
               </Link>
               <a
                 href="#como-funciona"
@@ -167,7 +194,7 @@ export default function LandingPage() {
               </a>
             </div>
 
-            {/* Stats */}
+            {/* Stats — produto real */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl bg-white/5 border border-white/10 backdrop-blur-md rounded-xl p-6">
               {STATS.map(s => (
                 <div key={s.label} className="text-center">
@@ -181,8 +208,8 @@ export default function LandingPage() {
           {/* ══ BEFORE vs AFTER ══ */}
           <section className="max-w-7xl mx-auto px-6 mb-32 relative">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Pare de contar com a sorte.</h2>
-              <p className="text-[#bec8d2] text-lg">A diferença entre quem tenta e quem escala.</p>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Você reconhece esse loop?</h2>
+              <p className="text-[#bec8d2] text-lg">A maioria dos criadores trava no mesmo lugar. Tem saída.</p>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
               {/* Before */}
@@ -191,7 +218,7 @@ export default function LandingPage() {
                   <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
                     <X size={22} className="text-red-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Modo Amador</h3>
+                  <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Sem direção</h3>
                 </div>
                 <ul className="space-y-6">
                   {BEFORE.map(b => (
@@ -209,7 +236,7 @@ export default function LandingPage() {
                   <div className="w-12 h-12 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center">
                     <CheckCircle size={22} className="text-[#0ea5e9]" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Método Engajamento</h3>
+                  <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Com o Mapa</h3>
                 </div>
                 <ul className="space-y-6 relative z-10">
                   {AFTER.map(a => (
@@ -223,58 +250,15 @@ export default function LandingPage() {
             </div>
           </section>
 
-          {/* ══ FEATURES — Bento Grid ══ */}
-          <section className="max-w-7xl mx-auto px-6 mb-32 relative" id="recursos">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#0ea5e9]/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="mb-16">
-              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>O arsenal completo.</h2>
-              <p className="text-[#bec8d2] text-lg">Tudo que você precisa em uma única plataforma.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5" style={{ gridAutoRows: '280px' }}>
-              {FEATURES.map(f => {
-                const Icon = f.icon
-                return (
-                  <div
-                    key={f.title}
-                    className={`${f.span === 2 ? 'md:col-span-2' : ''} relative overflow-hidden rounded-[1.5rem] p-8 flex flex-col justify-between ${
-                      f.popular
-                        ? 'bg-white/10 border border-white/15 backdrop-blur-xl'
-                        : 'bg-white/5 border border-white/10 backdrop-blur-md'
-                    }`}
-                  >
-                    {f.popular && (
-                      <div className="absolute top-6 right-6 bg-[#0ea5e9]/20 text-[#0ea5e9] text-xs font-bold px-3 py-1 rounded-full border border-[#0ea5e9]/30">
-                        Popular
-                      </div>
-                    )}
-                    <div>
-                      <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6 border border-white/10" style={{ color: f.color }}>
-                        <Icon size={22} />
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>{f.title}</h3>
-                      <p className="text-[#bec8d2] text-sm leading-relaxed max-w-sm">{f.desc}</p>
-                    </div>
-                    {f.popular && (
-                      <div className="w-full h-1 bg-white/5 mt-6 rounded-full overflow-hidden">
-                        <div className="w-1/3 h-full bg-gradient-to-r from-[#0ea5e9] to-[#d3bbff]" />
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-
           {/* ══ HOW IT WORKS ══ */}
           <section className="mb-32 relative border-y border-white/5 bg-[#1b1b1b]/50 py-24" id="como-funciona">
             <div className="absolute inset-0 bg-gradient-to-b from-[#0ea5e9]/5 via-transparent to-[#d3bbff]/5 pointer-events-none" />
             <div className="max-w-7xl mx-auto px-6 relative z-10">
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Fluxo de execução rápido.</h2>
-                <p className="text-[#bec8d2] text-lg">Do zero ao play em menos de 15 minutos.</p>
+                <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>3 passos. 15 minutos. Roteiro pronto.</h2>
+                <p className="text-[#bec8d2] text-lg">Sem curso, sem tutorial longo. Você usa e entende na hora.</p>
               </div>
               <div className="flex flex-col md:flex-row gap-8 items-start relative">
-                {/* Connector line */}
                 <div className="hidden md:block absolute top-[100px] left-[20%] w-[60%] h-px bg-gradient-to-r from-transparent via-white/20 to-transparent z-0" />
                 {STEPS.map(step => {
                   const Icon = step.icon
@@ -296,48 +280,53 @@ export default function LandingPage() {
             </div>
           </section>
 
-          {/* ══ TESTIMONIALS ══ */}
-          <section className="max-w-7xl mx-auto px-6 mb-32 relative" id="depoimentos">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>A matemática não mente.</h2>
-              <p className="text-[#bec8d2] text-lg">Resultados reais de criadores reais — em nichos diferentes.</p>
+          {/* ══ FEATURES — Real Tools ══ */}
+          <section className="max-w-7xl mx-auto px-6 mb-32 relative" id="recursos">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#0ea5e9]/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="mb-16">
+              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>O que tem dentro da plataforma.</h2>
+              <p className="text-[#bec8d2] text-lg">Tudo isso você acessa no mesmo lugar, hoje.</p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-              {TESTIMONIALS.map(t => (
-                <div key={t.name} className="bg-[#2a2a2a] border border-white/5 rounded-[1.5rem] p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex gap-0.5 mb-4">
-                      {[...Array(5)].map((_,i) => <Star key={i} size={12} className="fill-amber-400 text-amber-400" />)}
-                    </div>
-                    <p className="text-[#bec8d2] text-sm mb-6 leading-relaxed">{t.quote}</p>
-                  </div>
-                  <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                    <img
-                      src={t.avatar}
-                      alt={t.name}
-                      className="w-11 h-11 rounded-full shrink-0 bg-gradient-to-br from-[#0ea5e9] to-[#6d28d9]"
-                    />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5" style={{ gridAutoRows: '280px' }}>
+              {FEATURES.map(f => {
+                const Icon = f.icon
+                return (
+                  <div
+                    key={f.title}
+                    className={`${f.span === 2 ? 'md:col-span-2' : ''} relative overflow-hidden rounded-[1.5rem] p-8 flex flex-col justify-between ${
+                      f.span === 2
+                        ? 'bg-white/10 border border-white/15 backdrop-blur-xl'
+                        : 'bg-white/5 border border-white/10 backdrop-blur-md'
+                    }`}
+                  >
+                    {f.tag && (
+                      <div className="absolute top-6 right-6 bg-[#0ea5e9]/20 text-[#0ea5e9] text-xs font-bold px-3 py-1 rounded-full border border-[#0ea5e9]/30">
+                        {f.tag}
+                      </div>
+                    )}
                     <div>
-                      <p className="text-white font-bold text-sm">{t.name}</p>
-                      <p className="text-[#bec8d2]/60 text-[10px] font-medium mb-0.5">{t.handle}</p>
-                      <span
-                        className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: `${t.badgeColor}20`, color: t.badgeColor }}
-                      >
-                        {t.badge}
-                      </span>
+                      <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6 border border-white/10" style={{ color: f.color }}>
+                        <Icon size={22} />
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>{f.title}</h3>
+                      <p className="text-[#bec8d2] text-sm leading-relaxed max-w-sm">{f.desc}</p>
                     </div>
+                    {f.span === 2 && (
+                      <div className="w-full h-1 bg-white/5 mt-6 rounded-full overflow-hidden">
+                        <div className="w-1/2 h-full bg-gradient-to-r from-[#0ea5e9] to-[#d3bbff]" />
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </section>
 
           {/* ══ PRICING ══ */}
           <section className="max-w-7xl mx-auto px-6 mb-32 relative" id="precos">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Escolha seu acesso.</h2>
-              <p className="text-[#bec8d2] text-lg">Sem taxas ocultas, cancele quando quiser.</p>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>Comece grátis. Escale quando quiser.</h2>
+              <p className="text-[#bec8d2] text-lg">5 roteiros por dia gratuitos, sem precisar de cartão. Quando quiser sem limite, escolha um plano.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto items-center">
               {PLANS.map(plan => (
@@ -382,6 +371,11 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+
+            {/* Free tier note */}
+            <p className="text-center text-[#bec8d2]/50 text-sm mt-8">
+              Quer testar antes? <Link href="/login?mode=signup" className="text-[#0ea5e9] hover:underline font-medium">Crie uma conta grátis</Link> — 5 roteiros por dia, sem cartão.
+            </p>
           </section>
 
           {/* ══ GUARANTEE ══ */}
@@ -405,20 +399,21 @@ export default function LandingPage() {
             <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23fff' fill-opacity='0.05'/%3E%3C/svg%3E\")" }} />
             <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
               <span className="inline-block bg-white/20 backdrop-blur-md text-white font-bold px-4 py-1.5 rounded-full text-sm mb-8 border border-white/30 uppercase tracking-widest shadow-lg">
-                Acesso Imediato Liberado
+                Comece agora — é grátis
               </span>
               <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-6" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>
                 Chega de criar conteúdo que ninguém vê.
               </h2>
               <p className="text-white/80 text-xl font-medium mb-10 max-w-2xl mx-auto leading-relaxed">
-                Mais de 5.000 criadores já pararam de postar no escuro. Você é o próximo.
+                Você já tem a ideia. Falta a estrutura. É exatamente isso que o Mapa resolve — em menos de 15 minutos.
               </p>
               <Link
                 href="/login?mode=signup"
                 className="inline-flex items-center gap-2 bg-white text-[#004c6e] rounded-xl px-10 py-5 font-black text-xl hover:scale-105 transition-transform shadow-2xl"
               >
-                Quero Meu Acesso Agora <Rocket size={22} />
+                Gerar meu primeiro roteiro <Rocket size={22} />
               </Link>
+              <p className="text-white/50 text-sm mt-6">5 roteiros grátis por dia · Sem cartão · Cancele quando quiser</p>
             </div>
           </section>
         </main>
@@ -433,7 +428,7 @@ export default function LandingPage() {
               © 2025 Mapa do Engajamento. Todos os direitos reservados.
             </div>
             <div className="flex flex-wrap justify-center gap-6">
-              {[['#','Termos de Uso'],['#','Privacidade'],['mailto:suporte@protocoloviral.com.br','Suporte'],['#','Afiliados']].map(([href,label]) => (
+              {[['#','Termos de Uso'],['#','Privacidade'],['mailto:suporte@protocoloviral.com.br','Suporte']].map(([href,label]) => (
                 <a key={label} href={href} className="text-slate-500 hover:text-[#0ea5e9] transition-colors text-sm font-medium">{label}</a>
               ))}
             </div>
