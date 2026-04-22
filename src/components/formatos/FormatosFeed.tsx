@@ -60,15 +60,59 @@ const FormatoIcon = ({ name, size = 14, className = '' }: { name: string; size?:
   return <Icon size={size} className={className} />
 }
 
-export const normalizeFormato = (tipo: string | null, nicho: string | null): string => {
-  const combo = ((tipo || '') + ' ' + (nicho || '')).toLowerCase()
-  if (combo.includes('ancorag') || combo.includes('story')) return 'Ancoragem'
-  if (combo.includes('pergunta') || combo.includes('resposta') || combo.includes('dual')) return 'Perguntas e Respostas'
+// normalizeFormato — o campo `nicho` do Supabase É o tipo de formato do vídeo
+// Valores reais: 'problema_solucao', 'tutorial', 'Ancoragem', 'React', 'Pergunta/Resposta', etc.
+export const normalizeFormato = (
+  tipo: string | null,
+  nicho: string | null,
+  extra?: string | null
+): string => {
+  // Usa nicho como fonte principal (é o campo correto), com fallback em tipo e extra
+  const combo = [nicho, tipo, extra].filter(Boolean).join(' ').toLowerCase()
+
+  // Ancoragem
+  if (combo.includes('ancor')) return 'Ancoragem'
+
+  // Caixinha de perguntas
   if (combo.includes('caixinha')) return 'Caixinha de Perguntas'
-  if (combo.includes('preguiçoso') || combo.includes('preguicoso') || combo.includes('certo') || combo.includes('errado')) return 'Preguiçoso'
-  if (combo.includes('tela') || combo.includes('dividida') || combo.includes('lado a lado')) return 'Tela dividida'
-  if (combo.includes('tutorial') || combo.includes('dica') || combo.includes('passo')) return 'Tutorial (passo a passo)'
-  if (combo.includes('react') || combo.includes('reação') || combo.includes('experimento')) return 'Reação (react)'
+
+  // Perguntas e Respostas — 'pergunta/resposta', 'pergunta', 'question'
+  if (
+    combo.includes('pergunta') ||
+    combo.includes('resposta') ||
+    combo.includes('question') ||
+    combo.includes('quiz') ||
+    combo.includes('q&a')
+  ) return 'Perguntas e Respostas'
+
+  // Preguiçoso
+  if (combo.includes('preguiç') || combo.includes('preguic') || combo.includes('lo-fi') || combo.includes('lofi')) return 'Preguiçoso'
+
+  // Tela dividida
+  if (combo.includes('tela divid') || combo.includes('lado a lado') || combo.includes('dual') || combo.includes('split')) return 'Tela dividida'
+
+  // Tutorial/passo a passo — 'tutorial', 'problema_solucao', 'Problema / Solução', 'dica', 'lista'
+  if (
+    combo.includes('tutorial') ||
+    combo.includes('problema') ||
+    combo.includes('solucao') ||
+    combo.includes('solução') ||
+    combo.includes('dica') ||
+    combo.includes('lista') ||
+    combo.includes('ensino') ||
+    combo.includes('curiosidade') ||
+    combo.includes('noticia') ||
+    combo.includes('bastidores') ||
+    combo.includes('transformac') ||
+    combo.includes('desafio')
+  ) return 'Tutorial (passo a passo)'
+
+  // Reação (react)
+  if (combo.includes('react') || combo.includes('reação') || combo.includes('reacao') || combo.includes('análise') || combo.includes('analise')) return 'Reação (react)'
+
+  // Storytelling → Varias Cenas (narrativa livre)
+  if (combo.includes('storytelling') || combo.includes('story')) return 'Varias Cenas'
+
   return 'Varias Cenas'
 }
 
@@ -239,7 +283,7 @@ export function FormatosFeed() {
   const formatosProcessados = useMemo(() => {
     let result = formatos.map(f => ({
       ...f,
-      formato_normalizado: normalizeFormato(f.tipo, f.nicho),
+      formato_normalizado: normalizeFormato(f.tipo, f.nicho, f.estudo),
     }))
     if (busca.trim()) {
       const q = busca.toLowerCase()
