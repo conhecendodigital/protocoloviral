@@ -206,78 +206,142 @@ export default function LandingPage() {
           </section>
 
           {/* ══ APP PREVIEW 3D ══ */}
-          <section className="max-w-7xl mx-auto px-6 mb-32 relative">
-            {/* Glow ambientes */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-[#0ea5e9]/8 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute top-1/2 left-1/4 w-[300px] h-[300px] bg-violet-500/8 rounded-full blur-[100px] pointer-events-none" />
+          <section className="max-w-7xl mx-auto px-6 mb-32 relative overflow-hidden">
+            {/* Ambient glows */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-[#0ea5e9]/6 rounded-full blur-[140px] pointer-events-none" />
+            <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-violet-600/6 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/6 rounded-full blur-[120px] pointer-events-none" />
 
-            <div className="text-center mb-12">
-              <p className="text-xs font-bold uppercase tracking-widest text-[#0ea5e9] mb-3">Plataforma completa</p>
+            <div className="text-center mb-16">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#0ea5e9] mb-3">Veja na prática</p>
               <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>
                 Tudo que você precisa para <br />
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">criar conteúdo viral.</span>
               </h2>
             </div>
 
-            {/* Mockups 3D */}
-            <div className="relative flex items-center justify-center" style={{ perspective: '1200px', minHeight: '420px' }}>
+            {/* ── Desktop 3D stage ── */}
+            <div className="hidden md:block relative" style={{ perspective: '1400px', perspectiveOrigin: '50% 40%', height: '520px' }}>
 
-              {/* Left — ganchos, tilted left */}
+              {/* LEFT — Banco de Ganchos */}
               <div
-                className="absolute left-0 hidden md:block w-[38%] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:scale-105"
+                className="absolute top-12 left-0 w-[42%] transition-transform duration-700 hover:scale-[1.03]"
                 style={{
-                  transform: 'rotateY(18deg) rotateX(3deg) translateZ(-60px) translateX(20px)',
-                  boxShadow: '-20px 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(139,92,246,0.15)',
+                  transform: 'rotateY(22deg) rotateX(4deg) translateZ(-80px)',
                   zIndex: 1,
+                  filter: 'drop-shadow(-24px 32px 48px rgba(0,0,0,0.7))',
                 }}
               >
-                <img src="/images/mockup-ganchos.png" alt="Banco de Ganchos — mais de 100 aberturas prontas" className="w-full h-auto block" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <p className="text-xs font-bold text-[#8b5cf6] uppercase tracking-widest">Banco de Ganchos</p>
-                  <p className="text-sm font-semibold text-white mt-0.5">100+ aberturas prontas pra usar</p>
+                {/* Browser chrome */}
+                <div className="rounded-xl overflow-hidden ring-1 ring-white/10" style={{ background: '#1c1c1e' }}>
+                  <div className="flex items-center gap-2 px-3 py-2.5 border-b border-white/5">
+                    <span className="w-3 h-3 rounded-full bg-red-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-green-500/80" />
+                    <div className="flex-1 mx-3 h-5 rounded-md bg-white/5 flex items-center px-2">
+                      <span className="text-[9px] text-white/30 truncate">protocolo.omatheusai.com.br/ganchos</span>
+                    </div>
+                  </div>
+                  <img src="/images/mockup-ganchos.png" alt="Banco de Ganchos" className="w-full h-auto block" />
                 </div>
+                {/* Glow ring */}
+                <div className="absolute -inset-4 bg-violet-500/10 rounded-2xl blur-2xl -z-10" />
+                {/* Label */}
+                <div className="mt-4 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-violet-400" />
+                  <span className="text-xs font-bold text-violet-300 uppercase tracking-widest">Banco de Ganchos</span>
+                </div>
+                <p className="text-[11px] text-white/50 mt-1 pl-4">100+ aberturas prontas para usar</p>
               </div>
 
-              {/* Center — roteirista, straight front */}
+              {/* CENTER — Roteirista IA */}
               <div
-                className="relative w-full md:w-[50%] rounded-2xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.7),0_0_60px_rgba(14,165,233,0.2)] transition-transform duration-500 hover:scale-[1.02]"
-                style={{ zIndex: 10 }}
-              >
-                <img src="/images/mockup-roteirista.png" alt="Roteirista IA — gere roteiros virais em segundos" className="w-full h-auto block" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <p className="text-xs font-bold text-[#0ea5e9] uppercase tracking-widest">Roteirista IA</p>
-                  <p className="text-sm font-semibold text-white mt-0.5">Do tema ao roteiro em menos de 30s</p>
-                </div>
-              </div>
-
-              {/* Right — formatos, tilted right */}
-              <div
-                className="absolute right-0 hidden md:block w-[38%] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:scale-105"
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-[46%] transition-transform duration-700 hover:scale-[1.02]"
                 style={{
-                  transform: 'rotateY(-18deg) rotateX(3deg) translateZ(-60px) translateX(-20px)',
-                  boxShadow: '20px 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(14,165,233,0.12)',
-                  zIndex: 1,
+                  zIndex: 10,
+                  filter: 'drop-shadow(0 40px 80px rgba(14,165,233,0.25)) drop-shadow(0 0 0 rgba(0,0,0,0.9))',
                 }}
               >
-                <img src="/images/mockup-formatos.png" alt="Formatos Virais — biblioteca de estruturas comprovadas" className="w-full h-auto block" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <p className="text-xs font-bold text-[#22d3ee] uppercase tracking-widest">Formatos Virais</p>
-                  <p className="text-sm font-semibold text-white mt-0.5">15 estruturas que geram resultado</p>
+                {/* Browser chrome */}
+                <div className="rounded-xl overflow-hidden ring-1 ring-[#0ea5e9]/30" style={{ background: '#1c1c1e' }}>
+                  <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#0ea5e9]/10">
+                    <span className="w-3 h-3 rounded-full bg-red-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-green-500/80" />
+                    <div className="flex-1 mx-3 h-5 rounded-md bg-white/5 flex items-center px-2">
+                      <span className="text-[9px] text-white/30 truncate">protocolo.omatheusai.com.br/roteirista</span>
+                    </div>
+                  </div>
+                  <img src="/images/mockup-roteirista.png" alt="Roteirista IA" className="w-full h-auto block" />
                 </div>
+                {/* Blue glow ring */}
+                <div className="absolute -inset-6 bg-[#0ea5e9]/12 rounded-3xl blur-3xl -z-10" />
+                {/* Label */}
+                <div className="mt-4 flex items-center gap-2 justify-center">
+                  <div className="w-2 h-2 rounded-full bg-[#0ea5e9]" />
+                  <span className="text-xs font-bold text-[#0ea5e9] uppercase tracking-widest">Roteirista IA</span>
+                </div>
+                <p className="text-[11px] text-white/50 mt-1 text-center">Do tema ao roteiro em menos de 30s</p>
               </div>
+
+              {/* RIGHT — Formatos Virais */}
+              <div
+                className="absolute top-12 right-0 w-[42%] transition-transform duration-700 hover:scale-[1.03]"
+                style={{
+                  transform: 'rotateY(-22deg) rotateX(4deg) translateZ(-80px)',
+                  zIndex: 1,
+                  filter: 'drop-shadow(24px 32px 48px rgba(0,0,0,0.7))',
+                }}
+              >
+                {/* Browser chrome */}
+                <div className="rounded-xl overflow-hidden ring-1 ring-white/10" style={{ background: '#1c1c1e' }}>
+                  <div className="flex items-center gap-2 px-3 py-2.5 border-b border-white/5">
+                    <span className="w-3 h-3 rounded-full bg-red-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-green-500/80" />
+                    <div className="flex-1 mx-3 h-5 rounded-md bg-white/5 flex items-center px-2">
+                      <span className="text-[9px] text-white/30 truncate">protocolo.omatheusai.com.br/formatos</span>
+                    </div>
+                  </div>
+                  <img src="/images/mockup-formatos.png" alt="Formatos Virais" className="w-full h-auto block" />
+                </div>
+                {/* Glow ring */}
+                <div className="absolute -inset-4 bg-cyan-500/10 rounded-2xl blur-2xl -z-10" />
+                {/* Label */}
+                <div className="mt-4 flex items-center gap-2 justify-end">
+                  <span className="text-xs font-bold text-cyan-300 uppercase tracking-widest">Formatos Virais</span>
+                  <div className="w-2 h-2 rounded-full bg-cyan-400" />
+                </div>
+                <p className="text-[11px] text-white/50 mt-1 text-right">15 estruturas que geram resultado</p>
+              </div>
+
+              {/* Bottom gradient fade */}
+              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0b0e16] to-transparent pointer-events-none z-20" />
             </div>
 
-            {/* Mobile: cards empilhados */}
-            <div className="md:hidden mt-6 space-y-4">
+            {/* ── Mobile: stacked cards ── */}
+            <div className="md:hidden space-y-6">
               {[
-                { src: '/images/mockup-ganchos.png', label: 'Banco de Ganchos', desc: '100+ aberturas prontas', color: '#8b5cf6' },
-                { src: '/images/mockup-formatos.png', label: 'Formatos Virais', desc: '15 estruturas que convertem', color: '#22d3ee' },
+                { src: '/images/mockup-roteirista.png', url: '/roteirista', label: 'Roteirista IA', desc: 'Do tema ao roteiro em menos de 30s', color: '#0ea5e9', ring: 'ring-[#0ea5e9]/30' },
+                { src: '/images/mockup-ganchos.png',    url: '/ganchos',    label: 'Banco de Ganchos', desc: '100+ aberturas prontas para usar', color: '#8b5cf6', ring: 'ring-white/10' },
+                { src: '/images/mockup-formatos.png',   url: '/formatos',   label: 'Formatos Virais',  desc: '15 estruturas que geram resultado', color: '#22d3ee', ring: 'ring-white/10' },
               ].map(item => (
-                <div key={item.label} className="rounded-2xl overflow-hidden border border-white/10">
+                <div key={item.label} className={`rounded-xl overflow-hidden ring-1 ${item.ring}`} style={{ background: '#1c1c1e' }}>
+                  <div className="flex items-center gap-2 px-3 py-2.5 border-b border-white/5">
+                    <span className="w-3 h-3 rounded-full bg-red-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-green-500/80" />
+                    <div className="flex-1 mx-2 h-4 rounded bg-white/5 flex items-center px-2">
+                      <span className="text-[8px] text-white/30 truncate">protocolo.omatheusai.com.br{item.url}</span>
+                    </div>
+                  </div>
                   <img src={item.src} alt={item.label} className="w-full h-auto block" />
-                  <div className="p-4 bg-white/5">
-                    <p className="text-xs font-bold uppercase tracking-widest" style={{ color: item.color }}>{item.label}</p>
-                    <p className="text-sm text-white/80 mt-0.5">{item.desc}</p>
+                  <div className="p-3 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ background: item.color }} />
+                    <div>
+                      <p className="text-xs font-bold" style={{ color: item.color }}>{item.label}</p>
+                      <p className="text-[11px] text-white/50">{item.desc}</p>
+                    </div>
                   </div>
                 </div>
               ))}
