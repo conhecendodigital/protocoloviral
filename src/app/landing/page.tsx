@@ -205,6 +205,85 @@ export default function LandingPage() {
             </div>
           </section>
 
+          {/* ══ APP PREVIEW 3D ══ */}
+          <section className="max-w-7xl mx-auto px-6 mb-32 relative">
+            {/* Glow ambientes */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-[#0ea5e9]/8 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-1/2 left-1/4 w-[300px] h-[300px] bg-violet-500/8 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="text-center mb-12">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#0ea5e9] mb-3">Plataforma completa</p>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>
+                Tudo que você precisa para <br />
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">criar conteúdo viral.</span>
+              </h2>
+            </div>
+
+            {/* Mockups 3D */}
+            <div className="relative flex items-center justify-center" style={{ perspective: '1200px', minHeight: '420px' }}>
+
+              {/* Left — ganchos, tilted left */}
+              <div
+                className="absolute left-0 hidden md:block w-[38%] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:scale-105"
+                style={{
+                  transform: 'rotateY(18deg) rotateX(3deg) translateZ(-60px) translateX(20px)',
+                  boxShadow: '-20px 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(139,92,246,0.15)',
+                  zIndex: 1,
+                }}
+              >
+                <img src="/images/mockup-ganchos.png" alt="Banco de Ganchos — mais de 100 aberturas prontas" className="w-full h-auto block" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <p className="text-xs font-bold text-[#8b5cf6] uppercase tracking-widest">Banco de Ganchos</p>
+                  <p className="text-sm font-semibold text-white mt-0.5">100+ aberturas prontas pra usar</p>
+                </div>
+              </div>
+
+              {/* Center — roteirista, straight front */}
+              <div
+                className="relative w-full md:w-[50%] rounded-2xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.7),0_0_60px_rgba(14,165,233,0.2)] transition-transform duration-500 hover:scale-[1.02]"
+                style={{ zIndex: 10 }}
+              >
+                <img src="/images/mockup-roteirista.png" alt="Roteirista IA — gere roteiros virais em segundos" className="w-full h-auto block" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <p className="text-xs font-bold text-[#0ea5e9] uppercase tracking-widest">Roteirista IA</p>
+                  <p className="text-sm font-semibold text-white mt-0.5">Do tema ao roteiro em menos de 30s</p>
+                </div>
+              </div>
+
+              {/* Right — formatos, tilted right */}
+              <div
+                className="absolute right-0 hidden md:block w-[38%] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-500 hover:scale-105"
+                style={{
+                  transform: 'rotateY(-18deg) rotateX(3deg) translateZ(-60px) translateX(-20px)',
+                  boxShadow: '20px 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(14,165,233,0.12)',
+                  zIndex: 1,
+                }}
+              >
+                <img src="/images/mockup-formatos.png" alt="Formatos Virais — biblioteca de estruturas comprovadas" className="w-full h-auto block" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <p className="text-xs font-bold text-[#22d3ee] uppercase tracking-widest">Formatos Virais</p>
+                  <p className="text-sm font-semibold text-white mt-0.5">15 estruturas que geram resultado</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile: cards empilhados */}
+            <div className="md:hidden mt-6 space-y-4">
+              {[
+                { src: '/images/mockup-ganchos.png', label: 'Banco de Ganchos', desc: '100+ aberturas prontas', color: '#8b5cf6' },
+                { src: '/images/mockup-formatos.png', label: 'Formatos Virais', desc: '15 estruturas que convertem', color: '#22d3ee' },
+              ].map(item => (
+                <div key={item.label} className="rounded-2xl overflow-hidden border border-white/10">
+                  <img src={item.src} alt={item.label} className="w-full h-auto block" />
+                  <div className="p-4 bg-white/5">
+                    <p className="text-xs font-bold uppercase tracking-widest" style={{ color: item.color }}>{item.label}</p>
+                    <p className="text-sm text-white/80 mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* ══ BEFORE vs AFTER ══ */}
           <section className="max-w-7xl mx-auto px-6 mb-32 relative">
             <div className="text-center mb-16">
