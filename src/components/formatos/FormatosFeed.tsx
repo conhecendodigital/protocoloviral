@@ -40,80 +40,40 @@ const formatNumber = (n: number | null): string => {
   return n.toString()
 }
 
+// ícones para tipos conhecidos — fallback em FolderOpen para qualquer outro
 const formatoIconMap: Record<string, LucideIcon> = {
   'Ancoragem': Anchor,
+  'Pergunta/Resposta': MessageCircle,
   'Perguntas e Respostas': MessageCircle,
   'Preguiçoso': Sofa,
-  'Tela dividida': Smartphone,
-  'Varias Cenas': Clapperboard,
-  'Reação (react)': Star,
-  'Caixinha de Perguntas': HelpCircle,
-  'Tutorial (passo a passo)': BookOpen,
+  'Lo-Fi': Sofa,
+  'Tela Dividida': Smartphone,
+  'React': Star,
+  'React/Análise': Star,
+  'Tutorial': BookOpen,
+  'Problema Solucao': BookOpen,
+  'Problema / Solução': BookOpen,
+  'Storytelling': Clapperboard,
   'Todos': Globe,
 }
-
-const FORMATO_TYPES = Object.keys(formatoIconMap)
-const ALL_TYPES = ['Todos', ...FORMATO_TYPES]
 
 const FormatoIcon = ({ name, size = 14, className = '' }: { name: string; size?: number; className?: string }) => {
   const Icon = formatoIconMap[name] || FolderOpen
   return <Icon size={size} className={className} />
 }
 
-// normalizeFormato — o campo `nicho` do Supabase É o tipo de formato do vídeo
-// Valores reais: 'problema_solucao', 'tutorial', 'Ancoragem', 'React', 'Pergunta/Resposta', etc.
+// normalizeFormato — limpa apenas caracteres de formatação, SEM renomear
+// _ → espaço | trim | capitaliza primeira letra de cada palavra
 export const normalizeFormato = (
-  tipo: string | null,
+  _tipo: string | null,
   nicho: string | null,
-  extra?: string | null
 ): string => {
-  // Usa nicho como fonte principal (é o campo correto), com fallback em tipo e extra
-  const combo = [nicho, tipo, extra].filter(Boolean).join(' ').toLowerCase()
-
-  // Ancoragem
-  if (combo.includes('ancor')) return 'Ancoragem'
-
-  // Caixinha de perguntas
-  if (combo.includes('caixinha')) return 'Caixinha de Perguntas'
-
-  // Perguntas e Respostas — 'pergunta/resposta', 'pergunta', 'question'
-  if (
-    combo.includes('pergunta') ||
-    combo.includes('resposta') ||
-    combo.includes('question') ||
-    combo.includes('quiz') ||
-    combo.includes('q&a')
-  ) return 'Perguntas e Respostas'
-
-  // Preguiçoso
-  if (combo.includes('preguiç') || combo.includes('preguic') || combo.includes('lo-fi') || combo.includes('lofi')) return 'Preguiçoso'
-
-  // Tela dividida
-  if (combo.includes('tela divid') || combo.includes('lado a lado') || combo.includes('dual') || combo.includes('split')) return 'Tela dividida'
-
-  // Tutorial/passo a passo — 'tutorial', 'problema_solucao', 'Problema / Solução', 'dica', 'lista'
-  if (
-    combo.includes('tutorial') ||
-    combo.includes('problema') ||
-    combo.includes('solucao') ||
-    combo.includes('solução') ||
-    combo.includes('dica') ||
-    combo.includes('lista') ||
-    combo.includes('ensino') ||
-    combo.includes('curiosidade') ||
-    combo.includes('noticia') ||
-    combo.includes('bastidores') ||
-    combo.includes('transformac') ||
-    combo.includes('desafio')
-  ) return 'Tutorial (passo a passo)'
-
-  // Reação (react)
-  if (combo.includes('react') || combo.includes('reação') || combo.includes('reacao') || combo.includes('análise') || combo.includes('analise')) return 'Reação (react)'
-
-  // Storytelling → Varias Cenas (narrativa livre)
-  if (combo.includes('storytelling') || combo.includes('story')) return 'Varias Cenas'
-
-  return 'Varias Cenas'
+  if (!nicho || nicho.trim() === '') return 'Geral'
+  return nicho
+    .replace(/_/g, ' ')   // problema_solucao → problema solucao
+    .replace(/\.+$/, '')  // remove ponto no final
+    .trim()
+    .replace(/\b\w/g, c => c.toUpperCase()) // capitaliza cada palavra
 }
 
 const getDriveFileId = (url: string): string | null => {
@@ -283,7 +243,7 @@ export function FormatosFeed() {
   const formatosProcessados = useMemo(() => {
     let result = formatos.map(f => ({
       ...f,
-      formato_normalizado: normalizeFormato(f.tipo, f.nicho, f.estudo),
+      formato_normalizado: normalizeFormato(f.tipo, f.nicho),
     }))
     if (busca.trim()) {
       const q = busca.toLowerCase()
@@ -304,6 +264,13 @@ export function FormatosFeed() {
     })
     return result
   }, [formatos, busca, filtroFormato, ordenacao])
+
+  // Lista dinâmica de tipos — gerada dos dados reais do banco
+  const tiposDisponiveis = useMemo(() => {
+    const set = new Set<string>()
+    formatosProcessados.forEach(f => { if (f.formato_normalizado) set.add(f.formato_normalizado) })
+    return ['Todos', ...Array.from(set).sort()]
+  }, [formatosProcessados])
 
   return (
     <main className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative z-10 custom-scrollbar">
@@ -343,7 +310,7 @@ export function FormatosFeed() {
                       initial={{ opacity: 0, scaleY: 0.9, y: 5 }} animate={{ opacity: 1, scaleY: 1, y: 0 }} exit={{ opacity: 0, scaleY: 0.9, y: 5 }}
                       className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0a0f1e] border border-slate-200 dark:border-white/10 shadow-2xl rounded-2xl p-2 z-50 origin-top max-h-64 overflow-y-auto custom-scrollbar"
                     >
-                      {ALL_TYPES.map((opt) => (
+                      {tiposDisponiveis.map((opt) => (
                         <button
                           key={opt}
                           onClick={() => { setFiltroFormato(opt); setFormatoMenuAtivo(false) }}
