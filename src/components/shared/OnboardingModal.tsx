@@ -234,7 +234,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
 
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
               Antes de começar,<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-[#0ea5e9]">preciso te conhecer melhor!</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">preciso te conhecer melhor!</span>
             </h2>
 
             <p className="text-base text-slate-800 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
@@ -308,7 +308,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             </div>
             <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-gradient-to-r from-[#0ea5e9] to-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.5)]"
+                className="h-full bg-gradient-to-r from-[#0ea5e9] to-violet-500 shadow-[0_0_15px_rgba(14,165,233,0.5)]"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}

@@ -120,7 +120,7 @@ function RoteiristaContent() {
   const chatEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const supabase = useMemo(() => createClient(), [])
+  const supabase = createClient()
   
   // Profile & Limits
   const { profile } = useProfile()
@@ -361,7 +361,7 @@ function RoteiristaContent() {
           .replace(/\[ROTEIRO_ID:[a-f0-9-]+\]/gi, '')
 
         // Ocultar blocos de raciocínio lógico (CoT) com uma mensagem de status atraente
-        displayText = displayText.replace(/\[THINKING\][\s\S]*?(\[\/THINKING\]|$)/g, '> 🧠 **Ativando Raciocínio Profundo...**\n> Analisando formato e tom de voz antes de escrever...\n\n')
+        displayText = displayText.replace(/\[THINKING\][\s\S]*?(\[\/THINKING\]|$)/g, '> **Ativando Raciocínio Profundo...**\n> Analisando formato e tom de voz antes de escrever...\n\n')
 
         displayText = displayText.trim()
 

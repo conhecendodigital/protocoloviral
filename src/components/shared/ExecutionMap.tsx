@@ -229,7 +229,13 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
                   ? 'bg-slate-200/50 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-white/10'
                   : 'bg-[#0ea5e9]/15 text-[#0ea5e9] border-[#0ea5e9]/30'
             }`}>
-              {isDone ? '✅ Fase Completa' : activeStep.status === 'locked' ? '🔒 Próxima Etapa (Bloqueada)' : '📍 FAZER NESTE MOMENTO'}
+              {isDone ? (
+                <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4" /> Fase Completa</span>
+              ) : activeStep.status === 'locked' ? (
+                <span className="flex items-center gap-1.5"><Lock className="w-4 h-4" /> Próxima Etapa (Bloqueada)</span>
+              ) : (
+                <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> FAZER NESTE MOMENTO</span>
+              )}
             </span>
             <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
               {activeStep.title}
