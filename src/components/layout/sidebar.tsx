@@ -2,18 +2,16 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { cn } from '@/lib/utils'
-import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import {
   Home, Clapperboard, FileEdit, Bot, MonitorPlay,
   FileText, Anchor, Camera, BarChart3, Calculator, User, Compass,
-  Calendar, Mic2, Crown, ChevronDown, LogOut, Mail, Map
+  Calendar, Mic2, Crown, ChevronDown, Mail, Map
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { SidebarAvatarMenu } from '@/components/sidebar-avatar-menu'
 
 interface NavItem {
   label: string
@@ -69,23 +67,12 @@ const NAV_SECTIONS: NavSection[] = [
       { label: 'Tom de Voz', href: '/tom-de-voz', icon: Mic2, badge: 'NEW', badgeHot: true },
     ],
   },
-  {
-    id: 'assinatura',
-    label: 'Premium',
-    icon: Crown,
-    collapsible: false,
-    items: [
-      { label: 'Assinatura', href: '/assinatura', icon: Crown, badge: 'PRO', badgeHot: true },
-    ],
-  },
 ]
 
 interface SidebarProps {
   className?: string
 }
 
-// Supabase client outside component
-const supabase = createClient()
 
 export function Sidebar({ className = '' }: SidebarProps) {
   const pathname = usePathname()
@@ -116,24 +103,6 @@ export function Sidebar({ className = '' }: SidebarProps) {
 
   const handleMouseLeave = () => {
     leaveTimer.current = setTimeout(() => setHovered(false), 120)
-  }
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    window.location.href = '/login'
-  }
-
-  const getDisplayName = () => {
-    if (profile?.nome_completo) return profile.nome_completo
-    if (!profile?.email) return 'Usuário'
-    return profile.email.split('@')[0].split('.')[0].replace(/^\w/, c => c.toUpperCase())
-  }
-
-  const getInitials = () => {
-    const name = profile?.nome_completo || profile?.email?.split('@')[0] || 'U'
-    const parts = name.split(/[\s.]+/)
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
-    return name.substring(0, 2).toUpperCase()
   }
 
   const renderNavItem = (item: NavItem) => {
@@ -269,13 +238,9 @@ export function Sidebar({ className = '' }: SidebarProps) {
       </nav>
 
       {/* ── FOOTER ── */}
-      <div className="px-2 pb-4 space-y-2 shrink-0">
-        <div className="flex justify-center px-1">
-          <ThemeToggle />
-        </div>
-
+      <div className="px-2 pb-4 shrink-0">
         {hovered && (
-          <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
+          <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden mb-2">
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Suporte</p>
             <p className="text-xs text-slate-600 dark:text-white/70 leading-relaxed mb-2">Precisa de ajuda?</p>
             <a
@@ -287,41 +252,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
             </a>
           </div>
         )}
-
-        <div className="flex items-center gap-2.5 px-1 py-1 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-200">
-          <Link href="/perfil" className="shrink-0">
-            <div className="size-9 rounded-full overflow-hidden ring-2 ring-[#0ea5e9]/20 hover:ring-[#0ea5e9]/50 transition-all">
-              {profile?.avatar_url ? (
-                <Image src={profile.avatar_url} width={36} height={36} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-tr from-[#0ea5e9] to-indigo-500 flex items-center justify-center">
-                  <span className="text-[11px] font-black text-white">{getInitials()}</span>
-                </div>
-              )}
-            </div>
-          </Link>
-
-          <div className={cn(
-            'flex-1 min-w-0 overflow-hidden transition-all duration-200',
-            hovered ? 'opacity-100 max-w-[120px]' : 'opacity-0 max-w-0'
-          )}>
-            <Link href="/perfil">
-              <p className="text-xs font-bold text-slate-900 dark:text-white truncate hover:text-[#0ea5e9] transition-colors">
-                {getDisplayName()}
-              </p>
-            </Link>
-          </div>
-
-          {hovered && (
-            <button
-              onClick={handleLogout}
-              className="shrink-0 text-slate-400 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-500/10"
-              title="Sair"
-            >
-              <LogOut size={16} />
-            </button>
-          )}
-        </div>
+        <SidebarAvatarMenu hovered={hovered} />
       </div>
     </aside>
   )

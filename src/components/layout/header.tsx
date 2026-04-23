@@ -5,7 +5,6 @@ import { useProfile } from '@/hooks/use-profile'
 import { getNivelByXP, getProgressoNivel } from '@/data/niveis'
 import { useNotifications } from '@/hooks/use-notifications'
 import { NotificationPanel } from '@/components/shared/NotificationPanel'
-import { ThemeToggle } from '@/components/theme-toggle'
 import Link from 'next/link'
 
 interface HeaderProps {
@@ -71,30 +70,6 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
         )}
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        <ThemeToggle className="hidden sm:flex" />
-
-        {/* Compact Profile Completion Ring */}
-        <Link href="/perfil" className="flex items-center gap-2 group" title={`Perfil ${completion}% completo`}>
-          <div className="relative size-9 sm:size-10">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-              <circle className="text-white/5" cx="18" cy="18" fill="transparent" r="15" stroke="currentColor" strokeWidth="3"></circle>
-              <circle 
-                className="transition-all duration-1000 ease-out"
-                cx="18" cy="18" fill="transparent" r="15" 
-                stroke={completion === 100 ? '#10b981' : '#f59e0b'}
-                strokeDasharray="94.2" 
-                strokeDashoffset={94.2 - (94.2 * completion) / 100} 
-                strokeWidth="3"
-                strokeLinecap="round"
-              ></circle>
-            </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-slate-900 dark:text-white group-hover:text-[#0ea5e9] transition-colors">
-              {completion}%
-            </span>
-          </div>
-        </Link>
-
         {/* Notification Bell + Panel */}
         <NotificationPanel 
           notifications={notifications}
@@ -102,11 +77,6 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
           onRead={markAsRead}
           onReadAll={markAllAsRead}
         />
-
-        {/* Ver Perfil Button (desktop only) */}
-        <Link href="/perfil" className="hidden sm:block px-5 py-2 rounded-full shimmer-btn text-white text-sm font-bold tracking-tight shadow-lg shadow-[#0ea5e9]/20">
-          Ver Perfil
-        </Link>
       </div>
     </header>
   )

@@ -15,7 +15,7 @@ export default function DashboardLayout({
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-500/5 rounded-full blur-[80px]"></div>
         <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-blue-600/5 rounded-full blur-[80px]"></div>
       </div>
-      
+
       <div className="relative z-10 flex h-screen overflow-hidden">
         <Sidebar className="shrink-0" />
         <div className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden relative">
