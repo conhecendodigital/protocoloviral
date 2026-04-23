@@ -425,6 +425,9 @@ export async function POST(req: Request) {
         let lastError: any = null
         let fullGeneratedText = ''
 
+        let finalUsage = { promptTokens: 0, completionTokens: 0 }
+        let modelUsed = 'unknown'
+
         for (let i = 0; i < fallbackModels.length; i++) {
           const selectedModel = fallbackModels[i]
 
@@ -448,6 +451,18 @@ export async function POST(req: Request) {
               throw new Error('IA retornou resposta vazia.')
             }
 
+            // Capturar métricas após consumo do stream
+            try {
+              const usageData = await result.usage
+              finalUsage = {
+                promptTokens: usageData.promptTokens || 0,
+                completionTokens: usageData.completionTokens || 0
+              }
+            } catch (e) {
+              console.warn('[USAGE WARNING] Falha ao capturar tokens:', e)
+            }
+            
+            modelUsed = selectedModel.modelId
             success = true
             break
 
@@ -529,6 +544,42 @@ export async function POST(req: Request) {
               }
             }
 
+            let calculatedCostBrl = 0.0
+            try {
+              // Valores oficiais por 1 Milhao de tokens (M) em Dolar USD
+              let costInputPer1M = 0
+              let costOutputPer1M = 0
+              
+              if (modelUsed.includes('sonnet')) {
+                costInputPer1M = 3.00
+                costOutputPer1M = 15.00
+              } else if (modelUsed.includes('gpt-4o') && !modelUsed.includes('mini')) {
+                costInputPer1M = 5.00
+                costOutputPer1M = 15.00
+              } else if (modelUsed.includes('haiku')) {
+                costInputPer1M = 0.25
+                costOutputPer1M = 1.25
+              } else if (modelUsed.includes('gpt-4o-mini')) {
+                costInputPer1M = 0.15
+                costOutputPer1M = 0.60
+              } else if (modelUsed.includes('gemini')) {
+                costInputPer1M = 0.10
+                costOutputPer1M = 0.40
+              } else {
+                // Fallback default caso haja outro modelo
+                costInputPer1M = 1.00
+                costOutputPer1M = 2.00
+              }
+
+              const costUsd = (finalUsage.promptTokens / 1000000) * costInputPer1M +
+                              (finalUsage.completionTokens / 1000000) * costOutputPer1M
+
+              // Conversão fixa de 4.99 aprovada
+              calculatedCostBrl = costUsd * 4.99
+            } catch (calcError) {
+              console.warn('[CALC_COST_ERROR]', calcError)
+            }
+
             const { data: savedRoteiro, error: saveError } = await adminSupabase
               .from('roteiros')
               .insert({
@@ -536,7 +587,8 @@ export async function POST(req: Request) {
                 roteiro: finalScript,
                 titulo: title,
                 nicho: null,
-                formato_nome: formatTitle
+                formato_nome: formatTitle,
+                cost_brl: calculatedCostBrl
               })
               .select('id')
               .single()

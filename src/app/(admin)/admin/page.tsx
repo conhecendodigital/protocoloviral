@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { Users, Crown, Activity, Zap } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
+import Link from 'next/link'
 
 export default async function AdminDashboard() {
   const cookieStore = await cookies()
@@ -65,9 +66,15 @@ export default async function AdminDashboard() {
     totalCreditsAvailable += (c.credits_total || 0)
   })
 
-  // Cálculo aproximado de custo (Ex: 1 crédito = ~R$ 0.05 de custo da API OpenAI/Anthropic em média)
-  // Isso é apenas para fins de visualização do dashboard.
-  const custoAproximado = totalCreditsUsed * 0.05
+  // 5. Custo Exato em R$
+  const { data: roteirosCost } = await supabase
+    .from('roteiros')
+    .select('cost_brl')
+
+  let custoAproximado = 0
+  roteirosCost?.forEach(r => {
+    custoAproximado += (r.cost_brl || 0)
+  })
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -81,18 +88,21 @@ export default async function AdminDashboard() {
       {/* Cards de Métricas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Usuários */}
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none" />
+        <Link href="/admin/users" className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-blue-500/30 transition-colors">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none group-hover:from-blue-500/10 transition-colors" />
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-slate-400">Total de Usuários</h3>
+            <h3 className="text-sm font-medium text-slate-400 group-hover:text-slate-300 transition-colors">Total de Usuários</h3>
             <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
               <Users className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline justify-between">
             <span className="text-3xl font-bold text-white">{totalUsers || 0}</span>
+            <span className="text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-xs gap-1">
+              Ver Todos <span className="text-lg leading-none">&rarr;</span>
+            </span>
           </div>
-        </div>
+        </Link>
 
         {/* Assinantes Ativos */}
         <div className="bg-slate-900/50 backdrop-blur-xl border border-amber-500/20 p-6 rounded-2xl relative overflow-hidden group shadow-[0_0_30px_-15px_rgba(245,158,11,0.3)]">
