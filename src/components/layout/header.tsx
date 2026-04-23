@@ -70,6 +70,7 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
         )}
       </div>
 
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {/* Notification Bell + Panel */}
         <NotificationPanel 
           notifications={notifications}
