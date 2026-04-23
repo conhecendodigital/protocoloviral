@@ -34,12 +34,38 @@ Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduçõ
       })
 
       const raw = text.trim()
+
+      // Strip markdown code fences if model wrapped the JSON (```json ... ```)
+      const stripped = raw
+        .replace(/^```(?:json)?\s*/i, '')
+        .replace(/\s*```$/, '')
+        .trim()
+
       try {
-        const parsed = JSON.parse(raw)
-        return NextResponse.json({ variations: parsed.variations })
+        const parsed = JSON.parse(stripped)
+        if (Array.isArray(parsed.variations) && parsed.variations.length > 0) {
+          return NextResponse.json({ variations: parsed.variations.slice(0, 3) })
+        }
+        throw new Error('bad shape')
       } catch {
-        const lines = raw.split('\n').filter((l: string) => l.trim().length > 5).slice(0, 3)
-        return NextResponse.json({ variations: lines })
+        // Regex fallback: extract all "quoted strings" from the raw response
+        const matches = [...stripped.matchAll(/"([^"]{10,})"/g)]
+          .map(m => m[1].trim())
+          .filter(s => !s.startsWith('{') && !s.includes('variations') && s.length > 5)
+          .slice(0, 3)
+
+        if (matches.length > 0) {
+          return NextResponse.json({ variations: matches })
+        }
+
+        // Last resort: numbered lines (1. text or - text)
+        const fallback = stripped
+          .split('\n')
+          .map((l: string) => l.replace(/^[\d]+[.)]\s*/, '').replace(/^[-•]\s*/, '').replace(/^[""]|[""]$/g, '').trim())
+          .filter((l: string) => l.length > 10 && !l.startsWith('{') && !l.startsWith('"variations'))
+          .slice(0, 3)
+
+        return NextResponse.json({ variations: fallback })
       }
     }
 
