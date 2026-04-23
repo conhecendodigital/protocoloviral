@@ -4,7 +4,7 @@ import { Suspense, useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useProfile } from '@/hooks/use-profile'
-import { Loader2, CheckCircle2, Shield, Star, Zap, Crown, ArrowRightLeft } from 'lucide-react'
+import { Loader2, CheckCircle2, Shield, Star, Zap, Crown, ArrowRightLeft, Flame } from 'lucide-react'
 import { CheckoutBrick } from '@/components/checkout/checkout-brick'
 
 const FEATURES = [
@@ -23,6 +23,7 @@ const PLANS = [
     price: '97',
     desc: 'Perfeito para testar e validar o ecossistema.',
     badge: null,
+    badgeHot: false,
     popular: false,
   },
   {
@@ -30,7 +31,8 @@ const PLANS = [
     title: 'Trimestral',
     price: '200',
     desc: 'O mais escolhido. Compromisso ideal por 3 meses.',
-    badge: '🔥 Mais Popular',
+    badge: 'MAIS POPULAR',
+    badgeHot: true,
     popular: true,
   },
   {
@@ -38,7 +40,8 @@ const PLANS = [
     title: 'Semestral',
     price: '297',
     desc: 'Pague por ~3 meses e ganhe 6 meses de acesso total.',
-    badge: '⭐ Maior Economia',
+    badge: 'MAIOR ECONOMIA',
+    badgeHot: false,
     popular: false,
   }
 ]
@@ -145,7 +148,9 @@ function AssinaturaContent() {
 
         {/* Status Block if Active */}
         {activePlan && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto glass-card rounded-3xl p-8 border border-emerald-500/20 text-center relative overflow-hidden bg-emerald-500/5">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto glass-card rounded-3xl p-8 border border-emerald-500/20 text-center relative overflow-hidden bg-gradient-to-b from-emerald-500/10 to-transparent">
+            {/* Glow decorativo */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/10 rounded-full blur-[60px] pointer-events-none" />
             <div className="absolute top-0 right-0 p-6 opacity-10">
               <Shield className="w-32 h-32 text-emerald-500" />
             </div>
@@ -215,10 +220,16 @@ function AssinaturaContent() {
                 animate={{ opacity: 1, y: 0 }} 
                 transition={{ delay: 0.1 * i }}
                 key={plan.id}
-                className={`glass-card rounded-3xl p-8 relative flex flex-col transition-all duration-300 ${plan.popular ? 'border-[#0ea5e9]/50 shadow-[0_0_30px_rgba(14,165,233,0.15)] scale-100 lg:scale-[1.02] z-20 bg-white/60 dark:bg-[#0B0F19]/80' : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'}`}
+                className={`glass-card rounded-3xl p-8 relative flex flex-col transition-all duration-300 ${plan.popular ? 'border-[#0ea5e9]/50 shadow-[0_8px_32px_-4px_rgba(14,165,233,0.2),0_0_0_1px_rgba(14,165,233,0.1)] scale-100 lg:scale-[1.02] z-20 bg-white/60 dark:bg-[#0B0F19]/80' : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'}`}
               >
                 {plan.badge && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gradient-to-r from-sky-400 to-[#0ea5e9] shadow-lg shadow-[#0ea5e9]/30 text-white text-xs font-black uppercase tracking-widest whitespace-nowrap">
+                  <div className={`absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-white text-xs font-black uppercase tracking-widest whitespace-nowrap shadow-lg flex items-center gap-1.5 ${
+                    plan.badgeHot
+                      ? 'bg-gradient-to-r from-amber-500 to-red-500 shadow-amber-500/30'
+                      : 'bg-gradient-to-r from-slate-600 to-slate-800 shadow-slate-500/20'
+                  }`}>
+                    {plan.badgeHot && <Flame className="w-3 h-3" />}
+                    {!plan.badgeHot && <Star className="w-3 h-3" />}
                     {plan.badge}
                   </div>
                 )}
@@ -236,12 +247,12 @@ function AssinaturaContent() {
                   <button
                     disabled={activePlan === plan.id || checkingOut !== null}
                     onClick={() => handleCheckoutClick(plan.id, plan.price)}
-                    className={`w-full py-4 rounded-xl flex items-center justify-center text-[13px] font-bold uppercase tracking-widest transition-all px-2 ${
+                    className={`w-full py-4 rounded-xl flex items-center justify-center text-[13px] font-bold uppercase tracking-widest px-2 ${
                       activePlan === plan.id 
                         ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 cursor-not-allowed'
                         : plan.popular 
-                          ? 'bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-lg shadow-sky-500/20 hover:brightness-110 active:scale-[0.98]'
-                          : 'bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white hover:bg-black/10 dark:hover:bg-white/10 active:scale-[0.98]'
+                          ? 'bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-lg shadow-sky-500/20 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:shadow-xl hover:shadow-sky-500/30 active:scale-[0.98] active:duration-100'
+                          : 'bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-black/10 dark:hover:bg-white/10 hover:scale-[1.02] hover:border-slate-300 dark:hover:border-white/20 active:scale-[0.98] active:duration-100'
                     }`}
                   >
                     {checkingOut === plan.id ? (
@@ -292,7 +303,7 @@ function AssinaturaContent() {
 
 export default function AssinaturaPage() {
   return (
-    <Suspense fallback={<div className="flex-1 flex items-center justify-center"><div className="w-6 h-6 border-2 border-[#0ea5e9] border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="flex-1 flex items-center justify-center"><Loader2 className="w-6 h-6 animate-spin text-[#0ea5e9]" /></div>}>
       <AssinaturaContent />
     </Suspense>
   )

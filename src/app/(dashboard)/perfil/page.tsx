@@ -82,7 +82,7 @@ function ClarezaTab({ data }: { data: ClarezaParsed }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       {sections.map((sec) => sec.content && (
-        <div key={sec.key} className={`glass-card rounded-3xl p-6 sm:p-8 border border-${sec.color}-500/10 relative overflow-hidden`}>
+        <div key={sec.key} className={`glass-card rounded-3xl p-6 sm:p-8 border border-${sec.color}-500/10 relative overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-${sec.color}-500/25 hover:shadow-[0_0_24px_rgba(0,0,0,0.06)]`}>
           {sec.key === 'manifesto' && (
             <div className="absolute top-0 right-0 p-6 opacity-5">
               <Sparkles size={18} className="text-[80px] text-[#0ea5e9]" />
@@ -90,7 +90,7 @@ function ClarezaTab({ data }: { data: ClarezaParsed }) {
           )}
           <div className="flex items-center gap-3 mb-5">
             <div className={`size-10 rounded-xl bg-${sec.color}-500/10 flex items-center justify-center border border-${sec.color}-500/20`}>
-              <DynamicIcon name={sec.icon} size={20} className="text-${sec.color}-400 text-xl`}" />
+              <DynamicIcon name={sec.icon} size={20} className="text-xl" />
             </div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white tracking-tight">{sec.title}</h3>
           </div>
@@ -283,9 +283,9 @@ function EmptyInsightState({ type }: { type: 'clareza' | 'persona' }) {
       <p className="text-sm text-slate-700 dark:text-white/60 max-w-md mb-8 leading-relaxed">{c.desc}</p>
       <Link
         href={`/prompts/${c.step}`}
-        className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-sky-400 to-[#0ea5e9] text-white font-bold text-sm hover:brightness-110 transition-all active:scale-[0.97] shadow-lg shadow-[#0ea5e9]/30"
+        className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-bold text-sm transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:shadow-xl hover:shadow-[#0ea5e9]/30 active:scale-[0.98] active:duration-100 shadow-lg shadow-[#0ea5e9]/20"
       >
-        <Sparkles size={18} className="text-lg" />
+        <Sparkles size={18} />
         Ir para {c.stepLabel}
       </Link>
     </motion.div>
@@ -362,11 +362,11 @@ export default function PerfilPage() {
 
   if (loading) {
     return (
-      <>
-        <div className="flex items-center justify-center h-96 relative z-10 w-full">
-          <Loader2 className="w-8 h-8 animate-spin text-[#0ea5e9]" />
-        </div>
-      </>
+      <div className="flex flex-col items-center justify-center h-96 gap-4 relative z-10 w-full">
+        <div className="w-28 h-28 rounded-full skeleton" />
+        <div className="w-48 h-6 rounded-lg skeleton" />
+        <div className="w-32 h-4 rounded-lg skeleton" />
+      </div>
     )
   }
 
@@ -466,21 +466,33 @@ export default function PerfilPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full mt-6 overflow-hidden relative z-10">
-                      <div className="h-full bg-gradient-to-r from-sky-400 to-[#0ea5e9] shadow-[0_0_15px_rgba(14,165,233,0.5)] transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `${completion}%` }} />
+                    <div className="w-full h-2.5 bg-black/5 dark:bg-white/5 rounded-full mt-6 overflow-hidden relative z-10">
+                      <motion.div
+                        className="h-full rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${completion}%` }}
+                        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        style={{
+                          background: completion === 100
+                            ? 'linear-gradient(90deg, #10b981, #34d399)'
+                            : 'linear-gradient(90deg, #0ea5e9, #8b5cf6)'
+                        }}
+                      />
                     </div>
 
                     {completion === 100 && (
                       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-[#0ea5e9]/10 border border-emerald-500/20 text-center relative z-10">
-                        <Rocket size={18} className="text-[32px] text-emerald-400 mb-2 block" />
-                        <h4 className="text-lg font-black text-slate-900 dark:text-white mb-1">Perfil Completo! 🚀</h4>
+                        <Rocket size={32} className="text-emerald-400 mb-2 mx-auto" />
+                        <h4 className="text-lg font-black text-slate-900 dark:text-white mb-1 flex items-center justify-center gap-2">
+                          Perfil Completo!
+                        </h4>
                         <p className="text-sm text-slate-700 dark:text-white/70 mb-5">Agora que temos todas as suas informações, vamos criar seu primeiro conteúdo.</p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                          <Link href="/jornada" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-[#0ea5e9] text-white font-bold text-sm hover:opacity-90 transition-opacity active:scale-[0.97]">
-                            <Compass size={18} className="text-lg" /> Ir para a Jornada de Conteúdo
+                          <Link href="/jornada" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-500 text-white font-bold text-sm transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:shadow-lg hover:shadow-emerald-500/30 active:scale-[0.98] active:duration-100">
+                            <Compass size={18} /> Ir para a Jornada de Conteúdo
                           </Link>
-                          <Link href="/prompts" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-bold text-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors active:scale-[0.97]">
-                            <Sparkles size={18} className="text-lg" /> Gerar meu primeiro Roteiro
+                          <Link href="/prompts" className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-bold text-sm transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-black/10 dark:hover:bg-white/10 hover:scale-[1.02] hover:border-slate-300 dark:hover:border-white/20 active:scale-[0.98] active:duration-100">
+                            <Sparkles size={18} /> Gerar meu primeiro Roteiro
                           </Link>
                         </div>
                       </motion.div>
@@ -518,11 +530,10 @@ export default function PerfilPage() {
                                   </div>
                                 </div>
                                 <div className="group relative">
-                                  <div className="absolute inset-0 bg-black/5 dark:bg-white/5 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none border border-[#0ea5e9]/50" />
                                   {isTextarea ? (
-                                    <Textarea id={field.id} placeholder={field.placeholder} value={fieldValue} onChange={e => handleFieldChange(field.id, e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 rounded-2xl px-5 py-4 focus-visible:ring-0 focus-visible:border-[#0ea5e9] outline-none transition-all resize-none text-slate-900 dark:text-white text-sm leading-relaxed min-h-[100px] relative z-10 placeholder:text-slate-400 dark:placeholder:text-white/30" rows={4} />
+                                    <Textarea id={field.id} placeholder={field.placeholder} value={fieldValue} onChange={e => handleFieldChange(field.id, e.target.value)} className="w-full bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-slate-200/60 dark:border-white/10 rounded-2xl px-5 py-4 focus-visible:ring-0 outline-none resize-none text-slate-900 dark:text-white text-sm leading-relaxed min-h-[100px] placeholder:text-slate-400 dark:placeholder:text-white/30 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus:bg-white/80 dark:focus:bg-white/10 focus:border-[#0ea5e9]/50 focus:shadow-[0_0_0_3px_rgba(14,165,233,0.1)]" rows={4} />
                                   ) : (
-                                    <Input id={field.id} placeholder={field.placeholder} value={fieldValue} onChange={e => handleFieldChange(field.id, e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border border-slate-200/50 dark:border-white/10 rounded-2xl px-5 py-6 h-auto focus-visible:ring-0 focus-visible:border-[#0ea5e9] outline-none transition-all text-slate-900 dark:text-white text-sm relative z-10 placeholder:text-slate-400 dark:placeholder:text-white/30" />
+                                    <Input id={field.id} placeholder={field.placeholder} value={fieldValue} onChange={e => handleFieldChange(field.id, e.target.value)} className="w-full bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-slate-200/60 dark:border-white/10 rounded-2xl px-5 py-6 h-auto focus-visible:ring-0 outline-none text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-white/30 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus:bg-white/80 dark:focus:bg-white/10 focus:border-[#0ea5e9]/50 focus:shadow-[0_0_0_3px_rgba(14,165,233,0.1)]" />
                                   )}
                                 </div>
                               </div>
