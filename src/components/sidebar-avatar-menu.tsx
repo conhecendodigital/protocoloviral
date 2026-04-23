@@ -40,6 +40,11 @@ export function SidebarAvatarMenu({ hovered = true }: SidebarAvatarMenuProps) {
     return () => document.removeEventListener('mousedown', handleOutside)
   }, [])
 
+  // Fecha automaticamente quando a sidebar colapsa
+  useEffect(() => {
+    if (!hovered) setOpen(false)
+  }, [hovered])
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
