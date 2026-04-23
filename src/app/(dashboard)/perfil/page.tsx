@@ -255,39 +255,133 @@ function PersonaTab({ data }: { data: PersonaParsed }) {
   )
 }
 
-// ─── Empty State Component ─────────────────────────────────
-function EmptyInsightState({ type }: { type: 'clareza' | 'persona' }) {
+// ── Empty State Component ─────────────────────────────────────
+// Recebe profile para gerar insights e onGenerated para recarregar os dados
+function EmptyInsightState({
+  type,
+  profile,
+  onGenerated,
+  onGoToProfile,
+}: {
+  type: 'clareza' | 'persona'
+  profile: import('@/types/profile').Profile | null
+  onGenerated: () => void
+  onGoToProfile: () => void
+}) {
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+
   const config = {
     clareza: {
       icon: 'lightbulb',
       title: 'Sua Clareza ainda não foi gerada',
-      desc: 'Vá até o Gerador de Prompts, gere o Passo 1 (Clareza), cole no ChatGPT, e depois cole a resposta de volta no campo indicado.',
-      step: 'clareza',
-      stepLabel: 'Passo 1: Clareza',
+      desc: 'A IA vai analisar seu perfil e criar seu posicionamento completo: manifesto, diferencial, transformação, pilares de conteúdo e próximos passos.',
+      color: 'amber' as const,
     },
     persona: {
       icon: 'groups',
-      title: 'Sua Persona ainda não foi gerada',
-      desc: 'Vá até o Gerador de Prompts, gere o Passo 2 (Persona), cole no ChatGPT, e depois cole a resposta de volta no campo indicado.',
-      step: 'persona',
-      stepLabel: 'Passo 2: Persona',
+      title: 'Sua Persona ainda não foi criada',
+      desc: 'A IA vai construir o perfil psicológico completo do seu público-alvo: sonhos, dores, objeções, hábitos digitais e comportamento de compra.',
+      color: 'purple' as const,
     },
   }
   const c = config[type]
+
+  const hasEnoughProfile = !!(profile?.nicho)
+
+  const handleGenerate = async () => {
+    if (!profile) return
+    setIsGenerating(true)
+    setErrorMsg('')
+    try {
+      const res = await fetch('/api/gerar-insights', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile: {
+            nicho: profile.nicho,
+            assunto: profile.assunto,
+            formacoes: profile.formacoes,
+            resultado: profile.resultado,
+            diferencial: profile.diferencial,
+            publico: profile.publico,
+            dor: profile.dor,
+            tentou: profile.tentou,
+            concorrentes: profile.concorrentes,
+            proposito: profile.proposito,
+            receio: profile.receio,
+            tempo: profile.tempo,
+            naoquer: profile.naoquer,
+          },
+        }),
+      })
+      if (!res.ok) throw new Error('API error')
+      onGenerated()
+    } catch {
+      setErrorMsg('Erro ao gerar. Verifique se seu perfil tem pelo menos o nicho preenchido.')
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const accentColor = type === 'clareza' ? '#f59e0b' : '#8b5cf6'
+  const accentClass = type === 'clareza' ? 'from-amber-400 to-orange-500' : 'from-violet-500 to-purple-600'
+  const shadowClass = type === 'clareza' ? 'shadow-amber-500/20' : 'shadow-violet-500/20'
+
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center justify-center text-center py-16 px-6">
-      <div className="size-20 rounded-full bg-[#0ea5e9]/10 flex items-center justify-center mb-6 border border-[#0ea5e9]/20">
-        <DynamicIcon name={c.icon} size={40} className="text-[40px] text-[#0ea5e9]" />
-      </div>
-      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{c.title}</h3>
-      <p className="text-sm text-slate-700 dark:text-white/60 max-w-md mb-8 leading-relaxed">{c.desc}</p>
-      <Link
-        href={`/prompts/${c.step}`}
-        className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-bold text-sm transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:shadow-xl hover:shadow-[#0ea5e9]/30 active:scale-[0.98] active:duration-100 shadow-lg shadow-[#0ea5e9]/20"
+      {/* Icone animado */}
+      <motion.div
+        animate={{ scale: [1, 1.06, 1] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+        className="size-20 rounded-full flex items-center justify-center mb-6 border"
+        style={{
+          background: `${accentColor}15`,
+          borderColor: `${accentColor}30`,
+          boxShadow: `0 0 30px ${accentColor}20`,
+        }}
       >
-        <Sparkles size={18} />
-        Ir para {c.stepLabel}
-      </Link>
+        <DynamicIcon name={c.icon} size={40} style={{ color: accentColor }} />
+      </motion.div>
+
+      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{c.title}</h3>
+      <p className="text-sm text-slate-600 dark:text-white/60 max-w-md mb-2 leading-relaxed">{c.desc}</p>
+
+      {!hasEnoughProfile && (
+        <p className="text-xs text-amber-500 dark:text-amber-400 mb-8 font-medium">
+          ⚠️ Preencha pelo menos o campo <strong>Nicho</strong> antes de treinar a IA.
+        </p>
+      )}
+      {hasEnoughProfile && <div className="mb-8" />}
+
+      {errorMsg && (
+        <p className="text-xs text-red-500 dark:text-red-400 mb-4 max-w-xs">{errorMsg}</p>
+      )}
+
+      {/* CTAs */}
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        {/* Treinar a IA */}
+        <button
+          onClick={handleGenerate}
+          disabled={isGenerating || !hasEnoughProfile}
+          className={`inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r ${accentClass} text-white font-bold text-sm transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:shadow-xl ${shadowClass} active:scale-[0.98] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100`}
+        >
+          {isGenerating ? (
+            <><Loader2 size={18} className="animate-spin" /><span>Gerando...</span></>
+          ) : (
+            <><Sparkles size={18} /><span>Treinar a IA</span></>
+          )}
+        </button>
+
+        {/* Preencher Perfil */}
+        <button
+          onClick={onGoToProfile}
+          className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 font-bold text-sm transition-all hover:bg-white/50 dark:hover:bg-white/5 hover:border-slate-300 dark:hover:border-white/20"
+        >
+          <User size={16} />
+          <span>Preencher Perfil</span>
+        </button>
+      </div>
     </motion.div>
   )
 }
@@ -360,6 +454,16 @@ export default function PerfilPage() {
   }
   const handleCancelEditName = () => { setEditingName(false) }
 
+  // callback para recarregar clareza/persona após geração in-page
+  const handleInsightGenerated = useCallback(() => {
+    // recarrega o profile do supabase para pegar resposta1/resposta2 novas
+    window.location.reload()
+  }, [])
+
+  // navega para a aba de dados
+  const [activeTab, setActiveTab] = useState('dados')
+  const goToProfile = useCallback(() => setActiveTab('dados'), [])
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-96 gap-4 relative z-10 w-full">
@@ -375,7 +479,7 @@ export default function PerfilPage() {
       <main className="flex-1 flex flex-col items-center w-full relative z-10 overflow-y-auto custom-scrollbar">
         <div className="w-full max-w-7xl px-6 lg:px-8 py-8 md:py-12 pb-24">
 
-          {/* ─── Profile Header ──────────────────────────── */}
+          {/* ─── Profile Header ────────────────────────── */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
               {/* Avatar */}
@@ -417,8 +521,8 @@ export default function PerfilPage() {
             </div>
           </motion.div>
 
-          {/* ─── Main 3-Tab Layout ───────────────────────── */}
-          <Tabs defaultValue="dados" className="w-full focus-visible:outline-none">
+          {/* ─── Main 3-Tab Layout ───────────────── */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full focus-visible:outline-none">
             <TabsList className="mb-8 bg-black/5 dark:bg-white/5 border border-slate-300/10 dark:border-white/10 p-1.5 rounded-2xl w-full grid grid-cols-3 !h-auto min-h-[60px] sm:min-h-[50px]">
               <TabsTrigger value="dados" className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 rounded-xl font-bold py-2 sm:py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-[#0ea5e9]/20 data-[state=active]:text-[#0ea5e9] data-[state=active]:shadow-[0_4px_8px_rgba(0,0,0,0.05)] transition-all focus-visible:ring-0 text-[11px] sm:text-sm leading-none !h-auto">
                 <User size={16} className="text-[18px] sm:text-base" />
@@ -612,12 +716,30 @@ export default function PerfilPage() {
 
             {/* ═══ TAB 2: SUA CLAREZA ══════════════════════ */}
             <TabsContent value="clareza" className="focus-visible:outline-none focus:outline-none">
-              {clarezaData ? <ClarezaTab data={clarezaData} /> : <EmptyInsightState type="clareza" />}
+              {clarezaData ? (
+                <ClarezaTab data={clarezaData} />
+              ) : (
+                <EmptyInsightState
+                  type="clareza"
+                  profile={profile}
+                  onGenerated={handleInsightGenerated}
+                  onGoToProfile={goToProfile}
+                />
+              )}
             </TabsContent>
 
             {/* ═══ TAB 3: SUA PERSONA ══════════════════════ */}
             <TabsContent value="persona" className="focus-visible:outline-none focus:outline-none">
-              {personaData ? <PersonaTab data={personaData} /> : <EmptyInsightState type="persona" />}
+              {personaData ? (
+                <PersonaTab data={personaData} />
+              ) : (
+                <EmptyInsightState
+                  type="persona"
+                  profile={profile}
+                  onGenerated={handleInsightGenerated}
+                  onGoToProfile={goToProfile}
+                />
+              )}
             </TabsContent>
           </Tabs>
         </div>
