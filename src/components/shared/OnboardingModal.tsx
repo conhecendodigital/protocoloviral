@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, ArrowRight, Check, CheckCircle, Hand, RefreshCw } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Brain, Check, CheckCircle, Hand, RefreshCw, Sparkles } from 'lucide-react'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface OnboardingModalProps {
@@ -18,10 +18,8 @@ const SECTION_LABELS: Record<string, { icon: string; label: string; color: strin
   publico: { icon: 'groups', label: 'Seu Público', color: '#8b5cf6' },
   objetivos: { icon: 'rocket_launch', label: 'Seus Objetivos', color: '#10b981' },
 }
-// ── Opções clicaveis (apenas nesses campos — sem campo de texto)
-// Campos SEM opções: nicho, assunto, formacoes, diferencial, concorrentes → texto livre
-// Campos COM opções: cards clicaveis, sem textarea
-const OPTIONS: Record<string, { emoji: string; label: string; desc: string; value: string }[]> = {
+// ── Opções estáticas para campos genéricos
+const OPTIONS_STATIC: Record<string, { emoji: string; label: string; desc: string; value: string }[]> = {
   resultado: [
     { emoji: '📱', label: '10k+ seguidores', desc: 'Cresci de 0 para mais de 10 mil seguidores', value: 'Cresci de 0 para mais de 10 mil seguidores' },
     { emoji: '💰', label: 'Primeiros clientes', desc: 'Fechei os primeiros clientes pelas redes', value: 'Fechei meus primeiros clientes pelas redes sociais' },
@@ -80,12 +78,93 @@ const OPTIONS: Record<string, { emoji: string; label: string; desc: string; valu
   ],
 }
 
+// ── Opções dinâmicas por nicho — adapta publico, dor e resultado
+function getDynamicOptions(fieldId: string, nicho: string): { emoji: string; label: string; desc: string; value: string }[] | null {
+  const n = nicho.toLowerCase()
+
+  // Nicho: Fitness / Saúde / Emagrecimento
+  if (n.match(/fit|saúde|saude|emagre|nutri|treino|academia|corpo|magr/)) {
+    if (fieldId === 'publico') return [
+      { emoji: '🏋️', label: 'Sedentários', desc: 'Quem quer começar mas não sabe por onde', value: 'Pessoas sedentárias que querem começar a se exercitar mas não sabem por onde começar' },
+      { emoji: '🍽️', label: 'Quem quer emagrecer', desc: 'Buscam emagrecimento saudável e definitivo', value: 'Pessoas que querem emagrecer de forma saudável e definitiva' },
+      { emoji: '💪', label: 'Iniciantes na academia', desc: 'Começaram mas estão perdidos nos treinos', value: 'Iniciantes na academia que estão perdidos nos treinos e alimentação' },
+      { emoji: '👩', label: 'Mulheres 30-50 anos', desc: 'Querem qualidade de vida e autoestima', value: 'Mulheres entre 30 e 50 anos buscando qualidade de vida e autoestima' },
+      { emoji: '🏃', label: 'Atletas amadores', desc: 'Querem melhorar performance esportiva', value: 'Atletas amadores que querem melhorar performance e evitar lesões' },
+    ]
+    if (fieldId === 'dor') return [
+      { emoji: '🔄', label: 'Efeito sanfona', desc: 'Perde e engorda, não consegue manter', value: 'Sofre com o efeito sanfona, sempre voltando ao peso inicial' },
+      { emoji: '⏰', label: 'Sem tempo para treinar', desc: 'Rotina intensa, sem conseguir ser consistente', value: 'Não consegue ser consistente por falta de tempo na rotina' },
+      { emoji: '🍕', label: 'Ansiedade e comida', desc: 'Come por emoção, sabota a dieta', value: 'Come por ansiedade e sabota a própria dieta constantemente' },
+      { emoji: '😔', label: 'Baixa autoestima', desc: 'Vergonha do próprio corpo', value: 'Tem vergonha do próprio corpo e baixa autoestima' },
+      { emoji: '💸', label: 'Gastou com soluções', desc: 'Remédios, dietas milagrosas sem resultado', value: 'Já gastou muito dinheiro com dietas milagrosas e remédios sem resultado' },
+    ]
+  }
+
+  // Nicho: Finanças / Investimentos / Renda extra
+  if (n.match(/finan|invest|renda|dinheiro|econom|aposentad|bolsa|cripto|patrimônio/)) {
+    if (fieldId === 'publico') return [
+      { emoji: '💳', label: 'Endividados', desc: 'Querem sair das dívidas e do vermelho', value: 'Pessoas endividadas que querem sair do vermelho e reorganizar as finanças' },
+      { emoji: '📊', label: 'Iniciantes em investimentos', desc: 'Nunca investiram e não sabem começar', value: 'Pessoas que nunca investiram e não sabem por onde começar' },
+      { emoji: '💼', label: 'Assalariados', desc: 'Querem renda extra além do salário', value: 'Assalariados que querem criar fontes de renda extra além do salário' },
+      { emoji: '👨‍👩‍👧', label: 'Pais de família', desc: 'Querem segurança financeira para família', value: 'Pais de família buscando segurança financeira e futuro para os filhos' },
+      { emoji: '🎓', label: 'Jovens adultos', desc: 'Começando a vida financeira do zero', value: 'Jovens adultos começando a construir o patrimônio do zero' },
+    ]
+    if (fieldId === 'dor') return [
+      { emoji: '💸', label: 'Dinheiro some', desc: 'Sempre termina o mês no vermelho', value: 'O dinheiro some antes do fim do mês e não sabe para onde vai' },
+      { emoji: '😱', label: 'Medo de investir', desc: 'Tem medo de perder o pouco que tem', value: 'Tem medo de perder dinheiro e não sabe em quem confiar para investir' },
+      { emoji: '🏦', label: 'Sem reserva', desc: 'Qualquer imprevisto causa crise', value: 'Não tem reserva de emergência e qualquer imprevisto vira crise' },
+      { emoji: '📉', label: 'Compras por impulso', desc: 'Gasta mais do que ganha consistentemente', value: 'Gasta por impulso e não consegue economizar mesmo querendo' },
+      { emoji: '⏳', label: 'Aposentadoria incerta', desc: 'Não sabe se vai conseguir se aposentar', value: 'Não sabe se vai conseguir se aposentar com qualidade de vida' },
+    ]
+  }
+
+  // Nicho: Marketing Digital / Redes Sociais / Infoprodutos
+  if (n.match(/market|digital|redes|social|instagram|tiktok|youtube|content|criador|influenc|infoprod/)) {
+    if (fieldId === 'publico') return [
+      { emoji: '🏪', label: 'Negócios locais', desc: 'Lojas e serviços querendo mais clientes', value: 'Donos de negócios locais que querem usar o digital para atrair mais clientes' },
+      { emoji: '🎓', label: 'Especialistas sem audiência', desc: 'Sabem muito mas ninguém conhece', value: 'Especialistas e profissionais que têm expertise mas não sabem se posicionar online' },
+      { emoji: '💼', label: 'Autônomos e freelancers', desc: 'Querem clientes via redes sociais', value: 'Autônomos e freelancers que querem atrair clientes pelas redes sociais' },
+      { emoji: '🌱', label: 'Iniciantes no digital', desc: 'Nunca criaram conteúdo antes', value: 'Pessoas que nunca criaram conteúdo e não sabem por onde começar' },
+      { emoji: '🔄', label: 'Já criam mas sem resultado', desc: 'Postam mas não crescem nem vendem', value: 'Criadores que já postam há meses mas não conseguem crescer nem vender' },
+    ]
+    if (fieldId === 'dor') return [
+      { emoji: '🤷', label: 'Não sabe o que postar', desc: 'Fica travado sem ideias de conteúdo', value: 'Fica travado sem saber o que postar e fica dias sem publicar' },
+      { emoji: '👻', label: 'Vídeos sem views', desc: 'Produz mas ninguém assiste', value: 'Produz conteúdo mas os vídeos não chegam a ninguém' },
+      { emoji: '📉', label: 'Seguidores que não compram', desc: 'Tem audiência mas zero vendas', value: 'Acumulou seguidores mas não consegue converter nenhum em cliente' },
+      { emoji: '🔁', label: 'Sem consistência', desc: 'Para e começa, nunca mantém o ritmo', value: 'Começa motivado, para na segunda semana e recomeça do zero' },
+      { emoji: '😵', label: 'Sem posicionamento', desc: 'Não sabe qual é seu diferencial', value: 'Não sabe qual é seu diferencial e se perde no meio de tantos criadores' },
+    ]
+  }
+
+  // Nicho: Moda / Beleza / Estética / Lifestyle
+  if (n.match(/moda|beleza|estet|look|make|maqu|fashion|style|lifestyle|pele|cabelo/)) {
+    if (fieldId === 'publico') return [
+      { emoji: '👗', label: 'Mulheres que querem se vestir bem', desc: 'Buscam estilo sem gastar muito', value: 'Mulheres que querem se vestir bem e com estilo sem gastar muito' },
+      { emoji: '🪞', label: 'Quem quer transformar a autoestima', desc: 'Usam a beleza para ganhar confiança', value: 'Pessoas que buscam transformar a própria autoestima através da imagem' },
+      { emoji: '📸', label: 'Quem quer aparecer online', desc: 'Querem criar conteúdo de moda/beleza', value: 'Pessoas que querem criar conteúdo de moda e beleza para as redes sociais' },
+      { emoji: '💍', label: 'Mulheres 25-45', desc: 'Querem se vestir bem para o dia a dia', value: 'Mulheres entre 25 e 45 anos que querem se sentir bonitas no dia a dia' },
+      { emoji: '💼', label: 'Profissionais que querem imagem', desc: 'Querem projetar autoridade pela aparência', value: 'Profissionais que querem projetar autoridade e confiança pela imagem pessoal' },
+    ]
+    if (fieldId === 'dor') return [
+      { emoji: '🤷‍♀️', label: 'Não sabe se vestir', desc: 'Tem roupas mas não sabe combinar', value: 'Tem um guarda-roupa cheio mas não sabe montar looks bonitos' },
+      { emoji: '💸', label: 'Gasta e não usa', desc: 'Compra por impulso e se arrepende', value: 'Gasta dinheiro em roupas por impulso mas nunca usa a maioria' },
+      { emoji: '😔', label: 'Baixa autoestima visual', desc: 'Não gosta da própria imagem', value: 'Não gosta da própria imagem e evita aparecer em fotos e vídeos' },
+      { emoji: '📏', label: 'Dificuldade com o corpo', desc: 'Não encontra roupas para o seu tipo físico', value: 'Tem dificuldade de encontrar roupas que valorizem seu tipo de corpo' },
+      { emoji: '❓', label: 'Não sabe qual estilo é seu', desc: 'Perdida sem uma identidade visual clara', value: 'Não sabe qual é seu estilo e fica copiando tendências sem identidade própria' },
+    ]
+  }
+
+  return null // usa opções padrão
+}
+
+
 
 export function OnboardingModal({ userId, onComplete, updateField }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState(-1) // -1 = intro screen
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [direction, setDirection] = useState(1) // 1 = forward, -1 = backward
   const [isCompleting, setIsCompleting] = useState(false)
+  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
 
   const supabase = useMemo(() => createClient(), [])
@@ -112,13 +191,13 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
       setDirection(1)
       setCurrentStep(prev => prev + 1)
     } else {
-      // Last step — complete onboarding
+      // Last step — save + generate insights
       setIsCompleting(true)
-      
-      // Save the last field if filled
-      if (value.trim()) {
-        updateField(currentField.id, value)
-      }
+      if (value.trim()) updateField(currentField.id, value)
+
+      // Build full profile from answers
+      const fullProfile = { ...answers }
+      if (value.trim()) fullProfile[currentField.id] = value
 
       // Mark onboarding as completed
       await supabase
@@ -127,9 +206,22 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
         .eq('id', userId)
 
       setShowSuccess(true)
-      setTimeout(() => {
-        onComplete()
-      }, 2500)
+      setIsGeneratingInsights(true)
+
+      // Generate Clareza + Persona in background
+      try {
+        await fetch('/api/gerar-insights', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile: fullProfile }),
+        })
+      } catch (e) {
+        console.error('[onboarding] gerar-insights failed:', e)
+      } finally {
+        setIsGeneratingInsights(false)
+      }
+
+      setTimeout(() => { onComplete() }, 2500)
     }
   }, [currentStep, totalSteps, currentField, answers, updateField, userId, supabase, onComplete])
 
@@ -195,16 +287,23 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
           </motion.div>
           <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Perfil Completo!</h2>
           <p className="text-lg text-slate-800 dark:text-white/90 max-w-md">
-            Agora a Inteligência Artificial tem o contexto ideal para gerar conteúdos personalizados para você.
+            Estamos personalizando sua experiência com Inteligência Artificial.
           </p>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="mt-6 text-sm text-[#0ea5e9] font-bold uppercase tracking-widest flex items-center gap-2"
+            className="mt-6 space-y-2 flex flex-col items-center"
           >
-            <RefreshCw size={16} className="animate-spin text-base" />
-            Preparando sua experiência...
+            <div className="flex items-center gap-2 text-sm font-bold text-[#0ea5e9] uppercase tracking-widest">
+              <Brain size={16} className="animate-pulse" />
+              Gerando sua Clareza de Nicho...
+            </div>
+            <div className="flex items-center gap-2 text-sm font-bold text-violet-400 uppercase tracking-widest">
+              <Sparkles size={16} className="animate-pulse" />
+              Criando sua Persona de Público...
+            </div>
+            <p className="text-xs text-slate-600 dark:text-white/50 mt-2">Isso leva alguns segundos</p>
           </motion.div>
         </motion.div>
       </div>
@@ -363,40 +462,44 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                 </p>
 
                 {/* Renderização: cards clicaveis OU texto livre — nunca os dois */}
-                {OPTIONS[currentField.id] ? (
-                  // ── Cards clicaveis (igual Tom de Voz) ──
-                  <div className="grid grid-cols-2 gap-3">
-                    {OPTIONS[currentField.id].map((opt) => {
-                      const isSelected = answers[currentField.id] === opt.value
-                      return (
-                        <motion.button
-                          key={opt.value}
-                          type="button"
-                          initial={{ opacity: 0, scale: 0.97 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          whileTap={{ scale: 0.97 }}
-                          onClick={() => handleAnswer(opt.value)}
-                          className={`relative flex flex-col items-start gap-1.5 p-4 rounded-2xl border text-left transition-all ${
-                            isSelected
-                              ? 'bg-[#0ea5e9]/10 border-[#0ea5e9] shadow-[0_0_16px_rgba(14,165,233,0.2)]'
-                              : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-[#0ea5e9]/50 hover:bg-[#0ea5e9]/5'
-                          }`}
-                        >
-                          {isSelected && (
-                            <span className="absolute top-3 right-3 size-5 rounded-full bg-[#0ea5e9] flex items-center justify-center">
-                              <Check size={11} className="text-white" />
-                            </span>
-                          )}
-                          <span className="text-2xl leading-none">{opt.emoji}</span>
-                          <span className={`text-sm font-bold leading-tight ${
-                            isSelected ? 'text-[#0ea5e9]' : 'text-slate-900 dark:text-white'
-                          }`}>{opt.label}</span>
-                          <span className="text-xs text-slate-500 dark:text-white/50 leading-snug">{opt.desc}</span>
-                        </motion.button>
-                      )
-                    })}
-                  </div>
-                ) : (
+                {(() => {
+                  const nicho = answers['nicho'] || ''
+                  const dynamicOpts = getDynamicOptions(currentField.id, nicho)
+                  const opts = dynamicOpts || OPTIONS_STATIC[currentField.id]
+                  return opts ? (
+                    // ── Cards clicaveis (igual Tom de Voz) ──
+                    <div className="grid grid-cols-2 gap-3">
+                      {opts.map((opt) => {
+                        const isSelected = answers[currentField.id] === opt.value
+                        return (
+                          <motion.button
+                            key={opt.value}
+                            type="button"
+                            initial={{ opacity: 0, scale: 0.97 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            whileTap={{ scale: 0.97 }}
+                            onClick={() => handleAnswer(opt.value)}
+                            className={`relative flex flex-col items-start gap-1.5 p-4 rounded-2xl border text-left transition-all ${
+                              isSelected
+                                ? 'bg-[#0ea5e9]/10 border-[#0ea5e9] shadow-[0_0_16px_rgba(14,165,233,0.2)]'
+                                : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-[#0ea5e9]/50 hover:bg-[#0ea5e9]/5'
+                            }`}
+                          >
+                            {isSelected && (
+                              <span className="absolute top-3 right-3 size-5 rounded-full bg-[#0ea5e9] flex items-center justify-center">
+                                <Check size={11} className="text-white" />
+                              </span>
+                            )}
+                            <span className="text-2xl leading-none">{opt.emoji}</span>
+                            <span className={`text-sm font-bold leading-tight ${
+                              isSelected ? 'text-[#0ea5e9]' : 'text-slate-900 dark:text-white'
+                            }`}>{opt.label}</span>
+                            <span className="text-xs text-slate-500 dark:text-white/50 leading-snug">{opt.desc}</span>
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+                  ) : (
                   // ── Texto livre ──
                   currentField.type === 'textarea' ? (
                     <textarea
@@ -418,7 +521,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                       onKeyDown={(e) => { if (e.key === 'Enter') handleNext() }}
                     />
                   )
-                )}
+                })()}
 
               </div>
             </motion.div>
