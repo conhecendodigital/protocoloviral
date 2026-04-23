@@ -67,13 +67,13 @@ export default async function AdminDashboard() {
   })
 
   // 5. Custo Exato em R$
-  const { data: roteirosCost } = await supabase
-    .from('roteiros')
+  const { data: usageLogs } = await supabase
+    .from('api_usage_logs')
     .select('cost_brl')
 
   let custoAproximado = 0
-  roteirosCost?.forEach(r => {
-    custoAproximado += (r.cost_brl || 0)
+  usageLogs?.forEach(log => {
+    custoAproximado += (log.cost_brl || 0)
   })
 
   return (
@@ -104,24 +104,29 @@ export default async function AdminDashboard() {
           </div>
         </Link>
 
-        {/* Assinantes Ativos */}
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-amber-500/20 p-6 rounded-2xl relative overflow-hidden group shadow-[0_0_30px_-15px_rgba(245,158,11,0.3)]">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent pointer-events-none" />
+        {/* Assinantes PRO */}
+        <Link href="/admin/users?filter=pro" className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-amber-500/30 transition-colors">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none group-hover:from-amber-500/10 transition-colors" />
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-amber-400/80">Assinantes PRO</h3>
-            <div className="p-2 bg-amber-500/10 rounded-lg text-amber-400">
+            <h3 className="text-sm font-medium text-slate-400 group-hover:text-amber-400 transition-colors">Assinantes PRO</h3>
+            <div className="p-2 bg-amber-500/10 rounded-lg text-amber-400 group-hover:scale-110 transition-transform">
               <Crown className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">
-              {totalSubscribers}
-            </span>
-            <span className="text-sm text-amber-500/50">
-              {totalUsers ? Math.round((totalSubscribers / totalUsers) * 100) : 0}% conversão
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-white">
+                {totalSubscribers}
+              </span>
+              <span className="text-sm text-slate-500">
+                {totalUsers ? Math.round((totalSubscribers / totalUsers) * 100) : 0}% conversão
+              </span>
+            </div>
+            <span className="text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-xs gap-1">
+              Ver Assinantes <span className="text-lg leading-none">&rarr;</span>
             </span>
           </div>
-        </div>
+        </Link>
 
         {/* Consumo IA */}
         <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden group">
@@ -147,20 +152,23 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        {/* Custo Estimado */}
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none" />
+        {/* Custo Exato da API */}
+        <Link href="/admin/apis" className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden group cursor-pointer hover:border-emerald-500/30 transition-colors">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none group-hover:from-emerald-500/10 transition-colors" />
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-slate-400">Custo Estimado API</h3>
-            <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400">
+            <h3 className="text-sm font-medium text-slate-400 group-hover:text-emerald-400 transition-colors">Custo Exato API</h3>
+            <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400 group-hover:scale-110 transition-transform">
               <Activity className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline justify-between">
             <span className="text-3xl font-bold text-white">R$ {custoAproximado.toFixed(2)}</span>
+            <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-xs gap-1">
+              Ver Modelos <span className="text-lg leading-none">&rarr;</span>
+            </span>
           </div>
-          <p className="mt-2 text-xs text-slate-500">Baseado no volume de gerações</p>
-        </div>
+          <p className="mt-2 text-xs text-slate-500">Calculado via tokens do SDK</p>
+        </Link>
       </div>
 
       {/* Tabela de Usuários Recentes */}
@@ -180,34 +188,42 @@ export default async function AdminDashboard() {
             </thead>
             <tbody className="divide-y divide-white/5">
               {displayUsers?.map((user) => (
-                <tr key={user.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-medium text-slate-200">
-                      {user.displayName}
-                    </div>
+                <tr key={user.id} className="hover:bg-white/[0.04] transition-colors group">
+                  <td className="p-0">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4 w-full h-full">
+                      <div className="font-medium text-slate-200 group-hover:text-white transition-colors">
+                        {user.displayName}
+                      </div>
+                    </Link>
                   </td>
-                  <td className="px-6 py-4 text-slate-400">
-                    {user.email}
+                  <td className="p-0 text-slate-400">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4 w-full h-full group-hover:text-slate-300 transition-colors">
+                      {user.email}
+                    </Link>
                   </td>
-                  <td className="px-6 py-4">
-                    {user.plan_tier && user.plan_tier !== 'free' ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                        {user.plan_tier.toUpperCase()}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300">
-                        FREE
-                      </span>
-                    )}
+                  <td className="p-0">
+                    <Link href={`/admin/users/${user.id}`} className="flex items-center px-6 py-4 w-full h-full">
+                      {user.plan_tier && user.plan_tier !== 'free' ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                          {user.plan_tier.toUpperCase()}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300">
+                          FREE
+                        </span>
+                      )}
+                    </Link>
                   </td>
-                  <td className="px-6 py-4 text-slate-400">
-                    {new Date(user.created_at).toLocaleDateString('pt-BR', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+                  <td className="p-0 text-slate-400">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4 w-full h-full group-hover:text-slate-300 transition-colors">
+                      {new Date(user.created_at).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </Link>
                   </td>
                 </tr>
               ))}

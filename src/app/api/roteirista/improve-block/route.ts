@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
+import { createServerSupabase } from '@/lib/supabase/server'
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createServerSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { blockType, blockText, context, variations, mode, instruction } = await req.json()
 
     if (!blockText || !blockType) {
@@ -12,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     // ── HOOK with 3 variations ──
     if (blockType === 'GANCHO' && variations) {
-      const { text } = await generateText({
+      const { text, usage } = await generateText({
         model: anthropic('claude-haiku-4-5-20251001'),
         maxTokens: 600,
         prompt: `Você é um expert em ganchos virais para TikTok e Instagram Reels.
@@ -32,6 +40,21 @@ RESPONDA APENAS neste formato JSON (sem markdown, sem explicações):
 
 Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduções.`,
       })
+
+      if (usage) {
+        try {
+          const { logApiUsage } = await import('@/lib/billing')
+          await logApiUsage({
+            userId: user.id,
+            feature: 'improve_block_gancho',
+            modelUsed: 'claude-haiku-4-5-20251001',
+            promptTokens: usage.promptTokens,
+            completionTokens: usage.completionTokens
+          })
+        } catch (err) {
+          console.error('[BILLING_ERROR]', err)
+        }
+      }
 
       const raw = text.trim()
 
@@ -83,7 +106,7 @@ Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduçõ
       const goal = typeGoals[blockType] || typeGoals['OUTROS']
       const instructionLine = instruction ? `\n\nInstrução adicional do criador: "${instruction}"` : ''
 
-      const { text: improved } = await generateText({
+      const { text: improved, usage } = await generateText({
         model: anthropic('claude-haiku-4-5-20251001'),
         maxTokens: 500,
         prompt: `Você é um expert em roteiros virais para TikTok e Instagram Reels.
@@ -98,6 +121,21 @@ ${goal}${instructionLine}
 
 RESPONDA APENAS com o novo texto. Sem explicações, sem aspas, sem prefixos.`,
       })
+
+      if (usage) {
+        try {
+          const { logApiUsage } = await import('@/lib/billing')
+          await logApiUsage({
+            userId: user.id,
+            feature: 'improve_block_regenerate',
+            modelUsed: 'claude-haiku-4-5-20251001',
+            promptTokens: usage.promptTokens,
+            completionTokens: usage.completionTokens
+          })
+        } catch (err) {
+          console.error('[BILLING_ERROR]', err)
+        }
+      }
 
       return NextResponse.json({
         improved: improved.replace(/^["""„‟]|["""„‟]$/g, '').trim(),
@@ -116,7 +154,7 @@ RESPONDA APENAS com o novo texto. Sem explicações, sem aspas, sem prefixos.`,
 
     const blockInstruction = typeInstructions[blockType] || typeInstructions['OUTROS']
 
-    const { text: improved } = await generateText({
+    const { text: improved, usage } = await generateText({
       model: anthropic('claude-haiku-4-5-20251001'),
       maxTokens: 400,
       prompt: `Você é um expert em roteiros virais para o TikTok e Instagram Reels.
@@ -133,6 +171,21 @@ Regra: ${blockInstruction}
 
 RESPONDA APENAS com o texto melhorado. Sem explicações, sem aspas extras, sem prefixos.`,
     })
+
+    if (usage) {
+      try {
+        const { logApiUsage } = await import('@/lib/billing')
+        await logApiUsage({
+          userId: user.id,
+          feature: 'improve_block_refine',
+          modelUsed: 'claude-haiku-4-5-20251001',
+          promptTokens: usage.promptTokens,
+          completionTokens: usage.completionTokens
+        })
+      } catch (err) {
+        console.error('[BILLING_ERROR]', err)
+      }
+    }
 
     return NextResponse.json({
       improved: improved.replace(/^["""„‟]|["""„‟]$/g, '').trim(),

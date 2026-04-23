@@ -35,7 +35,7 @@ CONTEXTO DO CRIADOR (use para personalizar a sugestão):
 
     const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-    const { text } = await generateText({
+    const { text, usage } = await generateText({
       model: openai('gpt-4o-mini'),
       system: `Você é um especialista em copywriting para Instagram com 10 anos de experiência otimizando bios de perfis que convertem seguidores em clientes.
 
@@ -74,6 +74,21 @@ CRITÉRIOS OBRIGATÓRIOS (analise todos):
       temperature: 0.4,
       maxTokens: 800,
     })
+
+    if (usage) {
+      try {
+        const { logApiUsage } = await import('@/lib/billing')
+        await logApiUsage({
+          userId: user.id,
+          feature: 'analyze_bio',
+          modelUsed: 'gpt-4o-mini',
+          promptTokens: usage.promptTokens,
+          completionTokens: usage.completionTokens
+        })
+      } catch (err) {
+        console.error('[BILLING_ERROR]', err)
+      }
+    }
 
     // Tentar parsear o JSON da resposta
     let result

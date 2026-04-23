@@ -134,6 +134,27 @@ INFLUENCIADORES QUE SEGUE:
       return NextResponse.json({ error: 'EMPTY_RESPONSE' }, { status: 500 })
     }
 
+    // Extrair usage metadata de ambos e logar
+    try {
+      const u1 = clarezaData?.usageMetadata
+      const u2 = personaData?.usageMetadata
+      const totalPrompt = (u1?.promptTokenCount || 0) + (u2?.promptTokenCount || 0)
+      const totalCompletion = (u1?.candidatesTokenCount || 0) + (u2?.candidatesTokenCount || 0)
+
+      if (totalPrompt > 0 || totalCompletion > 0) {
+        const { logApiUsage } = await import('@/lib/billing')
+        await logApiUsage({
+          userId: user.id,
+          feature: 'gerar_insights',
+          modelUsed: 'gemini-2.0-flash',
+          promptTokens: totalPrompt,
+          completionTokens: totalCompletion
+        })
+      }
+    } catch (err) {
+      console.error('[BILLING_ERROR]', err)
+    }
+
     // Salva resposta1 e resposta2 no perfil do usuário
     const { error: saveError } = await supabase
       .from('profiles')

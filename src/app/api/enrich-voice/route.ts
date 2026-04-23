@@ -106,6 +106,21 @@ IMPORTANTE:
       temperature: 0.7,
     })
 
+    if (result.usage) {
+      try {
+        const { logApiUsage } = await import('@/lib/billing')
+        await logApiUsage({
+          userId: user.id,
+          feature: 'enrich_voice',
+          modelUsed: 'gpt-4o-mini',
+          promptTokens: result.usage.promptTokens,
+          completionTokens: result.usage.completionTokens
+        })
+      } catch (err) {
+        console.error('[BILLING_ERROR]', err)
+      }
+    }
+
     let enrichedProfile: Record<string, any> = {}
 
     try {

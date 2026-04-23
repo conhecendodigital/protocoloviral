@@ -37,6 +37,21 @@ TEXTOS DE EXEMPLO:
 ${combinedTexts}`
     })
 
+    if (result.usage) {
+      try {
+        const { logApiUsage } = await import('@/lib/billing')
+        await logApiUsage({
+          userId: user.id,
+          feature: 'analyze_voice',
+          modelUsed: 'gpt-4o-mini',
+          promptTokens: result.usage.promptTokens,
+          completionTokens: result.usage.completionTokens
+        })
+      } catch (err) {
+        console.error('[BILLING_ERROR]', err)
+      }
+    }
+
     return Response.json(result.object)
   } catch (error: any) {
     console.error('[ANALYZE_VOICE_ERROR]', error)

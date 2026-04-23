@@ -299,6 +299,22 @@ Duração alvo: ${duracao}`
       throw new Error('Retorno vazio da API do Gemini.')
     }
 
+    try {
+      const usageMetadata = data?.usageMetadata
+      if (usageMetadata) {
+        const { logApiUsage } = await import('@/lib/billing')
+        await logApiUsage({
+          userId: user.id,
+          feature: 'generate_reel',
+          modelUsed: 'gemini-2.0-flash',
+          promptTokens: usageMetadata.promptTokenCount || 0,
+          completionTokens: usageMetadata.candidatesTokenCount || 0
+        })
+      }
+    } catch (err) {
+      console.error('[BILLING_ERROR]', err)
+    }
+
     return NextResponse.json({ result: resultText })
 
   } catch (error: any) {

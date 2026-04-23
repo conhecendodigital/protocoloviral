@@ -220,12 +220,28 @@ ${agent.system_prompt}
         }
 
         // Atualizar saldo de tokens consumidos
-        if (usage && usage.totalTokens && !isAdmin) {
-            const extraTokens = profile?.tokens_used_this_cycle || 0;
-            await supabase.from('profiles').update({ 
-                tokens_used_today: currentTokensUsed + usage.totalTokens,
-                tokens_used_this_cycle: extraTokens + usage.totalTokens
-            }).eq('id', user.id);
+        if (usage && usage.totalTokens) {
+            if (!isAdmin) {
+              const extraTokens = profile?.tokens_used_this_cycle || 0;
+              await supabase.from('profiles').update({ 
+                  tokens_used_today: currentTokensUsed + usage.totalTokens,
+                  tokens_used_this_cycle: extraTokens + usage.totalTokens
+              }).eq('id', user.id);
+            }
+
+            // Logar no painel financeiro admin
+            try {
+              const { logApiUsage } = await import('@/lib/billing')
+              await logApiUsage({
+                userId: user.id,
+                feature: 'chat_agent',
+                modelUsed: agent.ai_model || 'gemini-2.0-flash',
+                promptTokens: usage.promptTokens,
+                completionTokens: usage.completionTokens
+              })
+            } catch (err) {
+              console.error('[CHAT_BILLING_ERROR]', err)
+            }
         }
       }
     })

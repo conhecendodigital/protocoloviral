@@ -116,6 +116,24 @@ Retorne EXATAMENTE neste formato JSON, sem texto extra:
 
     try {
       const enhanced = JSON.parse(jsonStr)
+
+      // Logar consumo da API
+      try {
+        const usageMetadata = data?.usageMetadata
+        if (usageMetadata) {
+          const { logApiUsage } = await import('@/lib/billing')
+          await logApiUsage({
+            userId: user.id,
+            feature: 'enhance_answer',
+            modelUsed: 'gemini-2.0-flash',
+            promptTokens: usageMetadata.promptTokenCount || 0,
+            completionTokens: usageMetadata.candidatesTokenCount || 0
+          })
+        }
+      } catch (err) {
+        console.error('[BILLING_ERROR]', err)
+      }
+
       return NextResponse.json({ enhanced, used_ai: true })
     } catch (parseErr) {
       console.error('[enhance-answer] JSON parse failed:', parseErr, 'Raw:', rawText.substring(0, 200))

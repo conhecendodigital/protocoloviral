@@ -546,36 +546,17 @@ export async function POST(req: Request) {
 
             let calculatedCostBrl = 0.0
             try {
-              // Valores oficiais por 1 Milhao de tokens (M) em Dolar USD
-              let costInputPer1M = 0
-              let costOutputPer1M = 0
-              
-              if (modelUsed.includes('sonnet')) {
-                costInputPer1M = 3.00
-                costOutputPer1M = 15.00
-              } else if (modelUsed.includes('gpt-4o') && !modelUsed.includes('mini')) {
-                costInputPer1M = 5.00
-                costOutputPer1M = 15.00
-              } else if (modelUsed.includes('haiku')) {
-                costInputPer1M = 0.25
-                costOutputPer1M = 1.25
-              } else if (modelUsed.includes('gpt-4o-mini')) {
-                costInputPer1M = 0.15
-                costOutputPer1M = 0.60
-              } else if (modelUsed.includes('gemini')) {
-                costInputPer1M = 0.10
-                costOutputPer1M = 0.40
-              } else {
-                // Fallback default caso haja outro modelo
-                costInputPer1M = 1.00
-                costOutputPer1M = 2.00
+              const { logApiUsage } = await import('@/lib/billing')
+              const res = await logApiUsage({
+                userId: user.id,
+                feature: 'roteirista',
+                modelUsed: modelUsed,
+                promptTokens: finalUsage.promptTokens,
+                completionTokens: finalUsage.completionTokens
+              })
+              if (res.success && res.costBrl) {
+                calculatedCostBrl = res.costBrl
               }
-
-              const costUsd = (finalUsage.promptTokens / 1000000) * costInputPer1M +
-                              (finalUsage.completionTokens / 1000000) * costOutputPer1M
-
-              // Conversão fixa de 4.99 aprovada
-              calculatedCostBrl = costUsd * 4.99
             } catch (calcError) {
               console.warn('[CALC_COST_ERROR]', calcError)
             }
@@ -588,7 +569,8 @@ export async function POST(req: Request) {
                 titulo: title,
                 nicho: null,
                 formato_nome: formatTitle,
-                cost_brl: calculatedCostBrl
+                cost_brl: calculatedCostBrl,
+                model_used: modelUsed
               })
               .select('id')
               .single()

@@ -7,7 +7,7 @@ import Link from 'next/link'
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; filter?: string }>
 }) {
   const cookieStore = await cookies()
   const authCookie = cookieStore.get('pv_admin_auth')
@@ -15,7 +15,7 @@ export default async function AdminUsersPage({
     redirect('/admin/login')
   }
 
-  const { page } = await searchParams
+  const { page, filter } = await searchParams
   const currentPage = parseInt(page || '1', 10)
   const pageSize = 100
   const offset = (currentPage - 1) * pageSize
@@ -23,15 +23,18 @@ export default async function AdminUsersPage({
   const supabase = createAdminClient()
 
   // 1. Total de usuários (para paginação)
-  const { count: totalUsers } = await supabase
-    .from('profiles')
-    .select('*', { count: 'exact', head: true })
+  let countQuery = supabase.from('profiles').select('*', { count: 'exact', head: true })
+  if (filter === 'pro') {
+    countQuery = countQuery.neq('plan_tier', 'free')
+  }
+  const { count: totalUsers } = await countQuery
 
   // 2. Todos os usuários paginados
-  const { data: allProfiles } = await supabase
-    .from('profiles')
-    .select('id, email, nome_completo, plan_tier, created_at')
-    .range(offset, offset + pageSize - 1)
+  let profilesQuery = supabase.from('profiles').select('id, email, nome_completo, plan_tier, created_at')
+  if (filter === 'pro') {
+    profilesQuery = profilesQuery.neq('plan_tier', 'free')
+  }
+  const { data: allProfiles } = await profilesQuery.range(offset, offset + pageSize - 1)
 
   // 3. Obter metadados de autenticação do Auth Users
   const { data: { users: authUsers } } = await supabase.auth.admin.listUsers({
@@ -77,8 +80,12 @@ export default async function AdminUsersPage({
 
   const totalPages = Math.ceil((totalUsers || 0) / pageSize)
 
+  // URL base para os botões de paginação
+  const basePath = filter ? `/admin/users?filter=${filter}&` : `/admin/users?`
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-24">
+      {/* HEADER */}
       <div className="flex items-center gap-4">
         <Link 
           href="/admin" 
@@ -88,10 +95,14 @@ export default async function AdminUsersPage({
         </Link>
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            <Users className="w-6 h-6 text-blue-400" />
-            Todos os Usuários
+            <Users className="w-6 h-6 text-indigo-400" />
+            {filter === 'pro' ? 'Assinantes PRO' : 'Base de Usuários'}
           </h2>
-          <p className="text-slate-400">Listagem completa e consumo por usuário.</p>
+          <p className="text-slate-400">
+            {filter === 'pro' 
+              ? 'Listagem de todos os clientes com plano pago ativo.'
+              : 'Visão completa de todos os usuários cadastrados na plataforma.'}
+          </p>
         </div>
       </div>
 
@@ -176,21 +187,35 @@ export default async function AdminUsersPage({
               Mostrando <span className="text-white">{offset + 1}</span> a <span className="text-white">{Math.min(offset + pageSize, totalUsers || 0)}</span> de <span className="text-white">{totalUsers}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Link
-                href={currentPage > 1 ? `/admin/users?page=${currentPage - 1}` : '#'}
-                className={`p-2 rounded-lg border border-white/10 transition-colors flex items-center justify-center ${currentPage > 1 ? 'hover:bg-white/5 text-slate-300' : 'opacity-50 cursor-not-allowed text-slate-500'}`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Link>
-              <div className="px-4 py-2 rounded-lg bg-white/5 text-sm font-medium text-white">
-                Página {currentPage} de {totalPages}
+              {currentPage > 1 ? (
+                <Link 
+                  href={`${basePath}page=${currentPage - 1}`}
+                  className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-medium"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Anterior
+                </Link>
+              ) : (
+                <div className="px-4 py-2 bg-slate-800/50 text-slate-500 rounded-lg flex items-center gap-2 text-sm font-medium cursor-not-allowed">
+                  <ChevronLeft className="w-4 h-4" /> Anterior
+                </div>
+              )}
+
+              <div className="text-sm font-medium text-slate-400">
+                Página <span className="text-white">{currentPage}</span> de <span className="text-white">{totalPages || 1}</span>
               </div>
-              <Link
-                href={currentPage < totalPages ? `/admin/users?page=${currentPage + 1}` : '#'}
-                className={`p-2 rounded-lg border border-white/10 transition-colors flex items-center justify-center ${currentPage < totalPages ? 'hover:bg-white/5 text-slate-300' : 'opacity-50 cursor-not-allowed text-slate-500'}`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Link>
+
+              {currentPage < totalPages ? (
+                <Link 
+                  href={`${basePath}page=${currentPage + 1}`}
+                  className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-medium"
+                >
+                  Próxima <ChevronRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <div className="px-4 py-2 bg-slate-800/50 text-slate-500 rounded-lg flex items-center gap-2 text-sm font-medium cursor-not-allowed">
+                  Próxima <ChevronRight className="w-4 h-4" />
+                </div>
+              )}
             </div>
           </div>
         )}
