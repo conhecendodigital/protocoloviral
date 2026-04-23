@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 
 import { useProfile } from '@/hooks/use-profile'
 import { useAutoSave } from '@/hooks/use-auto-save'
@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { parseClareza, parsePersona } from '@/lib/parser'
 import type { ClarezaParsed, PersonaParsed } from '@/lib/parser'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
+import { OnboardingModal } from '@/components/shared/OnboardingModal'
 
 // ─── Section Config ────────────────────────────────────────
 const SECTION_META = {
@@ -261,12 +262,12 @@ function EmptyInsightState({
   type,
   profile,
   onGenerated,
-  onGoToProfile,
+  onOpenOnboarding,
 }: {
   type: 'clareza' | 'persona'
   profile: import('@/types/profile').Profile | null
   onGenerated: () => void
-  onGoToProfile: () => void
+  onOpenOnboarding: () => void
 }) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -341,7 +342,7 @@ function EmptyInsightState({
           boxShadow: `0 0 30px ${accentColor}20`,
         }}
       >
-        <DynamicIcon name={c.icon} size={40} style={{ color: accentColor }} />
+        <DynamicIcon name={c.icon} size={40} className={type === 'clareza' ? 'text-amber-400' : 'text-violet-400'} />
       </motion.div>
 
       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{c.title}</h3>
@@ -375,7 +376,7 @@ function EmptyInsightState({
 
         {/* Preencher Perfil */}
         <button
-          onClick={onGoToProfile}
+          onClick={onOpenOnboarding}
           className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 font-bold text-sm transition-all hover:bg-white/50 dark:hover:bg-white/5 hover:border-slate-300 dark:hover:border-white/20"
         >
           <User size={16} />
@@ -460,9 +461,37 @@ export default function PerfilPage() {
     window.location.reload()
   }, [])
 
-  // navega para a aba de dados
+  // abre o OnboardingModal em modo edição com respostas pré-preenchidas
+  const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [activeTab, setActiveTab] = useState('dados')
-  const goToProfile = useCallback(() => setActiveTab('dados'), [])
+
+  const openOnboarding = useCallback(() => setIsEditingProfile(true), [])
+  const closeOnboarding = useCallback(() => {
+    setIsEditingProfile(false)
+    window.location.reload() // recarrega para pegar dados atualizados
+  }, [])
+
+  // Mapeia profile → Record<string, string> para initialAnswers
+  const profileAsAnswers = useMemo<Record<string, string>>(() => {
+    if (!profile) return {}
+    const p = profile as Record<string, string | null | undefined>
+    const result: Record<string, string> = {
+      nicho: p.nicho ?? '',
+      assunto: p.assunto ?? '',
+      formacoes: p.formacoes ?? '',
+      resultado: p.resultado ?? '',
+      diferencial: p.diferencial ?? '',
+      publico: p.publico ?? '',
+      dor: p.dor ?? '',
+      tentou: p.tentou ?? '',
+      concorrentes: p.concorrentes ?? '',
+      proposito: p.proposito ?? '',
+      receio: p.receio ?? '',
+      tempo: p.tempo ?? '',
+      naoquer: p.naoquer ?? '',
+    }
+    return result
+  }, [profile])
 
   if (loading) {
     return (
@@ -476,6 +505,17 @@ export default function PerfilPage() {
 
   return (
     <>
+      {/* ── Onboarding em modo edição ─────────────────────── */}
+      {isEditingProfile && userId && (
+        <OnboardingModal
+          userId={userId}
+          onComplete={closeOnboarding}
+          updateField={updateField}
+          initialAnswers={profileAsAnswers}
+          editMode
+        />
+      )}
+
       <main className="flex-1 flex flex-col items-center w-full relative z-10 overflow-y-auto custom-scrollbar">
         <div className="w-full max-w-7xl px-6 lg:px-8 py-8 md:py-12 pb-24">
 
@@ -721,9 +761,9 @@ export default function PerfilPage() {
               ) : (
                 <EmptyInsightState
                   type="clareza"
-                  profile={profile}
+                  profile={profile as import('@/types/profile').Profile}
                   onGenerated={handleInsightGenerated}
-                  onGoToProfile={goToProfile}
+                  onOpenOnboarding={openOnboarding}
                 />
               )}
             </TabsContent>
@@ -735,9 +775,9 @@ export default function PerfilPage() {
               ) : (
                 <EmptyInsightState
                   type="persona"
-                  profile={profile}
+                  profile={profile as import('@/types/profile').Profile}
                   onGenerated={handleInsightGenerated}
-                  onGoToProfile={goToProfile}
+                  onOpenOnboarding={openOnboarding}
                 />
               )}
             </TabsContent>

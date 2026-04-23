@@ -11,6 +11,8 @@ interface OnboardingModalProps {
   userId: string
   onComplete: () => void
   updateField: (field: string, value: string) => void
+  initialAnswers?: Record<string, string> // para modo edição (perfil já preenchido)
+  editMode?: boolean // quando true: pula intro, mostra 'Salvar' no final
 }
 
 const SECTION_LABELS: Record<string, { icon: string; label: string; color: string }> = {
@@ -216,9 +218,9 @@ function resolveValue(selected: string, otherText: string): string {
   return selected === '__outro__' ? otherText.trim() : selected
 }
 
-export function OnboardingModal({ userId, onComplete, updateField }: OnboardingModalProps) {
-  const [currentStep, setCurrentStep] = useState(-1)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+export function OnboardingModal({ userId, onComplete, updateField, initialAnswers = {}, editMode = false }: OnboardingModalProps) {
+  const [currentStep, setCurrentStep] = useState(editMode ? 0 : -1)
+  const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers)
   const [otherTexts, setOtherTexts] = useState<Record<string, string>>({})
   const [direction, setDirection] = useState(1)
   const [isCompleting, setIsCompleting] = useState(false)
@@ -270,6 +272,15 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
     if (currentStep < totalSteps - 1) {
       setDirection(1)
       setCurrentStep(prev => prev + 1)
+    } else if (editMode) {
+      // Modo edição: salva tudo e fecha sem gerar insights
+      setIsCompleting(true)
+      const finalAnswers = getFinalAnswers()
+      // Persiste cada campo diretamente
+      for (const [key, val] of Object.entries(finalAnswers)) {
+        if (val) updateField(key, val)
+      }
+      onComplete()
     } else {
       setIsCompleting(true)
       const finalAnswers = getFinalAnswers()
@@ -292,12 +303,13 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
 
       setTimeout(() => { onComplete() }, 2500)
     }
-  }, [currentStep, totalSteps, currentField, saveCurrentField, getFinalAnswers, updateField, userId, supabase, onComplete])
+  }, [currentStep, totalSteps, currentField, editMode, saveCurrentField, getFinalAnswers, updateField, userId, supabase, onComplete])
 
   const handleBack = useCallback(() => {
     if (currentStep > 0) { setDirection(-1); setCurrentStep(prev => prev - 1) }
+    else if (currentStep === 0 && editMode) { onComplete() } // fecha modal em modo edição
     else if (currentStep === 0) { setDirection(-1); setCurrentStep(-1) }
-  }, [currentStep])
+  }, [currentStep, editMode, onComplete])
 
   const handleSkip = useCallback(async () => {
     if (currentStep < totalSteps - 1) {
@@ -657,7 +669,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
               className="onboarding-next-btn flex items-center gap-2 px-8 py-4 rounded-2xl text-slate-900 dark:text-white font-bold text-sm transition-all active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {currentStep === totalSteps - 1 ? (
-                <><span>Concluir</span><Check size={20} /></>
+                <><span>{editMode ? 'Salvar Alterações' : 'Concluir'}</span><Check size={20} /></>
               ) : (
                 <><span>Próximo</span><ArrowRight size={20} /></>
               )}
