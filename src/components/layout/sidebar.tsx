@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useProfile } from '@/hooks/use-profile'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   Home, Clapperboard, FileEdit, Bot, MonitorPlay,
   FileText, Anchor, Camera, BarChart3, Calculator, User, Compass,
