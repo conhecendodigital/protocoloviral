@@ -49,14 +49,14 @@ const NAV_SECTIONS: NavSection[] = [
     icon: MonitorPlay,
     collapsible: true,
     items: [
-      { label: 'Meus Roteiros', href: '/roteiros', icon: FileText },
-      { label: 'Ganchos Virais', href: '/ganchos', icon: Anchor, badge: '100' },
-      { label: 'Stories', href: '/stories', icon: Camera },
-      { label: 'Analisador', href: '/bio-analyzer', icon: BarChart3 },
-      { label: 'Calculadora', href: '/calculadora', icon: Calculator },
-      { label: 'Meu Perfil', href: '/perfil', icon: User },
-      { label: 'Jornada', href: '/jornada', icon: Compass },
-      { label: 'Rotina', href: '/rotina', icon: Calendar },
+      { label: 'Jornada',       href: '/jornada',      icon: Compass },
+      { label: 'Rotina',        href: '/rotina',       icon: Calendar },
+      { label: 'Meus Roteiros', href: '/roteiros',     icon: FileText },
+      { label: 'Analisador',    href: '/bio-analyzer', icon: BarChart3 },
+      { label: 'Ganchos Virais', href: '/ganchos',    icon: Anchor, badge: '100' },
+      // { label: 'Stories',     href: '/stories',      icon: Camera },      // oculto
+      // { label: 'Calculadora', href: '/calculadora',  icon: Calculator },  // oculto
+      // { label: 'Meu Perfil',  href: '/perfil',       icon: User },        // oculto
     ],
   },
   {
