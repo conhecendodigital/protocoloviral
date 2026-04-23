@@ -30,7 +30,9 @@ export async function proxy(request: NextRequest) {
 
   const isPublicRoute =
     request.nextUrl.pathname.startsWith('/login') ||
-    request.nextUrl.pathname.startsWith('/landing')
+    request.nextUrl.pathname.startsWith('/landing') ||
+    request.nextUrl.pathname.startsWith('/admin') ||
+    request.nextUrl.pathname.startsWith('/api/admin')
 
   if (!user && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', request.url))
