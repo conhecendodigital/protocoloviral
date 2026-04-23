@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
-import { Crown, Home } from 'lucide-react'
+import { Crown } from 'lucide-react'
 import { AdminLogoutButton } from './logout-button'
 
 export const metadata = {
@@ -47,14 +47,6 @@ export default async function AdminLayout({
           </div>
           
           <nav className="flex items-center gap-4">
-            <Link 
-              href="/dashboard" 
-              className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition-colors"
-            >
-              <Home className="w-4 h-4" />
-              <span className="hidden sm:inline">Voltar ao App</span>
-            </Link>
-            <div className="w-px h-4 bg-white/10" />
             <AdminLogoutButton />
           </nav>
         </div>
