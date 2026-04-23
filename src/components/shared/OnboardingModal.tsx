@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { createClient } from '@/lib/supabase/client'
-import { ArrowLeft, ArrowRight, Brain, Check, CheckCircle, Hand, RefreshCw, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Brain, Check, CheckCircle, Hand, Pencil, Sparkles } from 'lucide-react'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 interface OnboardingModalProps {
@@ -18,151 +18,209 @@ const SECTION_LABELS: Record<string, { icon: string; label: string; color: strin
   publico: { icon: 'groups', label: 'Seu Público', color: '#8b5cf6' },
   objetivos: { icon: 'rocket_launch', label: 'Seus Objetivos', color: '#10b981' },
 }
-// ── Opções estáticas para campos genéricos
-const OPTIONS_STATIC: Record<string, { emoji: string; label: string; desc: string; value: string }[]> = {
+
+// ── Campos OPCIONAIS — exibem badge "Opcional" e podem ser pulados sem culpa
+const OPTIONAL_FIELDS = new Set(['formacoes', 'diferencial', 'concorrentes', 'naoquer'])
+
+// ── Contexto "por que isso importa" — mostrado abaixo da pergunta
+const FIELD_WHY: Record<string, string> = {
+  nicho:        'A IA usa isso para personalizar 100% do conteúdo gerado para você.',
+  assunto:      'Quanto mais específico, mais poderosos serão seus roteiros e ideias.',
+  formacoes:    'Sua experiência vira credibilidade nos seus conteúdos. (opcional)',
+  resultado:    'Resultados reais são o melhor gancho para atrair seu público.',
+  diferencial:  'O que te faz único é o que vai fazer as pessoas escolherem você. (opcional)',
+  publico:      'A IA cria personas e roteiros direcionados exatamente para essa pessoa.',
+  dor:          'Conteúdo que toca na dor real converte 3x mais que conteúdo genérico.',
+  tentou:       'Saber o que NÃO funcionou evita conteúdo batido e repetitivo.',
+  concorrentes: 'A IA analisa o que funciona no seu nicho para te diferenciar. (opcional)',
+  proposito:    'Seu objetivo define a estratégia inteira de conteúdo e vendas.',
+  receio:       'A IA vai te ajudar a superar exatamente esses bloqueios.',
+  tempo:        'Com isso a IA monta uma estratégia real para a sua rotina.',
+  naoquer:      'Esses limites serão respeitados em todos os conteúdos gerados. (opcional)',
+}
+
+type CardOption = { emoji: string; label: string; desc: string; value: string }
+
+// ── Opções estáticas padrão (nichos não mapeados) — expert-level rewrite
+const OPTIONS_STATIC: Record<string, CardOption[]> = {
   resultado: [
-    { emoji: '📱', label: '10k+ seguidores', desc: 'Cresci de 0 para mais de 10 mil seguidores', value: 'Cresci de 0 para mais de 10 mil seguidores' },
-    { emoji: '💰', label: 'Primeiros clientes', desc: 'Fechei os primeiros clientes pelas redes', value: 'Fechei meus primeiros clientes pelas redes sociais' },
-    { emoji: '🏆', label: 'Virei referência', desc: 'Me tornei referência reconhecida no nicho', value: 'Me tornei referência no meu nicho local' },
-    { emoji: '🚀', label: 'Largue o emprego', desc: 'Vivo 100% do meu negócio online', value: 'Consegui viver 100% do meu negócio online' },
-    { emoji: '🌱', label: 'Ainda construindo', desc: 'Estou dando os primeiros passos agora', value: 'Ainda estou construindo meus primeiros resultados' },
+    { emoji: '🌱', label: 'Ainda no começo', desc: 'Primeiros passos, construindo a base', value: 'Ainda estou nos primeiros passos, construindo minha presença digital do zero' },
+    { emoji: '📈', label: 'Crescimento inicial', desc: 'Tive avanços, mas ainda pequenos', value: 'Tive crescimento inicial com alguns seguidores e engajamento, mas ainda pequeno' },
+    { emoji: '💰', label: 'Primeiras vendas', desc: 'Já fechei clientes pelas redes', value: 'Já consegui fechar meus primeiros clientes ou vendas pelas redes sociais' },
+    { emoji: '🏆', label: 'Referência no nicho', desc: 'Pessoas me reconhecem como autoridade', value: 'Me tornei referência reconhecida no meu nicho com audiência engajada' },
+    { emoji: '🚀', label: 'Vivo do digital', desc: '100% da renda vem do conteúdo/digital', value: 'Já vivo 100% do meu negócio digital, com renda consistente online' },
+    { emoji: '✏️', label: 'Outro resultado', desc: 'Descreva com suas palavras', value: '__outro__' },
   ],
   publico: [
-    { emoji: '🎯', label: 'Iniciantes', desc: 'Pessoas começando completamente do zero', value: 'Iniciantes que estão começando do zero' },
-    { emoji: '📈', label: 'Intermediários', desc: 'Estagnados no meio, não conseguem escalar', value: 'Pessoas no nível intermediário que não conseguem escalar' },
-    { emoji: '👩‍👧', label: 'Mães sem tempo', desc: 'Mães ou quem tem rotina corrida', value: 'Mães ou pessoas com rotina corrida e pouco tempo livre' },
-    { emoji: '💼', label: 'Empreendedores', desc: 'Donos de negócio buscando mais clientes', value: 'Empreendedores e donos de negócio que querem mais clientes' },
-    { emoji: '🔄', label: 'Transição de carreira', desc: 'Profissionais mudando de área', value: 'Profissionais buscando transição de carreira' },
-    { emoji: '🏥', label: 'Liberal / especialista', desc: 'Médico, advogado, coach, consultor...', value: 'Profissionais liberais que querem atrair clientes pelo digital' },
+    { emoji: '🎯', label: 'Quem quer começar', desc: 'Zero a um — começando completamente do zero', value: 'Pessoas que ainda estão no zero e não sabem por onde começar' },
+    { emoji: '😤', label: 'Estagnados no meio', desc: 'Têm base mas travaram no crescimento', value: 'Pessoas que já começaram mas estagnaram e não conseguem dar o próximo passo' },
+    { emoji: '💼', label: 'Empreendedores', desc: 'Donos de negócio querendo mais clientes', value: 'Empreendedores e donos de negócio que querem usar o digital para atrair mais clientes' },
+    { emoji: '🏥', label: 'Profissionais liberais', desc: 'Médico, advogado, coach, consultor...', value: 'Profissionais liberais como médicos, advogados, coaches e consultores que querem autoridade online' },
+    { emoji: '🔄', label: 'Em transição', desc: 'Mudando de área ou criando nova fonte de renda', value: 'Profissionais em transição de carreira ou buscando criar uma nova fonte de renda' },
+    { emoji: '✏️', label: 'Outro público', desc: 'Descreva com suas palavras', value: '__outro__' },
   ],
   dor: [
-    { emoji: '🤯', label: 'Overdose de info', desc: 'Consome muito, mas não executa nada', value: 'Consome muito conteúdo mas não consegue colocar em prática' },
-    { emoji: '⏳', label: 'Falta de tempo', desc: 'Rotina intensa impede a consistência', value: 'Falta de tempo e consistência para criar conteúdo' },
-    { emoji: '📉', label: 'Sem vendas', desc: 'Seguidores que nunca compram nada', value: 'Não sabe como transformar seguidores em clientes pagantes' },
-    { emoji: '😨', label: 'Medo de aparecer', desc: 'Vergonha e medo do julgamento alheio', value: 'Medo de se expor e ser julgado pelas pessoas que conhece' },
-    { emoji: '😵', label: 'Sem direção', desc: 'Perdido, sem saber o próximo passo', value: 'Perdido, sem saber qual o próximo passo concreto' },
+    { emoji: '🧊', label: 'Paralisia total', desc: 'Sabe o que fazer mas não executa nada', value: 'Sofre de paralisia por análise — consome muito conteúdo mas não consegue colocar nada em prática' },
+    { emoji: '🔁', label: 'Inconsistência crônica', desc: 'Começa cheio de energia, some em 2 semanas', value: 'Começa motivado mas para inevitavelmente — não consegue manter consistência por mais de 2 semanas' },
+    { emoji: '👻', label: 'Invisibilidade online', desc: 'Publica mas ninguém vê, curte ou comenta', value: 'Publica conteúdo mas não alcança ninguém — posts sem visualizações, sem engajamento, sem resultado' },
+    { emoji: '📉', label: 'Não converte', desc: 'Tem seguidores mas nenhum vira cliente', value: 'Tem seguidores mas nenhum vira cliente — não sabe como usar o conteúdo para vender' },
+    { emoji: '🌫️', label: 'Falta de clareza', desc: 'Não sabe o que falar, para quem ou como', value: 'Não tem clareza sobre o que falar, para quem falar ou como se posicionar no seu nicho' },
+    { emoji: '✏️', label: 'Outra dor', desc: 'Descreva com suas palavras', value: '__outro__' },
   ],
   tentou: [
-    { emoji: '📚', label: 'Cursos teóricos', desc: 'Comprou, empolgou, parou no meio', value: 'Comprou cursos, começou empolgado e parou no meio' },
-    { emoji: '🗓️', label: 'Métodos antigos', desc: 'Estratégias que não funcionam mais', value: 'Tentou métodos que já não funcionam mais no algoritmo atual' },
-    { emoji: '📺', label: 'Conteúdo gratuito', desc: 'YouTube e redes sem resultado concreto', value: 'Consumiu muito conteúdo gratuito no YouTube sem resultado concreto' },
-    { emoji: '🏢', label: 'Agência / terceiros', desc: 'Pagou profissional e não teve retorno', value: 'Pagou agência ou freelancer e não teve retorno' },
+    { emoji: '📚', label: 'Cursos teóricos', desc: 'Comprou, empolgou, parou no módulo 3', value: 'Comprou cursos online, começou empolgado e parou no meio sem implementar nada' },
+    { emoji: '🐑', label: 'Copiar outros', desc: 'Imitou concorrentes e não saiu do lugar', value: 'Tentou copiar estratégias de outros criadores e não teve nenhum resultado' },
+    { emoji: '📅', label: 'Postar sempre', desc: 'Volume sem estratégia — publicou muito, cresceu pouco', value: 'Postou muito sem estratégia e ficou exausto sem ver crescimento' },
+    { emoji: '🏢', label: 'Contratar alguém', desc: 'Pagou agência ou editor, não teve retorno', value: 'Pagou agência, gestor ou editor de conteúdo e o investimento não gerou resultado' },
+    { emoji: '✏️', label: 'Outra tentativa', desc: 'Descreva com suas palavras', value: '__outro__' },
   ],
   proposito: [
-    { emoji: '🛒', label: 'Vender produto', desc: 'Produto ou serviço pelas redes sociais', value: 'Vender meu produto ou serviço pelas redes sociais' },
-    { emoji: '🎓', label: 'Lançar curso', desc: 'Curso ou mentoria online', value: 'Lançar um curso ou mentoria online' },
-    { emoji: '📞', label: 'Atrair clientes', desc: 'Clientes para negócio físico ou online', value: 'Atrair novos clientes para meu negócio físico ou online' },
-    { emoji: '👑', label: 'Construir autoridade', desc: 'Ser referência e ganhar reconhecimento', value: 'Construir autoridade e reconhecimento no meu nicho' },
-    { emoji: '🌱', label: 'Audiência + renda futura', desc: 'Crescer audiência e monetizar depois', value: 'Crescer uma audiência e monetizar no futuro' },
+    { emoji: '🛒', label: 'Vender produto/serviço', desc: 'Usar conteúdo como canal de vendas diretas', value: 'Usar o conteúdo para vender meu produto ou serviço e gerar receita direta' },
+    { emoji: '🎓', label: 'Lançar curso/mentoria', desc: 'Criar e vender um infoproduto online', value: 'Lançar um curso, mentoria ou programa online e viver disso' },
+    { emoji: '📞', label: 'Atrair clientes', desc: 'Conteúdo gerando leads para o negócio', value: 'Usar o conteúdo para atrair leads e novos clientes para meu negócio' },
+    { emoji: '👑', label: 'Construir autoridade', desc: 'Ser a referência número 1 do nicho', value: 'Me tornar referência reconhecida no meu nicho e construir autoridade sólida' },
+    { emoji: '🌱', label: 'Audiência primeiro', desc: 'Crescer agora, monetizar depois', value: 'Primeiro construir uma audiência engajada e depois monetizar de forma sustentável' },
+    { emoji: '✏️', label: 'Outro objetivo', desc: 'Descreva com suas palavras', value: '__outro__' },
   ],
   receio: [
-    { emoji: '🎥', label: 'Vergonha da câmera', desc: 'Fico travado(a) na frente da câmera', value: 'Sinto vergonha de aparecer na câmera' },
-    { emoji: '👀', label: 'Medo de julgamento', desc: 'O que pessoas próximas vão achar', value: 'Medo de ser julgado(a) pelas pessoas que me conhecem' },
-    { emoji: '🤔', label: 'Não sei o que falar', desc: 'Não tenho clareza do que comunicar', value: 'Não sei o que falar nem como me comunicar nos vídeos' },
-    { emoji: '📅', label: 'Consistência', desc: 'Começo e não consigo manter o ritmo', value: 'Medo de começar e não conseguir manter a consistência' },
-    { emoji: '✅', label: 'Nenhum receio', desc: 'Estou pronto(a), só quero melhorar', value: 'Não tenho receios, quero apenas melhorar meu conteúdo' },
+    { emoji: '🎥', label: 'Câmera me paralisa', desc: 'Trava só de pensar em gravar', value: 'Sinto bloqueio total na frente da câmera, fico tenso e sem saber o que fazer' },
+    { emoji: '😰', label: 'Medo de julgamento', desc: 'Preocupação com o que conhecidos vão pensar', value: 'Medo intenso de ser julgado pelas pessoas que me conhecem pessoalmente' },
+    { emoji: '🤔', label: 'Não sei o que falar', desc: 'Não tenho clareza da mensagem', value: 'Não tenho clareza sobre o que falar, qual mensagem passar ou como me comunicar' },
+    { emoji: '📅', label: 'Medo de não manter', desc: 'E se eu começar e não aguentar o ritmo?', value: 'Tenho medo de começar, criar expectativa e depois não conseguir manter a consistência' },
+    { emoji: '✅', label: 'Sem receios', desc: 'Estou pronto, só quero melhorar os resultados', value: 'Não tenho receios — estou pronto para criar e só quero melhorar minha estratégia' },
   ],
   tempo: [
-    { emoji: '⚡', label: '15 a 30 min', desc: 'Poucos minutos por dia', value: '15 a 30 minutos por dia' },
-    { emoji: '🕐', label: '1 hora/dia', desc: 'Uma hora bem focada por dia', value: 'Cerca de 1 hora por dia' },
-    { emoji: '🕑', label: '2 horas/dia', desc: 'Bom tempo para criar com calma', value: 'Cerca de 2 horas por dia' },
-    { emoji: '📅', label: 'Fins de semana', desc: 'Só tenho tempo livre no final de semana', value: 'Apenas nos finais de semana' },
-    { emoji: '🔥', label: 'Full time (3h+)', desc: 'Dedicado(a) de verdade nisso', value: 'Mais de 3 horas por dia, estou 100% focado nisso' },
+    { emoji: '⚡', label: '15 a 30 min/dia', desc: 'Rotina corrida — só tenho alguns minutos', value: '15 a 30 minutos por dia — tenho rotina muito intensa' },
+    { emoji: '⏱️', label: '1 hora/dia', desc: 'Uma hora focada por dia', value: 'Cerca de 1 hora por dia dedicada exclusivamente ao conteúdo' },
+    { emoji: '⏰', label: '2 horas/dia', desc: 'Bom tempo para criar com qualidade', value: 'Cerca de 2 horas por dia para criação de conteúdo' },
+    { emoji: '📅', label: 'Só fins de semana', desc: 'Semana lotada, só tenho o final de semana livre', value: 'Apenas nos finais de semana — minha semana é completamente tomada' },
+    { emoji: '🔥', label: 'Full time (3h+)', desc: 'Dedicação total — isso é minha prioridade número 1', value: 'Mais de 3 horas por dia — o digital é minha prioridade máxima agora' },
   ],
   naoquer: [
-    { emoji: '🚫', label: 'Política e religião', desc: 'Esses temas ficam fora do meu conteúdo', value: 'Política e religião' },
-    { emoji: '💊', label: 'Promessas milagrosas', desc: 'Não vendo ilusão de dinheiro fácil', value: 'Promessas de dinheiro fácil ou resultado sem esforço' },
-    { emoji: '🔒', label: 'Vida pessoal / família', desc: 'Minha vida privada fica fora da internet', value: 'Expor minha vida pessoal ou minha família' },
-    { emoji: '🥊', label: 'Atacar concorrentes', desc: 'Não entro em brigas ou polêmicas', value: 'Atacar concorrentes ou me envolver em polêmicas' },
-    { emoji: '✅', label: 'Sem restrições', desc: 'Faço o que precisar para crescer', value: 'Não tenho restrições, falo o que precisar' },
+    { emoji: '🚫', label: 'Política e religião', desc: 'Esses temas ficam totalmente fora', value: 'Política e religião — não quero abordar esses temas em nenhuma circunstância' },
+    { emoji: '💊', label: 'Promessas milagrosas', desc: 'Sem "fique rico rápido" ou resultados impossíveis', value: 'Promessas de enriquecimento rápido ou resultados sem esforço real' },
+    { emoji: '🔒', label: 'Vida pessoal/família', desc: 'Privacidade total da vida fora do trabalho', value: 'Exposição da minha vida pessoal, família ou relacionamentos íntimos' },
+    { emoji: '🥊', label: 'Polêmicas e brigas', desc: 'Zero brigas com concorrentes ou trending topics negativos', value: 'Atacar concorrentes, me envolver em polêmicas ou drama online' },
+    { emoji: '✅', label: 'Sem restrições', desc: 'Faço o que for preciso para crescer', value: 'Não tenho restrições — falo o que for necessário para entregar valor' },
+    { emoji: '✏️', label: 'Outras restrições', desc: 'Descreva o que não quer abordar', value: '__outro__' },
   ],
 }
 
-// ── Opções dinâmicas por nicho — adapta publico, dor e resultado
-function getDynamicOptions(fieldId: string, nicho: string): { emoji: string; label: string; desc: string; value: string }[] | null {
+// ── Opções dinâmicas por nicho (publico + dor)
+function getDynamicOptions(fieldId: string, nicho: string): CardOption[] | null {
   const n = nicho.toLowerCase()
 
-  // Nicho: Fitness / Saúde / Emagrecimento
-  if (n.match(/fit|saúde|saude|emagre|nutri|treino|academia|corpo|magr/)) {
+  // Fitness / Saúde / Emagrecimento
+  if (n.match(/fit|sa[uú]de|emagre|nutri|treino|academia|corpo|magr|dieta|esport/)) {
     if (fieldId === 'publico') return [
-      { emoji: '🏋️', label: 'Sedentários', desc: 'Quem quer começar mas não sabe por onde', value: 'Pessoas sedentárias que querem começar a se exercitar mas não sabem por onde começar' },
-      { emoji: '🍽️', label: 'Quem quer emagrecer', desc: 'Buscam emagrecimento saudável e definitivo', value: 'Pessoas que querem emagrecer de forma saudável e definitiva' },
-      { emoji: '💪', label: 'Iniciantes na academia', desc: 'Começaram mas estão perdidos nos treinos', value: 'Iniciantes na academia que estão perdidos nos treinos e alimentação' },
-      { emoji: '👩', label: 'Mulheres 30-50 anos', desc: 'Querem qualidade de vida e autoestima', value: 'Mulheres entre 30 e 50 anos buscando qualidade de vida e autoestima' },
-      { emoji: '🏃', label: 'Atletas amadores', desc: 'Querem melhorar performance esportiva', value: 'Atletas amadores que querem melhorar performance e evitar lesões' },
+      { emoji: '🏋️', label: 'Sedentários querendo começar', desc: 'Sabem que devem mas não conseguem dar o passo', value: 'Pessoas sedentárias que sabem que precisam mudar mas não conseguem começar e manter' },
+      { emoji: '🍽️', label: 'Quem luta com o peso', desc: 'Tentaram tudo e não conseguem resultado duradouro', value: 'Pessoas que tentaram várias dietas e métodos mas não conseguem emagrecer de forma definitiva' },
+      { emoji: '💪', label: 'Iniciantes na musculação', desc: 'Na academia mas se sentindo perdidos', value: 'Iniciantes na academia que não sabem como treinar corretamente nem o que comer' },
+      { emoji: '👩', label: 'Mulheres 30-50 anos', desc: 'Qualidade de vida, autoestima e saúde hormonal', value: 'Mulheres entre 30 e 50 anos que buscam saúde, qualidade de vida e autoestima' },
+      { emoji: '🏃', label: 'Atletas amadores', desc: 'Querem melhorar performance e evitar lesões', value: 'Atletas amadores que querem melhorar performance, evitar lesões e ter melhor recuperação' },
+      { emoji: '✏️', label: 'Outro público', desc: 'Descreva com suas palavras', value: '__outro__' },
     ]
     if (fieldId === 'dor') return [
-      { emoji: '🔄', label: 'Efeito sanfona', desc: 'Perde e engorda, não consegue manter', value: 'Sofre com o efeito sanfona, sempre voltando ao peso inicial' },
-      { emoji: '⏰', label: 'Sem tempo para treinar', desc: 'Rotina intensa, sem conseguir ser consistente', value: 'Não consegue ser consistente por falta de tempo na rotina' },
-      { emoji: '🍕', label: 'Ansiedade e comida', desc: 'Come por emoção, sabota a dieta', value: 'Come por ansiedade e sabota a própria dieta constantemente' },
-      { emoji: '😔', label: 'Baixa autoestima', desc: 'Vergonha do próprio corpo', value: 'Tem vergonha do próprio corpo e baixa autoestima' },
-      { emoji: '💸', label: 'Gastou com soluções', desc: 'Remédios, dietas milagrosas sem resultado', value: 'Já gastou muito dinheiro com dietas milagrosas e remédios sem resultado' },
+      { emoji: '🔄', label: 'Efeito sanfona eterno', desc: 'Emagrece, engorda, emagrece — nunca mantém', value: 'Sofre com efeito sanfona há anos — sempre volta ao peso inicial, sem conseguir manter resultado' },
+      { emoji: '⏰', label: 'Falta de tempo e energia', desc: 'Rotina lotada que impossibilita a consistência', value: 'Falta de tempo e energia depois do trabalho para treinar e preparar alimentação saudável' },
+      { emoji: '🍕', label: 'Ansiedade e compulsão', desc: 'Come por emoção e sabota a própria dieta', value: 'Come por ansiedade, estresse ou tédio e sabota toda a disciplina que construiu' },
+      { emoji: '😔', label: 'Crise de autoestima', desc: 'Corpo gera vergonha, evita espelhos e fotos', value: 'Autoestima destruída pelo corpo atual — evita fotos, espelhos e situações sociais' },
+      { emoji: '💸', label: 'Gastou e não resultou', desc: 'Suplementos, remédios, dietas caras sem resultado', value: 'Gastou muito dinheiro com suplementos, remédios e dietas milagrosas sem resultado real' },
+      { emoji: '✏️', label: 'Outra dor', desc: 'Descreva com suas palavras', value: '__outro__' },
     ]
   }
 
-  // Nicho: Finanças / Investimentos / Renda extra
-  if (n.match(/finan|invest|renda|dinheiro|econom|aposentad|bolsa|cripto|patrimônio/)) {
+  // Finanças / Investimentos / Renda
+  if (n.match(/finan|invest|renda|dinheiro|econom|aposentad|bolsa|cripto|patrim/)) {
     if (fieldId === 'publico') return [
-      { emoji: '💳', label: 'Endividados', desc: 'Querem sair das dívidas e do vermelho', value: 'Pessoas endividadas que querem sair do vermelho e reorganizar as finanças' },
-      { emoji: '📊', label: 'Iniciantes em investimentos', desc: 'Nunca investiram e não sabem começar', value: 'Pessoas que nunca investiram e não sabem por onde começar' },
-      { emoji: '💼', label: 'Assalariados', desc: 'Querem renda extra além do salário', value: 'Assalariados que querem criar fontes de renda extra além do salário' },
-      { emoji: '👨‍👩‍👧', label: 'Pais de família', desc: 'Querem segurança financeira para família', value: 'Pais de família buscando segurança financeira e futuro para os filhos' },
-      { emoji: '🎓', label: 'Jovens adultos', desc: 'Começando a vida financeira do zero', value: 'Jovens adultos começando a construir o patrimônio do zero' },
+      { emoji: '💳', label: 'Endividados e no vermelho', desc: 'Querem sair das dívidas e organizar a vida financeira', value: 'Pessoas endividadas que querem sair do vermelho, quitar dívidas e reorganizar as finanças' },
+      { emoji: '📊', label: 'Zero em investimentos', desc: 'Nunca investiram — não sabem nem por onde começar', value: 'Pessoas que nunca investiram na vida e não sabem por onde começar com segurança' },
+      { emoji: '💼', label: 'Assalariados estagnados', desc: 'Salário certo, mas não sobra nada no fim do mês', value: 'Assalariados com renda fixa que não conseguem guardar dinheiro e querem criar renda extra' },
+      { emoji: '👨‍👩‍👧', label: 'Pais de família', desc: 'Segurança financeira para o futuro dos filhos', value: 'Pais de família que querem construir segurança financeira e garantir o futuro dos filhos' },
+      { emoji: '🎓', label: 'Jovens adultos 20-30', desc: 'Começando a vida e querendo construir patrimônio', value: 'Jovens adultos entre 20 e 30 anos que querem começar certo e construir patrimônio desde cedo' },
+      { emoji: '✏️', label: 'Outro público', desc: 'Descreva com suas palavras', value: '__outro__' },
     ]
     if (fieldId === 'dor') return [
-      { emoji: '💸', label: 'Dinheiro some', desc: 'Sempre termina o mês no vermelho', value: 'O dinheiro some antes do fim do mês e não sabe para onde vai' },
-      { emoji: '😱', label: 'Medo de investir', desc: 'Tem medo de perder o pouco que tem', value: 'Tem medo de perder dinheiro e não sabe em quem confiar para investir' },
-      { emoji: '🏦', label: 'Sem reserva', desc: 'Qualquer imprevisto causa crise', value: 'Não tem reserva de emergência e qualquer imprevisto vira crise' },
-      { emoji: '📉', label: 'Compras por impulso', desc: 'Gasta mais do que ganha consistentemente', value: 'Gasta por impulso e não consegue economizar mesmo querendo' },
-      { emoji: '⏳', label: 'Aposentadoria incerta', desc: 'Não sabe se vai conseguir se aposentar', value: 'Não sabe se vai conseguir se aposentar com qualidade de vida' },
+      { emoji: '💸', label: 'Dinheiro some todo mês', desc: 'Não sabe para onde foi — acorda e o saldo foi', value: 'O dinheiro desaparece antes do fim do mês e nunca sabe exatamente para onde foi' },
+      { emoji: '😱', label: 'Medo de investir e perder', desc: 'Querer investir mas ter pavor de perder o pouco que tem', value: 'Tem vontade de investir mas tem medo de perder o dinheiro que levou anos para juntar' },
+      { emoji: '🏦', label: 'Sem reserva de emergência', desc: 'Qualquer imprevisto vira catástrofe financeira', value: 'Não tem nenhuma reserva de emergência — qualquer conta inesperada desequilibra tudo' },
+      { emoji: '📉', label: 'Compra por impulso', desc: 'Gasta mais do que ganha — cartão sempre travado', value: 'Compra por impulso e emoção, sempre gastando mais do que ganha mesmo querendo economizar' },
+      { emoji: '⏳', label: 'Aposentadoria impossível', desc: 'Não consegue imaginar como vai se aposentar', value: 'Não consegue visualizar como vai se aposentar com qualidade de vida no ritmo atual' },
+      { emoji: '✏️', label: 'Outra dor', desc: 'Descreva com suas palavras', value: '__outro__' },
     ]
   }
 
-  // Nicho: Marketing Digital / Redes Sociais / Infoprodutos
+  // Marketing Digital / Criadores de conteúdo
   if (n.match(/market|digital|redes|social|instagram|tiktok|youtube|content|criador|influenc|infoprod/)) {
     if (fieldId === 'publico') return [
-      { emoji: '🏪', label: 'Negócios locais', desc: 'Lojas e serviços querendo mais clientes', value: 'Donos de negócios locais que querem usar o digital para atrair mais clientes' },
-      { emoji: '🎓', label: 'Especialistas sem audiência', desc: 'Sabem muito mas ninguém conhece', value: 'Especialistas e profissionais que têm expertise mas não sabem se posicionar online' },
-      { emoji: '💼', label: 'Autônomos e freelancers', desc: 'Querem clientes via redes sociais', value: 'Autônomos e freelancers que querem atrair clientes pelas redes sociais' },
-      { emoji: '🌱', label: 'Iniciantes no digital', desc: 'Nunca criaram conteúdo antes', value: 'Pessoas que nunca criaram conteúdo e não sabem por onde começar' },
-      { emoji: '🔄', label: 'Já criam mas sem resultado', desc: 'Postam mas não crescem nem vendem', value: 'Criadores que já postam há meses mas não conseguem crescer nem vender' },
+      { emoji: '🏪', label: 'Negócios locais', desc: 'Comércios e serviços que querem mais clientes via digital', value: 'Donos de negócios locais que querem usar o Instagram e TikTok para atrair clientes' },
+      { emoji: '🎓', label: 'Especialistas invisíveis', desc: 'Sabem muito, mas ninguém conhece eles', value: 'Especialistas com muito conhecimento mas sem presença digital — invisíveis no mercado' },
+      { emoji: '💼', label: 'Autônomos e freelancers', desc: 'Vivem de clientes e querem captar pelo digital', value: 'Autônomos e freelancers que querem parar de depender de indicação e captar clientes online' },
+      { emoji: '🌱', label: 'Nunca criaram conteúdo', desc: 'Absolute zero — nunca gravaram um vídeo sequer', value: 'Pessoas que nunca criaram nenhum tipo de conteúdo e não sabem nem como começar' },
+      { emoji: '🔄', label: 'Criadores sem resultado', desc: 'Postam há meses mas não crescem nem vendem', value: 'Criadores que já postam há bastante tempo mas não conseguem crescimento nem conversão' },
+      { emoji: '✏️', label: 'Outro público', desc: 'Descreva com suas palavras', value: '__outro__' },
     ]
     if (fieldId === 'dor') return [
-      { emoji: '🤷', label: 'Não sabe o que postar', desc: 'Fica travado sem ideias de conteúdo', value: 'Fica travado sem saber o que postar e fica dias sem publicar' },
-      { emoji: '👻', label: 'Vídeos sem views', desc: 'Produz mas ninguém assiste', value: 'Produz conteúdo mas os vídeos não chegam a ninguém' },
-      { emoji: '📉', label: 'Seguidores que não compram', desc: 'Tem audiência mas zero vendas', value: 'Acumulou seguidores mas não consegue converter nenhum em cliente' },
-      { emoji: '🔁', label: 'Sem consistência', desc: 'Para e começa, nunca mantém o ritmo', value: 'Começa motivado, para na segunda semana e recomeça do zero' },
-      { emoji: '😵', label: 'Sem posicionamento', desc: 'Não sabe qual é seu diferencial', value: 'Não sabe qual é seu diferencial e se perde no meio de tantos criadores' },
+      { emoji: '🤷', label: 'Trava criativa total', desc: 'Fica dias sem saber o que postar', value: 'Fica dias e semanas sem publicar nada porque não sabe o que postar ou o que falar' },
+      { emoji: '👻', label: 'Conteúdo que ninguém vê', desc: 'Produz com esforço mas o alcance é zero', value: 'Produz conteúdo com muito esforço mas o alcance orgânico é mínimo — ninguém chega ao perfil' },
+      { emoji: '📉', label: 'Seguidores que não compram', desc: 'Audiência existe mas não converte em vendas', value: 'Tem uma base de seguidores razoável mas não consegue converter nenhum em cliente pagante' },
+      { emoji: '🔁', label: 'O ciclo de recomeçar', desc: 'Começa, para, some, recome — ciclo infinito', value: 'Entra em ciclo vicioso: começa motivado, para na segunda semana, some do feed, recomeça do zero' },
+      { emoji: '😵', label: 'Perdido no mar de criadores', desc: 'Não sabe como ser diferente de todos os outros', value: 'Não sabe qual é seu diferencial real e se sente perdido num mar de criadores fazendo a mesma coisa' },
+      { emoji: '✏️', label: 'Outra dor', desc: 'Descreva com suas palavras', value: '__outro__' },
     ]
   }
 
-  // Nicho: Moda / Beleza / Estética / Lifestyle
+  // Moda / Beleza / Estética
   if (n.match(/moda|beleza|estet|look|make|maqu|fashion|style|lifestyle|pele|cabelo/)) {
     if (fieldId === 'publico') return [
-      { emoji: '👗', label: 'Mulheres que querem se vestir bem', desc: 'Buscam estilo sem gastar muito', value: 'Mulheres que querem se vestir bem e com estilo sem gastar muito' },
-      { emoji: '🪞', label: 'Quem quer transformar a autoestima', desc: 'Usam a beleza para ganhar confiança', value: 'Pessoas que buscam transformar a própria autoestima através da imagem' },
-      { emoji: '📸', label: 'Quem quer aparecer online', desc: 'Querem criar conteúdo de moda/beleza', value: 'Pessoas que querem criar conteúdo de moda e beleza para as redes sociais' },
-      { emoji: '💍', label: 'Mulheres 25-45', desc: 'Querem se vestir bem para o dia a dia', value: 'Mulheres entre 25 e 45 anos que querem se sentir bonitas no dia a dia' },
-      { emoji: '💼', label: 'Profissionais que querem imagem', desc: 'Querem projetar autoridade pela aparência', value: 'Profissionais que querem projetar autoridade e confiança pela imagem pessoal' },
+      { emoji: '👗', label: 'Quem quer se vestir bem', desc: 'Buscam estilo sem gastar uma fortuna', value: 'Mulheres que querem se vestir bem, ter estilo próprio e se sentir confiantes sem gastar muito' },
+      { emoji: '🪞', label: 'Batalha com autoestima', desc: 'Usam moda e beleza para se reconectar com si mesmas', value: 'Pessoas que buscam transformar a autoestima e a relação com o próprio corpo através da moda e beleza' },
+      { emoji: '📸', label: 'Querem aparecer online', desc: 'Criar conteúdo de moda/beauty e crescer', value: 'Pessoas que querem criar conteúdo de moda ou beleza nas redes sociais e construir audiência' },
+      { emoji: '💼', label: 'Imagem profissional', desc: 'Querem projetar autoridade pela aparência', value: 'Profissionais que querem construir uma imagem de autoridade e confiança pela forma como se apresentam' },
+      { emoji: '💍', label: 'Mulheres 25-45', desc: 'Querem se sentir bonitas no dia a dia sem drama', value: 'Mulheres entre 25 e 45 anos que querem praticidade, estilo e se sentir bonitas sem complicação' },
+      { emoji: '✏️', label: 'Outro público', desc: 'Descreva com suas palavras', value: '__outro__' },
     ]
     if (fieldId === 'dor') return [
-      { emoji: '🤷‍♀️', label: 'Não sabe se vestir', desc: 'Tem roupas mas não sabe combinar', value: 'Tem um guarda-roupa cheio mas não sabe montar looks bonitos' },
-      { emoji: '💸', label: 'Gasta e não usa', desc: 'Compra por impulso e se arrepende', value: 'Gasta dinheiro em roupas por impulso mas nunca usa a maioria' },
-      { emoji: '😔', label: 'Baixa autoestima visual', desc: 'Não gosta da própria imagem', value: 'Não gosta da própria imagem e evita aparecer em fotos e vídeos' },
-      { emoji: '📏', label: 'Dificuldade com o corpo', desc: 'Não encontra roupas para o seu tipo físico', value: 'Tem dificuldade de encontrar roupas que valorizem seu tipo de corpo' },
-      { emoji: '❓', label: 'Não sabe qual estilo é seu', desc: 'Perdida sem uma identidade visual clara', value: 'Não sabe qual é seu estilo e fica copiando tendências sem identidade própria' },
+      { emoji: '🤷‍♀️', label: 'Guarda-roupa cheio, nada para vestir', desc: 'Muitas roupas mas não sabe combinar', value: 'Tem um guarda-roupa cheio de roupas mas não sabe montar looks e sente que não tem nada para usar' },
+      { emoji: '💸', label: 'Compra por impulso e se arrepende', desc: 'Gasta com roupas que nunca usa', value: 'Compra roupas por impulso, se arrepende e elas ficam encostadas com etiqueta no armário' },
+      { emoji: '😔', label: 'Não gosta da própria imagem', desc: 'Evita fotos e situações onde vai aparecer', value: 'Não gosta da própria imagem, evita aparecer em fotos e sente vergonha da sua aparência' },
+      { emoji: '📏', label: 'Dificuldade com o corpo real', desc: 'Não encontra roupas que valorizem seu tipo físico', value: 'Tem dificuldade de encontrar roupas que valorizem seu tipo físico real — não é modelo de revista' },
+      { emoji: '❓', label: 'Sem identidade visual', desc: 'Copia tendências sem ter estilo próprio', value: 'Não tem identidade visual própria — fica copiando tendências e influencers sem desenvolver seu estilo' },
+      { emoji: '✏️', label: 'Outra dor', desc: 'Descreva com suas palavras', value: '__outro__' },
     ]
   }
 
-  return null // usa opções padrão
+  // Educação / Concursos / Estudos
+  if (n.match(/educa|concurs|estud|professor|ensino|aprend|pedagogia/)) {
+    if (fieldId === 'publico') return [
+      { emoji: '📚', label: 'Concurseiros', desc: 'Estudando para passar em concurso público', value: 'Pessoas estudando para concursos públicos que querem método mais eficiente e aprovação mais rápida' },
+      { emoji: '🎓', label: 'Estudantes de graduação', desc: 'Faculdade e vestibular', value: 'Estudantes de graduação ou que preparam para vestibular querendo melhorar desempenho' },
+      { emoji: '👩‍💼', label: 'Profissionais se capacitando', desc: 'Querem subir de nível na carreira', value: 'Profissionais que estudam para se qualificar e crescer na carreira' },
+      { emoji: '👨‍👩‍👧', label: 'Pais de crianças', desc: 'Querem ajudar os filhos a estudar melhor', value: 'Pais que querem ajudar seus filhos a ter melhor desempenho escolar e hábitos de estudo' },
+      { emoji: '✏️', label: 'Outro público', desc: 'Descreva com suas palavras', value: '__outro__' },
+    ]
+    if (fieldId === 'dor') return [
+      { emoji: '😴', label: 'Não consegue absorver', desc: 'Lê mas não fica nada na cabeça', value: 'Estuda horas mas não absorve o conteúdo — tudo parece entrar por um ouvido e sair pelo outro' },
+      { emoji: '🔁', label: 'Falta de disciplina', desc: 'Planeja muito mas executa pouco', value: 'Faz mil cronogramas e planos de estudo mas não consegue seguir nenhum por mais de uma semana' },
+      { emoji: '😰', label: 'Ansiedade de prova', desc: 'Sabe a matéria mas trava na hora H', value: 'Tem ansiedade intensa na hora das provas — sabe o conteúdo mas trava e não performa' },
+      { emoji: '🕐', label: 'Falta de tempo', desc: 'Trabalha, tem família e ainda precisa estudar', value: 'Trabalha ou tem família e não sabe como encaixar o estudo sério na rotina corrida' },
+      { emoji: '✏️', label: 'Outra dor', desc: 'Descreva com suas palavras', value: '__outro__' },
+    ]
+  }
+
+  return null
 }
 
-
+// ── Valor final da resposta (resolve __outro__ para o texto digitado)
+function resolveValue(selected: string, otherText: string): string {
+  return selected === '__outro__' ? otherText.trim() : selected
+}
 
 export function OnboardingModal({ userId, onComplete, updateField }: OnboardingModalProps) {
-  const [currentStep, setCurrentStep] = useState(-1) // -1 = intro screen
+  const [currentStep, setCurrentStep] = useState(-1)
   const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [direction, setDirection] = useState(1) // 1 = forward, -1 = backward
+  const [otherTexts, setOtherTexts] = useState<Record<string, string>>({})
+  const [direction, setDirection] = useState(1)
   const [isCompleting, setIsCompleting] = useState(false)
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -171,49 +229,60 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
   const totalSteps = PROFILE_FIELDS.length
   const currentField = currentStep >= 0 ? PROFILE_FIELDS[currentStep] : null
   const progress = currentStep >= 0 ? ((currentStep + 1) / totalSteps) * 100 : 0
-
   const currentSection = currentField ? SECTION_LABELS[currentField.section] : null
+  const isOptional = currentField ? OPTIONAL_FIELDS.has(currentField.id) : false
+
+  // Resolve se o step atual tem algum valor válido
+  const currentAnswer = currentField ? answers[currentField.id] || '' : ''
+  const currentOtherText = currentField ? otherTexts[currentField.id] || '' : ''
+  const isOtherSelected = currentAnswer === '__outro__'
+  const hasValidAnswer = currentAnswer !== '' && (currentAnswer !== '__outro__' || currentOtherText.trim() !== '')
 
   const handleAnswer = useCallback((value: string) => {
     if (!currentField) return
     setAnswers(prev => ({ ...prev, [currentField.id]: value }))
   }, [currentField])
 
+  const handleOtherText = useCallback((text: string) => {
+    if (!currentField) return
+    setOtherTexts(prev => ({ ...prev, [currentField.id]: text }))
+  }, [currentField])
+
+  const getFinalAnswers = useCallback(() => {
+    const result: Record<string, string> = {}
+    for (const key of Object.keys(answers)) {
+      const val = answers[key]
+      result[key] = val === '__outro__' ? (otherTexts[key] || '').trim() : val
+    }
+    return result
+  }, [answers, otherTexts])
+
+  const saveCurrentField = useCallback(() => {
+    if (!currentField) return
+    const val = resolveValue(currentAnswer, currentOtherText)
+    if (val) updateField(currentField.id, val)
+  }, [currentField, currentAnswer, currentOtherText, updateField])
+
   const handleNext = useCallback(async () => {
     if (!currentField) return
-    // Save current answer
-    const value = answers[currentField.id] || ''
-    if (value.trim()) {
-      updateField(currentField.id, value)
-    }
+    saveCurrentField()
 
     if (currentStep < totalSteps - 1) {
       setDirection(1)
       setCurrentStep(prev => prev + 1)
     } else {
-      // Last step — save + generate insights
       setIsCompleting(true)
-      if (value.trim()) updateField(currentField.id, value)
+      const finalAnswers = getFinalAnswers()
 
-      // Build full profile from answers
-      const fullProfile = { ...answers }
-      if (value.trim()) fullProfile[currentField.id] = value
-
-      // Mark onboarding as completed
-      await supabase
-        .from('profiles')
-        .update({ onboarding_completed: true })
-        .eq('id', userId)
-
+      await supabase.from('profiles').update({ onboarding_completed: true }).eq('id', userId)
       setShowSuccess(true)
       setIsGeneratingInsights(true)
 
-      // Generate Clareza + Persona in background
       try {
         await fetch('/api/gerar-insights', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profile: fullProfile }),
+          body: JSON.stringify({ profile: finalAnswers }),
         })
       } catch (e) {
         console.error('[onboarding] gerar-insights failed:', e)
@@ -223,16 +292,11 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
 
       setTimeout(() => { onComplete() }, 2500)
     }
-  }, [currentStep, totalSteps, currentField, answers, updateField, userId, supabase, onComplete])
+  }, [currentStep, totalSteps, currentField, saveCurrentField, getFinalAnswers, updateField, userId, supabase, onComplete])
 
   const handleBack = useCallback(() => {
-    if (currentStep > 0) {
-      setDirection(-1)
-      setCurrentStep(prev => prev - 1)
-    } else if (currentStep === 0) {
-      setDirection(-1)
-      setCurrentStep(-1) // Go back to intro
-    }
+    if (currentStep > 0) { setDirection(-1); setCurrentStep(prev => prev - 1) }
+    else if (currentStep === 0) { setDirection(-1); setCurrentStep(-1) }
   }, [currentStep])
 
   const handleSkip = useCallback(async () => {
@@ -241,33 +305,29 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
       setCurrentStep(prev => prev + 1)
     } else {
       setIsCompleting(true)
-      await supabase
-        .from('profiles')
-        .update({ onboarding_completed: true })
-        .eq('id', userId)
+      await supabase.from('profiles').update({ onboarding_completed: true }).eq('id', userId)
       setShowSuccess(true)
-      setTimeout(() => {
-        onComplete()
-      }, 2500)
+      setIsGeneratingInsights(true)
+      try {
+        const finalAnswers = getFinalAnswers()
+        await fetch('/api/gerar-insights', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile: finalAnswers }),
+        })
+      } catch (e) { console.error('[onboarding] gerar-insights skip failed:', e) }
+      finally { setIsGeneratingInsights(false) }
+      setTimeout(() => { onComplete() }, 2500)
     }
-  }, [currentStep, totalSteps, supabase, userId, onComplete])
+  }, [currentStep, totalSteps, supabase, userId, onComplete, getFinalAnswers])
 
   const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 80 : -80,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (dir: number) => ({
-      x: dir > 0 ? -80 : 80,
-      opacity: 0,
-    }),
+    enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 }),
   }
 
-  // Success screen
+  // ── Success Screen ────────────────────────────────────────
   if (showSuccess) {
     return (
       <div className="onboarding-overlay dark">
@@ -283,7 +343,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             className="size-24 rounded-full bg-gradient-to-br from-emerald-400 to-[#0ea5e9] flex items-center justify-center mb-8 shadow-[0_0_60px_rgba(16,185,129,0.4)]"
           >
-            <CheckCircle size={48} className="text-[48px] text-slate-900 dark:text-white" />
+            <CheckCircle size={48} className="text-slate-900 dark:text-white" />
           </motion.div>
           <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">Perfil Completo!</h2>
           <p className="text-lg text-slate-800 dark:text-white/90 max-w-md">
@@ -310,7 +370,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
     )
   }
 
-  // Intro welcome screen
+  // ── Intro Screen ──────────────────────────────────────────
   if (currentStep === -1) {
     return (
       <div className="onboarding-overlay dark">
@@ -321,14 +381,13 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="text-center"
           >
-            {/* Logo */}
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
               className="size-20 bg-gradient-to-br from-[#0ea5e9] to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(14,165,233,0.3)]"
             >
-              <Hand size={40} className="text-[40px] text-slate-900 dark:text-white" />
+              <Hand size={40} className="text-slate-900 dark:text-white" />
             </motion.div>
 
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
@@ -337,34 +396,31 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
             </h2>
 
             <p className="text-base text-slate-800 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
-              Vou te fazer algumas perguntas rápidas sobre você, seu público e seus objetivos.
+              São <strong>13 perguntas rápidas</strong> — a maioria tem opções clicáveis, dura menos de 3 minutos.
             </p>
 
             <p className="text-base text-slate-800 dark:text-white/90 max-w-lg mx-auto mb-4 leading-relaxed">
-              Essas respostas vão alimentar diretamente a <span className="font-bold text-slate-900 dark:text-white">Inteligência Artificial</span> que gera seus prompts, roteiros, ideias de conteúdo e estratégias de vendas.
+              Suas respostas alimentam a <span className="font-bold text-slate-900 dark:text-white">IA</span> que gera roteiros, ganchos e estratégias <span className="font-bold text-[#0ea5e9]">100% no seu nicho</span>.
             </p>
 
-            <p className="text-sm text-slate-700 dark:text-white/90 max-w-lg mx-auto mb-10 leading-relaxed">
-              Quanto mais detalhado você for, <span className="font-bold text-[#0ea5e9]">mais personalizados e poderosos</span> serão os conteúdos gerados para o seu nicho. Sem essas informações, a IA não tem contexto suficiente.
+            <p className="text-sm text-slate-700 dark:text-white/70 max-w-lg mx-auto mb-10 leading-relaxed">
+              Campos marcados como <span className="inline-flex items-center gap-1 text-xs font-bold bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-white/60 px-2 py-0.5 rounded-full">Opcional</span> podem ser pulados sem problema.
             </p>
 
             <motion.button
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              onClick={() => {
-                setDirection(1)
-                setCurrentStep(0)
-              }}
+              onClick={() => { setDirection(1); setCurrentStep(0) }}
               className="onboarding-next-btn inline-flex items-center gap-3 px-10 py-5 rounded-2xl text-slate-900 dark:text-white font-bold text-base transition-all active:scale-[0.97]"
             >
               <span>Vamos começar</span>
-              <ArrowRight size={20} className="text-xl" />
+              <ArrowRight size={20} />
             </motion.button>
 
             <button
               onClick={onComplete}
-              className="block mx-auto mt-6 text-sm font-medium text-slate-800 dark:text-white/90 hover:text-slate-800 dark:text-white/90 transition-colors"
+              className="block mx-auto mt-6 text-sm font-medium text-slate-500 dark:text-white/50 hover:text-slate-700 dark:hover:text-white/70 transition-colors"
             >
               Preencher depois
             </button>
@@ -374,33 +430,32 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
     )
   }
 
-  // Main question flow
   if (!currentField) return null
+
+  // ── Resolve opções para o campo atual ───────────────────
+  const nicho = answers['nicho'] || ''
+  const dynamicOpts = getDynamicOptions(currentField.id, nicho)
+  const opts = dynamicOpts || OPTIONS_STATIC[currentField.id]
+  const hasCards = !!opts
 
   return (
     <div className="onboarding-overlay dark">
       <div className="w-full max-w-2xl mx-auto px-6 flex flex-col items-center justify-center min-h-screen py-12">
 
         {/* Top: Logo + Progress */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full mb-12"
-        >
-          {/* Logo */}
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="w-full mb-10">
           <div className="flex items-center justify-center gap-3 mb-8">
             <div className="size-10 bg-[#0ea5e9] rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(14,165,233,0.4)]">
               <svg className="text-slate-900 dark:text-white w-6 h-6" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+                <path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor" />
               </svg>
             </div>
             <span className="text-slate-900 dark:text-white font-bold text-lg tracking-tight">Mapa do Engajamento</span>
           </div>
 
-          {/* Progress Bar */}
           <div className="w-full">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-slate-700 dark:text-white/90 uppercase tracking-widest">
+              <span className="text-xs font-bold text-slate-700 dark:text-white/70 uppercase tracking-widest">
                 Pergunta {currentStep + 1} de {totalSteps}
               </span>
               <span className="text-xs font-black text-[#0ea5e9]">{Math.round(progress)}%</span>
@@ -416,28 +471,33 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
           </div>
         </motion.div>
 
-        {/* Section Badge */}
-        {currentSection && (
-          <motion.div
-            key={currentField.section}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 mb-6"
-          >
-            <div
-              className="size-8 rounded-lg flex items-center justify-center border"
-              style={{
-                backgroundColor: `${currentSection.color}15`,
-                borderColor: `${currentSection.color}30`,
-              }}
+        {/* Section Badge + Optional Badge */}
+        <div className="w-full flex items-center justify-between mb-5">
+          {currentSection && (
+            <motion.div
+              key={currentField.section}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-2"
             >
-              <DynamicIcon name={currentSection.icon} size={16} style={{ color: currentSection.color }} />
-            </div>
-            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: currentSection.color }}>
-              {currentSection.label}
+              <div
+                className="size-8 rounded-lg flex items-center justify-center border"
+                style={{ backgroundColor: `${currentSection.color}15`, borderColor: `${currentSection.color}30` }}
+              >
+                <DynamicIcon name={currentSection.icon} size={16} style={{ color: currentSection.color }} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-widest" style={{ color: currentSection.color }}>
+                {currentSection.label}
+              </span>
+            </motion.div>
+          )}
+
+          {isOptional && (
+            <span className="text-xs font-bold bg-slate-200/80 dark:bg-white/10 text-slate-500 dark:text-white/50 px-3 py-1 rounded-full">
+              Opcional
             </span>
-          </motion.div>
-        )}
+          )}
+        </div>
 
         {/* Question Card */}
         <div className="w-full relative" style={{ minHeight: '280px' }}>
@@ -453,24 +513,24 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
               className="w-full"
             >
               <div className="onboarding-card p-8 md:p-10 rounded-3xl">
-                {/* Question Label */}
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-3 leading-tight">
+                {/* Question */}
+                <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-2 leading-tight">
                   {currentField.label}
                 </h2>
-                <p className="text-sm text-slate-700 dark:text-white/90 mb-8">
-                  {currentField.placeholder}
-                </p>
 
-                {/* Renderização: cards clicaveis OU texto livre — nunca os dois */}
-                {(() => {
-                  const nicho = answers['nicho'] || ''
-                  const dynamicOpts = getDynamicOptions(currentField.id, nicho)
-                  const opts = dynamicOpts || OPTIONS_STATIC[currentField.id]
-                  return opts ? (
-                    // ── Cards clicaveis (igual Tom de Voz) ──
+                {/* Why hint */}
+                {FIELD_WHY[currentField.id] && (
+                  <p className="text-xs text-[#0ea5e9]/80 font-medium mb-6 italic">
+                    💡 {FIELD_WHY[currentField.id]}
+                  </p>
+                )}
+
+                {/* Cards OR Texto livre */}
+                {hasCards && opts ? (
+                  <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       {opts.map((opt) => {
-                        const isSelected = answers[currentField.id] === opt.value
+                        const isSelected = currentAnswer === opt.value
                         return (
                           <motion.button
                             key={opt.value}
@@ -480,30 +540,64 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                             whileTap={{ scale: 0.97 }}
                             onClick={() => handleAnswer(opt.value)}
                             className={`relative flex flex-col items-start gap-1.5 p-4 rounded-2xl border text-left transition-all ${
-                              isSelected
-                                ? 'bg-[#0ea5e9]/10 border-[#0ea5e9] shadow-[0_0_16px_rgba(14,165,233,0.2)]'
-                                : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-[#0ea5e9]/50 hover:bg-[#0ea5e9]/5'
+                              opt.value === '__outro__'
+                                ? isSelected
+                                  ? 'bg-violet-500/10 border-violet-500 shadow-[0_0_16px_rgba(139,92,246,0.2)]'
+                                  : 'bg-white dark:bg-white/5 border-dashed border-slate-300 dark:border-white/20 hover:border-violet-400/60 hover:bg-violet-500/5'
+                                : isSelected
+                                  ? 'bg-[#0ea5e9]/10 border-[#0ea5e9] shadow-[0_0_16px_rgba(14,165,233,0.2)]'
+                                  : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-[#0ea5e9]/50 hover:bg-[#0ea5e9]/5'
                             }`}
                           >
-                            {isSelected && (
+                            {isSelected && opt.value !== '__outro__' && (
                               <span className="absolute top-3 right-3 size-5 rounded-full bg-[#0ea5e9] flex items-center justify-center">
                                 <Check size={11} className="text-white" />
                               </span>
                             )}
+                            {isSelected && opt.value === '__outro__' && (
+                              <span className="absolute top-3 right-3 size-5 rounded-full bg-violet-500 flex items-center justify-center">
+                                <Pencil size={10} className="text-white" />
+                              </span>
+                            )}
                             <span className="text-2xl leading-none">{opt.emoji}</span>
                             <span className={`text-sm font-bold leading-tight ${
-                              isSelected ? 'text-[#0ea5e9]' : 'text-slate-900 dark:text-white'
+                              opt.value === '__outro__'
+                                ? isSelected ? 'text-violet-400' : 'text-slate-500 dark:text-white/50'
+                                : isSelected ? 'text-[#0ea5e9]' : 'text-slate-900 dark:text-white'
                             }`}>{opt.label}</span>
                             <span className="text-xs text-slate-500 dark:text-white/50 leading-snug">{opt.desc}</span>
                           </motion.button>
                         )
                       })}
                     </div>
-                  ) : (
-                  // ── Texto livre ──
+
+                    {/* Expandable text input for "Outro" */}
+                    <AnimatePresence>
+                      {isOtherSelected && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <textarea
+                            value={currentOtherText}
+                            onChange={(e) => handleOtherText(e.target.value)}
+                            placeholder="Descreva com suas próprias palavras..."
+                            autoFocus
+                            rows={3}
+                            className="w-full bg-white dark:bg-white/5 border border-violet-400/50 rounded-2xl px-5 py-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none focus:border-violet-500 transition-all resize-none text-sm leading-relaxed shadow-sm"
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  // Texto livre
                   currentField.type === 'textarea' ? (
                     <textarea
-                      value={answers[currentField.id] || ''}
+                      value={currentAnswer}
                       onChange={(e) => handleAnswer(e.target.value)}
                       placeholder="Digite sua resposta aqui..."
                       className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all resize-none text-base leading-relaxed min-h-[160px] shadow-sm"
@@ -513,7 +607,7 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                   ) : (
                     <input
                       type="text"
-                      value={answers[currentField.id] || ''}
+                      value={currentAnswer}
                       onChange={(e) => handleAnswer(e.target.value)}
                       placeholder="Digite sua resposta aqui..."
                       className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-5 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-[#0ea5e9] transition-all text-base shadow-sm"
@@ -521,62 +615,59 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                       onKeyDown={(e) => { if (e.key === 'Enter') handleNext() }}
                     />
                   )
-                })()}
-
+                )}
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* Navigation Buttons */}
+        {/* Navigation */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
           className="w-full flex items-center justify-between mt-8 gap-4"
         >
-          {/* Back */}
           <button
             onClick={handleBack}
             disabled={currentStep < 0}
-            className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-slate-900 dark:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none px-4 py-3"
+            className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors disabled:opacity-30 disabled:pointer-events-none px-4 py-3"
           >
-            <ArrowLeft size={20} className="text-xl" />
+            <ArrowLeft size={20} />
             Voltar
           </button>
 
           <div className="flex items-center gap-3">
-            {/* Skip */}
+            {/* Pular — sempre visível, mas mais proeminente em campos opcionais */}
             <button
               onClick={handleSkip}
-              className="text-sm font-medium text-slate-800 dark:text-white/90 hover:text-slate-800 dark:text-white/90 transition-colors px-4 py-3"
+              className={`text-sm font-medium transition-colors px-4 py-3 rounded-xl ${
+                isOptional
+                  ? 'text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-white/5'
+                  : 'text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/60'
+              }`}
             >
-              Pular
+              {isOptional ? 'Pular (opcional)' : 'Pular'}
             </button>
 
-            {/* Next / Complete */}
+            {/* Próximo / Concluir */}
             <button
               onClick={handleNext}
-              disabled={isCompleting}
-              className="onboarding-next-btn flex items-center gap-2 px-8 py-4 rounded-2xl text-slate-900 dark:text-white font-bold text-sm transition-all active:scale-[0.97] disabled:opacity-70"
+              disabled={isCompleting || (!hasValidAnswer && !isOptional && currentAnswer === '')}
+              className="onboarding-next-btn flex items-center gap-2 px-8 py-4 rounded-2xl text-slate-900 dark:text-white font-bold text-sm transition-all active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {currentStep === totalSteps - 1 ? (
-                <>
-                  <span>Concluir</span>
-                  <Check size={20} className="text-xl" />
-                </>
+                <><span>Concluir</span><Check size={20} /></>
               ) : (
-                <>
-                  <span>Próximo</span>
-                  <ArrowRight size={20} className="text-xl" />
-                </>
+                <><span>Próximo</span><ArrowRight size={20} /></>
               )}
             </button>
           </div>
         </motion.div>
+
         {/* Step Dots */}
         <div className="flex items-center gap-1.5 mt-8">
-          {PROFILE_FIELDS.map((_, i) => (
+          {PROFILE_FIELDS.map((f, i) => (
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -584,6 +675,8 @@ export function OnboardingModal({ userId, onComplete, updateField }: OnboardingM
                   ? 'w-6 bg-[#0ea5e9] shadow-[0_0_8px_rgba(14,165,233,0.5)]'
                   : i < currentStep
                   ? 'w-1.5 bg-[#0ea5e9]/50'
+                  : OPTIONAL_FIELDS.has(f.id)
+                  ? 'w-1.5 bg-black/5 dark:bg-white/5'
                   : 'w-1.5 bg-black/10 dark:bg-white/10'
               }`}
             />
