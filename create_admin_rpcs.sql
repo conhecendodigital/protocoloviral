@@ -1,6 +1,7 @@
 -- Funções RPC para Otimização do Painel Administrativo
 
 -- 1. Métricas Globais do Dashboard (Total de usuários, Pro, Requisições, Custos)
+DROP FUNCTION IF EXISTS get_admin_dashboard_metrics();
 CREATE OR REPLACE FUNCTION get_admin_dashboard_metrics()
 RETURNS TABLE (
   total_users BIGINT,
