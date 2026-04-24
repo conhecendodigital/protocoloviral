@@ -6,7 +6,7 @@ interface ApiUsageParams {
   modelUsed: string // ex: 'gpt-4o', 'claude-3-5-sonnet', 'elevenlabs'
   promptTokens?: number
   completionTokens?: number
-  costUsdOverride?: number // Caso a API já nos dê o custo em dólar ou tenhamos calculado manualmente (ex: áudio)
+  costUsdOverride?: number | null
   metadata?: Record<string, any>
 }
 

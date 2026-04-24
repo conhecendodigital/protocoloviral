@@ -82,8 +82,8 @@ CRITÉRIOS OBRIGATÓRIOS (analise todos):
           userId: user.id,
           feature: 'analyze_bio',
           modelUsed: 'gpt-4o-mini',
-          promptTokens: usage.promptTokens,
-          completionTokens: usage.completionTokens
+          promptTokens: usage.inputTokens,
+          completionTokens: usage.outputTokens
         })
       } catch (err) {
         console.error('[BILLING_ERROR]', err)

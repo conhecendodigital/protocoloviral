@@ -48,8 +48,8 @@ Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduçõ
             userId: user.id,
             feature: 'improve_block_gancho',
             modelUsed: 'claude-haiku-4-5-20251001',
-            promptTokens: usage.promptTokens,
-            completionTokens: usage.completionTokens
+            promptTokens: usage.inputTokens,
+            completionTokens: usage.outputTokens
           })
         } catch (err) {
           console.error('[BILLING_ERROR]', err)
@@ -129,8 +129,8 @@ RESPONDA APENAS com o novo texto. Sem explicações, sem aspas, sem prefixos.`,
             userId: user.id,
             feature: 'improve_block_regenerate',
             modelUsed: 'claude-haiku-4-5-20251001',
-            promptTokens: usage.promptTokens,
-            completionTokens: usage.completionTokens
+            promptTokens: usage.inputTokens,
+            completionTokens: usage.outputTokens
           })
         } catch (err) {
           console.error('[BILLING_ERROR]', err)
@@ -179,8 +179,8 @@ RESPONDA APENAS com o texto melhorado. Sem explicações, sem aspas extras, sem 
           userId: user.id,
           feature: 'improve_block_refine',
           modelUsed: 'claude-haiku-4-5-20251001',
-          promptTokens: usage.promptTokens,
-          completionTokens: usage.completionTokens
+          promptTokens: usage.inputTokens,
+          completionTokens: usage.outputTokens
         })
       } catch (err) {
         console.error('[BILLING_ERROR]', err)

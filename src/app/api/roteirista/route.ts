@@ -455,8 +455,8 @@ export async function POST(req: Request) {
             try {
               const usageData = await result.usage
               finalUsage = {
-                promptTokens: usageData.promptTokens || 0,
-                completionTokens: usageData.completionTokens || 0
+                promptTokens: usageData.inputTokens || 0,
+                completionTokens: usageData.outputTokens || 0
               }
             } catch (e) {
               console.warn('[USAGE WARNING] Falha ao capturar tokens:', e)

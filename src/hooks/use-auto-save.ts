@@ -1,7 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+
+const supabase = createClient()
 
 /** Whitelist of fields the user is allowed to auto-save */
 const EDITABLE_FIELDS = new Set([
@@ -15,7 +17,6 @@ const EDITABLE_FIELDS = new Set([
 
 export function useAutoSave(userId: string | undefined) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const supabase = useMemo(() => createClient(), [])
 
   const saveField = useCallback(async (fieldName: string, value: string) => {
     if (!userId) return false

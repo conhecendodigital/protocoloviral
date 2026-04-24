@@ -113,8 +113,8 @@ IMPORTANTE:
           userId: user.id,
           feature: 'enrich_voice',
           modelUsed: 'gpt-4o-mini',
-          promptTokens: result.usage.promptTokens,
-          completionTokens: result.usage.completionTokens
+          promptTokens: result.usage.inputTokens,
+          completionTokens: result.usage.outputTokens
         })
       } catch (err) {
         console.error('[BILLING_ERROR]', err)

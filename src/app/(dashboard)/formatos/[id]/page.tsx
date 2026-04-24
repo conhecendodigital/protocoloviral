@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useProfile } from '@/hooks/use-profile'
@@ -10,6 +10,8 @@ import { parseRoteiroBlocks, parsePersona } from '@/lib/parser'
 import Link from 'next/link'
 import { AlertCircle, AlignLeft, ArrowLeft, ArrowRight, BadgeCheck, Copy, ExternalLink, Eye, Heart, Lock, MessageCircle, PlayCircle, Quote, RefreshCw, Sparkles, Timer, TrendingUp, Wand2 } from 'lucide-react'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
+
+const supabase = createClient()
 
 interface Formato {
   id: string
@@ -141,7 +143,6 @@ export default function FormatoViewPage() {
   const [formato, setFormato] = useState<Formato | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'analise' | 'roteiro' | 'adaptar'>('analise')
-  const supabase = useMemo(() => createClient(), [])
 
   const { profile } = useProfile()
   const [generatingReel, setGeneratingReel] = useState(false)

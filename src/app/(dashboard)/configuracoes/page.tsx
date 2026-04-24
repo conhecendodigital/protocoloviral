@@ -23,7 +23,7 @@ export default function ConfiguracoesPage() {
               Configurações
             </h1>
           </div>
-          <p className="text-sm text-slate-500 dark:text-white/50 ml-13">
+          <p className="text-sm text-slate-500 dark:text-white/50 ml-12">
             Personalize sua experiência na plataforma.
           </p>
         </motion.div>

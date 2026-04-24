@@ -72,7 +72,7 @@ export function NotificationPanel({
         className={`size-9 sm:size-10 rounded-full flex items-center justify-center transition-all border relative ${
           isOpen 
             ? 'bg-[#0ea5e9]/20 text-[#0ea5e9] border-[#0ea5e9]/30' 
-            : 'bg-black/5 dark:bg-white/5 text-slate-800 dark:text-slate-300 hover:text-slate-900 dark:text-white border-slate-300/10 dark:border-slate-200 dark:border-white/10 hover:border-slate-300/20 dark:border-white/20'
+            : 'bg-black/5 dark:bg-white/5 text-slate-800 dark:text-white/90 hover:text-slate-900 dark:hover:text-white border-slate-300/10 dark:border-white/10 hover:border-slate-300/20 dark:hover:border-white/20'
         }`}
       >
         <Bell size={20} className="text-xl" />

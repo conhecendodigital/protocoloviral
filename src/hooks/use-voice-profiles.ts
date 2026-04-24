@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+
+const supabase = createClient()
 
 export interface VoiceProfile {
   id: string
@@ -19,7 +21,6 @@ export function useVoiceProfiles() {
   const [profiles, setProfiles] = useState<VoiceProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const supabase = useMemo(() => createClient(), [])
 
   const fetchProfiles = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession()

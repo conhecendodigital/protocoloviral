@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback, use } from 'react'
+import { useState, useEffect, useCallback, useMemo, use } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -8,6 +8,8 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { BANCO_DE_GANCHOS, CATEGORIAS_GANCHOS } from '@/lib/ganchos'
 import { ArrowLeft, ArrowLeftRight, BookOpen, Check, CheckCircle2, Clock, Copy, Mic, Pencil, RefreshCw, RotateCcw, Sparkles, Type, WandSparkles, X } from 'lucide-react'
+
+const supabase = createClient()
 
 const CATEGORIA_ICONS: Record<string, string> = {
   'Número + Segredo': '🔢',
@@ -151,8 +153,6 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isNew = searchParams?.get('new') === 'true'
-
-  const supabase = useMemo(() => createClient(), [])
 
   const [roteiro, setRoteiro] = useState<Roteiro | null>(null)
   const [blocks, setBlocks] = useState<Block[]>([])

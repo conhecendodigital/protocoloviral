@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Plus, RefreshCw, Search, SearchX, Sparkles, Trash2, Video, X, FileEdit } from 'lucide-react'
 
+const supabase = createClient()
+
 interface Roteiro {
   id: string
   titulo: string
@@ -79,7 +81,6 @@ export default function RoteirosPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
 
-  const supabase = useMemo(() => createClient(), [])
   const { profile } = useProfile()
   const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true
   const [userId, setUserId] = useState<string | null>(null)

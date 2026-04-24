@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/types/profile'
+
+const supabase = createClient()
 
 /** Whitelist of fields the user is allowed to edit */
 const EDITABLE_FIELDS = new Set([
@@ -18,7 +20,6 @@ export function useProfile() {
   const [profile, setProfile] = useState<Partial<Profile> | null>(null)
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | undefined>()
-  const supabase = useMemo(() => createClient(), [])
 
   const fetchProfile = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession()

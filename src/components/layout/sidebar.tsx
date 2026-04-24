@@ -117,7 +117,7 @@ export function Sidebar({ className = '' }: SidebarProps) {
           'relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group/item',
           isActive
             ? 'bg-[#0ea5e9]/15 text-[#0ea5e9]'
-            : 'text-slate-700 dark:text-white/80 hover:bg-slate-100 dark:hover:bg-white/6 hover:text-slate-900 dark:hover:text-white'
+            : 'text-slate-700 dark:text-white/80 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
         )}
       >
         {isActive && (

@@ -126,11 +126,10 @@ export async function POST(req: Request) {
 
           if (file.file_type === 'PDF' || file.file_name.toLowerCase().endsWith('.pdf')) {
              try {
-                 const { PDFParse } = await import('pdf-parse');
-                 const parser = new (PDFParse as any)({ data: new Uint8Array(buffer) });
-                 const textR = await (parser as any).getText();
-                 await (parser as any).destroy();
-                 fileExtractedText = textR.text;
+                 // eslint-disable-next-line @typescript-eslint/no-require-imports
+                 const pdfParse = require('pdf-parse') as (buf: Buffer) => Promise<{ text: string }>;
+                 const result = await pdfParse(buffer);
+                 fileExtractedText = result.text;
              } catch (fallbackErr) {
                  console.error(`[RAG] Fallback PDF parse failed:`, fallbackErr);
              }
@@ -236,8 +235,8 @@ ${agent.system_prompt}
                 userId: user.id,
                 feature: 'chat_agent',
                 modelUsed: agent.ai_model || 'gemini-2.0-flash',
-                promptTokens: usage.promptTokens,
-                completionTokens: usage.completionTokens
+                promptTokens: usage.inputTokens,
+                completionTokens: usage.outputTokens
               })
             } catch (err) {
               console.error('[CHAT_BILLING_ERROR]', err)

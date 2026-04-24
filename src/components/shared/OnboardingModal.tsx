@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PROFILE_FIELDS } from '@/types/profile'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, ArrowRight, Brain, Check, CheckCircle, Hand, Pencil, Sparkles } from 'lucide-react'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
+
+const supabase = createClient()
 
 interface OnboardingModalProps {
   userId: string
@@ -227,7 +229,6 @@ export function OnboardingModal({ userId, onComplete, updateField, initialAnswer
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
 
-  const supabase = useMemo(() => createClient(), [])
   const totalSteps = PROFILE_FIELDS.length
   const currentField = currentStep >= 0 ? PROFILE_FIELDS[currentStep] : null
   const progress = currentStep >= 0 ? ((currentStep + 1) / totalSteps) * 100 : 0

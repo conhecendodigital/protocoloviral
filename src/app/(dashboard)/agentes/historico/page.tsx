@@ -10,6 +10,8 @@ import Image from 'next/image'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
+const supabase = createClient()
+
 interface ChatSession {
   id: string
   title: string
@@ -23,7 +25,6 @@ export default function HistoricoAgentesPage() {
   const router = useRouter()
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const supabase = useMemo(() => createClient(), [])
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null)
 
   // Estado que controla se estamos vendo as pastas de agentes ou as sessões de um agente específico

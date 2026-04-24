@@ -155,7 +155,7 @@ export default function LandingPage() {
 
         <main className="pt-32 pb-24 relative">
           {/* Ambient glow */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#0ea5e9]/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#0ea5e9]/10 rounded-full blur-[80px] pointer-events-none -z-10" />
 
           {/* ══ HERO ══ */}
           <section className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center mb-32 relative">
@@ -209,8 +209,8 @@ export default function LandingPage() {
           <section className="max-w-7xl mx-auto px-6 mb-32 relative overflow-hidden">
             {/* Ambient glows */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-[#0ea5e9]/6 rounded-full blur-[140px] pointer-events-none" />
-            <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-violet-600/6 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/6 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-violet-600/6 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/6 rounded-full blur-[80px] pointer-events-none" />
 
             <div className="text-center mb-16">
               <p className="text-xs font-bold uppercase tracking-widest text-[#0ea5e9] mb-3">Veja na prática</p>
@@ -425,7 +425,7 @@ export default function LandingPage() {
 
           {/* ══ FEATURES — Real Tools ══ */}
           <section className="max-w-7xl mx-auto px-6 mb-32 relative" id="recursos">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#0ea5e9]/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#0ea5e9]/10 rounded-full blur-[80px] pointer-events-none" />
             <div className="mb-16">
               <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>O que tem dentro da plataforma.</h2>
               <p className="text-[#bec8d2] text-lg">Tudo isso você acessa no mesmo lugar, hoje.</p>

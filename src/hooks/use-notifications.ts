@@ -8,6 +8,8 @@ import {
   NOTIFICATION_TEMPLATES 
 } from '@/data/notifications'
 
+const supabase = createClient()
+
 interface UseNotificationsProps {
   completion: number
   hasAvatar: boolean
@@ -43,7 +45,6 @@ export function useNotifications({
   const [readIds, setReadIds] = useState<Set<string>>(new Set())
   const [jornadaDone, setJornadaDone] = useState(0)
   const [loaded, setLoaded] = useState(false)
-  const supabase = useMemo(() => createClient(), [])
 
   // Load read IDs from Supabase
   useEffect(() => {
@@ -75,21 +76,22 @@ export function useNotifications({
       .eq('id', userId)
   }, [userId, supabase])
 
-  const now = new Date()
-  const ctx: NotificationContext = useMemo(() => ({
-    completion,
-    jornadaDone,
-    jornadaTotal: 30,
-    dayOfWeek: now.getDay(),
-    hour: now.getHours(),
-    hasAvatar,
-    userName,
-    onboardingCompleted,
-    xp,
-    level,
-    conquistasCount,
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [completion, jornadaDone, hasAvatar, userName, onboardingCompleted, xp, level, conquistasCount])
+  const ctx: NotificationContext = useMemo(() => {
+    const now = new Date()
+    return {
+      completion,
+      jornadaDone,
+      jornadaTotal: 30,
+      dayOfWeek: now.getDay(),
+      hour: now.getHours(),
+      hasAvatar,
+      userName,
+      onboardingCompleted,
+      xp,
+      level,
+      conquistasCount,
+    }
+  }, [completion, jornadaDone, hasAvatar, userName, onboardingCompleted, xp, level, conquistasCount])
 
   // Generate notifications from templates based on current context
   const notifications: Notification[] = useMemo(() => {

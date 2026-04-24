@@ -23,7 +23,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Sequência Problema → Solução',
       descricao: 'Estrutura clássica de vendas em 5 stories',
-      icone: '🎯',
+      icone: 'Target',
       stories: [
         { ordem: 1, tipo: 'Gancho', texto: '[Problema comum] está destruindo seu [resultado desejado]?', dica: 'Use pergunta provocativa + emoji de pensamento' },
         { ordem: 2, tipo: 'Agitação', texto: 'E o pior é que você [consequência negativa] sem nem perceber...', dica: 'Aprofunde a dor, mostre que você entende' },
@@ -35,7 +35,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Sequência de Antecipação',
       descricao: 'Gera desejo antes do lançamento em 6 stories',
-      icone: '🔥',
+      icone: 'Flame',
       stories: [
         { ordem: 1, tipo: 'Teaser', texto: 'Algo grande está chegando... 👀', dica: 'Mistério puro, sem revelar nada' },
         { ordem: 2, tipo: 'Pista', texto: 'Pra quem está cansado de [problema específico]...', dica: 'Conecte com a dor do público' },
@@ -48,7 +48,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Sequência de Prova Social',
       descricao: 'Usa resultados de clientes para vender em 5 stories',
-      icone: '⭐',
+      icone: 'Star',
       stories: [
         { ordem: 1, tipo: 'Resultado', texto: '[Nome] conseguiu [resultado específico] em [tempo]', dica: 'Print do depoimento ou resultado' },
         { ordem: 2, tipo: 'Contexto', texto: 'Ela estava [situação antes] e achava impossível...', dica: 'Mostre o antes para criar identificação' },
@@ -60,7 +60,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Sequência de Objeções',
       descricao: 'Quebra objeções antes da venda em 6 stories',
-      icone: '🔓',
+      icone: 'Unlock',
       stories: [
         { ordem: 1, tipo: 'Gancho', texto: '"Não tenho tempo/dinheiro/experiência" - Você pensa assim?', dica: 'Comece com a objeção mais comum' },
         { ordem: 2, tipo: 'Empatia', texto: 'Eu entendo. [Sua história similar ou de cliente]', dica: 'Mostre que você já pensou assim' },
@@ -75,7 +75,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Sequência de Enquete Interativa',
       descricao: 'Maximiza views e interações em 4 stories',
-      icone: '📊',
+      icone: 'BarChart2',
       stories: [
         { ordem: 1, tipo: 'Pergunta', texto: 'Você prefere [Opção A] ou [Opção B]? 🤔', dica: 'Use enquete, perguntas polarizantes funcionam' },
         { ordem: 2, tipo: 'Revelação', texto: '[X%] votou em [opção vencedora]! E eu concordo porque...', dica: 'Mostre resultado + sua opinião' },
@@ -86,7 +86,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Sequência de Bastidores',
       descricao: 'Humaniza e cria conexão em 5 stories',
-      icone: '🎬',
+      icone: 'Film',
       stories: [
         { ordem: 1, tipo: 'Real', texto: 'Deixa eu te mostrar algo que poucos veem...', dica: 'Crie sensação de exclusividade' },
         { ordem: 2, tipo: 'Processo', texto: '[Mostrando o que você está fazendo/criando]', dica: 'Vídeo real, sem produção' },
@@ -98,7 +98,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Sequência Polêmica Controlada',
       descricao: 'Gera debates e muitas views em 4 stories',
-      icone: '💥',
+      icone: 'Zap',
       stories: [
         { ordem: 1, tipo: 'Gatilho', texto: 'Opinião impopular: [afirmação controversa do nicho]', dica: 'Seja ousado mas não ofensivo' },
         { ordem: 2, tipo: 'Argumento', texto: 'Sei que parece loucura, mas pensa nisso: [argumento]', dica: 'Justifique com lógica' },
@@ -109,7 +109,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Sequência Tutorial Rápido',
       descricao: 'Entrega valor e posiciona como expert em 5 stories',
-      icone: '📚',
+      icone: 'BookOpen',
       stories: [
         { ordem: 1, tipo: 'Promessa', texto: 'Em 30 segundos você vai aprender [habilidade]:', dica: 'Seja específico na promessa' },
         { ordem: 2, tipo: 'Passo 1', texto: 'Primeiro: [ação simples e prática]', dica: 'Comece fácil para gerar confiança' },
@@ -123,7 +123,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Jornada do Herói Compacta',
       descricao: 'Conta sua história de transformação em 6 stories',
-      icone: '🦸',
+      icone: 'Shield',
       stories: [
         { ordem: 1, tipo: 'Antes', texto: 'Há [tempo] eu estava [situação ruim específica]', dica: 'Seja específico e emocional' },
         { ordem: 2, tipo: 'Fundo do Poço', texto: 'O momento mais difícil foi quando [evento doloroso]', dica: 'Vulnerabilidade gera conexão' },
@@ -136,7 +136,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Case de Sucesso Narrativo',
       descricao: 'Transforma depoimento em história em 5 stories',
-      icone: '🏆',
+      icone: 'Trophy',
       stories: [
         { ordem: 1, tipo: 'Contexto', texto: 'Preciso te contar sobre [nome do cliente]...', dica: 'Comece como se fosse um segredo' },
         { ordem: 2, tipo: 'Problema', texto: 'Quando ela chegou, estava [problema específico]', dica: 'Descreva a dor em detalhes' },
@@ -150,7 +150,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Contagem Regressiva',
       descricao: 'Cria urgência nos últimos dias em 5 stories',
-      icone: '⏰',
+      icone: 'Timer',
       stories: [
         { ordem: 1, tipo: 'Aviso', texto: 'ATENÇÃO: Faltam apenas [X] horas ⚠️', dica: 'Use cores vibrantes e timer' },
         { ordem: 2, tipo: 'Recap', texto: 'Resumo do que você leva: [lista de benefícios]', dica: 'Bullet points visuais' },
@@ -162,7 +162,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Abertura de Carrinho',
       descricao: 'Anuncia disponibilidade com impacto em 6 stories',
-      icone: '🛒',
+      icone: 'ShoppingCart',
       stories: [
         { ordem: 1, tipo: 'Alerta', texto: '🚨 CHEGOU A HORA 🚨', dica: 'Visual impactante, cores quentes' },
         { ordem: 2, tipo: 'Novidade', texto: '[Nome do produto/serviço] está ABERTO!', dica: 'Logo ou mockup bonito' },
@@ -175,7 +175,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'Pré-Lançamento (Esquente a Audiência)',
       descricao: 'Prepara audiência 7 dias antes de abrir vendas em 7 stories',
-      icone: '🔥',
+      icone: 'Flame',
       stories: [
         { ordem: 1, tipo: 'Problema', texto: 'Percebi que muita gente tá passando por [problema comum]...', dica: 'Conecte com dor real da audiência' },
         { ordem: 2, tipo: 'Validação', texto: 'Você também sente isso? Vota aqui 👇', dica: 'Use enquete: Sim / Demais!' },
@@ -189,7 +189,7 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
     {
       nome: 'FAQ de Vendas',
       descricao: 'Responde objeções e perguntas comuns em 6 stories',
-      icone: '❓',
+      icone: 'HelpCircle',
       stories: [
         { ordem: 1, tipo: 'Intro', texto: 'Vocês perguntaram, eu respondo! Vem nas próximas ➡️', dica: 'Tom leve e acessível' },
         { ordem: 2, tipo: 'Pergunta 1', texto: '"Funciona pra quem [objeção comum]?" - Resposta: SIM, porque...', dica: 'Quebre a objeção mais comum' },
@@ -203,30 +203,30 @@ export const STORIES_FRAMEWORKS: Record<string, StoryFramework[]> = {
 }
 
 export const STORIES_DICAS: StoriesDica[] = [
-  { categoria: 'Visual', dica: 'Use 80% de tela com texto grande e legível (mínimo 24px)', icone: '👁️' },
-  { categoria: 'Visual', dica: 'Cores contrastantes: fundo escuro + texto claro ou vice-versa', icone: '🎨' },
-  { categoria: 'Visual', dica: 'Rostos humanos aumentam retenção em 38%', icone: '🧑' },
-  { categoria: 'Visual', dica: 'Movimento nos 2 primeiros segundos prende atenção', icone: '🎬' },
-  { categoria: 'Texto', dica: 'Máximo 3 linhas por story - menos é mais', icone: '✍️' },
-  { categoria: 'Texto', dica: 'Comece com verbo de ação ou pergunta', icone: '❓' },
-  { categoria: 'Texto', dica: 'Use números específicos: "7 dias" > "poucos dias"', icone: '🔢' },
-  { categoria: 'Texto', dica: 'Primeira palavra em CAPS prende o olhar', icone: '📢' },
-  { categoria: 'Timing', dica: 'Poste entre 7-9h, 12-14h ou 19-21h', icone: '⏰' },
-  { categoria: 'Timing', dica: 'Sequências de 5-7 stories têm melhor retenção', icone: '📊' },
-  { categoria: 'Timing', dica: 'Use stickers interativos nos 3 primeiros stories', icone: '🔥' },
+  { categoria: 'Visual', dica: 'Use 80% de tela com texto grande e legível (mínimo 24px)', icone: 'Eye' },
+  { categoria: 'Visual', dica: 'Cores contrastantes: fundo escuro + texto claro ou vice-versa', icone: 'Palette' },
+  { categoria: 'Visual', dica: 'Rostos humanos aumentam retenção em 38%', icone: 'User' },
+  { categoria: 'Visual', dica: 'Movimento nos 2 primeiros segundos prende atenção', icone: 'Film' },
+  { categoria: 'Texto', dica: 'Máximo 3 linhas por story - menos é mais', icone: 'PenLine' },
+  { categoria: 'Texto', dica: 'Comece com verbo de ação ou pergunta', icone: 'HelpCircle' },
+  { categoria: 'Texto', dica: 'Use números específicos: "7 dias" > "poucos dias"', icone: 'Hash' },
+  { categoria: 'Texto', dica: 'Primeira palavra em CAPS prende o olhar', icone: 'Megaphone' },
+  { categoria: 'Timing', dica: 'Poste entre 7-9h, 12-14h ou 19-21h', icone: 'Timer' },
+  { categoria: 'Timing', dica: 'Sequências de 5-7 stories têm melhor retenção', icone: 'BarChart2' },
+  { categoria: 'Timing', dica: 'Use stickers interativos nos 3 primeiros stories', icone: 'Flame' },
   { categoria: 'Timing', dica: 'Poste stories todos os dias - consistência ganha', icone: '📅' },
-  { categoria: 'Conversão', dica: 'CTA no máximo a cada 3-4 stories', icone: '🎯' },
-  { categoria: 'Conversão', dica: 'Ofereça algo em troca do clique: "Ganhe X ao clicar"', icone: '🎁' },
-  { categoria: 'Conversão', dica: 'Use prova social antes do CTA', icone: '⭐' },
-  { categoria: 'Conversão', dica: 'Repita o CTA de formas diferentes ao longo do dia', icone: '🔄' },
-  { categoria: 'Engajamento', dica: 'Enquetes aumentam alcance em 20%', icone: '📊' },
-  { categoria: 'Engajamento', dica: 'Responda TODA mensagem de DM vinda de story', icone: '💬' },
-  { categoria: 'Engajamento', dica: 'Perguntas abertas geram 3x mais respostas', icone: '🤔' },
+  { categoria: 'Conversão', dica: 'CTA no máximo a cada 3-4 stories', icone: 'Target' },
+  { categoria: 'Conversão', dica: 'Ofereça algo em troca do clique: "Ganhe X ao clicar"', icone: 'Gift' },
+  { categoria: 'Conversão', dica: 'Use prova social antes do CTA', icone: 'Star' },
+  { categoria: 'Conversão', dica: 'Repita o CTA de formas diferentes ao longo do dia', icone: 'RefreshCw' },
+  { categoria: 'Engajamento', dica: 'Enquetes aumentam alcance em 20%', icone: 'BarChart2' },
+  { categoria: 'Engajamento', dica: 'Responda TODA mensagem de DM vinda de story', icone: 'MessageCircle' },
+  { categoria: 'Engajamento', dica: 'Perguntas abertas geram 3x mais respostas', icone: 'HelpCircle' },
 ]
 
 export const CATEGORIAS_STORIES = [
-  { id: 'vendas', nome: 'Vendas', icone: '💰', descricao: 'Sequências que convertem' },
-  { id: 'engajamento', nome: 'Engajamento', icone: '📊', descricao: 'Maximize views e interação' },
-  { id: 'storytelling', nome: 'Storytelling', icone: '🎭', descricao: 'Conte histórias que conectam' },
-  { id: 'lancamento', nome: 'Lançamento', icone: '🚀', descricao: 'Estratégias para lançar produtos' },
+  { id: 'vendas', nome: 'Vendas', icone: 'DollarSign', descricao: 'Sequências que convertem' },
+  { id: 'engajamento', nome: 'Engajamento', icone: 'BarChart2', descricao: 'Maximize views e interação' },
+  { id: 'storytelling', nome: 'Storytelling', icone: 'Drama', descricao: 'Conte histórias que conectam' },
+  { id: 'lancamento', nome: 'Lançamento', icone: 'Rocket', descricao: 'Estratégias para lançar produtos' },
 ]
