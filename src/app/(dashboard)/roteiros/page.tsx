@@ -102,6 +102,12 @@ export default function RoteirosPage() {
     fetchRoteiros()
   }, [supabase])
 
+  const handleDelete = async (id: string) => {
+    if (!userId) return
+    await supabase.from('roteiros').delete().eq('id', id).eq('user_id', userId)
+    setRoteiros(prev => prev.filter(r => r.id !== id))
+  }
+
   const filteredRoteiros = useMemo(() => {
     if (!searchQuery.trim()) return roteiros;
     const q = searchQuery.toLowerCase();

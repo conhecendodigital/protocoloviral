@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     if (blockType === 'GANCHO' && variations) {
       const { text, usage } = await generateText({
         model: anthropic('claude-haiku-4-5-20251001'),
-        maxTokens: 600,
+        maxOutputTokens: 600,
         prompt: `Você é um expert em ganchos virais para TikTok e Instagram Reels.
 
 Contexto do roteiro:
@@ -108,7 +108,7 @@ Cada gancho deve ter NO MÁXIMO 12 palavras. Sem aspas internas. Sem introduçõ
 
       const { text: improved, usage } = await generateText({
         model: anthropic('claude-haiku-4-5-20251001'),
-        maxTokens: 500,
+        maxOutputTokens: 500,
         prompt: `Você é um expert em roteiros virais para TikTok e Instagram Reels.
 
 Contexto completo do roteiro:
@@ -156,7 +156,7 @@ RESPONDA APENAS com o novo texto. Sem explicações, sem aspas, sem prefixos.`,
 
     const { text: improved, usage } = await generateText({
       model: anthropic('claude-haiku-4-5-20251001'),
-      maxTokens: 400,
+      maxOutputTokens: 400,
       prompt: `Você é um expert em roteiros virais para o TikTok e Instagram Reels.
 
 Contexto completo do roteiro:

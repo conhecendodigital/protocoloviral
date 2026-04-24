@@ -11,9 +11,9 @@ interface Props {
 }
 
 export function VoiceSelector({ selectedId, onSelect, disabled }: Props) {
-  const { profiles, isLoading } = useVoiceProfiles()
+  const { profiles, loading } = useVoiceProfiles()
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex gap-2 p-1 overflow-x-auto">
         {[1, 2, 3].map(i => (

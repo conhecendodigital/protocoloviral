@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('plan_tier, is_admin')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single()
 
     const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true

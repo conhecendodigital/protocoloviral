@@ -791,7 +791,7 @@ export default function FormatoViewPage() {
                       {generatingReel ? 'Gerando...' : 'Reescrever'}
                     </button>
                     <button
-                      onClick={() => copyToClipboard(generatedReel)}
+                      onClick={() => copyToClipboard(generatedReel ?? '')}
                       className="bg-[#0ea5e9] hover:bg-sky-400 text-white flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-lg transition-all font-bold uppercase tracking-widest"
                     >
                       <Copy size={14} className="text-[14px]" />
@@ -801,10 +801,12 @@ export default function FormatoViewPage() {
                 </div>
                 <div className="p-5 sm:p-8">
                   {(() => {
-                    const parsed = editableBlocks || parseRoteiroBlocks(generatedReel);
+                    const parsed = editableBlocks || parseRoteiroBlocks(generatedReel ?? '');
                     if (parsed) {
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      const safe = parsed!
                       const updateReel = (newBlocks: any) => {
-                        const merged = { ...parsed, ...newBlocks }
+                        const merged = { ...safe, ...newBlocks }
                         setEditableBlocks(merged)
                         setGeneratedReel(`**${merged.titulo}**\n\n[GANCHO]\n${merged.gancho}\n\n[DESENVOLVIMENTO]\n${merged.desenvolvimento}\n\n[CTA E FINAL]\n${merged.cta}`)
                       }
@@ -815,7 +817,7 @@ export default function FormatoViewPage() {
                               <Quote size={16} className="text-[16px]" />Gancho
                             </h4>
                             <Textarea
-                              value={parsed.gancho}
+                              value={safe.gancho}
                               onChange={(e) => updateReel({ gancho: e.target.value })}
                               className="w-full bg-black/20 border border-[#0ea5e9]/30 rounded-xl p-4 text-white placeholder-white/30 focus:ring-1 focus:ring-[#0ea5e9] focus:border-[#0ea5e9]/50 outline-none resize-y min-h-[120px] font-sans text-[15px] leading-[1.7]"
                             />
@@ -826,7 +828,7 @@ export default function FormatoViewPage() {
                               <AlignLeft size={16} className="text-[16px]" />Desenvolvimento
                             </h4>
                             <Textarea
-                              value={parsed.desenvolvimento}
+                              value={safe.desenvolvimento}
                               onChange={(e) => updateReel({ desenvolvimento: e.target.value })}
                               className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-white/30 focus:ring-1 focus:ring-white/30 focus:border-white/20 outline-none resize-y min-h-[220px] font-sans text-[15px] leading-[1.7]"
                             />
@@ -837,7 +839,7 @@ export default function FormatoViewPage() {
                               <Wand2 size={16} className="text-[16px]" />CTA e Final
                             </h4>
                             <Textarea
-                              value={parsed.cta}
+                              value={safe.cta}
                               onChange={(e) => updateReel({ cta: e.target.value })}
                               className="w-full bg-black/20 border border-emerald-500/30 rounded-xl p-4 text-[#a7f3d0] placeholder-emerald-500/30 focus:ring-1 focus:ring-emerald-500 outline-none resize-y min-h-[100px] font-sans text-[15px] leading-[1.7]"
                             />
@@ -847,7 +849,7 @@ export default function FormatoViewPage() {
                     }
                     return (
                       <Textarea
-                        value={generatedReel}
+                        value={generatedReel ?? ''}
                         onChange={(e) => setGeneratedReel(e.target.value)}
                         className="w-full bg-transparent border-0 text-white focus:ring-0 outline-none resize-y min-h-[400px] font-sans text-[15px] leading-[1.8] p-0 custom-scrollbar"
                       />

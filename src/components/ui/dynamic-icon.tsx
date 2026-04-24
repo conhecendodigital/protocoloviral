@@ -1,6 +1,7 @@
 'use client'
 import * as LucideIcons from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import type { CSSProperties } from 'react'
 
 // Maps Material Symbol names → Lucide component names
 const MATERIAL_TO_LUCIDE: Record<string, string> = {
@@ -26,7 +27,7 @@ const MATERIAL_TO_LUCIDE: Record<string, string> = {
   verified: 'BadgeCheck', star: 'Star', favorite: 'Heart', bolt: 'Zap',
   flare: 'Sparkles', whatshot: 'Flame', local_fire_department: 'Flame',
   smart_toy: 'Bot', psychology: 'Brain', neurology: 'Brain', memory: 'Cpu',
-  smart_button: 'Wand2', auto_awesome: 'Sparkles', lightbulb: 'Lightbulb',
+  auto_awesome: 'Sparkles', lightbulb: 'Lightbulb',
   insights: 'TrendingUp', monitoring: 'BarChart3', analytics: 'BarChart3',
   trending_up: 'TrendingUp', person: 'User', person_pin: 'UserCheck',
   groups: 'Users', settings: 'Settings', tune: 'SlidersHorizontal',
@@ -38,7 +39,7 @@ const MATERIAL_TO_LUCIDE: Record<string, string> = {
   sentiment_dissatisfied: 'Frown', alternate_email: 'AtSign',
   robot_2: 'Bot', attach_file: 'Paperclip', block: 'Ban',
   chat: 'MessageCircle', chat_bubble: 'MessageCircle', auto_fix_high: 'Wand2',
-  video_camera_front: 'Camera', anchor: 'Anchor', amp_stories: 'Layers',
+  video_camera_front: 'Camera', amp_stories: 'Layers',
   emoji_objects: 'Lightbulb', tips_and_updates: 'Lightbulb',
   trip_origin: 'Circle', magic_button: 'Wand2', smart_button: 'Wand2',
   toggle_on: 'ToggleRight', cloud_done: 'CloudCheck',
@@ -48,6 +49,7 @@ interface DynamicIconProps {
   name: string
   size?: number
   className?: string
+  style?: CSSProperties
 }
 
 /**
@@ -57,13 +59,13 @@ interface DynamicIconProps {
  * @example
  * <DynamicIcon name={formato.icone} size={20} className="text-sky-500" />
  */
-export function DynamicIcon({ name, size = 18, className }: DynamicIconProps) {
+export function DynamicIcon({ name, size = 18, className, style }: DynamicIconProps) {
   const lucideName = MATERIAL_TO_LUCIDE[name] || 'HelpCircle'
-  const Icon = (LucideIcons as Record<string, LucideIcon>)[lucideName]
+  const Icon = (LucideIcons as unknown as Record<string, LucideIcon>)[lucideName]
 
   if (!Icon) {
-    return <span className={className} style={{ width: size, height: size, display: 'inline-block' }} />
+    return <span className={className} style={{ width: size, height: size, display: 'inline-block', ...style }} />
   }
 
-  return <Icon size={size} className={className} />
+  return <Icon size={size} className={className} style={style} />
 }

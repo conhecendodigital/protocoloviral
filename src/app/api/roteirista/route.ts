@@ -437,7 +437,7 @@ export async function POST(req: Request) {
               system: systemPrompt,
               messages: sanitizedMessages,
               maxRetries: 0,
-              experimental_providerMetadata: {
+              providerOptions: {
                 anthropic: { cacheControl: { type: 'ephemeral' } }
               }
             })

@@ -330,7 +330,7 @@ function RoteiristaContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
-          mode: activeTab === 'analisar' ? 'analyze' : (isPro ? 'search' : 'fast'),
+          mode: isPro ? 'search' : 'fast',
           voiceProfileId: selectedVoiceId,
           formatData: selectedFormato ? { id: selectedFormato.id, titulo: selectedFormato.titulo } : null,
         }),
@@ -490,7 +490,7 @@ function RoteiristaContent() {
                   <button onClick={() => { setSelectedFormato(null); setShowFormatMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${!selectedFormato ? 'text-[#0ea5e9]' : 'text-slate-600 dark:text-white/70'}`}><X size={14} className="text-sm" /> Sem formato</button>
                   {formatos.map(f => (
                     <button key={f.id} onClick={() => { setSelectedFormato(f); setShowFormatMenu(false) }} className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors ${selectedFormato?.id === f.id ? 'text-[#0ea5e9] bg-[#0ea5e9]/5' : 'text-slate-600 dark:text-white/70'}`}>
-                      <DynamicIcon name={f.icone} size={18} className="text-lg opacity-70" />
+                      <DynamicIcon name={f.icone ?? 'description'} size={18} className="text-lg opacity-70" />
                       {f.titulo}
                     </button>
                   ))}

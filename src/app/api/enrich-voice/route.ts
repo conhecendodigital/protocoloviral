@@ -102,7 +102,7 @@ IMPORTANTE:
     const result = await generateText({
       model: openai('gpt-4o-mini'),
       prompt,
-      maxTokens: 1500,
+      maxOutputTokens: 1500,
       temperature: 0.7,
     })
 

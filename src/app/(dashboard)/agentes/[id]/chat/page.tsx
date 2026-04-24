@@ -16,6 +16,7 @@ interface Agent {
   category: string
   ai_provider: string
   ai_model: string
+  avatar_url?: string | null
 }
 
 export default function AgentChatPage({ params }: { params: Promise<{ id: string }> }) {

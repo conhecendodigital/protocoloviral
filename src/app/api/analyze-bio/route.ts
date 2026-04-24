@@ -72,7 +72,7 @@ CRITÉRIOS OBRIGATÓRIOS (analise todos):
 7. Linguagem do Público (fala a língua de quem você quer atrair?)`,
       prompt: `Analise esta bio do Instagram e retorne o JSON:\n\n"${bio}"`,
       temperature: 0.4,
-      maxTokens: 800,
+      maxOutputTokens: 800,
     })
 
     if (usage) {
