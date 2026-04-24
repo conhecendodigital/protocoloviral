@@ -1,4 +1,4 @@
-import { createServerSupabase } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 interface ApiUsageParams {
   userId: string
@@ -11,7 +11,9 @@ interface ApiUsageParams {
 }
 
 /**
- * Função centralizada para registrar o consumo de qualquer API do sistema
+ * Função centralizada para registrar o consumo de qualquer API do sistema.
+ * Usa o admin client (Service Role) para ignorar RLS e garantir que o log
+ * sempre seja inserido, independentemente das políticas da tabela.
  */
 export async function logApiUsage({
   userId,
@@ -23,7 +25,7 @@ export async function logApiUsage({
   metadata = {}
 }: ApiUsageParams) {
   try {
-    const supabase = await createServerSupabase()
+    const supabase = createAdminClient()
     let costUsd = costUsdOverride
 
     // Se não houver override, calculamos baseados nos tokens (para LLMs de texto)
@@ -40,8 +42,8 @@ export async function logApiUsage({
         costInputPer1M = 5.00
         costOutputPer1M = 15.00
       } else if (model.includes('haiku')) {
-        costInputPer1M = 0.25
-        costOutputPer1M = 1.25
+        costInputPer1M = 0.80
+        costOutputPer1M = 4.00
       } else if (model.includes('gpt-4o-mini')) {
         costInputPer1M = 0.15
         costOutputPer1M = 0.60
@@ -63,7 +65,7 @@ export async function logApiUsage({
     // Conversão BRL
     const costBrl = costUsd * 4.99
 
-    await supabase.from('api_usage_logs').insert({
+    const { error } = await supabase.from('api_usage_logs').insert({
       user_id: userId,
       feature,
       model_used: modelUsed,
@@ -73,9 +75,14 @@ export async function logApiUsage({
       metadata
     })
 
+    if (error) {
+      console.error('[API_USAGE_LOG_ERROR] Supabase insert failed:', error.message, { feature, modelUsed, userId })
+      return { success: false, error: error.message }
+    }
+
     return { success: true, costBrl }
   } catch (error) {
-    console.error('[API_USAGE_LOG_ERROR]', error)
+    console.error('[API_USAGE_LOG_ERROR] Unexpected:', error)
     return { success: false, error }
   }
 }
