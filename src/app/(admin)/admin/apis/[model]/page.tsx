@@ -1,12 +1,18 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import { Activity, ArrowLeft, Calendar, FileText, User } from 'lucide-react'
+import { Activity, ArrowLeft, Calendar, ChevronLeft, ChevronRight, FileText, User } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-export default async function AdminApiDetailsPage({ params }: { params: { model: string } }) {
+export default async function AdminApiDetailsPage({ 
+  params,
+  searchParams 
+}: { 
+  params: { model: string }
+  searchParams: Promise<{ page?: string }>
+}) {
   const cookieStore = await cookies()
   const authCookie = cookieStore.get('pv_admin_auth')
   if (authCookie?.value !== 'authenticated') {
@@ -15,29 +21,44 @@ export default async function AdminApiDetailsPage({ params }: { params: { model:
 
   // O model vem URL-encoded (ex: gpt-4o-mini). Precisamos decodificar se tiver espaços.
   const modelName = decodeURIComponent(params.model)
+  const { page } = await searchParams
+  const currentPage = parseInt(page || '1', 10)
+  const pageSize = 50
+  const offset = (currentPage - 1) * pageSize
 
   const supabase = createAdminClient()
 
-  // Buscar logs gerados por este modelo
-  // O join com perfis pega nome/email de quem gerou
-  const { data: logs } = await supabase
-    .from('api_usage_logs')
-    .select(`
-      id,
-      feature,
-      created_at,
-      cost_brl,
-      user_id,
-      profiles:user_id (
-        nome_completo,
-        email
-      )
-    `)
-    .eq('model_used', modelName)
-    .order('created_at', { ascending: false })
+  // Buscar dados em paralelo: estatísticas agregadas + logs paginados
+  const [statsResponse, logsResponse] = await Promise.all([
+    // Estatísticas globais do modelo (sem baixar todos os registros)
+    supabase
+      .from('api_usage_logs')
+      .select('cost_brl', { count: 'exact', head: false })
+      .eq('model_used', modelName),
+    // Logs paginados com JOIN de perfil para nome do usuário
+    supabase
+      .from('api_usage_logs')
+      .select(`
+        id,
+        feature,
+        created_at,
+        cost_brl,
+        user_id,
+        profiles:user_id (
+          nome_completo,
+          email
+        )
+      `)
+      .eq('model_used', modelName)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + pageSize - 1)
+  ])
 
-  const totalCost = logs?.reduce((sum, curr) => sum + (curr.cost_brl || 0), 0) || 0
-  const totalGenerations = logs?.length || 0
+  // Custo total calculado via agregação (sem reduce em array gigante)
+  const totalGenerations = statsResponse.count || 0
+  const totalCost = statsResponse.data?.reduce((sum, r) => sum + (r.cost_brl || 0), 0) || 0
+  const logs = logsResponse.data
+  const totalPages = Math.ceil(totalGenerations / pageSize)
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-24">
@@ -141,6 +162,45 @@ export default async function AdminApiDetailsPage({ params }: { params: { model:
             </tbody>
           </table>
         </div>
+        {/* Paginação */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-white/5 flex items-center justify-between">
+            <div className="text-sm text-slate-400">
+              Mostrando <span className="text-white">{offset + 1}</span> a <span className="text-white">{Math.min(offset + pageSize, totalGenerations)}</span> de <span className="text-white">{totalGenerations}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {currentPage > 1 ? (
+                <Link 
+                  href={`/admin/apis/${encodeURIComponent(modelName)}?page=${currentPage - 1}`}
+                  className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-medium"
+                >
+                  <ChevronLeft className="w-4 h-4" /> Anterior
+                </Link>
+              ) : (
+                <div className="px-4 py-2 bg-slate-800/50 text-slate-500 rounded-lg flex items-center gap-2 text-sm font-medium cursor-not-allowed">
+                  <ChevronLeft className="w-4 h-4" /> Anterior
+                </div>
+              )}
+
+              <div className="text-sm font-medium text-slate-400">
+                Página <span className="text-white">{currentPage}</span> de <span className="text-white">{totalPages}</span>
+              </div>
+
+              {currentPage < totalPages ? (
+                <Link 
+                  href={`/admin/apis/${encodeURIComponent(modelName)}?page=${currentPage + 1}`}
+                  className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-medium"
+                >
+                  Próxima <ChevronRight className="w-4 h-4" />
+                </Link>
+              ) : (
+                <div className="px-4 py-2 bg-slate-800/50 text-slate-500 rounded-lg flex items-center gap-2 text-sm font-medium cursor-not-allowed">
+                  Próxima <ChevronRight className="w-4 h-4" />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

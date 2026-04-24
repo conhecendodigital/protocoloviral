@@ -13,67 +13,31 @@ export default async function AdminDashboard() {
 
   const supabase = createAdminClient()
 
-  // 1. Total de usuários
-  const { count: totalUsers } = await supabase
-    .from('profiles')
-    .select('*', { count: 'exact', head: true })
+  // Buscar métricas globais e usuários recentes paralelamente
+  const [metricsResponse, recentUsersResponse] = await Promise.all([
+    supabase.rpc('get_admin_dashboard_metrics').single(),
+    supabase
+      .from('profiles')
+      .select('id, email, nome_completo, plan_tier, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10)
+  ])
 
-  // 2. Usuários recentes
-  const { data: recentUsers } = await supabase
-    .from('profiles')
-    .select('id, email, nome_completo, plan_tier, created_at')
-    .order('created_at', { ascending: false })
-    .limit(10)
+  const metricsData = metricsResponse.data
+  const recentUsers = recentUsersResponse.data
 
-  // 2.1 Buscar dados do auth para preencher nomes de login social (Google)
-  const { data: { users: authUsers } } = await supabase.auth.admin.listUsers({
-    page: 1,
-    perPage: 1000
-  })
+  const totalUsers = metricsData?.total_users || 0
+  const totalSubscribers = metricsData?.pro_subscribers || 0
+  const totalCreditsUsed = metricsData?.total_credits_used || 0
+  const totalCreditsAvailable = metricsData?.total_credits_available || 0
+  const custoAproximado = metricsData?.total_cost_brl || 0
 
+  // Formatamos os usuários recentes (removendo a dependência lenta de auth.admin.listUsers)
   const displayUsers = recentUsers?.map(user => {
-    const authUser = authUsers.find(a => a.id === user.id)
-    const metaName = authUser?.user_metadata?.full_name || authUser?.user_metadata?.name
     return {
       ...user,
-      displayName: user.nome_completo || metaName || 'Sem Nome'
+      displayName: user.nome_completo || user.email || 'Usuário sem nome'
     }
-  })
-
-  // 3. Assinantes (Aproximado buscando todos ou usando filtros)
-  // Assumindo que quem não tem plan_tier = free é assinante (ou quem tem mp_subscription_id)
-  const { data: allProfiles } = await supabase
-    .from('profiles')
-    .select('plan_tier, mp_subscription_id')
-
-  let totalSubscribers = 0
-  allProfiles?.forEach(p => {
-    if ((p.plan_tier && p.plan_tier !== 'free') || p.mp_subscription_id) {
-      totalSubscribers++
-    }
-  })
-
-  // 4. Consumo de Créditos / API
-  const { data: creditos } = await supabase
-    .from('creditos_mensais')
-    .select('credits_used, credits_total')
-
-  let totalCreditsUsed = 0
-  let totalCreditsAvailable = 0
-
-  creditos?.forEach(c => {
-    totalCreditsUsed += (c.credits_used || 0)
-    totalCreditsAvailable += (c.credits_total || 0)
-  })
-
-  // 5. Custo Exato em R$
-  const { data: usageLogs } = await supabase
-    .from('api_usage_logs')
-    .select('cost_brl')
-
-  let custoAproximado = 0
-  usageLogs?.forEach(log => {
-    custoAproximado += (log.cost_brl || 0)
   })
 
   return (

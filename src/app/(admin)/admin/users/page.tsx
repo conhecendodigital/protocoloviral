@@ -22,61 +22,27 @@ export default async function AdminUsersPage({
 
   const supabase = createAdminClient()
 
-  // 1. Total de usuários (para paginação)
-  let countQuery = supabase.from('profiles').select('*', { count: 'exact', head: true })
-  if (filter === 'pro') {
-    countQuery = countQuery.neq('plan_tier', 'free')
-  }
-  const { count: totalUsers } = await countQuery
-
-  // 2. Todos os usuários paginados
-  let profilesQuery = supabase.from('profiles').select('id, email, nome_completo, plan_tier, created_at')
-  if (filter === 'pro') {
-    profilesQuery = profilesQuery.neq('plan_tier', 'free')
-  }
-  const { data: allProfiles } = await profilesQuery.range(offset, offset + pageSize - 1)
-
-  // 3. Obter metadados de autenticação do Auth Users
-  const { data: { users: authUsers } } = await supabase.auth.admin.listUsers({
-    page: 1,
-    perPage: 1000 // Mantemos alto para cobrir o máximo possível de mapeamentos
+  // Buscar usuários paginados, com consumo e custos reais via RPC do banco de dados
+  const { data: rpcUsers } = await supabase.rpc('get_admin_users_ranked', {
+    filter_pro: filter === 'pro',
+    limit_val: pageSize,
+    offset_val: offset
   })
 
-  // 4. Obter o consumo de todos para ordenar
-  const { data: creditos } = await supabase
-    .from('creditos_mensais')
-    .select('user_id, credits_used, credits_total')
-    .in('user_id', allProfiles?.map(p => p.id) || [])
+  // O total global de usuários vem acoplado em cada linha (Window Function)
+  const totalUsers = rpcUsers?.[0]?.total_count || 0
 
-  // 4.1. Obter o custo real agrupado da tabela roteiros
-  const { data: roteiros } = await supabase
-    .from('roteiros')
-    .select('user_id, cost_brl')
-    .in('user_id', allProfiles?.map(p => p.id) || [])
-
-  // Mesclar dados
-  const usersWithConsumption = allProfiles?.map(user => {
-    const authUser = authUsers.find(a => a.id === user.id)
-    const metaName = authUser?.user_metadata?.full_name || authUser?.user_metadata?.name
-    const creds = creditos?.find(c => c.user_id === user.id)
-    
-    // Somar os custos de todos os roteiros deste usuário
-    let totalRealCost = 0
-    roteiros?.filter(r => r.user_id === user.id).forEach(r => {
-      totalRealCost += (r.cost_brl || 0)
-    })
-    
-    return {
-      ...user,
-      displayName: user.nome_completo || metaName || 'Sem Nome',
-      creditsUsed: creds?.credits_used || 0,
-      creditsTotal: creds?.credits_total || 150,
-      cost: totalRealCost
-    }
-  }) || []
-
-  // Ordenar usuários por consumo (do maior para o menor)
-  usersWithConsumption.sort((a, b) => b.creditsUsed - a.creditsUsed)
+  // Mapear para o formato do componente
+  const usersWithConsumption = rpcUsers?.map(user => ({
+    id: user.user_id,
+    displayName: user.display_name,
+    email: user.email,
+    plan_tier: user.plan_tier,
+    created_at: user.created_at,
+    creditsUsed: user.credits_used,
+    creditsTotal: user.credits_total,
+    cost: user.total_cost_brl
+  })) || []
 
   const totalPages = Math.ceil((totalUsers || 0) / pageSize)
 

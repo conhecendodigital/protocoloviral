@@ -13,10 +13,8 @@ export default async function AdminApisPage() {
 
   const supabase = createAdminClient()
 
-  // Buscar todos os logs registrados
-  const { data: logs } = await supabase
-    .from('api_usage_logs')
-    .select('model_used, cost_brl')
+  // Buscar as estatísticas pré-calculadas direto do banco de dados (RPC)
+  const { data: rpcStats } = await supabase.rpc('get_admin_api_stats')
 
   // Lista base de modelos conhecidos que o app utiliza
   const KNOWN_MODELS = [
@@ -28,27 +26,22 @@ export default async function AdminApisPage() {
   ]
 
   // Iniciar o acumulador com os modelos conhecidos zerados
-  const initialStats: Record<string, { count: number, cost: number }> = {}
+  const apiStatsMap: Record<string, { count: number, cost: number }> = {}
   KNOWN_MODELS.forEach(model => {
-    initialStats[model] = { count: 0, cost: 0 }
+    apiStatsMap[model] = { count: 0, cost: 0 }
   })
 
-  // Agrupar e calcular estatísticas por modelo (mesclando com os conhecidos)
-  const apiStats = logs?.reduce((acc, curr) => {
-    const model = curr.model_used || 'desconhecido'
-    
-    if (!acc[model]) {
-      acc[model] = { count: 0, cost: 0 }
+  // Mesclar com os dados reais do banco
+  rpcStats?.forEach(stat => {
+    const model = stat.model_used || 'desconhecido'
+    apiStatsMap[model] = {
+      count: Number(stat.request_count) || 0,
+      cost: Number(stat.total_cost_brl) || 0
     }
-    
-    acc[model].count += 1
-    acc[model].cost += (curr.cost_brl || 0)
-    
-    return acc
-  }, initialStats) || initialStats
+  })
 
   // Converter o objeto agrupado em um array e ordenar do mais caro pro mais barato
-  const sortedApis = Object.entries(apiStats)
+  const sortedApis = Object.entries(apiStatsMap)
     .map(([model, stats]) => ({
       model,
       count: stats.count,

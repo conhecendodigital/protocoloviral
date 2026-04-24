@@ -18,53 +18,38 @@ export default async function AdminUserDashboard({
   const { id: userId } = await params
   const supabase = createAdminClient()
 
-  // 1. Buscar Dados do Profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single()
+  // Buscar dados em paralelo para máxima performance
+  const [profileResponse, creditosResponse, logsResponse] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', userId).single(),
+    supabase.from('creditos_mensais').select('*').eq('user_id', userId).single(),
+    supabase
+      .from('api_usage_logs')
+      .select('id, feature, model_used, created_at, cost_brl')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50)
+  ])
+
+  const profile = profileResponse.data
 
   if (!profile) {
-    // Se não encontrou o perfil, volta para a lista
     redirect('/admin/users')
   }
 
-  // 2. Buscar Dados do Auth (para pegar o nome verdadeiro e email verificado)
-  const { data: authData } = await supabase.auth.admin.getUserById(userId)
-  const authUser = authData?.user
+  const displayName = profile.nome_completo || profile.email || 'Sem Nome'
+  const email = profile.email
 
-  const displayName = profile.nome_completo 
-    || authUser?.user_metadata?.full_name 
-    || authUser?.user_metadata?.name 
-    || 'Sem Nome'
-  
-  const email = profile.email || authUser?.email
-
-  // 3. Buscar Créditos Mensais
-  const { data: creditos } = await supabase
-    .from('creditos_mensais')
-    .select('*')
-    .eq('user_id', userId)
-    .single()
-
+  const creditos = creditosResponse.data
   const creditsUsed = creditos?.credits_used || 0
   const creditsTotal = creditos?.credits_total || 150
   const percentageUsed = creditsTotal > 0 ? (creditsUsed / creditsTotal) * 100 : 0
 
-  // 4. Buscar Histórico de Roteiros Gerados e Custo Real
-  const { data: roteiros } = await supabase
-    .from('roteiros')
-    .select('id, titulo, formato_nome, created_at, cost_brl')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50) // Pegar mais para ter um custo exato mais próximo do real
+  // Histórico completo de TODAS as ações de IA (não apenas roteiros)
+  const apiLogs = logsResponse.data || []
 
-  // Calcular custo exato (ao invés do antigo multiplier * 0.05)
-  let cost = 0
-  roteiros?.forEach(r => {
-    cost += (r.cost_brl || 0)
-  })
+  // Custo real consolidado: soma de TODAS as interações com IA deste usuário
+  const cost = apiLogs.reduce((sum, log) => sum + (log.cost_brl || 0), 0)
+  const totalActions = apiLogs.length
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-24">
@@ -165,11 +150,11 @@ export default async function AdminUserDashboard({
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none" />
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-sm font-medium text-slate-400">Roteiros Gerados</h3>
+              <h3 className="text-sm font-medium text-slate-400">Ações de IA</h3>
               <div className="text-3xl font-bold text-white mt-1">
-                {roteiros?.length || 0}
+                {totalActions}
               </div>
-              <p className="text-xs text-slate-500 mt-2">Histórico contabilizado</p>
+              <p className="text-xs text-slate-500 mt-2">Requisições registradas</p>
             </div>
             <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
               <BookOpen className="w-5 h-5" />
@@ -178,36 +163,34 @@ export default async function AdminUserDashboard({
         </div>
       </div>
 
-      {/* HISTÓRICO DE GERAÇÕES */}
+      {/* HISTÓRICO COMPLETO DE IA */}
       <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-white/5">
-          <h3 className="text-lg font-bold text-white">Últimos Roteiros Gerados</h3>
-          <p className="text-sm text-slate-400">Histórico detalhado das ações da IA para este usuário.</p>
+          <h3 className="text-lg font-bold text-white">Histórico de Consumo de IA</h3>
+          <p className="text-sm text-slate-400">Todas as ações de IA realizadas por este usuário.</p>
         </div>
         
-        {(!roteiros || roteiros.length === 0) ? (
+        {apiLogs.length === 0 ? (
           <div className="p-12 text-center">
             <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <h4 className="text-lg font-medium text-slate-300">Nenhuma geração ainda</h4>
-            <p className="text-slate-500 text-sm mt-1">O usuário não consumiu créditos gerando roteiros.</p>
+            <h4 className="text-lg font-medium text-slate-300">Nenhuma ação registrada</h4>
+            <p className="text-slate-500 text-sm mt-1">O usuário ainda não utilizou nenhuma funcionalidade de IA.</p>
           </div>
         ) : (
           <div className="divide-y divide-white/5">
-            {roteiros.map(roteiro => (
-              <div key={roteiro.id} className="p-6 hover:bg-white/[0.02] transition-colors flex items-center justify-between gap-4">
+            {apiLogs.map(log => (
+              <div key={log.id} className="p-6 hover:bg-white/[0.02] transition-colors flex items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400 shrink-0">
-                    <BookOpen className="w-5 h-5" />
+                    <Activity className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-white font-medium mb-1 line-clamp-1">{roteiro.titulo}</h4>
+                    <h4 className="text-white font-medium mb-1 line-clamp-1">{log.feature}</h4>
                     <div className="flex items-center gap-3 text-xs text-slate-500 font-medium">
-                      {roteiro.formato_nome && (
-                        <span className="text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded uppercase tracking-wider">{roteiro.formato_nome}</span>
-                      )}
+                      <span className="text-sky-400 bg-sky-400/10 px-2 py-0.5 rounded uppercase tracking-wider">{log.model_used}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {new Date(roteiro.created_at).toLocaleDateString('pt-BR', {
+                        {new Date(log.created_at).toLocaleDateString('pt-BR', {
                           day: '2-digit', month: 'short', year: 'numeric',
                           hour: '2-digit', minute: '2-digit'
                         })}
@@ -215,6 +198,9 @@ export default async function AdminUserDashboard({
                     </div>
                   </div>
                 </div>
+                <span className="text-emerald-400 font-medium text-sm whitespace-nowrap">
+                  R$ {(log.cost_brl || 0).toFixed(4)}
+                </span>
               </div>
             ))}
           </div>
