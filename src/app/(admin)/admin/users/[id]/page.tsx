@@ -19,9 +19,8 @@ export default async function AdminUserDashboard({
   const supabase = createAdminClient()
 
   // Buscar dados em paralelo para máxima performance
-  const [profileResponse, creditosResponse, logsResponse] = await Promise.all([
+  const [profileResponse, logsResponse] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', userId).single(),
-    supabase.from('creditos_mensais').select('*').eq('user_id', userId).single(),
     supabase
       .from('api_usage_logs')
       .select('id, feature, model_used, created_at, cost_brl')
@@ -39,17 +38,13 @@ export default async function AdminUserDashboard({
   const displayName = profile.nome_completo || profile.email || 'Sem Nome'
   const email = profile.email
 
-  const creditos = creditosResponse.data
-  const creditsUsed = creditos?.credits_used || 0
-  const creditsTotal = creditos?.credits_total || 150
-  const percentageUsed = creditsTotal > 0 ? (creditsUsed / creditsTotal) * 100 : 0
-
   // Histórico completo de TODAS as ações de IA (não apenas roteiros)
   const apiLogs = logsResponse.data || []
 
   // Custo real consolidado: soma de TODAS as interações com IA deste usuário
   const cost = apiLogs.reduce((sum, log) => sum + (log.cost_brl || 0), 0)
   const totalActions = apiLogs.length
+  const custoMedio = totalActions > 0 ? cost / totalActions : 0
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-24">
@@ -109,25 +104,18 @@ export default async function AdminUserDashboard({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative group">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none" />
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-sm font-medium text-slate-400">Consumo de IA</h3>
-              <div className="text-2xl font-bold text-white mt-1">
-                {creditsUsed} <span className="text-base text-slate-500 font-medium">/ {creditsTotal}</span>
+              <h3 className="text-sm font-medium text-slate-400">Requisições de IA</h3>
+              <div className="text-3xl font-bold text-white mt-1">
+                {totalActions}
               </div>
+              <p className="text-xs text-slate-500 mt-2">Total de chamadas à IA</p>
             </div>
             <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400">
               <Zap className="w-5 h-5" />
             </div>
           </div>
-          
-          <div className="mt-4 h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-1000" 
-              style={{ width: `${Math.min(100, percentageUsed)}%` }}
-            />
-          </div>
-          <p className="text-xs text-slate-500 mt-2 text-right">{percentageUsed.toFixed(1)}% utilizado</p>
         </div>
 
         <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative group">

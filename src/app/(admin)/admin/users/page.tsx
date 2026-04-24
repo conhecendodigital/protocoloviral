@@ -39,8 +39,7 @@ export default async function AdminUsersPage({
     email: user.email,
     plan_tier: user.plan_tier,
     created_at: user.created_at,
-    creditsUsed: user.credits_used,
-    creditsTotal: user.credits_total,
+    requestCount: user.request_count,
     cost: user.total_cost_brl
   })) || []
 
@@ -83,7 +82,7 @@ export default async function AdminUsersPage({
                 <th className="px-6 py-4 font-medium">Usuário</th>
                 <th className="px-6 py-4 font-medium">Email</th>
                 <th className="px-6 py-4 font-medium">Plano</th>
-                <th className="px-6 py-4 font-medium text-center">Consumo (Créditos)</th>
+                <th className="px-6 py-4 font-medium text-center">Requisições de IA</th>
                 <th className="px-6 py-4 font-medium text-center">Custo API (R$)</th>
                 <th className="px-6 py-4 font-medium text-center">Ações</th>
               </tr>
@@ -115,10 +114,7 @@ export default async function AdminUsersPage({
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="font-medium text-white">{user.creditsUsed}</span>
-                      <span className="text-slate-500 text-xs">/ {user.creditsTotal}</span>
-                    </div>
+                    <span className="font-medium text-white">{user.requestCount}</span>
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className="font-medium text-emerald-400">

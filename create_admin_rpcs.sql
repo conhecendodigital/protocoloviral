@@ -52,7 +52,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
--- 3. Lista de Usuários Rankeada e Paginada (Cruza perfis, créditos e custo REAL)
+DROP FUNCTION IF EXISTS get_admin_users_ranked(BOOLEAN, INT, INT);
 CREATE OR REPLACE FUNCTION get_admin_users_ranked(filter_pro BOOLEAN, limit_val INT, offset_val INT)
 RETURNS TABLE (
   user_id UUID,
@@ -60,8 +60,7 @@ RETURNS TABLE (
   email TEXT,
   plan_tier TEXT,
   created_at TIMESTAMPTZ,
-  credits_used BIGINT,
-  credits_total BIGINT,
+  request_count BIGINT,
   total_cost_brl NUMERIC,
   total_count BIGINT
 ) AS $$
@@ -82,18 +81,16 @@ BEGIN
     fp.email,
     fp.plan_tier,
     fp.created_at,
-    COALESCE(cm.credits_used, 0)::BIGINT as credits_used,
-    COALESCE(cm.credits_total, 150)::BIGINT as credits_total,
+    COALESCE(logs.req_count, 0)::BIGINT as request_count,
     COALESCE(logs.total_cost, 0)::NUMERIC as total_cost_brl,
     (SELECT cnt FROM total_records) as total_count
   FROM filtered_profiles fp
-  LEFT JOIN creditos_mensais cm ON cm.user_id = fp.id
   LEFT JOIN (
-    SELECT a.user_id, sum(a.cost_brl) as total_cost 
+    SELECT a.user_id, count(*) as req_count, sum(a.cost_brl) as total_cost 
     FROM api_usage_logs a
     GROUP BY a.user_id
   ) logs ON logs.user_id = fp.id
-  ORDER BY COALESCE(logs.total_cost, 0) DESC, COALESCE(cm.credits_used, 0) DESC, fp.created_at DESC
+  ORDER BY COALESCE(logs.total_cost, 0) DESC, COALESCE(logs.req_count, 0) DESC, fp.created_at DESC
   LIMIT limit_val OFFSET offset_val;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
