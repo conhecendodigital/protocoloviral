@@ -1,19 +1,17 @@
 -- Funções RPC para Otimização do Painel Administrativo
 
--- 1. Métricas Globais do Dashboard (Total de usuários, Pro, Créditos, Custos)
+-- 1. Métricas Globais do Dashboard (Total de usuários, Pro, Requisições, Custos)
 CREATE OR REPLACE FUNCTION get_admin_dashboard_metrics()
 RETURNS TABLE (
   total_users BIGINT,
   pro_subscribers BIGINT,
-  total_credits_used BIGINT,
-  total_credits_available BIGINT,
+  total_requests BIGINT,
   total_cost_brl NUMERIC
 ) AS $$
 DECLARE
   v_total_users BIGINT;
   v_pro_subscribers BIGINT;
-  v_total_credits_used BIGINT;
-  v_total_credits_available BIGINT;
+  v_total_requests BIGINT;
   v_total_cost_brl NUMERIC;
 BEGIN
   -- Contar usuários
@@ -22,15 +20,13 @@ BEGIN
   -- Contar assinantes PRO
   SELECT count(*) INTO v_pro_subscribers FROM profiles WHERE plan_tier != 'free' OR mp_subscription_id IS NOT NULL;
 
-  -- Somar créditos
-  SELECT COALESCE(sum(credits_used), 0), COALESCE(sum(credits_total), 0)
-  INTO v_total_credits_used, v_total_credits_available
-  FROM creditos_mensais;
+  -- Contar requisições totais de IA (todas as features)
+  SELECT count(*) INTO v_total_requests FROM api_usage_logs;
 
   -- Somar custos reais
   SELECT COALESCE(sum(cost_brl), 0) INTO v_total_cost_brl FROM api_usage_logs;
 
-  RETURN QUERY SELECT v_total_users, v_pro_subscribers, v_total_credits_used, v_total_credits_available, v_total_cost_brl;
+  RETURN QUERY SELECT v_total_users, v_pro_subscribers, v_total_requests, v_total_cost_brl;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -68,6 +64,7 @@ RETURNS TABLE (
   total_cost_brl NUMERIC,
   total_count BIGINT
 ) AS $$
+#variable_conflict use_column
 BEGIN
   RETURN QUERY
   WITH filtered_profiles AS (
@@ -91,9 +88,9 @@ BEGIN
   FROM filtered_profiles fp
   LEFT JOIN creditos_mensais cm ON cm.user_id = fp.id
   LEFT JOIN (
-    SELECT user_id, sum(cost_brl) as total_cost 
-    FROM api_usage_logs 
-    GROUP BY user_id
+    SELECT a.user_id, sum(a.cost_brl) as total_cost 
+    FROM api_usage_logs a
+    GROUP BY a.user_id
   ) logs ON logs.user_id = fp.id
   ORDER BY COALESCE(logs.total_cost, 0) DESC, COALESCE(cm.credits_used, 0) DESC, fp.created_at DESC
   LIMIT limit_val OFFSET offset_val;

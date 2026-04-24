@@ -28,9 +28,9 @@ export default async function AdminDashboard() {
 
   const totalUsers = metricsData?.total_users || 0
   const totalSubscribers = metricsData?.pro_subscribers || 0
-  const totalCreditsUsed = metricsData?.total_credits_used || 0
-  const totalCreditsAvailable = metricsData?.total_credits_available || 0
-  const custoAproximado = metricsData?.total_cost_brl || 0
+  const totalRequests = metricsData?.total_requests || 0
+  const custoTotal = metricsData?.total_cost_brl || 0
+  const custoMedioPorReq = totalRequests > 0 ? custoTotal / totalRequests : 0
 
   // Formatamos os usuários recentes (removendo a dependência lenta de auth.admin.listUsers)
   const displayUsers = recentUsers?.map(user => {
@@ -92,28 +92,21 @@ export default async function AdminDashboard() {
           </div>
         </Link>
 
-        {/* Consumo IA */}
+        {/* Requisições de IA */}
         <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none" />
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-slate-400">Créditos de IA Usados</h3>
+            <h3 className="text-sm font-medium text-slate-400">Requisições de IA</h3>
             <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400">
               <Zap className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-white">{totalCreditsUsed.toLocaleString()}</span>
-            <span className="text-sm text-slate-500">
-              / {totalCreditsAvailable.toLocaleString()}
-            </span>
+            <span className="text-3xl font-bold text-white">{totalRequests.toLocaleString()}</span>
           </div>
-          {/* Progress bar */}
-          <div className="mt-4 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-purple-500 to-indigo-500" 
-              style={{ width: `${Math.min(100, totalCreditsAvailable ? (totalCreditsUsed / totalCreditsAvailable) * 100 : 0)}%` }}
-            />
-          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            Custo médio: R$ {custoMedioPorReq.toFixed(4)} / req
+          </p>
         </div>
 
         {/* Custo Exato da API */}
@@ -126,7 +119,7 @@ export default async function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-3xl font-bold text-white">R$ {custoAproximado.toFixed(2)}</span>
+            <span className="text-3xl font-bold text-white">R$ {custoTotal.toFixed(2)}</span>
             <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-xs gap-1">
               Ver Modelos <span className="text-lg leading-none">&rarr;</span>
             </span>
