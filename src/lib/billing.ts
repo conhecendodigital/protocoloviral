@@ -7,7 +7,6 @@ interface ApiUsageParams {
   promptTokens?: number
   completionTokens?: number
   costUsdOverride?: number | null
-  metadata?: Record<string, any>
 }
 
 /**
@@ -22,7 +21,6 @@ export async function logApiUsage({
   promptTokens = 0,
   completionTokens = 0,
   costUsdOverride = null,
-  metadata = {}
 }: ApiUsageParams) {
   try {
     const supabase = createAdminClient()
@@ -72,7 +70,7 @@ export async function logApiUsage({
       cost_brl: costBrl,
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
-      metadata
+      total_tokens: promptTokens + completionTokens
     })
 
     if (error) {
