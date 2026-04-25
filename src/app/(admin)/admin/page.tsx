@@ -25,21 +25,37 @@ export default async function AdminDashboard() {
   const metricsData = metricsResponse.data
   const recentLogs = logsResponse.data || []
 
-  // Buscar perfis dos usuários que aparecem nos logs
+  // Buscar perfis e contagem de requisições dos usuários nos logs
   const userIds = [...new Set(recentLogs.map(log => log.user_id))]
   let profilesMap: Record<string, { nome_completo: string | null, email: string | null }> = {}
+  let requestCountMap: Record<string, number> = {}
 
   if (userIds.length > 0) {
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('id, nome_completo, email')
-      .in('id', userIds)
+    const [profilesRes, countsRes] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('id, nome_completo, email')
+        .in('id', userIds),
+      Promise.all(
+        userIds.map(async (uid) => {
+          const { count } = await supabase
+            .from('api_usage_logs')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', uid)
+          return { uid, count: count || 0 }
+        })
+      )
+    ])
 
-    if (profiles) {
-      profiles.forEach(p => {
+    if (profilesRes.data) {
+      profilesRes.data.forEach(p => {
         profilesMap[p.id] = { nome_completo: p.nome_completo, email: p.email }
       })
     }
+
+    countsRes.forEach(({ uid, count }) => {
+      requestCountMap[uid] = count
+    })
   }
 
   const enrichedLogs = recentLogs.map(log => ({
@@ -50,7 +66,8 @@ export default async function AdminDashboard() {
     total_tokens: log.total_tokens,
     created_at: log.created_at,
     user_id: log.user_id,
-    user_name: profilesMap[log.user_id]?.nome_completo || profilesMap[log.user_id]?.email || 'Usuário desconhecido'
+    user_name: profilesMap[log.user_id]?.nome_completo || profilesMap[log.user_id]?.email || 'Usuário desconhecido',
+    user_request_count: requestCountMap[log.user_id] || 0
   }))
 
   const initialMetrics = {

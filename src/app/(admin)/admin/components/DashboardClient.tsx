@@ -35,6 +35,7 @@ interface LogEntry {
   created_at: string
   user_id: string
   user_name: string
+  user_request_count: number
 }
 
 interface DashboardClientProps {
@@ -211,6 +212,9 @@ export default function DashboardClient({ initialMetrics, initialLogs }: Dashboa
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors truncate">
                         {log.user_name}
+                      </span>
+                      <span className="text-[10px] font-medium text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded-full tabular-nums shrink-0">
+                        {log.user_request_count} req{log.user_request_count !== 1 ? 's' : ''}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
