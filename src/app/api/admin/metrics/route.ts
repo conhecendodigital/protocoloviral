@@ -26,7 +26,12 @@ export async function GET() {
       .limit(10)
   ])
 
-  const metrics = metricsResponse.data
+  const metrics = metricsResponse.data as {
+    total_users: number
+    pro_subscribers: number
+    total_requests: number
+    total_cost_brl: number
+  } | null
   const recentLogs = logsResponse.data || []
 
   // Buscar perfis e contagem de requisições por usuário (batch)

@@ -218,34 +218,90 @@ export default function AgentChatPage({ params }: { params: Promise<{ id: string
               </div>
           </div>
       ) : (
-          <div className="flex-1 overflow-y-auto custom-scrollbar pt-6">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-6 space-y-6">
+          <div className="flex-1 overflow-y-auto custom-scrollbar pt-4">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-6 space-y-8">
                 {messages.map((message) => (
-                    <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] rounded-2xl px-5 py-3 relative group ${message.role === 'user' ? 'bg-[#0ea5e9] text-white rounded-br-md' : 'bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white/90 border border-slate-200 dark:border-white/[0.06] rounded-bl-md'}`}>
+                    <div key={message.id} className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+
+                        {/* Avatar IA */}
+                        {message.role === 'assistant' && (
+                            <div className="shrink-0 size-8 rounded-xl bg-gradient-to-br from-[#0ea5e9]/30 to-indigo-500/20 border border-[#0ea5e9]/20 flex items-center justify-center mt-1 shadow-[0_0_12px_rgba(14,165,233,0.15)] overflow-hidden">
+                                {agent?.avatar_url ? (
+                                    <Image src={agent.avatar_url} alt={agent.name || ''} width={32} height={32} className="w-full h-full object-cover" unoptimized />
+                                ) : (
+                                    <Sparkles size={14} className="text-[#0ea5e9]" />
+                                )}
+                            </div>
+                        )}
+
+                        {/* Bubble */}
+                        <div className={`relative group ${
+                            message.role === 'user'
+                                ? 'max-w-[80%] bg-[#0ea5e9] text-white rounded-2xl rounded-br-sm px-4 py-3 shadow-lg shadow-[#0ea5e9]/20'
+                                : 'flex-1 min-w-0'
+                        }`}>
+
                             {message.role === 'assistant' ? (
-                                <div className="prose prose-sm dark:prose-invert max-w-none [&_h1]:text-lg [&_h2]:text-base [&_h3]:text-sm [&_p]:text-[13px] [&_li]:text-[13px] [&_p]:leading-relaxed [&_li]:leading-relaxed">
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || ''}</ReactMarkdown>
+                                <div className="
+                                    prose prose-sm dark:prose-invert max-w-none
+                                    [&_h1]:text-xl [&_h1]:font-black [&_h1]:text-slate-900 [&_h1]:dark:text-white [&_h1]:mb-3 [&_h1]:mt-1 [&_h1]:tracking-tight
+                                    [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-800 [&_h2]:dark:text-white/90 [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:border-b [&_h2]:border-slate-200 [&_h2]:dark:border-white/10 [&_h2]:pb-1.5
+                                    [&_h3]:text-sm [&_h3]:font-bold [&_h3]:text-[#0ea5e9] [&_h3]:mb-1.5 [&_h3]:mt-3 [&_h3]:uppercase [&_h3]:tracking-wider
+                                    [&_p]:text-[14px] [&_p]:leading-[1.8] [&_p]:text-slate-800 [&_p]:dark:text-white/85 [&_p]:mb-3
+                                    [&_ul]:space-y-1.5 [&_ul]:my-3 [&_ul]:ml-1
+                                    [&_ol]:space-y-1.5 [&_ol]:my-3 [&_ol]:ml-1
+                                    [&_li]:text-[14px] [&_li]:leading-[1.7] [&_li]:text-slate-800 [&_li]:dark:text-white/85
+                                    [&_li]:before:text-[#0ea5e9]
+                                    [&_strong]:text-slate-900 [&_strong]:dark:text-white [&_strong]:font-bold
+                                    [&_em]:text-slate-600 [&_em]:dark:text-white/60
+                                    [&_code]:bg-slate-100 [&_code]:dark:bg-white/10 [&_code]:text-[#0ea5e9] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-[12px] [&_code]:font-mono
+                                    [&_pre]:bg-slate-900 [&_pre]:dark:bg-black/60 [&_pre]:border [&_pre]:border-slate-200 [&_pre]:dark:border-white/10 [&_pre]:rounded-xl [&_pre]:p-4 [&_pre]:my-3 [&_pre]:overflow-x-auto
+                                    [&_pre_code]:bg-transparent [&_pre_code]:text-slate-100 [&_pre_code]:p-0 [&_pre_code]:text-[12px]
+                                    [&_blockquote]:border-l-4 [&_blockquote]:border-[#0ea5e9]/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-600 [&_blockquote]:dark:text-white/50 [&_blockquote]:my-3
+                                    [&_hr]:border-slate-200 [&_hr]:dark:border-white/10 [&_hr]:my-4
+                                    [&_a]:text-[#0ea5e9] [&_a]:underline [&_a]:underline-offset-2
+                                    [&_table]:w-full [&_table]:border-collapse [&_table]:my-3 [&_table]:text-[13px]
+                                    [&_th]:bg-slate-100 [&_th]:dark:bg-white/5 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-bold [&_th]:border [&_th]:border-slate-200 [&_th]:dark:border-white/10
+                                    [&_td]:px-3 [&_td]:py-2 [&_td]:border [&_td]:border-slate-200 [&_td]:dark:border-white/10
+                                ">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || ''}
+                                    </ReactMarkdown>
                                 </div>
                             ) : (
-                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n')}</p>
+                                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                    {message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n')}
+                                </p>
                             )}
+
+                            {/* Botão copiar IA */}
                             {message.role === 'assistant' && (
-                                <button onClick={() => navigator.clipboard.writeText(message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || '')} className="absolute -bottom-3 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-black/80 border border-white/10 hover:bg-white/10" title="Copiar">
-                                    <Copy size={18} className="text-white/60 text-xs" />
+                                <button
+                                    onClick={() => navigator.clipboard.writeText(message.parts?.filter(p => p.type === 'text').map((p: any) => p.text).join('\n') || '')}
+                                    className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-white/70 transition-colors opacity-0 group-hover:opacity-100"
+                                    title="Copiar resposta"
+                                >
+                                    <Copy size={12} />
+                                    Copiar
                                 </button>
                             )}
                         </div>
+
+                        {/* Spacer para alinhar user à direita */}
+                        {message.role === 'user' && <div className="shrink-0 size-8" />}
                     </div>
                 ))}
+
+                {/* Typing indicator */}
                 {isLoading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
-                    <div className="flex justify-start">
-                        <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-2xl rounded-bl-md px-5 py-4">
-                            <div className="flex justify-center items-center gap-1.5 h-full">
-                                <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '0ms' }} />
-                                <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '150ms' }} />
-                                <span className="size-2 rounded-full bg-slate-400 dark:bg-white/40 animate-bounce" style={{ animationDelay: '300ms' }} />
-                            </div>
+                    <div className="flex gap-3 justify-start">
+                        <div className="shrink-0 size-8 rounded-xl bg-gradient-to-br from-[#0ea5e9]/30 to-indigo-500/20 border border-[#0ea5e9]/20 flex items-center justify-center mt-1">
+                            <Sparkles size={14} className="text-[#0ea5e9] animate-pulse" />
+                        </div>
+                        <div className="flex items-center gap-1.5 px-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/[0.06] rounded-2xl rounded-bl-sm">
+                            <span className="size-1.5 rounded-full bg-[#0ea5e9]/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="size-1.5 rounded-full bg-[#0ea5e9]/60 animate-bounce" style={{ animationDelay: '160ms' }} />
+                            <span className="size-1.5 rounded-full bg-[#0ea5e9]/60 animate-bounce" style={{ animationDelay: '320ms' }} />
                         </div>
                     </div>
                 )}
