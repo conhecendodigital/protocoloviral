@@ -1,6 +1,7 @@
 import { createServerSupabase } from '@/lib/supabase/server'
 import { generateText } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: Request) {
   try {
@@ -10,6 +11,25 @@ export async function POST(req: Request) {
     if (!user) {
       return new Response('Unauthorized', { status: 401 })
     }
+
+    // ── Verificar plano e aplicar rate limit ────────────────────────
+    const { data: planProfile } = await supabase
+      .from('profiles')
+      .select('plan_tier, is_admin')
+      .eq('id', user.id)
+      .single()
+
+    const isPro = (planProfile?.plan_tier && planProfile.plan_tier !== 'free') || planProfile?.is_admin === true
+    const maxReqs = isPro ? 20 : 5
+
+    const rl = checkRateLimit(`analyze-bio:${user.id}`, maxReqs, 60_000)
+    if (!rl.allowed) {
+      return Response.json(
+        { error: isPro ? 'Muitas requisições. Aguarde 1 minuto.' : 'Você atingiu o limite do plano gratuito. Faça upgrade para Pro.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } }
+      )
+    }
+    // ────────────────────────────────────────────────────────────────
 
     const { bio } = await req.json()
 

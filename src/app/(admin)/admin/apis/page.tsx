@@ -32,7 +32,7 @@ export default async function AdminApisPage() {
   })
 
   // Mesclar com os dados reais do banco
-  rpcStats?.forEach(stat => {
+  rpcStats?.forEach((stat: { model_used: string; request_count: number; total_cost_brl: number }) => {
     const model = stat.model_used || 'desconhecido'
     apiStatsMap[model] = {
       count: Number(stat.request_count) || 0,

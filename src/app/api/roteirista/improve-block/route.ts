@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +12,25 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    // ── Verificar plano e aplicar rate limit ────────────────────────
+    const { data: planProfile } = await supabase
+      .from('profiles')
+      .select('plan_tier, is_admin')
+      .eq('id', user.id)
+      .single()
+
+    const isPro = (planProfile?.plan_tier && planProfile.plan_tier !== 'free') || planProfile?.is_admin === true
+    const maxReqs = isPro ? 30 : 10
+
+    const rl = checkRateLimit(`improve-block:${user.id}`, maxReqs, 60_000)
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: isPro ? 'Muitas requisições. Aguarde 1 minuto.' : 'Você atingiu o limite do plano gratuito. Faça upgrade para Pro.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } }
+      )
+    }
+    // ────────────────────────────────────────────────────────────────
 
     const { blockType, blockText, context, variations, mode, instruction } = await req.json()
 

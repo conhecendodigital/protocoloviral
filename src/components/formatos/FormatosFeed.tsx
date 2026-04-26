@@ -104,7 +104,7 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
     if (!el) return
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect() } },
-      { rootMargin: '200px', threshold: 0.01 }
+      { rootMargin: '50px', threshold: 0.01 }
     )
     obs.observe(el)
     return () => obs.disconnect()
@@ -133,6 +133,7 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
         <video
           src={formato.video_url}
           autoPlay muted loop playsInline
+          preload="none"
           className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none"
         />
       )
@@ -232,10 +233,10 @@ export function FormatosFeed() {
   useEffect(() => {
     supabase
       .from('formatos')
-      .select('*')
+      .select('id, titulo, plataforma, tipo, nicho, descricao, video_url, link_original, destaque, curtidas, views, engajamento, created_at')
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
-        if (!error && data) setFormatos(data)
+        if (!error && data) setFormatos(data as unknown as Formato[])
         setLoading(false)
       })
   }, [])

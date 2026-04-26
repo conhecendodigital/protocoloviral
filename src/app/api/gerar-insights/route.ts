@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
 
@@ -8,6 +9,25 @@ export async function POST(req: NextRequest) {
     const supabase = await createServerSupabase()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 })
+
+    // ── Verificar plano e aplicar rate limit ────────────────────────
+    const { data: planData } = await supabase
+      .from('profiles')
+      .select('plan_tier, is_admin')
+      .eq('id', user.id)
+      .single()
+
+    const isPro = (planData?.plan_tier && planData.plan_tier !== 'free') || planData?.is_admin === true
+    const maxReqs = isPro ? 10 : 2
+
+    const rl = checkRateLimit(`insights:${user.id}`, maxReqs, 60_000)
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: isPro ? 'Muitas requisições. Aguarde 1 minuto.' : 'Você atingiu o limite do plano gratuito. Faça upgrade para Pro.' },
+        { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } }
+      )
+    }
+    // ────────────────────────────────────────────────────────────────
 
     const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) return NextResponse.json({ error: 'NO_API_KEY' }, { status: 500 })

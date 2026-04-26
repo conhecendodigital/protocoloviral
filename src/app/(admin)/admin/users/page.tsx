@@ -33,7 +33,25 @@ export default async function AdminUsersPage({
   const totalUsers = rpcUsers?.[0]?.total_count || 0
 
   // Mapear para o formato do componente
-  const usersWithConsumption = rpcUsers?.map(user => ({
+  type UserRow = {
+    id: string
+    displayName: string
+    email: string
+    plan_tier: string
+    created_at: string
+    requestCount: number
+    cost: number
+  }
+  const usersWithConsumption: UserRow[] = rpcUsers?.map((user: {
+    user_id: string
+    display_name: string
+    email: string
+    plan_tier: string
+    created_at: string
+    request_count: number
+    total_cost_brl: number
+    total_count: number
+  }) => ({
     id: user.user_id,
     displayName: user.display_name,
     email: user.email,
