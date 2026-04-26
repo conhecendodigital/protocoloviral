@@ -218,6 +218,38 @@ ${agent.system_prompt}
             })
         }
 
+        // ── Geração automática de título (igual ao ChatGPT) ──────────────
+        // Só gera na PRIMEIRA resposta da IA (quando há exatamente 1 mensagem do user)
+        if (session_id && messages.length === 1) {
+          try {
+            const userMsg = messages[0]?.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join(' ')
+              || (typeof messages[0]?.content === 'string' ? messages[0].content : '')
+
+            if (userMsg.trim().length > 0) {
+              const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
+              const titleModel = openai('gpt-4o-mini')
+
+              const { generateText } = await import('ai')
+              const { text: generatedTitle } = await generateText({
+                model: titleModel,
+                prompt: `Gere um título curto e direto (máximo 6 palavras, em português) que resuma o assunto desta conversa. Responda APENAS o título, sem aspas, sem pontuação no final, sem explicações.\n\nMensagem do usuário: "${userMsg.substring(0, 300)}"`,
+                maxOutputTokens: 30,
+              })
+
+              const cleanTitle = generatedTitle.trim().replace(/^["']|["']$/g, '').substring(0, 80)
+              if (cleanTitle.length > 0) {
+                await supabase
+                  .from('chat_sessions')
+                  .update({ title: cleanTitle })
+                  .eq('id', session_id)
+              }
+            }
+          } catch (titleErr) {
+            // Fire-and-forget: falha silenciosa — não afeta o stream
+            console.error('[TITLE_GEN_ERROR]', titleErr)
+          }
+        }
+
         // Atualizar saldo de tokens consumidos
         if (usage && usage.totalTokens) {
             if (!isAdmin) {
