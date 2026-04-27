@@ -97,18 +97,20 @@ interface VideoCardProps {
 
 const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
   const ref = useRef<HTMLAnchorElement>(null)
-  const [inView, setInView] = useState(false)
+  // Primeiros 8 cards carregam imediatamente — sem esperar IntersectionObserver
+  const [inView, setInView] = useState(index < 8)
 
   useEffect(() => {
+    if (index < 8) return // já está ativo
     const el = ref.current
     if (!el) return
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect() } },
-      { rootMargin: '50px', threshold: 0.01 }
+      { rootMargin: '100px', threshold: 0.01 }
     )
     obs.observe(el)
     return () => obs.disconnect()
-  }, [])
+  }, [index])
 
   const renderVideo = useCallback(() => {
     if (!inView) return null
@@ -133,8 +135,8 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
         <video
           src={formato.video_url}
           autoPlay muted loop playsInline
-          preload="none"
-          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none"
+          preload="metadata"
+          className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none"
         />
       )
     }
@@ -154,26 +156,31 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.04, 0.4), duration: 0.4 }}
+      transition={{ delay: Math.min(index * 0.03, 0.3), duration: 0.35 }}
     >
       <Link
         ref={ref}
         href={`/formatos/${formato.id}`}
-        className="group block relative aspect-[9/16] rounded-[24px] overflow-hidden bg-black/50 hover:shadow-xl hover:shadow-[#0ea5e9]/20 transition-all cursor-pointer ring-1 ring-white/10 hover:ring-[#0ea5e9]/40 hover:-translate-y-1"
+        className="group block relative aspect-[9/16] rounded-[24px] overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 hover:shadow-xl hover:shadow-[#0ea5e9]/20 transition-all cursor-pointer ring-1 ring-white/10 hover:ring-[#0ea5e9]/40 hover:-translate-y-1"
       >
-        {/* Lazy-loaded video */}
+        {/* Video / skeleton */}
         <div className="absolute inset-0 pointer-events-none">
-          {renderVideo()}
-          {/* Skeleton placeholder until in-view */}
-          {!inView && (
-            <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 animate-pulse" />
+          {inView ? (
+            renderVideo()
+          ) : (
+            // Placeholder premium — gradiente + shimmer sutil
+            <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-850 to-slate-900">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent animate-pulse" />
+            </div>
           )}
         </div>
 
+        {/* Gradiente permanente no fundo para legibilidade do título */}
+        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+
         {/* Hover overlays */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 backdrop-blur-[2px] pointer-events-none z-0" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#060a12]/95 via-[#060a12]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#060a12]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
@@ -185,34 +192,42 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
           </div>
         )}
 
-        {/* Info overlay on hover */}
-        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 z-10">
-          <div className="flex items-center gap-2 mb-3 flex-wrap text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-[#0ea5e9]">
+        {/* Título sempre visível no card (não só no hover) */}
+        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10 pointer-events-none">
+          <h3 className="text-[13px] sm:text-sm font-bold text-white/90 leading-tight line-clamp-2 drop-shadow-lg group-hover:text-[#0ea5e9] transition-colors">
+            {formato.titulo}
+          </h3>
+
+          {/* Métricas — sempre visíveis */}
+          <div className="flex items-center gap-3 mt-2 text-[11px] sm:text-[12px] font-bold text-white/70">
+            <span className="flex items-center gap-1">
+              <TrendingUp size={11} className="text-green-400" />
+              {formato.engajamento ? `${formato.engajamento.toFixed(1)}%` : 'Alto'}
+            </span>
+            {formato.views != null && (
+              <span className="flex items-center gap-1">
+                <Eye size={11} className="text-[#0ea5e9]" />
+                {formatNumber(formato.views)}
+              </span>
+            )}
+            {formato.views == null && formato.curtidas != null && (
+              <span className="flex items-center gap-1">
+                <Heart size={11} className="text-rose-400" />
+                {formatNumber(formato.curtidas)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Info extra no hover */}
+        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-20 pointer-events-none">
+          <div className="flex items-center gap-2 mb-2 flex-wrap text-[9px] sm:text-[11px] font-black uppercase tracking-widest">
             <span className="bg-[#0ea5e9]/20 backdrop-blur-md px-2.5 py-1 rounded text-white flex gap-1 items-center border border-white/10">
               <FormatoIcon name={formato.formato_normalizado} size={12} />
               {formato.formato_normalizado || 'Geral'}
             </span>
-            <span>•</span>
+            <span className="text-white/70">•</span>
             <span className="text-white/90 drop-shadow-sm">{formato.plataforma}</span>
-          </div>
-          <h3 className="text-base sm:text-lg font-bold text-white leading-tight line-clamp-3 drop-shadow-lg group-hover:text-[#0ea5e9] transition-colors mb-4">
-            {formato.titulo}
-          </h3>
-          <div className="flex items-center justify-between mt-auto w-full pt-1 border-t border-white/10">
-            <div className="flex items-center gap-1.5 px-1 py-1 text-[11px] sm:text-[12px] font-bold text-white mt-1">
-              <TrendingUp size={14} className="text-green-400" />
-              {formato.engajamento ? `${formato.engajamento.toFixed(1)}%` : 'Alto'}
-            </div>
-            {(formato.views || formato.curtidas) && (
-              <div className="flex items-center gap-3 sm:gap-4 text-white/90 drop-shadow-md text-[11px] sm:text-[13px] font-bold mt-1">
-                {formato.views != null && (
-                  <span className="flex items-center gap-1.5"><Eye size={14} className="text-[#0ea5e9]" /> {formatNumber(formato.views)}</span>
-                )}
-                {formato.views == null && formato.curtidas != null && (
-                  <span className="flex items-center gap-1.5"><Heart size={14} className="text-rose-400" /> {formatNumber(formato.curtidas)}</span>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </Link>
