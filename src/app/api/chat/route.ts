@@ -102,48 +102,64 @@ export async function POST(req: Request) {
       .eq('agent_id', agent_id)
 
     let ragContext = '';
+    const hasFiles = files && files.length > 0;
 
-    if (files && files.length > 0) {
+    if (hasFiles) {
       console.log(`[RAG] Agent ${agent.name} has ${files.length} attached documents. Loading...`);
-      ragContext = `\n\n============ BASE DE CONHECIMENTO DO AGENTE ============\nOrientações: Use as informações abaixo estritamente como conhecimento interno primário para responder ao usuário. Se a informação não estiver nesses textos e você julgar necessária, você pode inferir respostas. Mas priorize o conhecimento contido aqui:\n\n`;
+      ragContext = `\n\n============ BASE DE CONHECIMENTO DO AGENTE ============\nOrientações de Segurança (RAG): O usuário anexou documentos de conhecimento específicos para este agente. Quando a pergunta do usuário for sobre o assunto ou contexto dos arquivos, você DEVE basear suas respostas ÚNICA e EXCLUSIVAMENTE nas informações contidas abaixo. Se a informação necessária não estiver contida nos textos, responda honestamente que você não possui essa informação em sua base. NUNCA invente, alucine ou deduza dados fora deste escopo para assuntos técnicos.\n\n`;
 
       for (const file of files) {
         if (!file.storage_path) continue;
 
-        try {
-          const { data: fileData, error: downloadError } = await supabase
-              .storage
-              .from('knowledge_base')
-              .download(file.storage_path);
+        let fileExtractedText = '';
 
-          if (downloadError || !fileData) {
-            console.error(`[RAG] Error downloading ${file.file_name}:`, downloadError);
-            continue;
+        if (file.extracted_text) {
+          // Usa o cache do banco
+          fileExtractedText = file.extracted_text;
+        } else {
+          // Baixa e extrai pela primeira vez
+          try {
+            const { data: fileData, error: downloadError } = await supabase
+                .storage
+                .from('knowledge_base')
+                .download(file.storage_path);
+
+            if (downloadError || !fileData) {
+              console.error(`[RAG] Error downloading ${file.file_name}:`, downloadError);
+              continue;
+            }
+
+            const buffer = Buffer.from(await fileData.arrayBuffer());
+
+            if (file.file_type === 'PDF' || file.file_name.toLowerCase().endsWith('.pdf')) {
+               try {
+                   // eslint-disable-next-line @typescript-eslint/no-require-imports
+                   const pdfParse = require('pdf-parse') as (buf: Buffer) => Promise<{ text: string }>;
+                   const result = await pdfParse(buffer);
+                   fileExtractedText = result.text;
+               } catch (fallbackErr) {
+                   console.error(`[RAG] Fallback PDF parse failed:`, fallbackErr);
+               }
+            } else {
+               // Assume TXT or simple text format
+               fileExtractedText = new TextDecoder('utf-8').decode(buffer);
+            }
+
+            // Salva o cache no banco para a próxima requisição ser instantânea
+            if (fileExtractedText && fileExtractedText.trim().length > 0) {
+              await supabase
+                .from('knowledge_base_files')
+                .update({ extracted_text: fileExtractedText })
+                .eq('id', file.id);
+            }
+
+          } catch (err) {
+            console.error(`[RAG] General error processing file ${file.file_name}:`, err);
           }
+        }
 
-          let fileExtractedText = '';
-          const buffer = Buffer.from(await fileData.arrayBuffer());
-
-          if (file.file_type === 'PDF' || file.file_name.toLowerCase().endsWith('.pdf')) {
-             try {
-                 // eslint-disable-next-line @typescript-eslint/no-require-imports
-                 const pdfParse = require('pdf-parse') as (buf: Buffer) => Promise<{ text: string }>;
-                 const result = await pdfParse(buffer);
-                 fileExtractedText = result.text;
-             } catch (fallbackErr) {
-                 console.error(`[RAG] Fallback PDF parse failed:`, fallbackErr);
-             }
-          } else {
-             // Assume TXT or simple text format
-             fileExtractedText = new TextDecoder('utf-8').decode(buffer);
-          }
-
-          if (fileExtractedText && fileExtractedText.trim().length > 0) {
-            ragContext += `--- DOCUMENTO: ${file.file_name} ---\n${fileExtractedText.trim()}\n\n`;
-          }
-
-        } catch (err) {
-          console.error(`[RAG] General error processing file ${file.file_name}:`, err);
+        if (fileExtractedText && fileExtractedText.trim().length > 0) {
+          ragContext += `--- DOCUMENTO: ${file.file_name} ---\n${fileExtractedText.trim()}\n\n`;
         }
       }
       
@@ -205,6 +221,7 @@ ${agent.system_prompt}
 
     const result = streamText({
       model,
+      temperature: hasFiles ? 0.2 : 0.7,
       system: finalSystemPrompt,
       messages: coreMessages,
       async onFinish({ text, usage }) {
