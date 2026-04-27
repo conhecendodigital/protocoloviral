@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useRef, memo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useRef, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
@@ -96,92 +96,111 @@ interface VideoCardProps {
 }
 
 const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
-  const ref = useRef<HTMLAnchorElement>(null)
-  // Primeiros 8 cards carregam imediatamente — sem esperar IntersectionObserver
+  const containerRef = useRef<HTMLAnchorElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  // Primeiros 8 cards montam o vídeo imediatamente
   const [inView, setInView] = useState(index < 8)
 
+  // Observer 1 — carga inicial (dispara 1x e desconecta)
+  // Margem grande para pré-carregar antes de aparecer na tela
   useEffect(() => {
-    if (index < 8) return // já está ativo
-    const el = ref.current
+    if (index < 8) return
+    const el = containerRef.current
     if (!el) return
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect() } },
-      { rootMargin: '100px', threshold: 0.01 }
+      { rootMargin: '250px', threshold: 0 }
     )
     obs.observe(el)
     return () => obs.disconnect()
   }, [index])
 
-  const renderVideo = useCallback(() => {
-    if (!inView) return null
-    const type = getVideoType(formato.video_url)
-
-    if (type === 'drive') {
-      const fileId = getDriveFileId(formato.video_url)
-      const src = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : formato.video_url
-      return (
-        <iframe
-          src={src}
-          className="w-full h-full object-cover scale-[1.3] opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none"
-          allow="autoplay; encrypted-media"
-          title={formato.titulo}
-          loading="lazy"
-        />
-      )
-    }
-
-    if (type === 'direct') {
-      return (
-        <video
-          src={formato.video_url}
-          autoPlay muted loop playsInline
-          preload="metadata"
-          onTimeUpdate={(e) => {
-            const v = e.currentTarget
-            if (v.currentTime > 5) v.currentTime = 0
-          }}
-          className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none"
-        />
-      )
-    }
-
-    const sep = formato.video_url.includes('?') ? '&' : '?'
-    return (
-      <iframe
-        src={`${formato.video_url}${sep}autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&playsinline=1`}
-        className="w-full h-full object-cover scale-[1.3] opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        title={formato.titulo}
-        loading="lazy"
-      />
+  // Observer 2 — play / pause contínuo
+  // Pausa vídeos fora da tela → reduz CPU durante o scroll
+  useEffect(() => {
+    if (!inView) return
+    const el = containerRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        const video = videoRef.current
+        if (!video) return
+        if (entry.isIntersecting) {
+          video.play().catch(() => {})
+        } else {
+          video.pause()
+        }
+      },
+      { rootMargin: '0px', threshold: 0.1 }
     )
-  }, [inView, formato.video_url, formato.titulo])
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [inView])
+
+  const videoType = inView ? getVideoType(formato.video_url) : null
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.03, 0.3), duration: 0.35 }}
+      // Delay apenas nos primeiros 8 cards — durante o scroll é instantâneo
+      transition={{ delay: index < 8 ? Math.min(index * 0.04, 0.28) : 0, duration: 0.3 }}
     >
       <Link
-        ref={ref}
+        ref={containerRef}
         href={`/formatos/${formato.id}`}
         className="group block relative aspect-[9/16] rounded-[24px] overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 hover:shadow-xl hover:shadow-[#0ea5e9]/20 transition-all cursor-pointer ring-1 ring-white/10 hover:ring-[#0ea5e9]/40 hover:-translate-y-1"
       >
-        {/* Video / skeleton */}
+        {/* Vídeo ou placeholder */}
         <div className="absolute inset-0 pointer-events-none">
-          {inView ? (
-            renderVideo()
-          ) : (
-            // Placeholder premium — gradiente + shimmer sutil
-            <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-850 to-slate-900">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent animate-pulse" />
-            </div>
+          {!inView && (
+            <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900" />
           )}
+
+          {inView && videoType === 'drive' && (() => {
+            const fileId = getDriveFileId(formato.video_url)
+            const src = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : formato.video_url
+            return (
+              <iframe
+                src={src}
+                className="w-full h-full object-cover scale-[1.3] opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none"
+                allow="autoplay; encrypted-media"
+                title={formato.titulo}
+                loading="lazy"
+              />
+            )
+          })()}
+
+          {inView && videoType === 'direct' && (
+            <video
+              ref={videoRef}
+              src={formato.video_url}
+              autoPlay muted loop playsInline
+              preload="metadata"
+              onTimeUpdate={(e) => {
+                const v = e.currentTarget
+                if (v.currentTime > 5) v.currentTime = 0
+              }}
+              className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none"
+            />
+          )}
+
+          {inView && videoType === 'embed' && (() => {
+            const sep = formato.video_url.includes('?') ? '&' : '?'
+            return (
+              <iframe
+                src={`${formato.video_url}${sep}autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&playsinline=1`}
+                className="w-full h-full object-cover scale-[1.3] opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title={formato.titulo}
+                loading="lazy"
+              />
+            )
+          })()}
         </div>
 
-        {/* Gradiente permanente no fundo para legibilidade do título */}
+        {/* Gradiente permanente para legibilidade */}
         <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
 
         {/* Hover overlays */}
@@ -196,13 +215,11 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
           </div>
         )}
 
-        {/* Título sempre visível no card (não só no hover) */}
+        {/* Título + métricas — sempre visíveis */}
         <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10 pointer-events-none">
           <h3 className="text-[13px] sm:text-sm font-bold text-white/90 leading-tight line-clamp-2 drop-shadow-lg group-hover:text-[#0ea5e9] transition-colors">
             {formato.titulo}
           </h3>
-
-          {/* Métricas — sempre visíveis */}
           <div className="flex items-center gap-3 mt-2 text-[11px] sm:text-[12px] font-bold text-white/70">
             <span className="flex items-center gap-1">
               <TrendingUp size={11} className="text-green-400" />
