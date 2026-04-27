@@ -87,7 +87,7 @@ export function SidebarAvatarMenu({ hovered = true, isHeader = false }: SidebarA
               !isHeader && (hovered ? 'left-0' : 'left-1/2 -translate-x-1/2')
             )}
           >
-            <div className="glass-card rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xl shadow-black/20 backdrop-blur-xl">
+            <div className="bg-white/95 dark:bg-[#0B0F19]/95 rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xl shadow-black/20 backdrop-blur-xl">
 
               {/* User info header */}
               <div className="px-4 py-3 border-b border-slate-200 dark:border-white/10">
