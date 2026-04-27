@@ -174,12 +174,7 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
   const isDone = activeStep.status === 'done'
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 }}
-      className="mb-10"
-    >
+    <section className="mb-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-3 mb-2">
         <MapPin size={24} className="text-[#0ea5e9] text-2xl" />
         <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
@@ -308,6 +303,6 @@ export function ExecutionMap({ completion, isRecurring = false, metodoConcluido 
           </div>
         </div>
       </motion.div>
-    </motion.section>
+    </section>
   )
 }

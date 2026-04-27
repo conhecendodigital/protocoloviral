@@ -84,7 +84,28 @@ export default function HomePage() {
       </section>
 
       {/* Execution Map */}
-      {!loading && (
+      {loading ? (
+        <section className="mb-10">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-white/10 animate-pulse" />
+            <div className="h-7 w-48 bg-slate-200 dark:bg-white/10 rounded-md animate-pulse" />
+          </div>
+          <div className="h-5 w-3/4 max-w-md bg-slate-200 dark:bg-white/10 rounded-md mb-6 ml-9 animate-pulse" />
+          <div className="relative rounded-3xl p-6 sm:p-8 sm:pr-10 border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 overflow-hidden">
+            <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 sm:items-center relative z-10">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-200 dark:bg-white/10 shrink-0 animate-pulse" />
+              <div className="flex-1 space-y-3">
+                <div className="h-6 w-32 bg-slate-200 dark:bg-white/10 rounded-full animate-pulse" />
+                <div className="h-8 w-64 bg-slate-200 dark:bg-white/10 rounded-md animate-pulse" />
+                <div className="h-5 w-full max-w-lg bg-slate-200 dark:bg-white/10 rounded-md animate-pulse" />
+              </div>
+              <div className="shrink-0 pt-4 sm:pt-0 sm:pl-10">
+                <div className="w-40 h-12 bg-slate-200 dark:bg-white/10 rounded-xl animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : (
         <ExecutionMap
           completion={completion}
           isRecurring={!!profile?.onboarding_completed}
