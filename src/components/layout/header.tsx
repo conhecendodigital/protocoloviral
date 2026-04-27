@@ -5,6 +5,7 @@ import { useProfile } from '@/hooks/use-profile'
 import { getNivelByXP, getProgressoNivel } from '@/data/niveis'
 import { useNotifications } from '@/hooks/use-notifications'
 import { NotificationPanel } from '@/components/shared/NotificationPanel'
+import { SidebarAvatarMenu } from '@/components/sidebar-avatar-menu'
 import Link from 'next/link'
 
 interface HeaderProps {
@@ -78,6 +79,11 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
           onRead={markAsRead}
           onReadAll={markAllAsRead}
         />
+        
+        {/* Avatar Menu (Mobile only since desktop has it in the sidebar) */}
+        <div className="lg:hidden">
+          <SidebarAvatarMenu isHeader hovered={false} />
+        </div>
       </div>
     </header>
   )

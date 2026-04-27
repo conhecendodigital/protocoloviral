@@ -18,9 +18,10 @@ const supabase = createClient()
 
 interface SidebarAvatarMenuProps {
   hovered?: boolean
+  isHeader?: boolean
 }
 
-export function SidebarAvatarMenu({ hovered = true }: SidebarAvatarMenuProps) {
+export function SidebarAvatarMenu({ hovered = true, isHeader = false }: SidebarAvatarMenuProps) {
   const { profile } = useProfile()
   const { theme, setTheme } = useTheme()
   const router = useRouter()
@@ -76,13 +77,14 @@ export function SidebarAvatarMenu({ hovered = true }: SidebarAvatarMenuProps) {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.96 }}
+            initial={{ opacity: 0, y: isHeader ? -8 : 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+            exit={{ opacity: 0, y: isHeader ? -8 : 8, scale: 0.96 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-              'absolute bottom-full mb-2 z-50 min-w-[196px]',
-              hovered ? 'left-0' : 'left-1/2 -translate-x-1/2'
+              'absolute z-50 min-w-[196px]',
+              isHeader ? 'top-full mt-2 right-0' : 'bottom-full mb-2',
+              !isHeader && (hovered ? 'left-0' : 'left-1/2 -translate-x-1/2')
             )}
           >
             <div className="glass-card rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xl shadow-black/20 backdrop-blur-xl">
@@ -157,8 +159,8 @@ export function SidebarAvatarMenu({ hovered = true }: SidebarAvatarMenuProps) {
         onClick={() => setOpen(prev => !prev)}
         className={cn(
           'w-full flex items-center gap-2.5 px-2 py-1.5 rounded-xl transition-all duration-200',
-          'hover:bg-slate-100 dark:hover:bg-white/5',
-          open && 'bg-slate-100 dark:bg-white/5'
+          !isHeader && 'hover:bg-slate-100 dark:hover:bg-white/5',
+          !isHeader && open && 'bg-slate-100 dark:bg-white/5'
         )}
       >
         {/* Avatar */}
