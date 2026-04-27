@@ -273,7 +273,7 @@ export function FormatosFeed() {
           setVisibleCount(prev => prev + 30)
         }
       },
-      { rootMargin: '400px', threshold: 0 }
+      { rootMargin: '2500px', threshold: 0 }
     )
     obs.observe(el)
     return () => obs.disconnect()
