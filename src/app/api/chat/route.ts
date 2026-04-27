@@ -106,7 +106,7 @@ export async function POST(req: Request) {
 
     if (hasFiles) {
       console.log(`[RAG] Agent ${agent.name} has ${files.length} attached documents. Loading...`);
-      ragContext = `\n\n============ BASE DE CONHECIMENTO DO AGENTE ============\nOrientações de Segurança (RAG): O usuário anexou documentos de conhecimento específicos para este agente. Quando a pergunta do usuário for sobre o assunto ou contexto dos arquivos, você DEVE basear suas respostas ÚNICA e EXCLUSIVAMENTE nas informações contidas abaixo. Se a informação necessária não estiver contida nos textos, responda honestamente que você não possui essa informação em sua base. NUNCA invente, alucine ou deduza dados fora deste escopo para assuntos técnicos.\n\n`;
+      ragContext = `\n\n============ BASE DE CONHECIMENTO (RAG) ============\nOrientações de Segurança: O usuário anexou documentos abaixo. Para qualquer informação técnica, dados ou afirmações factuais, você DEVE consultar estritamente estes documentos. No entanto, você NUNCA deve esquecer o seu DNA, sua Persona e suas Instruções Específicas. Você deve agir como o Especialista configurado, mantendo a sua forma de falar e o seu objetivo. Se o usuário perguntar algo factual que não está nos textos, avise-o amigavelmente usando o seu tom de voz de que essa informação não consta no seu material de apoio. NÃO invente fatos, mas use toda a sua criatividade para formatar as respostas, dar ideias e conversar com o usuário com base no seu DNA!\n\n`;
 
       for (const file of files) {
         if (!file.storage_path) continue;
@@ -221,7 +221,7 @@ ${agent.system_prompt}
 
     const result = streamText({
       model,
-      temperature: hasFiles ? 0.2 : 0.7,
+      temperature: hasFiles ? 0.4 : 0.7,
       system: finalSystemPrompt,
       messages: coreMessages,
       async onFinish({ text, usage }) {
