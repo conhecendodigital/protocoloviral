@@ -104,7 +104,10 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
   // Observer único — carga inicial (dispara 1x e desconecta)
   // rootMargin 250px: pré-carrega antes de aparecer na tela
   useEffect(() => {
-    if (index < 8) return
+    if (index < 8) {
+      setInView(true)
+      return
+    }
     const el = containerRef.current
     if (!el) return
     const obs = new IntersectionObserver(
