@@ -172,6 +172,15 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
                 const v = e.currentTarget
                 if (v.currentTime > 5) v.currentTime = 0
               }}
+              onError={(e) => {
+                // Auto-retry once on video load failure
+                const video = e.currentTarget;
+                if (!video.src.includes('?retry=')) {
+                  const sep = formato.video_url.includes('?') ? '&' : '?';
+                  video.src = `${formato.video_url}${sep}retry=${Date.now()}`;
+                  video.load();
+                }
+              }}
               className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none"
             />
           )}
@@ -281,14 +290,37 @@ export function FormatosFeed() {
   }, [visibleCount, loading, formatos.length]) // Re-conecta o observer quando a div for renderizada ou o limite mudar
 
   useEffect(() => {
-    supabase
-      .from('formatos')
-      .select('id, titulo, plataforma, tipo, nicho, descricao, video_url, link_original, destaque, curtidas, views, engajamento, created_at')
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
-        if (!error && data) setFormatos(data as unknown as Formato[])
-        setLoading(false)
-      })
+    let isMounted = true;
+    let retries = 0;
+
+    const fetchFormatos = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('formatos')
+          .select('id, titulo, plataforma, tipo, nicho, descricao, video_url, link_original, destaque, curtidas, views, engajamento, created_at')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        
+        if (isMounted) {
+          if (data) setFormatos(data as unknown as Formato[]);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (retries < 3 && isMounted) {
+          retries++;
+          setTimeout(fetchFormatos, 2000); // Retry every 2 seconds
+        } else if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchFormatos();
+
+    return () => {
+      isMounted = false;
+    };
   }, [])
 
   const formatosProcessados = useMemo(() => {
