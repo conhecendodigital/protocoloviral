@@ -59,8 +59,8 @@ export default function HomePage() {
       )}
 
       {/* Welcome Banner */}
-      <section className="mb-8 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <section className="mb-8 relative z-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter mb-2 text-slate-900 dark:text-white">
             Olá,{' '}
             {loading ? (
@@ -80,7 +80,7 @@ export default function HomePage() {
               ? 'Preencha seu perfil para a gente poder te ajudar melhor.'
               : 'Tudo pronto! Siga os passos abaixo para criar seu conteúdo.'}
           </p>
-        </motion.div>
+        </div>
       </section>
 
       {/* Execution Map */}
@@ -96,12 +96,7 @@ export default function HomePage() {
 
 
       {/* Feed de Formatos */}
-      <motion.section
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mt-8"
-      >
+      <section className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200 fill-mode-both">
         <div className="flex items-center gap-3 mb-6">
           <Flame size={28} className="text-orange-500" />
           <h3 className="text-2xl font-black tracking-tighter text-slate-900 dark:text-white uppercase italic">
@@ -109,7 +104,7 @@ export default function HomePage() {
           </h3>
         </div>
         <FormatosFeed />
-      </motion.section>
+      </section>
     </>
   )
 }

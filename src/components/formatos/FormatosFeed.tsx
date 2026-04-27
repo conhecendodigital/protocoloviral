@@ -412,10 +412,22 @@ export function FormatosFeed() {
           </div>
         </section>
 
-        {/* Loading */}
+        {/* Loading Skeleton */}
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="w-10 h-10 border-2 border-[#0ea5e9]/30 border-t-[#0ea5e9] rounded-full animate-spin" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="relative aspect-[9/16] w-full rounded-[2rem] bg-slate-100 dark:bg-white/5 animate-pulse overflow-hidden border border-slate-200 dark:border-white/10">
+                <div className="absolute top-4 right-4 w-12 h-6 bg-slate-200 dark:bg-white/10 rounded-full" />
+                <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col gap-3">
+                  <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-full" />
+                  <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-2/3" />
+                  <div className="flex gap-2 mt-2">
+                    <div className="h-3 bg-slate-200 dark:bg-white/10 rounded w-16" />
+                    <div className="h-3 bg-slate-200 dark:bg-white/10 rounded w-12" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
