@@ -136,6 +136,10 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
           src={formato.video_url}
           autoPlay muted loop playsInline
           preload="metadata"
+          onTimeUpdate={(e) => {
+            const v = e.currentTarget
+            if (v.currentTime > 5) v.currentTime = 0
+          }}
           className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 pointer-events-none"
         />
       )
