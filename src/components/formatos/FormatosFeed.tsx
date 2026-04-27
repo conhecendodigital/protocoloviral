@@ -98,12 +98,11 @@ interface VideoCardProps {
 
 const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
   const containerRef = useRef<HTMLAnchorElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
   // Primeiros 8 cards montam o vídeo imediatamente
   const [inView, setInView] = useState(index < 8)
 
-  // Observer 1 — carga inicial (dispara 1x e desconecta)
-  // Margem grande para pré-carregar antes de aparecer na tela
+  // Observer único — carga inicial (dispara 1x e desconecta)
+  // rootMargin 250px: pré-carrega antes de aparecer na tela
   useEffect(() => {
     if (index < 8) return
     const el = containerRef.current
@@ -115,28 +114,6 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
     obs.observe(el)
     return () => obs.disconnect()
   }, [index])
-
-  // Observer 2 — play / pause contínuo
-  // Pausa vídeos fora da tela → reduz CPU durante o scroll
-  useEffect(() => {
-    if (!inView) return
-    const el = containerRef.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        const video = videoRef.current
-        if (!video) return
-        if (entry.isIntersecting) {
-          video.play().catch(() => {})
-        } else {
-          video.pause()
-        }
-      },
-      { rootMargin: '0px', threshold: 0.1 }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [inView])
 
   // null quando não há URL válida ou card ainda fora da tela
   const videoType = inView && formato.video_url ? getVideoType(formato.video_url) : null
@@ -184,7 +161,6 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
 
           {inView && videoType === 'direct' && (
             <video
-              ref={videoRef}
               src={formato.video_url}
               autoPlay muted loop playsInline
               preload="metadata"
