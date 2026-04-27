@@ -10,7 +10,7 @@ export default async function AdminApiDetailsPage({
   params,
   searchParams 
 }: { 
-  params: { model: string }
+  params: Promise<{ model: string }>
   searchParams: Promise<{ page?: string }>
 }) {
   const cookieStore = await cookies()
@@ -19,9 +19,12 @@ export default async function AdminApiDetailsPage({
     redirect('/admin/login')
   }
 
-  // O model vem URL-encoded (ex: gpt-4o-mini). Precisamos decodificar se tiver espaços.
-  const modelName = decodeURIComponent(params.model)
+  // Next.js 15: params é uma Promise e precisa ser resolvida
+  const { model } = await params
   const { page } = await searchParams
+
+  // O model vem URL-encoded (ex: gpt-4o-mini). Precisamos decodificar se tiver espaços.
+  const modelName = decodeURIComponent(model)
   const currentPage = parseInt(page || '1', 10)
   const pageSize = 50
   const offset = (currentPage - 1) * pageSize
@@ -30,34 +33,46 @@ export default async function AdminApiDetailsPage({
 
   // Buscar dados em paralelo: estatísticas agregadas + logs paginados
   const [statsResponse, logsResponse] = await Promise.all([
-    // Estatísticas globais do modelo (sem baixar todos os registros)
+    // Estatísticas globais do modelo
     supabase
       .from('api_usage_logs')
       .select('cost_brl', { count: 'exact', head: false })
       .eq('model_used', modelName),
-    // Logs paginados com JOIN de perfil para nome do usuário
+    // Logs paginados (sem JOIN — não existe FK para profiles)
     supabase
       .from('api_usage_logs')
-      .select(`
-        id,
-        feature,
-        created_at,
-        cost_brl,
-        user_id,
-        profiles:user_id (
-          nome_completo,
-          email
-        )
-      `)
+      .select('id, feature, created_at, cost_brl, user_id')
       .eq('model_used', modelName)
       .order('created_at', { ascending: false })
       .range(offset, offset + pageSize - 1)
   ])
 
-  // Custo total calculado via agregação (sem reduce em array gigante)
+  // Custo total calculado via agregação
   const totalGenerations = statsResponse.count || 0
-  const totalCost = statsResponse.data?.reduce((sum, r) => sum + (r.cost_brl || 0), 0) || 0
-  const logs = logsResponse.data
+  const totalCost = statsResponse.data?.reduce((sum, r) => sum + (Number(r.cost_brl) || 0), 0) || 0
+  const rawLogs = logsResponse.data || []
+
+  // Buscar perfis dos usuários presentes nos logs
+  const userIds = [...new Set(rawLogs.map(l => l.user_id))]
+  let profilesMap: Record<string, string> = {}
+
+  if (userIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, nome_completo, email')
+      .in('id', userIds)
+
+    profiles?.forEach(p => {
+      profilesMap[p.id] = p.nome_completo || p.email || 'Usuário Deletado'
+    })
+  }
+
+  // Enriquecer logs com nome do usuário
+  const logs = rawLogs.map(log => ({
+    ...log,
+    user_name: profilesMap[log.user_id] || 'Usuário Deletado'
+  }))
+
   const totalPages = Math.ceil(totalGenerations / pageSize)
 
   return (
@@ -88,7 +103,7 @@ export default async function AdminApiDetailsPage({
         <div className="bg-slate-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none" />
           <h3 className="text-sm font-medium text-slate-400 mb-2">Custo Acumulado</h3>
-          <span className="text-4xl font-bold text-white">R$ {totalCost.toFixed(2)}</span>
+          <span className="text-4xl font-bold text-white">R$ {totalCost.toFixed(4)}</span>
           <p className="text-emerald-400 text-sm mt-2">Valor faturado nesta IA</p>
         </div>
 
@@ -117,10 +132,7 @@ export default async function AdminApiDetailsPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {logs?.map((log) => {
-                // @ts-expect-error - Supabase join type is complex
-                const nomeUsuario = log.profiles?.nome_completo || log.profiles?.email || 'Usuário Deletado'
-                
+              {logs.map((log) => {
                 return (
                   <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -141,7 +153,7 @@ export default async function AdminApiDetailsPage({
                       <Link href={`/admin/users/${log.user_id}`} className="flex items-center gap-2 group">
                         <User className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors" />
                         <span className="text-slate-400 group-hover:text-blue-400 transition-colors">
-                          {nomeUsuario}
+                          {log.user_name}
                         </span>
                       </Link>
                     </td>

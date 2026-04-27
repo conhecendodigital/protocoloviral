@@ -166,7 +166,7 @@ export default function DashboardClient({ initialMetrics, initialLogs }: Dashboa
             </div>
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-3xl font-bold text-white tabular-nums transition-all duration-500">R$ {metrics.total_cost_brl.toFixed(2)}</span>
+            <span className="text-3xl font-bold text-white tabular-nums transition-all duration-500">R$ {metrics.total_cost_brl.toFixed(4)}</span>
             <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-xs gap-1">
               Ver Modelos <span className="text-lg leading-none">&rarr;</span>
             </span>
@@ -182,12 +182,7 @@ export default function DashboardClient({ initialMetrics, initialLogs }: Dashboa
             <h3 className="text-lg font-bold text-white">Requisições Recentes</h3>
             <p className="text-sm text-slate-500 mt-0.5">Últimas chamadas de IA registradas na plataforma.</p>
           </div>
-          {isLive && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-400/70">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Atualiza a cada 15s
-            </div>
-          )}
+
         </div>
 
         {logs.length === 0 ? (

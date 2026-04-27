@@ -77,7 +77,7 @@ export default async function AdminApisPage() {
           <h3 className="text-lg font-bold text-white">Ranking de Custos</h3>
           <div className="flex items-center gap-2 text-sm text-slate-400 bg-slate-950/50 py-2 px-4 rounded-full border border-white/5">
             <span>Custo Total Mapeado:</span>
-            <span className="font-bold text-emerald-400">R$ {totalGeral.toFixed(2)}</span>
+            <span className="font-bold text-emerald-400">R$ {totalGeral.toFixed(4)}</span>
           </div>
         </div>
 
@@ -111,7 +111,7 @@ export default async function AdminApisPage() {
                   <td className="p-0">
                     <Link href={`/admin/apis/${api.model}`} className="flex items-center justify-end gap-3 px-6 py-4 w-full h-full text-right">
                       <span className="text-lg font-bold text-white">
-                        R$ {api.cost.toFixed(2)}
+                        R$ {api.cost.toFixed(4)}
                       </span>
                       <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-emerald-400 transition-colors" />
                     </Link>

@@ -99,53 +99,61 @@ export default async function AdminUsersPage({
               <tr>
                 <th className="px-6 py-4 font-medium">Usuário</th>
                 <th className="px-6 py-4 font-medium">Email</th>
-                <th className="px-6 py-4 font-medium">Plano</th>
-                <th className="px-6 py-4 font-medium text-center">Requisições de IA</th>
-                <th className="px-6 py-4 font-medium text-center">Custo API (R$)</th>
-                <th className="px-6 py-4 font-medium text-center">Ações</th>
+                <th className="px-6 py-4 font-medium w-24">Plano</th>
+                <th className="px-6 py-4 font-medium text-center w-36">Requisições de IA</th>
+                <th className="px-6 py-4 font-medium text-center w-32">Custo API (R$)</th>
+                <th className="px-6 py-4 font-medium text-center w-28">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {usersWithConsumption.map((user) => (
-                <tr key={user.id} className="hover:bg-white/[0.02] transition-colors group cursor-pointer" onClick={undefined}>
-                  <td colSpan={6} className="p-0">
-                    <Link href={`/admin/users/${user.id}`} className="grid grid-cols-[1fr_1fr_auto_auto_auto_auto] items-center w-full">
-                      <div className="px-6 py-4">
-                        <div className="font-medium text-slate-200">
-                          {user.displayName}
-                        </div>
-                        <div className="text-xs text-slate-500 mt-1">
-                          Membro desde {new Date(user.created_at).toLocaleDateString('pt-BR')}
-                        </div>
+                <tr key={user.id} className="hover:bg-white/[0.02] transition-colors group">
+                  <td className="p-0">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4">
+                      <div className="font-medium text-slate-200 group-hover:text-white transition-colors">
+                        {user.displayName}
                       </div>
-                      <div className="px-6 py-4 text-slate-400">
-                        {user.email}
+                      <div className="text-xs text-slate-500 mt-1">
+                        Membro desde {new Date(user.created_at).toLocaleDateString('pt-BR')}
                       </div>
-                      <div className="px-6 py-4">
-                        {user.plan_tier && user.plan_tier !== 'free' ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                            <Crown className="w-3 h-3 mr-1" />
-                            {user.plan_tier.toUpperCase()}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300">
-                            FREE
-                          </span>
-                        )}
-                      </div>
-                      <div className="px-6 py-4 text-center">
-                        <span className="font-medium text-white">{user.requestCount}</span>
-                      </div>
-                      <div className="px-6 py-4 text-center">
-                        <span className="font-medium text-emerald-400">
-                          R$ {user.cost.toFixed(2)}
+                    </Link>
+                  </td>
+                  <td className="p-0">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4 text-slate-400 group-hover:text-slate-300 transition-colors">
+                      {user.email}
+                    </Link>
+                  </td>
+                  <td className="p-0">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4">
+                      {user.plan_tier && user.plan_tier !== 'free' ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                          <Crown className="w-3 h-3 mr-1" />
+                          {user.plan_tier.toUpperCase()}
                         </span>
-                      </div>
-                      <div className="px-6 py-4 text-center">
-                        <span className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-400 bg-blue-400/10 group-hover:bg-blue-400/20 rounded-lg transition-colors">
-                          Ver Detalhes
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300">
+                          FREE
                         </span>
-                      </div>
+                      )}
+                    </Link>
+                  </td>
+                  <td className="p-0 text-center">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4">
+                      <span className="font-medium text-white">{user.requestCount}</span>
+                    </Link>
+                  </td>
+                  <td className="p-0 text-center">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4">
+                      <span className="font-medium text-emerald-400">
+                        R$ {user.cost.toFixed(4)}
+                      </span>
+                    </Link>
+                  </td>
+                  <td className="p-0 text-center">
+                    <Link href={`/admin/users/${user.id}`} className="block px-6 py-4">
+                      <span className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-400 bg-blue-400/10 group-hover:bg-blue-400/20 rounded-lg transition-colors">
+                        Ver Detalhes
+                      </span>
                     </Link>
                   </td>
                 </tr>
