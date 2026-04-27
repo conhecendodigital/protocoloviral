@@ -255,6 +255,29 @@ export function FormatosFeed() {
   const [ordemMenuAtivo, setOrdemMenuAtivo] = useState(false)
   const [formatoMenuAtivo, setFormatoMenuAtivo] = useState(false)
   const [ordenacao, setOrdenacao] = useState<'recente' | 'engajamento' | 'views'>('recente')
+  const [visibleCount, setVisibleCount] = useState(30)
+  const observerTarget = useRef<HTMLDivElement>(null)
+
+  // Reseta a paginação quando houver mudança nos filtros ou busca
+  useEffect(() => {
+    setVisibleCount(30)
+  }, [busca, filtroFormato, ordenacao])
+
+  // IntersectionObserver para o Infinite Scroll
+  useEffect(() => {
+    const el = observerTarget.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisibleCount(prev => prev + 30)
+        }
+      },
+      { rootMargin: '400px', threshold: 0 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [visibleCount]) // Re-conecta o observer quando o limite mudar para observar na nova posição
 
   useEffect(() => {
     supabase
@@ -409,10 +432,19 @@ export function FormatosFeed() {
 
         {/* Grid — lazy cards */}
         {!loading && formatosProcessados.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {formatosProcessados.map((formato, i) => (
-              <VideoCard key={formato.id} formato={formato} index={i} />
-            ))}
+          <div className="flex flex-col gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {formatosProcessados.slice(0, visibleCount).map((formato, i) => (
+                <VideoCard key={formato.id} formato={formato} index={i} />
+              ))}
+            </div>
+            
+            {/* Infinite Scroll Trigger */}
+            {visibleCount < formatosProcessados.length && (
+              <div ref={observerTarget} className="flex justify-center py-8">
+                <div className="w-8 h-8 border-2 border-[#0ea5e9]/30 border-t-[#0ea5e9] rounded-full animate-spin" />
+              </div>
+            )}
           </div>
         )}
       </div>
