@@ -157,7 +157,7 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
                 className="w-full h-full object-cover scale-[1.3] opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none"
                 allow="autoplay; encrypted-media"
                 title={formato.titulo}
-                loading="lazy"
+                loading={index < 4 ? "eager" : "lazy"}
               />
             )
           })()}
@@ -166,7 +166,8 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
             <video
               src={formato.video_url}
               autoPlay muted loop playsInline
-              preload="metadata"
+              preload={index < 4 ? "auto" : "metadata"}
+              poster="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
               onTimeUpdate={(e) => {
                 const v = e.currentTarget
                 if (v.currentTime > 5) v.currentTime = 0
@@ -184,7 +185,7 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 title={formato.titulo}
-                loading="lazy"
+                loading={index < 4 ? "eager" : "lazy"}
               />
             )
           })()}
