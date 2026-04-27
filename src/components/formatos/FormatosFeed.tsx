@@ -83,7 +83,8 @@ const getDriveFileId = (url: string): string | null => {
   return fileMatch ? fileMatch[1] : null
 }
 
-const getVideoType = (url: string): 'drive' | 'direct' | 'embed' => {
+const getVideoType = (url: string | null | undefined): 'drive' | 'direct' | 'embed' | null => {
+  if (!url || url.trim() === '') return null
   if (url.includes('drive.google.com')) return 'drive'
   if (url.includes('.mp4') || url.includes('.mov') || url.includes('.webm') || url.includes('/storage/v1/object/')) return 'direct'
   return 'embed'
@@ -137,7 +138,8 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
     return () => obs.disconnect()
   }, [inView])
 
-  const videoType = inView ? getVideoType(formato.video_url) : null
+  // null quando não há URL válida ou card ainda fora da tela
+  const videoType = inView && formato.video_url ? getVideoType(formato.video_url) : null
 
   return (
     <motion.div
@@ -153,8 +155,17 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
       >
         {/* Vídeo ou placeholder */}
         <div className="absolute inset-0 pointer-events-none">
-          {!inView && (
-            <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900" />
+          {/* Placeholder quando fora da tela ou sem URL */}
+          {(!inView || videoType === null) && (
+            <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+              {inView && videoType === null && (
+                <div className="flex flex-col items-center gap-2 opacity-20">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" className="text-white">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              )}
+            </div>
           )}
 
           {inView && videoType === 'drive' && (() => {
