@@ -277,7 +277,7 @@ export function FormatosFeed() {
     )
     obs.observe(el)
     return () => obs.disconnect()
-  }, [visibleCount]) // Re-conecta o observer quando o limite mudar para observar na nova posição
+  }, [visibleCount, loading, formatos.length]) // Re-conecta o observer quando a div for renderizada ou o limite mudar
 
   useEffect(() => {
     supabase
