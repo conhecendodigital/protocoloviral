@@ -67,6 +67,7 @@ export async function POST(req: Request) {
         .from('agents')
         .select('*')
         .eq('id', agentId)
+        .eq('user_id', user.id)
         .single()
 
       if (!agent) {
@@ -600,7 +601,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('[ROTEIRISTA_CORE_ERROR]', error)
     return new Response(
-      error.message || 'Servidor sobrecarregado ou falhando. Tente novamente.',
+      'Servidor sobrecarregado ou falhando. Tente novamente.',
       { status: 500 }
     )
   }

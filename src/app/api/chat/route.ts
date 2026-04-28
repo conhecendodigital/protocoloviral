@@ -25,11 +25,12 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: 'Muitas mensagens. Aguarde um momento.' }), { status: 429 })
     }
 
-    // Load Agent
+    // Load Agent (filter by user_id to prevent IDOR)
     const { data: agent } = await supabase
       .from('agents')
       .select('*')
       .eq('id', agent_id)
+      .eq('user_id', user.id)
       .single()
 
     if (!agent) {

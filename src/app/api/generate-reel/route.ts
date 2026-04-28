@@ -260,11 +260,11 @@ O Formato Viral (Estudo) é apenas a "Música de fundo" (ritmo, tempo, emoção)
 Duração alvo: ${duracao}`
 
     const modelName = 'gemini-2.0-flash'
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`
 
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
       body: JSON.stringify({
         system_instruction: {
           parts: [{ text: systemInstruction }]
@@ -284,10 +284,10 @@ Duração alvo: ${duracao}`
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Gemini API Error:', errorText)
+      console.error('Gemini API Error:', response.status, errorText)
       return NextResponse.json(
-        { error: `Erro na IA do Google: ${response.statusText}. Detalhes: ${errorText}` },
-        { status: response.status }
+        { error: 'Erro ao gerar roteiro. Tente novamente em instantes.' },
+        { status: 502 }
       )
     }
 
@@ -319,6 +319,6 @@ Duração alvo: ${duracao}`
 
   } catch (error: any) {
     console.error('Erro Route generate-reel:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Erro ao gerar roteiro. Tente novamente.' }, { status: 500 })
   }
 }

@@ -130,14 +130,14 @@ function RoteiristaContent() {
   // ─── Load Data ────────────────────────────────────────
   useEffect(() => {
     async function load() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) return
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
 
       // Vozes
       const { data: voices } = await supabase
         .from('voice_profiles')
         .select('id, name, is_default, wizard_inputs')
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
 
       if (voices && voices.length > 0) {
@@ -155,7 +155,7 @@ function RoteiristaContent() {
       const { count } = await supabase
         .from('roteiros')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', session.user.id)
+        .eq('user_id', user.id)
         .gte('created_at', startOfDay.toISOString())
 
       if (count !== null) {

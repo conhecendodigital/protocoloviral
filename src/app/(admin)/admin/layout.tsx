@@ -1,8 +1,7 @@
-import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { Crown } from 'lucide-react'
 import { AdminLogoutButton } from './logout-button'
+import { isAdminAuthenticated } from '@/lib/admin-auth'
 
 export const metadata = {
   title: 'Painel Admin - Protocolo Viral',
@@ -13,9 +12,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = await cookies()
-  const authCookie = cookieStore.get('pv_admin_auth')
-  const isAuthenticated = authCookie?.value === 'authenticated'
+  const isAuthenticated = await isAdminAuthenticated()
 
   // Para evitar redicionamento infinito, o layout não bloqueia se não estiver autenticado 
   // caso seja uma rota pública de admin. Porém, o layout envolve tudo em (admin)/admin.

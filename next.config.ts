@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.mercadopago.com https://*.mercadolibre.com https://*.mercadolivre.com https://*.mlstatic.com",
+              "script-src 'self' 'unsafe-inline' https://sdk.mercadopago.com https://*.mercadolibre.com https://*.mercadolivre.com https://*.mlstatic.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.mlstatic.com",
               "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com data: https://*.mlstatic.com",
               "img-src 'self' data: blob: https://vskmryemztaalmrftlpo.supabase.co https://*.googleusercontent.com https://*.mlstatic.com https://*.mercadolibre.com https://*.mercadolivre.com",
@@ -53,9 +53,6 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 };
 
 export default nextConfig;

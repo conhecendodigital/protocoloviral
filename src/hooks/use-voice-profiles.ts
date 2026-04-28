@@ -23,13 +23,13 @@ export function useVoiceProfiles() {
   const [saving, setSaving] = useState(false)
 
   const fetchProfiles = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) { setLoading(false); return }
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setLoading(false); return }
 
     const { data, error } = await supabase
       .from('voice_profiles')
       .select('*')
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
     if (!error && data) {
@@ -48,15 +48,15 @@ export function useVoiceProfiles() {
   ): Promise<VoiceProfile | null> => {
     setSaving(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user) return null
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return null
 
       // 1. Salvar wizard_inputs no Supabase
       const isFirst = profiles.length === 0
       const { data, error } = await supabase
         .from('voice_profiles')
         .insert({
-          user_id: session.user.id,
+          user_id: user.id,
           name,
           wizard_inputs: wizardInputs,
           enriched_profile: {},
@@ -116,14 +116,14 @@ export function useVoiceProfiles() {
   }, [supabase])
 
   const setDefault = useCallback(async (id: string) => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session?.user) return
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
 
     // Remove default de todos
     await supabase
       .from('voice_profiles')
       .update({ is_default: false })
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
 
     // Seta o novo default
     await supabase

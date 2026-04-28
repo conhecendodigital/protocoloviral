@@ -22,8 +22,7 @@ export function useProfile() {
   const [userId, setUserId] = useState<string | undefined>()
 
   const fetchProfile = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    const user = session?.user
+    const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setLoading(false); return }
 
     setUserId(user.id)

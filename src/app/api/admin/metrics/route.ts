@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { isAdminAuthenticated } from '@/lib/admin-auth'
 
 /**
  * Endpoint de polling para o dashboard admin.
  * Retorna métricas globais + últimas requisições de IA com dados do usuário.
- * Protegido pelo mesmo cookie de autenticação admin.
+ * Protegido pelo mesmo cookie HMAC-assinado de autenticação admin.
  */
 export async function GET() {
-  const cookieStore = await cookies()
-  const authCookie = cookieStore.get('pv_admin_auth')
-  if (authCookie?.value !== 'authenticated') {
+  if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

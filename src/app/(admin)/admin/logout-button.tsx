@@ -6,8 +6,12 @@ import { useRouter } from 'next/navigation'
 export function AdminLogoutButton() {
   const router = useRouter()
 
-  const handleLogout = () => {
-    document.cookie = "pv_admin_auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/admin;"
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' })
+    } catch {
+      // segue para o redirect mesmo se a chamada falhar
+    }
     router.push('/admin/login')
     router.refresh()
   }

@@ -73,10 +73,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: response.init_point });
   } catch (error: any) {
     console.error('Mercado Pago Checkout Error:', error);
-    let errorMessage = error.message || 'Error creating checkout session';
-    if (!process.env.MP_ACCESS_TOKEN || errorMessage.includes('Unauthorized access to resource')) {
-      errorMessage = 'Token do Mercado Pago não configurado corretamente no servidor de produção (Vercel).';
-    }
+    const isMisconfigured = !process.env.MP_ACCESS_TOKEN
+      || (typeof error?.message === 'string' && error.message.includes('Unauthorized access to resource'));
+    const errorMessage = isMisconfigured
+      ? 'Pagamento temporariamente indisponível. Tente novamente em instantes.'
+      : 'Erro ao iniciar checkout. Tente novamente.';
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

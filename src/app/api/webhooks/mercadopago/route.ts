@@ -10,26 +10,34 @@ export async function POST(req: Request) {
     const dataId = url.searchParams.get('data.id');
     const type = url.searchParams.get('type');
 
-    // ✅ SECURITY: Validate Mercado Pago webhook signature (x-signature header)
-    // This prevents anyone from hitting this endpoint with fake data to grant premium access.
+    // ✅ SECURITY: Mercado Pago webhook signature MUST be present and valid.
+    // Sem essa verificação, qualquer um pode conceder plano pago via POST forjado.
     const mpSignature = req.headers.get('x-signature')
     const mpRequestId = req.headers.get('x-request-id')
     const webhookSecret = process.env.MP_WEBHOOK_SECRET
 
-    if (webhookSecret && mpSignature) {
-      // MP signature format: "ts=<timestamp>,v1=<hmac_sha256>"
-      const sigParts = Object.fromEntries(mpSignature.split(',').map(p => p.split('=')))
-      const ts = sigParts['ts']
-      const v1 = sigParts['v1']
-      if (ts && v1) {
-        const signedPayload = `id:${dataId};request-id:${mpRequestId};ts:${ts};`
-        const crypto = await import('crypto')
-        const expected = crypto.createHmac('sha256', webhookSecret).update(signedPayload).digest('hex')
-        if (expected !== v1) {
-          console.error('[Webhook] Assinatura inválida — possível tentativa de spoofing.')
-          return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-        }
-      }
+    if (!webhookSecret) {
+      console.error('[Webhook] MP_WEBHOOK_SECRET não configurado — fail-closed.')
+      return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
+    }
+    if (!mpSignature) {
+      return NextResponse.json({ error: 'Missing signature' }, { status: 401 })
+    }
+
+    // MP signature format: "ts=<timestamp>,v1=<hmac_sha256>"
+    const sigParts = Object.fromEntries(mpSignature.split(',').map(p => p.split('=')))
+    const ts = sigParts['ts']
+    const v1 = sigParts['v1']
+    if (!ts || !v1) {
+      return NextResponse.json({ error: 'Malformed signature' }, { status: 401 })
+    }
+
+    const signedPayload = `id:${dataId};request-id:${mpRequestId};ts:${ts};`
+    const crypto = await import('crypto')
+    const expected = crypto.createHmac('sha256', webhookSecret).update(signedPayload).digest('hex')
+    if (expected !== v1) {
+      console.error('[Webhook] Assinatura inválida — possível tentativa de spoofing.')
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 
     // O webhook envia JSON na maioria dos casos, mas fallback pras QS

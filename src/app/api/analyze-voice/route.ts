@@ -75,6 +75,6 @@ ${combinedTexts}`
     return Response.json(result.object)
   } catch (error: any) {
     console.error('[ANALYZE_VOICE_ERROR]', error)
-    return new Response(error.message || 'Internal Server Error', { status: 500 })
+    return new Response('Erro ao analisar voz. Tente novamente em instantes.', { status: 500 })
   }
 }

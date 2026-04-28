@@ -1,13 +1,11 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Activity, ArrowLeft, ChevronRight, Server } from 'lucide-react'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import Link from 'next/link'
+import { isAdminAuthenticated } from '@/lib/admin-auth'
 
 export default async function AdminApisPage() {
-  const cookieStore = await cookies()
-  const authCookie = cookieStore.get('pv_admin_auth')
-  if (authCookie?.value !== 'authenticated') {
+  if (!(await isAdminAuthenticated())) {
     redirect('/admin/login')
   }
 

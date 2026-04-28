@@ -175,12 +175,13 @@ IMPORTANTE:
       }
     }
 
-    // Salvar no Supabase se profile_id fornecido
+    // Salvar no Supabase se profile_id fornecido (filtra por user_id para prevenir IDOR)
     if (profile_id) {
       await supabase
         .from('voice_profiles')
         .update({ enriched_profile: enrichedProfile, updated_at: new Date().toISOString() })
         .eq('id', profile_id)
+        .eq('user_id', user.id)
     }
 
     return Response.json({ enriched_profile: enrichedProfile })

@@ -212,6 +212,6 @@ RESPONDA APENAS com o texto melhorado. Sem explicações, sem aspas extras, sem 
     })
   } catch (err: any) {
     console.error('[IMPROVE_BLOCK]', err)
-    return NextResponse.json({ error: err.message || 'Erro interno' }, { status: 500 })
+    return NextResponse.json({ error: 'Erro ao melhorar bloco. Tente novamente.' }, { status: 500 })
   }
 }
