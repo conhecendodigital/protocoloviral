@@ -3,44 +3,44 @@ import { Sparkles, Brain, Layers, Mic2, Play, Route } from 'lucide-react'
 const FEATURES = [
   {
     Icon: Sparkles, color: '#0ea5e9', span: 2,
-    title: 'Roteirista IA — o motor do sistema',
-    tag: 'O coração da plataforma',
-    desc: 'Você descreve o tema, o objetivo (atrair, qualificar ou converter) e recebe o roteiro completo em segundos. Gancho que para o scroll, argumento que quebra objeção, CTA que direciona pro próximo passo da venda. Cada peça com função.',
-    detail: 'Modelos: Claude Sonnet + GPT-4o com fallback automático',
+    title: 'Roteirista IA',
+    tag: 'O coração do sistema',
+    desc: 'Você descreve o tema. Você escolhe o objetivo do vídeo: atrair, qualificar ou converter. O sistema entrega o roteiro completo em segundos. Gancho. Argumento. CTA. Cada parte com função de venda. Nada é decoração.',
+    detail: 'Usa Claude Sonnet e GPT-4o com troca automática em caso de falha.',
   },
   {
     Icon: Brain, color: '#a78bfa', span: 1,
     title: 'Banco de Ganchos',
     tag: null,
-    desc: '100+ aberturas organizadas por gatilho: Medo, Curiosidade, Contraste, Promessa, Provocação. Você escolhe o gancho certo pro cliente que quer parar.',
+    desc: '100 aberturas organizadas por gatilho: medo, curiosidade, contraste, promessa, provocação. Você escolhe o gancho certo pra parar o scroll de quem você quer que pare.',
     detail: null,
   },
   {
     Icon: Layers, color: '#22d3ee', span: 1,
-    title: 'Formatos Virais que Convertem',
+    title: 'Formatos com Intenção',
     tag: null,
-    desc: 'Estruturas testadas com intenção de venda: Antes/Depois, Objeção/Resposta, Autoridade, Storytelling. A IA aplica no seu tema.',
+    desc: '15 estruturas testadas com objetivo claro: Antes e Depois, Objeção e Resposta, Autoridade, Storytelling de venda. A IA aplica o formato no seu tema.',
     detail: null,
   },
   {
     Icon: Mic2, color: '#34d399', span: 1,
-    title: 'Sua Voz. Não a do robô.',
+    title: 'Tom de Voz',
     tag: null,
-    desc: 'Configure seu tom uma vez. A IA aprende como você fala, o que você evita e quem é sua audiência. O resultado parece que você mesmo escreveu — porque é baseado em você.',
+    desc: 'Configure uma vez. A IA aprende como você fala, o que você evita e quem é sua audiência. O roteiro sai como se você tivesse escrito. Porque é baseado em você.',
     detail: null,
   },
   {
     Icon: Play, color: '#fb923c', span: 1,
-    title: 'Engenharia Reversa de Virais',
+    title: 'Engenharia Reversa',
     tag: null,
-    desc: 'Cole a URL de qualquer vídeo viral do seu nicho. A IA desmonta e extrai o que funcionou — pra você replicar com seu conteúdo.',
+    desc: 'Cole a URL de qualquer vídeo viral do seu nicho. O sistema desmonta e extrai o que funcionou. Você adapta e replica com seu conteúdo.',
     detail: null,
   },
   {
     Icon: Route, color: '#f472b6', span: 1,
     title: 'Agentes por Nicho',
-    tag: 'Pro',
-    desc: 'Agentes especializados: Coach, Ecommerce, Saúde, Negócios. Cada um treinado pra falar com o cliente do seu mercado.',
+    tag: 'Plano Pro',
+    desc: 'Agentes especializados em Coach, Ecommerce, Saúde e Negócios. Cada um treinado pra falar com o cliente do seu mercado da maneira que ele compra.',
     detail: null,
   },
 ]
@@ -49,12 +49,12 @@ export function LandingFeatures() {
   return (
     <section id="ferramentas" className="max-w-7xl mx-auto px-6 py-24">
       <div className="mb-14">
-        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-3">As ferramentas</p>
+        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">As ferramentas</p>
         <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4">
-          Cada peça do sistema tem função.
+          Cada peça tem função.
         </h2>
         <p className="text-white/50 text-lg max-w-2xl">
-          Não são features soltas. São etapas de um processo que começa no gancho e termina no cliente pagando.
+          Não são features soltas. São as etapas de um processo que começa no gancho e termina no cliente pagando.
         </p>
       </div>
 
