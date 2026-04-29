@@ -21,6 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   weight: ["400", "500"],
+  display: "swap", // ← estava faltando! bloqueia rendering
 })
 
 export const metadata: Metadata = {
@@ -38,7 +39,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <head />
+      <head>
+        {/* Preconnect to speed up Supabase API calls */}
+        <link rel="preconnect" href="https://supabase.co" />
+        <link rel="preconnect" href="https://drive.google.com" />
+        {/* DNS prefetch for common third-parties */}
+        <link rel="dns-prefetch" href="https://supabase.co" />
+      </head>
       <body className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}

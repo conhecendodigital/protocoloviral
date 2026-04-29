@@ -2,7 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  compress: true, // Gzip/Brotli compression
   images: {
+    formats: ['image/avif', 'image/webp'], // Modern formats — menor tamanho
     remotePatterns: [
       {
         protocol: 'https',
@@ -10,6 +12,7 @@ const nextConfig: NextConfig = {
         pathname: '/storage/v1/object/public/**',
       },
     ],
+    minimumCacheTTL: 86400, // Cache imagens por 24h
   },
   async redirects() {
     return [
@@ -47,6 +50,16 @@ const nextConfig: NextConfig = {
               "frame-src 'self' https://drive.google.com https://www.youtube.com https://*.mercadopago.com https://*.mercadolibre.com https://*.mercadolivre.com",
               "media-src 'self' https://vskmryemztaalmrftlpo.supabase.co https://drive.google.com",
             ].join('; '),
+          },
+        ],
+      },
+      // Cache agressivo para assets estáticos (JS/CSS imutáveis gerados pelo Next.js)
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

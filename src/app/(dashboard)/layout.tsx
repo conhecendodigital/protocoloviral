@@ -1,6 +1,6 @@
 // Server Component — sem 'use client'
-// force-dynamic cascateia para todas as rotas filhas do dashboard
-export const dynamic = 'force-dynamic'
+// NOTA: NÃO use force-dynamic aqui. Deixa cada rota filha declarar o próprio.
+// force-dynamic aqui destruiria o cache do Edge em TODAS as rotas do dashboard.
 
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
@@ -12,10 +12,10 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="bg-slate-50 dark:bg-[#000000] text-slate-900 dark:text-slate-100 min-h-screen font-sans">
-      {/* Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-500/5 rounded-full blur-[80px]" />
-        <div className="absolute bottom-[10%] right-[-5%] w-[35%] h-[35%] bg-blue-600/5 rounded-full blur-[80px]" />
+      {/* Background — leve, apenas em telas grandes */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 hidden lg:block" aria-hidden>
+        <div className="absolute top-[-10%] left-[-10%] w-[30%] h-[30%] bg-sky-500/5 rounded-full blur-[60px]" />
+        <div className="absolute bottom-[10%] right-[-5%] w-[25%] h-[25%] bg-blue-600/5 rounded-full blur-[60px]" />
       </div>
 
       <div className="relative z-10 flex h-screen overflow-hidden">

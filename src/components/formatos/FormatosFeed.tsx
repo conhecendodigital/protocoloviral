@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { Camera, ChevronsUpDown, Clock, Eye, Flame, Heart, Search, TrendingUp, Anchor, MessageCircle, Sofa, Smartphone, Clapperboard, Star, HelpCircle, BookOpen, Globe, FolderOpen, type LucideIcon } from 'lucide-react'
 
-// ─── Supabase client fora do componente (sem useMemo anti-pattern) ───
 const supabase = createClient()
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -98,13 +97,13 @@ interface VideoCardProps {
 
 const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
   const containerRef = useRef<HTMLAnchorElement>(null)
-  // Primeiros 8 cards montam o vídeo imediatamente
-  const [inView, setInView] = useState(index < 8)
+  // Primeiros 4 cards montam o vídeo imediatamente (evita CPU excessiva no mobile)
+  const [inView, setInView] = useState(index < 4)
 
   // Observer único — carga inicial (dispara 1x e desconecta)
   // rootMargin 250px: pré-carrega antes de aparecer na tela
   useEffect(() => {
-    if (index < 8) {
+    if (index < 4) {
       setInView(true)
       return
     }
@@ -116,7 +115,7 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
     )
     obs.observe(el)
     return () => obs.disconnect()
-  }, [index])
+  }, [index]) // index é estático, esse efeito roda 1x
 
   // null quando não há URL válida ou card ainda fora da tela
   const videoType = inView && formato.video_url ? getVideoType(formato.video_url) : null
@@ -157,7 +156,7 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
                 className="w-full h-full object-cover scale-[1.3] opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none"
                 allow="autoplay; encrypted-media"
                 title={formato.titulo}
-                loading={index < 4 ? "eager" : "lazy"}
+                loading={index < 2 ? "eager" : "lazy"}
               />
             )
           })()}
@@ -194,7 +193,7 @@ const VideoCard = memo(function VideoCard({ formato, index }: VideoCardProps) {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 title={formato.titulo}
-                loading={index < 4 ? "eager" : "lazy"}
+                loading={index < 2 ? "eager" : "lazy"}
               />
             )
           })()}
@@ -283,11 +282,12 @@ export function FormatosFeed() {
           setVisibleCount(prev => prev + 30)
         }
       },
-      { rootMargin: '2500px', threshold: 0 }
+      { rootMargin: '400px', threshold: 0 } // 400px pré-carrega 1 tela à frente, não o documento inteiro
     )
     obs.observe(el)
     return () => obs.disconnect()
   }, [visibleCount, loading, formatos.length]) // Re-conecta o observer quando a div for renderizada ou o limite mudar
+
 
   useEffect(() => {
     let isMounted = true;
@@ -365,7 +365,6 @@ export function FormatosFeed() {
             <div className="flex-1 w-full relative">
               <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 pointer-events-none" />
               <input
-                autoFocus
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 type="text"
