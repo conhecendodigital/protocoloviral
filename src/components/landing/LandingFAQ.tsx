@@ -4,28 +4,28 @@ import { ChevronDown } from 'lucide-react'
 
 const FAQS = [
   {
-    q: 'Precisa de cartão pra testar?',
-    a: 'Não. Você cria uma conta gratuitamente e já tem acesso a 5 roteiros por dia. Sem cartão, sem período de trial com prazo. Use quando quiser.',
+    q: 'Isso funciona mesmo sem ter muitos seguidores?',
+    a: 'Sim. Esse é um dos maiores mitos do marketing de conteúdo. Criadores com 3k seguidores vendem mais do que criadores com 100k — quando o conteúdo tem a mensagem certa pra pessoa certa. O Mapa te ajuda a construir exatamente isso: especificidade, não volume.',
   },
   {
-    q: 'A IA escreve igual pra todo mundo?',
-    a: 'Não. É exatamente esse o diferencial. Você configura o seu Tom de Voz uma vez — nicho, estilo, palavras que usa, palavras que evita — e a IA passa a escrever no seu estilo. Dois criadores com o mesmo tema recebem roteiros completamente diferentes.',
+    q: 'Qual a diferença pra um ChatGPT comum?',
+    a: 'O ChatGPT é genérico. Ele não sabe quem é seu cliente, qual é o objetivo do vídeo (atrair, qualificar ou converter), nem qual estrutura viral funciona pro seu nicho. O Mapa foi construído especificamente pra isso — com os formatos certos, as estruturas certas e o seu tom de voz. O resultado não parece IA. Parece você.',
   },
   {
-    q: 'Os roteiros são detectados como IA?',
-    a: 'Depende de como você usa. O roteiro entregue é uma base — você adapta antes de gravar, adiciona exemplos seus, histórias pessoais. Quem faz isso passa despercebido. A ferramenta é pra acelerar, não pra substituir sua voz.',
+    q: 'Quanto tempo leva pra ver resultado?',
+    a: 'Depende de como você usa. Mas criadores que aplicam a estrutura certa já no primeiro vídeo relatam DMs de clientes em menos de 72 horas. O sistema funciona a partir do primeiro conteúdo estratégico que você publica.',
   },
   {
-    q: 'Funciona para qual nicho?',
-    a: 'Para qualquer nicho baseado em conteúdo informativo ou de autoridade: saúde, negócios, educação, finanças, emagrecimento, espiritualidade, vendas, empreendedorismo. Se você explica algo pra câmera, o Mapa funciona.',
+    q: 'Funciona pra qual tipo de negócio?',
+    a: 'Para qualquer negócio baseado em expertise: coaches, consultores, terapeutas, nutricionistas, personal trainers, infoprodutores, mentores, profissionais de saúde. Se você ensina algo e quer vender com conteúdo, o Mapa é pra você.',
   },
   {
     q: 'Posso cancelar quando quiser?',
-    a: 'Sim. Não existe fidelidade. Você cancela pelo painel a qualquer momento, sem multa e sem precisar falar com ninguém. E ainda tem a garantia de 7 dias — se não curtiu, devolvemos o dinheiro.',
+    a: 'Sim, sem burocracia. Você cancela pelo painel, sem precisar falar com ninguém, sem multa. E ainda tem a garantia de 7 dias — se em 7 dias você achar que não valeu, devolvemos 100%. Sem perguntas.',
   },
   {
-    q: 'O que é o modo Premium e o modo Busca?',
-    a: 'O modo Padrão gera roteiros rápidos com GPT-4o Mini. O modo Premium usa Claude Sonnet ou GPT-4o — roteiros mais ricos e detalhados. O modo Busca grunda o roteiro em dados reais do Google — ótimo para temas que exigem dados atuais.',
+    q: 'Precisa de cartão pra começar?',
+    a: 'Não precisa pra criar a conta e testar. Mas o plano gratuito tem limite de uso. Quando você ver o potencial do sistema e quiser usar sem restrição — que é quando os resultados aparecem de verdade — aí você escolhe o plano.',
   },
 ]
 
@@ -35,9 +35,9 @@ export function LandingFAQ() {
   return (
     <section className="max-w-3xl mx-auto px-6 py-24">
       <div className="text-center mb-16">
-        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-3">Dúvidas</p>
+        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-3">Suas dúvidas</p>
         <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-white">
-          Perguntas frequentes
+          Antes de decidir, leia isso.
         </h2>
       </div>
 

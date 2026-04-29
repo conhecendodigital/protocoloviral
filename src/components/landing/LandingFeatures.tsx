@@ -3,44 +3,44 @@ import { Sparkles, Brain, Layers, Mic2, Play, Route } from 'lucide-react'
 const FEATURES = [
   {
     Icon: Sparkles, color: '#0ea5e9', span: 2,
-    title: 'Roteirista IA',
-    tag: 'Carro-chefe',
-    desc: 'Chat especializado em roteiros de Reels e TikTok. Você descreve o tema, escolhe o formato e recebe o roteiro completo em menos de 30 segundos — gancho que prende, desenvolvimento que retém, CTA que converte.',
-    detail: 'Modelos: Claude + GPT-4o com fallback automático',
+    title: 'Roteirista IA — o motor do sistema',
+    tag: 'O coração da plataforma',
+    desc: 'Você descreve o tema, o objetivo (atrair, qualificar ou converter) e recebe o roteiro completo em segundos. Gancho que para o scroll, argumento que quebra objeção, CTA que direciona pro próximo passo da venda. Cada peça com função.',
+    detail: 'Modelos: Claude Sonnet + GPT-4o com fallback automático',
   },
   {
     Icon: Brain, color: '#a78bfa', span: 1,
     title: 'Banco de Ganchos',
     tag: null,
-    desc: '100+ aberturas organizadas por tipo: Verdade Chocante, Pergunta Provocativa, Promessa Direta, Contraste, Medo. Clicou, copiou, gravou.',
+    desc: '100+ aberturas organizadas por gatilho: Medo, Curiosidade, Contraste, Promessa, Provocação. Você escolhe o gancho certo pro cliente que quer parar.',
     detail: null,
   },
   {
     Icon: Layers, color: '#22d3ee', span: 1,
-    title: 'Formatos Virais',
+    title: 'Formatos Virais que Convertem',
     tag: null,
-    desc: '15+ estruturas testadas que funcionam: Storytelling, Lista Chocante, Antes/Depois, Bastidores. A IA aplica o formato no seu tema.',
+    desc: 'Estruturas testadas com intenção de venda: Antes/Depois, Objeção/Resposta, Autoridade, Storytelling. A IA aplica no seu tema.',
     detail: null,
   },
   {
     Icon: Mic2, color: '#34d399', span: 1,
-    title: 'Tom de Voz',
+    title: 'Sua Voz. Não a do robô.',
     tag: null,
-    desc: 'Configure nicho, personalidade e estilo uma vez. A IA passa a escrever como você — não como um robô genérico.',
+    desc: 'Configure seu tom uma vez. A IA aprende como você fala, o que você evita e quem é sua audiência. O resultado parece que você mesmo escreveu — porque é baseado em você.',
     detail: null,
   },
   {
     Icon: Play, color: '#fb923c', span: 1,
-    title: 'Analisar Vídeo Viral',
+    title: 'Engenharia Reversa de Virais',
     tag: null,
-    desc: 'Cole a URL de qualquer Reels ou TikTok viral. A IA desmonta o vídeo e extrai a estrutura como formato reutilizável.',
+    desc: 'Cole a URL de qualquer vídeo viral do seu nicho. A IA desmonta e extrai o que funcionou — pra você replicar com seu conteúdo.',
     detail: null,
   },
   {
     Icon: Route, color: '#f472b6', span: 1,
-    title: 'Agentes de IA',
+    title: 'Agentes por Nicho',
     tag: 'Pro',
-    desc: 'Agentes especializados por nicho: Coach, Ecommerce, Infoprodutos. Cada um com prompts otimizados para seu segmento.',
+    desc: 'Agentes especializados: Coach, Ecommerce, Saúde, Negócios. Cada um treinado pra falar com o cliente do seu mercado.',
     detail: null,
   },
 ]
@@ -49,12 +49,12 @@ export function LandingFeatures() {
   return (
     <section id="ferramentas" className="max-w-7xl mx-auto px-6 py-24">
       <div className="mb-14">
-        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-3">O que tem dentro</p>
+        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-3">As ferramentas</p>
         <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4">
-          Tudo em um lugar só.
+          Cada peça do sistema tem função.
         </h2>
-        <p className="text-white/50 text-lg max-w-xl">
-          Nada espalhado entre 4 ferramentas. Você entra, usa, grava.
+        <p className="text-white/50 text-lg max-w-2xl">
+          Não são features soltas. São etapas de um processo que começa no gancho e termina no cliente pagando.
         </p>
       </div>
 
@@ -64,10 +64,8 @@ export function LandingFeatures() {
             key={f.title}
             className={`${f.span === 2 ? 'md:col-span-2' : ''} relative group bg-white/[0.03] border border-white/[0.07] rounded-3xl p-8 hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-300 overflow-hidden`}
           >
-            {/* Hover glow */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl" style={{ background: `radial-gradient(400px at 50% 50%, ${f.color}08, transparent)` }} />
 
-            {/* Tag */}
             {f.tag && (
               <span className="absolute top-6 right-6 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border" style={{ color: f.color, background: `${f.color}15`, borderColor: `${f.color}30` }}>
                 {f.tag}

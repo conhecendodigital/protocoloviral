@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Zap } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 
 export function LandingNav() {
   return (
@@ -8,7 +8,7 @@ export function LandingNav() {
         {/* Logo */}
         <div className="flex items-center gap-2">
           <div className="size-8 rounded-lg bg-gradient-to-br from-[#0ea5e9] to-[#6d28d9] flex items-center justify-center shadow-lg shadow-[#0ea5e9]/20">
-            <Zap size={14} className="text-white" fill="white" />
+            <TrendingUp size={14} className="text-white" />
           </div>
           <span className="text-[15px] font-black tracking-tight text-white">
             Mapa do <span className="text-[#0ea5e9]">Engajamento</span>
@@ -18,10 +18,10 @@ export function LandingNav() {
         {/* Nav links */}
         <div className="hidden md:flex items-center gap-8">
           {[
-            ['#como-funciona', 'Como funciona'],
+            ['#como-funciona', 'O sistema'],
             ['#ferramentas', 'Ferramentas'],
             ['#depoimentos', 'Resultados'],
-            ['#precos', 'Preços'],
+            ['#precos', 'Planos'],
           ].map(([href, label]) => (
             <a key={href} href={href} className="text-sm font-medium text-white/50 hover:text-white transition-colors">
               {label}
@@ -31,14 +31,14 @@ export function LandingNav() {
 
         {/* CTA */}
         <div className="flex items-center gap-3">
-          <Link href="/login" className="hidden md:block text-sm font-semibold text-white/50 hover:text-white transition-colors">
+          <Link href="/login" className="hidden md:block text-sm font-semibold text-white/40 hover:text-white transition-colors">
             Entrar
           </Link>
           <Link
             href="/login?mode=signup"
             className="bg-gradient-to-r from-[#0ea5e9] to-[#6d28d9] text-white rounded-xl px-5 py-2.5 text-sm font-bold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg shadow-[#0ea5e9]/20"
           >
-            Testar grátis
+            Começar agora
           </Link>
         </div>
       </div>
