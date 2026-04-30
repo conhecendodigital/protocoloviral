@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { LandingStats } from './LandingStats'
 
 export function LandingHero() {
   return (
@@ -47,19 +48,9 @@ export function LandingHero() {
           </a>
         </div>
 
-        {/* Proof numbers */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.05] rounded-2xl overflow-hidden border border-white/[0.05]">
-          {[
-            { v: '100+', l: 'formatos virais estudados e documentados' },
-            { v: '15+', l: 'tipos de estrutura prontos pra usar' },
-            { v: '30s', l: 'pra gerar um roteiro no formato escolhido' },
-            { v: '7 dias', l: 'de garantia se não gostar' },
-          ].map(s => (
-            <div key={s.l} className="bg-[#080b12]/80 py-6 px-4 text-center">
-              <p className="text-2xl font-black text-white mb-1">{s.v}</p>
-              <p className="text-xs font-medium text-white/35">{s.l}</p>
-            </div>
-          ))}
+        {/* Real-time proof numbers */}
+        <div className="mt-16">
+          <LandingStats />
         </div>
       </div>
     </section>

@@ -32,7 +32,7 @@ export function LandingCTA() {
           </div>
 
           <p className="text-white/25 text-xs font-medium mt-6">
-            Grátis pra começar. Sem cartão.
+            Comece grátis. Planos a partir de R$77/mês.
           </p>
         </div>
       </div>
