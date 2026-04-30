@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === 'user')
     const topic = lastUserMsg ? lastUserMsg.content : ''
 
-    // ─── 1. GATEKEEPER: limite diario free ───────────────────────────────────
+    // ─── 1. GATEKEEPER: limite de creditos ───────────────────────────────────
     const { data: profile } = await supabase
       .from('profiles')
       .select('plan_tier, is_admin, publico, dor, tentou, diferencial, proposito, naoquer, produto_venda')
@@ -44,18 +44,15 @@ export async function POST(req: Request) {
 
     const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true
 
+    const { data: userCredits } = await supabase
+      .from('creditos_mensais')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+
     if (!isPro) {
-      const startOfDay = new Date()
-      startOfDay.setHours(0, 0, 0, 0)
-
-      const { count } = await supabase
-        .from('roteiros')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .gte('created_at', startOfDay.toISOString())
-
-      if (count !== null && count >= 5) {
-        return new Response('Limite de 5 roteiros diarios atingido.', { status: 403 })
+      if (!userCredits || (userCredits.credits_total - userCredits.credits_used) < 1) {
+        return new Response('Seus créditos mensais acabaram. Faça um upgrade para continuar gerando roteiros!', { status: 403 })
       }
     }
 
@@ -500,7 +497,9 @@ export async function POST(req: Request) {
               process.env.SUPABASE_SERVICE_ROLE_KEY!
             )
 
-            if (mode === 'premium' || mode === 'search') {
+            const shouldDeduct = !isPro || mode === 'premium' || mode === 'search';
+
+            if (shouldDeduct) {
               const { data: credits, error: creditErr } = await adminSupabase
                 .from('creditos_mensais')
                 .select('*')

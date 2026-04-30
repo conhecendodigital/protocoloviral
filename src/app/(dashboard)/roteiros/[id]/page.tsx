@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { useProfile } from '@/hooks/use-profile'
 import { BANCO_DE_GANCHOS, CATEGORIAS_GANCHOS } from '@/lib/ganchos'
 import { ArrowLeft, ArrowLeftRight, BookOpen, Check, CheckCircle2, Clock, Copy, Mic, Pencil, RefreshCw, RotateCcw, Sparkles, Type, WandSparkles, X } from 'lucide-react'
 
@@ -153,6 +154,9 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isNew = searchParams?.get('new') === 'true'
+
+  const { profile } = useProfile()
+  const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true
 
   const [roteiro, setRoteiro] = useState<Roteiro | null>(null)
   const [blocks, setBlocks] = useState<Block[]>([])
@@ -349,7 +353,12 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
 
   // ── Copy all ──
   const handleCopy = async () => {
-    const full = blocks.map(b => b.text).join('\n\n')
+    const full = blocks.map(b => {
+      if (!isPro && b.type !== 'GANCHO') {
+        return `[${b.label} - Bloqueado no plano Free]`
+      }
+      return b.text
+    }).join('\n\n')
     try { await navigator.clipboard.writeText(full) }
     catch {
       const ta = document.createElement('textarea')
@@ -528,9 +537,24 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                     </motion.div>
                   ) : (
                     /* ── VIEW MODE ── */
-                    <motion.div key="view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    <motion.div key="view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative">
+                      {(!isPro && block.type !== 'GANCHO') && (
+                        <div className="absolute -inset-4 z-20 flex flex-col items-center justify-center bg-white/40 dark:bg-[#0B0F19]/60 backdrop-blur-[8px] rounded-2xl">
+                          <div className="text-center p-5 bg-white/90 dark:bg-slate-900/90 rounded-2xl shadow-xl border border-slate-200 dark:border-white/10 backdrop-blur-md">
+                            <span className="text-2xl mb-2 block">🔒</span>
+                            <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-1">Conteúdo Exclusivo</h3>
+                            <p className="text-xs text-slate-500 dark:text-white/50 mb-3 max-w-[200px] mx-auto">
+                              Assine o plano Pro para acessar e editar o roteiro completo.
+                            </p>
+                            <Link href="/assinatura" className="inline-flex items-center justify-center px-4 py-2 bg-[#0ea5e9] text-white font-bold text-xs rounded-xl shadow-lg shadow-[#0ea5e9]/30 hover:bg-[#0284c7] transition-colors">
+                              Desbloquear Roteiro
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Text */}
-                      <div className="text-center px-2">
+                      <div className={`text-center px-2 ${!isPro && block.type !== 'GANCHO' ? 'select-none opacity-40' : ''}`}>
                         {aiLoading === idx ? (
                           /* Streaming live preview */
                           <div className="bg-slate-100 dark:bg-white/5 rounded-2xl p-6 border border-slate-200 dark:border-white/10">
@@ -577,8 +601,9 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                       )}
 
                       {/* Block actions — hover */}
-                      <div className="flex justify-center flex-wrap gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        {/* Editar manualmente */}
+                      {(isPro || block.type === 'GANCHO') && (
+                        <div className="flex justify-center flex-wrap gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          {/* Editar manualmente */}
                         <button
                           onClick={() => startEdit(idx)}
                           className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 text-slate-600 dark:text-white/70 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors shadow-sm"
@@ -619,6 +644,7 @@ function RoteiroEditorContent({ params }: { params: Promise<{ id: string }> }) {
                           <RotateCcw size={13} /> Regenerar
                         </button>
                       </div>
+                      )}
 
                       {/* AI Variations panel (Hook only) */}
                       <AnimatePresence>

@@ -60,9 +60,19 @@ export function useCredits() {
   }
 
   const createInitialCredits = async (userId: string) => {
+    // Busca o plano do usuário para definir os créditos iniciais
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan_tier')
+      .eq('id', userId)
+      .single()
+
+    const isFree = !profile || profile.plan_tier === 'free'
+    const initialCredits = isFree ? 10 : 150
+
     const { data, error } = await supabase
       .from('creditos_mensais')
-      .insert([{ user_id: userId, credits_total: 150, credits_used: 0 }])
+      .insert([{ user_id: userId, credits_total: initialCredits, credits_used: 0 }])
       .select()
       .single()
 

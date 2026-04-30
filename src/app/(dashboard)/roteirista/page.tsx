@@ -10,6 +10,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { useProfile } from '@/hooks/use-profile'
 import { ScriptRenderer } from '@/components/roteirista/ScriptRenderer'
+import { useCredits } from '@/hooks/use-credits'
 import { ArrowUp, BarChart3, Brain, CheckCircle, ChevronLeft, ChevronRight, FileEdit, LayoutDashboard, Mic2, Plus, RefreshCw, SlidersHorizontal, Sparkles, X } from 'lucide-react'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
@@ -124,6 +125,7 @@ function RoteiristaContent() {
   
   // Profile & Limits
   const { profile } = useProfile()
+  const { availableCredits, isLoading: isCreditsLoading } = useCredits()
   const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true
   const [generationsToday, setGenerationsToday] = useState(0)
 
@@ -444,13 +446,24 @@ function RoteiristaContent() {
       </AnimatePresence>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 mb-3">
-        <button onClick={() => setActiveTab('roteiro')} className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${activeTab === 'roteiro' ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' : 'text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}>
-          <FileEdit size={14} className="text-sm" /> Roteiro
-        </button>
-        <button onClick={() => setActiveTab('analisar')} className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${activeTab === 'analisar' ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' : 'text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}>
-          <BarChart3 size={14} className="text-sm" /> Analisar
-        </button>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-1">
+          <button onClick={() => setActiveTab('roteiro')} className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${activeTab === 'roteiro' ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' : 'text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}>
+            <FileEdit size={14} className="text-sm" /> Roteiro
+          </button>
+          <button onClick={() => setActiveTab('analisar')} className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${activeTab === 'analisar' ? 'bg-[#0ea5e9] text-white shadow-lg shadow-[#0ea5e9]/20' : 'text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}>
+            <BarChart3 size={14} className="text-sm" /> Analisar
+          </button>
+        </div>
+
+        {/* Credits Info Option C */}
+        {!isPro && activeTab === 'roteiro' && !isCreditsLoading && (
+          <div className="px-2">
+            <span className="text-[11px] font-medium text-slate-500 dark:text-white/40">
+              Custo: <strong className="text-amber-500">1 Crédito</strong> • Saldo: <strong className="text-slate-700 dark:text-white/80">{availableCredits} Créditos</strong>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Input Row */}

@@ -4,6 +4,7 @@ import { MobileNav } from './mobile-nav'
 import { useProfile } from '@/hooks/use-profile'
 import { getNivelByXP, getProgressoNivel } from '@/data/niveis'
 import { useNotifications } from '@/hooks/use-notifications'
+import { useCredits } from '@/hooks/use-credits'
 import { NotificationPanel } from '@/components/shared/NotificationPanel'
 import { SidebarAvatarMenu } from '@/components/sidebar-avatar-menu'
 import Link from 'next/link'
@@ -22,6 +23,9 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
   const nivel = getNivelByXP(xp)
   const progresso = getProgressoNivel(xp)
   const completion = getCompletionPercent()
+
+  const { availableCredits, isLoading: isCreditsLoading } = useCredits()
+  const isFreePlan = !profile?.plan_tier || profile?.plan_tier === 'free'
 
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications({
     completion,
@@ -72,6 +76,18 @@ export function Header({ title, subtitle, hideOnDesktop = false, className = '' 
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* Credits Pill (Free Tier) */}
+        {isFreePlan && !isCreditsLoading && (
+          <Link href="/assinatura">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-full cursor-pointer hover:bg-amber-500/20 transition-colors">
+              <span className="text-amber-500 text-sm">⚡</span>
+              <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                {availableCredits} Créditos
+              </span>
+            </div>
+          </Link>
+        )}
+
         {/* Notification Bell + Panel */}
         <NotificationPanel 
           notifications={notifications}
