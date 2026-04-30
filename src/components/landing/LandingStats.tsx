@@ -6,30 +6,30 @@ import { createClient } from '@/lib/supabase/client'
 interface Stats {
   formatos: number
   roteiros: number
-  assinantes: number
+  criadores: number
 }
 
 export function LandingStats() {
-  const [stats, setStats] = useState<Stats>({ formatos: 0, roteiros: 0, assinantes: 0 })
+  const [stats, setStats] = useState<Stats>({ formatos: 0, roteiros: 0, criadores: 0 })
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
 
     async function fetchStats() {
-      const [fRes, rRes, aRes] = await Promise.all([
+      const [fRes, rRes, cRes] = await Promise.all([
         // Total de formatos na biblioteca
         supabase.from('formatos').select('*', { count: 'exact', head: true }),
         // Total de roteiros gerados por todos os usuários
         supabase.from('roteiros').select('*', { count: 'exact', head: true }),
-        // Total de assinantes pagos (plan_tier != free e not null)
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('plan_tier', 'free').not('plan_tier', 'is', null),
+        // Total de criadores cadastrados na plataforma
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
       ])
 
       setStats({
         formatos: fRes.count ?? 0,
         roteiros: rRes.count ?? 0,
-        assinantes: aRes.count ?? 0,
+        criadores: cRes.count ?? 0,
       })
       setLoaded(true)
     }
@@ -39,9 +39,9 @@ export function LandingStats() {
 
   const NUMBERS = [
     { key: 'formatos' as const, label: 'formatos virais na biblioteca', suffix: '+' },
-    { key: 'roteiros' as const, label: 'roteiros gerados até agora', suffix: '+' },
-    { key: 'assinantes' as const, label: 'criadores usando ativamente', suffix: '+' },
-    { key: null, label: 'garantia incondicional', value: '7 dias', suffix: '' },
+    { key: 'roteiros' as const, label: 'roteiros gerados na plataforma', suffix: '+' },
+    { key: 'criadores' as const, label: 'criadores usando a plataforma', suffix: '+' },
+    { key: null, label: 'novos formatos adicionados por semana', value: 'Semanais', suffix: '' },
   ]
 
   return (
