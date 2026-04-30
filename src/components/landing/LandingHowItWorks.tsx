@@ -1,29 +1,29 @@
-import { Target, MessageSquare, TrendingUp, ArrowRight } from 'lucide-react'
+import { Play, BookOpen, Sparkles, ArrowRight } from 'lucide-react'
 
 const STEPS = [
   {
     n: '01',
-    Icon: Target,
+    Icon: Play,
     color: '#0ea5e9',
-    title: 'Você define pra quem quer vender',
-    desc: 'Conta pra IA quem é seu cliente ideal. O que ele sente. O que ele quer comprar. O que o impede de comprar. A IA passa a escrever pra essa pessoa específica. Não pra todo mundo.',
-    tag: '2 minutos. Uma vez só.',
+    title: 'A equipe estuda os vídeos que viralizaram',
+    desc: 'Cada formato na biblioteca veio de um vídeo real que viralizou em algum nicho. A estrutura foi desmontada, documentada e catalogada. Gancho, desenvolvimento, CTA. Tudo mapeado.',
+    tag: 'Trabalho feito pra você',
   },
   {
     n: '02',
-    Icon: MessageSquare,
+    Icon: BookOpen,
     color: '#7c3aed',
-    title: 'Você descreve o tema do vídeo',
-    desc: 'Fala o que quer abordar em linguagem normal. A IA identifica o objetivo do vídeo, atrair, qualificar ou converter, e monta a estrutura certa pra esse objetivo.',
+    title: 'Você escolhe o formato que quer usar',
+    desc: 'Navega pela biblioteca, vê qual formato faz sentido pro tema do dia. Storytelling, Lista Chocante, Problema e Solução, Bastidores, Curiosidade. Cada um com exemplos e explicação de por que funciona.',
     tag: null,
   },
   {
     n: '03',
-    Icon: TrendingUp,
+    Icon: Sparkles,
     color: '#a78bfa',
-    title: 'Você recebe o vídeo pronto pra vender',
-    desc: 'Gancho que para o scroll. Argumento que quebra objeção. CTA que direciona pra compra. Cada parte com função. Você grava. O cliente aparece.',
-    tag: 'Menos de 30 segundos',
+    title: 'A IA escreve no formato escolhido, no seu tom',
+    desc: 'Você descreve o tema. A IA aplica o formato que você escolheu e escreve o roteiro no seu tom de voz. Em 30 segundos você tem gancho, desenvolvimento e CTA prontos. Você grava.',
+    tag: '30 segundos',
   },
 ]
 
@@ -33,12 +33,12 @@ export function LandingHowItWorks() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#0ea5e9]/4 via-transparent to-violet-600/4 pointer-events-none" />
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
-          <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">O sistema</p>
+          <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">Como funciona</p>
           <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4">
-            3 etapas. Um vídeo com destino.
+            Estudo feito. Você só executa.
           </h2>
-          <p className="text-white/50 text-lg max-w-xl mx-auto">
-            Não é sobre criar mais conteúdo. É sobre criar o conteúdo certo com a mensagem certa pra pessoa certa.
+          <p className="text-white/50 text-lg max-w-2xl mx-auto">
+            O trabalho mais difícil já foi feito. Estudamos centenas de vídeos virais, extraímos as estruturas e documentamos tudo. Você chega e usa.
           </p>
         </div>
 
@@ -75,6 +75,34 @@ export function LandingHowItWorks() {
               )}
             </div>
           ))}
+        </div>
+
+        {/* Viral formats preview */}
+        <div className="mt-12 p-8 rounded-3xl bg-white/[0.03] border border-white/[0.06]">
+          <p className="text-xs font-black uppercase tracking-widest text-white/30 mb-5 text-center">Alguns formatos da biblioteca</p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {[
+              'Ancoragem e Storytelling',
+              'Lista Chocante',
+              'Problema e Solução',
+              'Bastidores e Comparação',
+              'Curiosidade',
+              'Dica Útil do Dia',
+              'Ensino Oculto',
+              'Tutorial Passo a Passo',
+              'Reação e Análise',
+              'Preguiçoso (Sem Esforço)',
+              'Perguntas e Respostas',
+              'Curiosidade e Notícia',
+              'Desmistificação',
+              'React e Análise',
+              'Geral (Tutorial Rápido)',
+            ].map(f => (
+              <span key={f} className="text-xs font-bold text-white/50 bg-white/[0.04] border border-white/[0.07] px-3 py-1.5 rounded-full">
+                {f}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </section>

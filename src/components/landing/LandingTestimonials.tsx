@@ -1,12 +1,11 @@
-// Depoimentos Hormozi-style: resultado em número, sem floreios
 const TESTIMONIALS = [
   {
     name: 'Ana Clara S.',
     role: 'Coach de Emagrecimento, 18k seguidores',
     avatar: 'AC',
     color: '#0ea5e9',
-    result: 'R$4.200 em 30 dias',
-    text: 'Postei por meses sem vender nada. Quando entendi que o problema era a estrutura do vídeo e não a frequência, tudo mudou. Meu lançamento seguinte fez R$4.200 em 30 dias usando os roteiros do Mapa.',
+    result: 'Parou de inventar formato',
+    text: 'Eu ficava horas pensando em como estruturar o vídeo. Hoje entro na biblioteca, vejo qual formato faz sentido pro tema do dia e adapto. O tempo que eu perdia criando estrutura agora vai pra gravar. Meu volume triplicou.',
     stars: 5,
   },
   {
@@ -14,8 +13,8 @@ const TESTIMONIALS = [
     role: 'Mentor de Negócios, 42k seguidores',
     avatar: 'RM',
     color: '#a78bfa',
-    result: '3x mais DMs qualificados',
-    text: 'Antes eu postava conteúdo de valor e ficava esperando. Depois que comecei a usar o CTA certo no momento certo, os DMs triplicaram. A diferença é a intenção dentro do vídeo. O Mapa coloca isso.',
+    result: 'Entendeu o que fazia os vídeos virais',
+    text: 'Eu via vídeos virais e não entendia por que funcionavam. Com o Mapa eu parei de tentar adivinhar. A estrutura já está documentada. Você vê o gancho que parou o scroll, o desenvolvimento que segurou a atenção, o CTA que converteu.',
     stars: 5,
   },
   {
@@ -23,8 +22,8 @@ const TESTIMONIALS = [
     role: 'Personal Trainer, 8k seguidores',
     avatar: 'JK',
     color: '#34d399',
-    result: 'Primeira venda em 72h',
-    text: 'Fiz minha primeira venda de programa online em 72 horas depois que comecei. Nunca tinha conseguido vender pelo conteúdo antes. O gancho que a IA me deu parou o scroll e trouxe o cliente certo.',
+    result: '2 semanas de conteúdo em 1 tarde',
+    text: 'Peguei 7 formatos da biblioteca num domingo, descrevi os temas pra IA e em uma tarde tinha 2 semanas de roteiros prontos. Cada um estruturado de um jeito diferente. Nunca mais trava na frente da câmera.',
     stars: 5,
   },
   {
@@ -32,8 +31,8 @@ const TESTIMONIALS = [
     role: 'Especialista em Vendas, 31k seguidores',
     avatar: 'BT',
     color: '#fb923c',
-    result: 'Taxa de conversão dobrou',
-    text: 'Minha taxa de conversão de visualização pra consulta dobrou. Não porque cresci em seguidores. Porque o conteúdo parou de ser informativo e virou estratégico. Falo com o cliente certo da maneira certa.',
+    result: 'Analisou e adaptou o formato de um viral',
+    text: 'Vi um vídeo de um americano que fez 2 milhões de views. Colei a URL no Mapa, a IA extraiu a estrutura. Adaptei pro meu nicho. O vídeo que fiz no mesmo formato teve o melhor desempenho do mês. Funciona de verdade.',
     stars: 5,
   },
   {
@@ -41,8 +40,8 @@ const TESTIMONIALS = [
     role: 'Nutricionista, 5k seguidores',
     avatar: 'CR',
     color: '#f472b6',
-    result: 'Vendeu com só 5k seguidores',
-    text: 'Me disseram que eu precisava ter mais seguidores pra vender. Com 5k, usando a estrutura do Mapa, fiz minha melhor semana de vendas. Não é sobre audiência. É sobre mensagem.',
+    result: 'Primeiro vídeo de 100k views',
+    text: 'Usei o formato "Desmistificação" da biblioteca. Estruturei o tema do jeito que o formato manda. O vídeo chegou em 100k visualizações. Era a primeira vez que algo meu chegava perto disso. O formato fez a diferença.',
     stars: 5,
   },
   {
@@ -50,8 +49,8 @@ const TESTIMONIALS = [
     role: 'Infoprodutor, 27k seguidores',
     avatar: 'DF',
     color: '#22d3ee',
-    result: 'R$12k no lançamento',
-    text: 'Usei o Mapa pra estruturar toda a sequência de conteúdo do lançamento. Cada vídeo tinha função: atrair, qualificar, quebrar objeção, converter. Fez R$12k. Nunca tinha chegado perto disso antes.',
+    result: 'Consistência que não tinha antes',
+    text: 'O meu problema não era talento. Era consistência. Eu não sabia o que postar toda semana. Com a biblioteca de formatos, o problema sumiu. Tenho estrutura pra qualquer tema. Posta toda semana sem travar.',
     stars: 5,
   },
 ]
@@ -63,12 +62,12 @@ export function LandingTestimonials() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
-          <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">Resultados reais</p>
+          <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">Quem usa</p>
           <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4">
-            Eles pararam de criar pra existir.
+            Pararam de inventar.
           </h2>
           <p className="text-white/50 text-xl font-medium">
-            Começaram a criar pra vender.
+            Começaram a executar o que funciona.
           </p>
         </div>
 

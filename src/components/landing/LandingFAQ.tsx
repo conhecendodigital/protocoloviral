@@ -4,28 +4,28 @@ import { ChevronDown } from 'lucide-react'
 
 const FAQS = [
   {
-    q: 'Isso funciona sem ter muitos seguidores?',
-    a: 'Sim. Um dos maiores mitos do marketing de conteúdo é que você precisa de audiência grande pra vender. Criadores com 3k seguidores vendem mais do que criadores com 100k quando a mensagem é a certa pra pessoa certa. O Mapa te ajuda a construir essa especificidade.',
+    q: 'O que exatamente é a biblioteca de formatos?',
+    a: 'São estruturas extraídas de vídeos virais reais de criadores de conteúdo. Cada formato documenta o tipo de gancho usado, como o desenvolvimento foi construído e qual CTA converteu. Não é teoria. É o que funcionou na prática, desmontado e documentado pra você adaptar.',
   },
   {
-    q: 'Qual a diferença pro ChatGPT comum?',
-    a: 'O ChatGPT é genérico. Ele não sabe quem é seu cliente, qual o objetivo do vídeo, nem qual estrutura funciona pro seu nicho. O Mapa foi construído pra isso. Com os formatos certos, as estruturas certas e o seu tom de voz. O resultado não parece IA. Parece você.',
+    q: 'Posso analisar qualquer vídeo que eu quiser?',
+    a: 'Sim, no plano Pro. Você cola a URL de um Reels ou TikTok e a IA extrai a estrutura do vídeo e salva como um novo formato na sua biblioteca. Funciona com qualquer criador, qualquer nicho, qualquer idioma.',
   },
   {
-    q: 'Quanto tempo leva pra ver resultado?',
-    a: 'Criadores que aplicam a estrutura certa já no primeiro vídeo relatam DMs de clientes em menos de 72 horas. O sistema funciona a partir do primeiro conteúdo estratégico que você publica. Mas depende de você usar de verdade.',
+    q: 'Os formatos funcionam pra qualquer nicho?',
+    a: 'Sim. Storytelling, Lista Chocante, Problema e Solução, Curiosidade. Esses mecanismos funcionam porque trabalham com atenção humana, não com um nicho específico. Você adapta o tema. A estrutura já foi validada.',
   },
   {
-    q: 'Funciona pra qual tipo de negócio?',
-    a: 'Para qualquer negócio baseado em expertise. Coaches, consultores, terapeutas, nutricionistas, personal trainers, infoprodutores, mentores. Se você ensina algo e quer vender com conteúdo, o Mapa é pra você.',
+    q: 'A IA gera o roteiro ou só a estrutura?',
+    a: 'Gera o roteiro completo. Você descreve o tema, escolhe o formato da biblioteca e a IA escreve o roteiro inteiro no formato escolhido, no seu tom de voz. Gancho, desenvolvimento, CTA. Pronto pra gravar em 30 segundos.',
   },
   {
-    q: 'Posso cancelar quando quiser?',
-    a: 'Sim. Você cancela pelo painel sem precisar falar com ninguém. Sem multa. Sem formulário longo. E tem a garantia de 7 dias: se dentro de uma semana você achar que não valeu, devolvemos 100%. Sem perguntas.',
+    q: 'Funciona sem ter muitos seguidores?',
+    a: 'Funciona melhor quanto menor for sua audiência. Com seguidores grandes você sobrevive com consistência. Com seguidores pequenos, cada vídeo precisa ser o mais eficiente possível. Os formatos virais garantem que você não está apostando no escuro.',
   },
   {
-    q: 'Precisa de cartão pra começar?',
-    a: 'Não pra criar a conta. Mas o plano gratuito tem limite de uso. Os resultados aparecem quando você usa sem restrição. Os planos pagos existem pra isso.',
+    q: 'Qual a diferença do ChatGPT pra isso?',
+    a: 'O ChatGPT gera texto. O Mapa tem uma biblioteca de formatos virais específicos, aplica o formato correto pro objetivo do vídeo e escreve no seu tom de voz. Não é a mesma coisa que pedir "escreva um roteiro" pra um chat genérico.',
   },
 ]
 
@@ -35,9 +35,9 @@ export function LandingFAQ() {
   return (
     <section className="max-w-3xl mx-auto px-6 py-24">
       <div className="text-center mb-16">
-        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">Antes de decidir</p>
+        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">Dúvidas</p>
         <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-white">
-          Perguntas que você provavelmente tem.
+          Perguntas comuns.
         </h2>
       </div>
 

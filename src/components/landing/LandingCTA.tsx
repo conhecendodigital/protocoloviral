@@ -3,40 +3,38 @@ import { ArrowRight } from 'lucide-react'
 
 export function LandingCTA() {
   return (
-    <section className="relative overflow-hidden py-32 px-6">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0ea5e9]/15 via-transparent to-violet-600/15 pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#0ea5e9]/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute inset-0 pointer-events-none opacity-[0.025]" style={{ backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+    <section className="max-w-5xl mx-auto px-6 py-24">
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#0c1628] to-[#0c1628] border border-[#0ea5e9]/20 p-12 md:p-16 text-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0ea5e9]/10 via-transparent to-violet-600/10 pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#0ea5e9]/10 rounded-full blur-[80px] pointer-events-none" />
 
-      <div className="max-w-3xl mx-auto text-center relative z-10">
+        <div className="relative z-10">
+          <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-6">
+            Pare de criar no escuro
+          </p>
 
-        <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-6 leading-[1.05]">
-          Você já tem o conhecimento.
-          <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">
-            Falta o sistema que vende.
-          </span>
-        </h2>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-6 leading-tight">
+            Os formatos que funcionam<br />já foram estudados.
+          </h2>
 
-        <p className="text-white/55 text-xl font-medium mb-4 max-w-2xl mx-auto leading-relaxed">
-          O Mapa do Engajamento coloca estrutura em cada vídeo que você grava. Gancho. Argumento. CTA. Na ordem que faz o cliente agir.
-        </p>
+          <p className="text-white/55 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+            Você pode continuar testando do zero. Ou pode acessar a biblioteca de formatos virais que outros criadores já validaram e começar a usar amanhã.
+          </p>
 
-        <p className="text-white/35 text-base mb-10 max-w-xl mx-auto">
-          Sem depender de tráfego pago. Sem precisar viralizar. Sem precisar ter 100 mil seguidores.
-        </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/login?mode=signup"
+              className="inline-flex items-center justify-center gap-2 bg-[#0ea5e9] text-white rounded-2xl px-8 py-4 font-black text-lg hover:scale-[1.03] transition-transform shadow-xl shadow-[#0ea5e9]/25"
+            >
+              Acessar os formatos grátis
+              <ArrowRight size={18} />
+            </Link>
+          </div>
 
-        <Link
-          href="/login?mode=signup"
-          className="inline-flex items-center gap-3 bg-white text-[#080b12] rounded-2xl px-10 py-5 font-black text-xl hover:scale-[1.03] transition-transform shadow-2xl shadow-black/40"
-        >
-          Quero vender com conteúdo
-          <ArrowRight size={20} />
-        </Link>
-
-        <p className="text-white/25 text-sm mt-6">
-          Garantia 7 dias. Cancele quando quiser.
-        </p>
+          <p className="text-white/25 text-xs font-medium mt-6">
+            Grátis pra começar. Sem cartão.
+          </p>
+        </div>
       </div>
     </section>
   )

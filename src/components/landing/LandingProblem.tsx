@@ -1,29 +1,29 @@
 import { X, CheckCircle } from 'lucide-react'
 
 const BEFORE = [
-  'Você posta. Posta. Posta. E no final do mês o faturamento não muda.',
-  'Você vê um concorrente com metade do seu conhecimento vendendo o dobro. E não entende por quê.',
-  'Você cria conteúdo de valor. As pessoas salvam. Agradecem. E compram de outro.',
-  'Você investe horas num vídeo que não converte nada. De novo.',
+  'Você abre a câmera sem saber o que falar. Improvisa. O vídeo não engaja.',
+  'Você tenta criar formatos do zero. Investe horas. Ninguém assiste até o final.',
+  'Você vê um vídeo viral de outro criador e não sabe por que funcionou. Tenta copiar. Não funciona igual.',
+  'Você posta. Posta. Posta. E no final do mês o resultado é o mesmo.',
 ]
 
 const AFTER = [
-  'Cada vídeo que você publica tem uma função. Atrair. Qualificar. Ou converter. Nunca à toa.',
-  'Você para de falar pra todo mundo e começa a falar com quem pode te pagar. A diferença é enorme.',
-  'Seu conteúdo passa a gerar DM, lead e venda mesmo nos dias que você não posta.',
-  'Em 15 minutos você sai com roteiro pronto. Gancho, argumento e CTA testados em virais reais.',
+  'Você entra na biblioteca, escolhe o formato que já viralizou no seu nicho e adapta pro seu conteúdo. Simples.',
+  'Você para de criar estrutura do zero. Usa o que já foi testado, validado e documentado por outros criadores.',
+  'Você entende por que cada formato funciona. O gancho. A estrutura. O CTA. E aplica com intenção.',
+  'A IA pega o formato que você escolheu e escreve o roteiro no seu tom de voz. Em 30 segundos.',
 ]
 
 export function LandingProblem() {
   return (
     <section className="max-w-7xl mx-auto px-6 py-24">
       <div className="text-center mb-16">
-        <p className="text-xs font-black uppercase tracking-widest text-red-400 mb-4">O problema que ninguém fala</p>
+        <p className="text-xs font-black uppercase tracking-widest text-red-400 mb-4">O erro que todo mundo comete</p>
         <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-6">
-          Seguidores não pagam seu aluguel.
+          Criar do zero é o problema.
         </h2>
         <p className="text-white/50 text-lg max-w-2xl mx-auto">
-          Você não tem problema de audiência. Você tem problema de mensagem. Existe uma diferença entre criar conteúdo e criar conteúdo que vende. Essa diferença é estrutura.
+          Os maiores criadores do mundo não inventam formato novo toda semana. Eles estudam o que já funciona e executam com consistência. O Mapa faz esse estudo pra você.
         </p>
       </div>
 
@@ -34,8 +34,8 @@ export function LandingProblem() {
               <X size={22} className="text-red-400" />
             </div>
             <div>
-              <h3 className="text-xl font-black text-white">Sem sistema</h3>
-              <p className="text-xs text-red-400/60 font-medium mt-0.5">O que acontece hoje</p>
+              <h3 className="text-xl font-black text-white">Criando no escuro</h3>
+              <p className="text-xs text-red-400/60 font-medium mt-0.5">Sem biblioteca, sem referência</p>
             </div>
           </div>
           <ul className="space-y-5">
@@ -55,8 +55,8 @@ export function LandingProblem() {
               <CheckCircle size={22} className="text-[#0ea5e9]" />
             </div>
             <div>
-              <h3 className="text-xl font-black text-white">Com o Mapa</h3>
-              <p className="text-xs text-[#0ea5e9]/60 font-medium mt-0.5">O que passa a acontecer</p>
+              <h3 className="text-xl font-black text-white">Com o Mapa do Engajamento</h3>
+              <p className="text-xs text-[#0ea5e9]/60 font-medium mt-0.5">Execute o que já foi validado</p>
             </div>
           </div>
           <ul className="space-y-5 relative">
@@ -72,7 +72,7 @@ export function LandingProblem() {
 
       <div className="mt-6 p-7 rounded-2xl bg-white/[0.03] border border-white/[0.07]">
         <p className="text-white/80 text-base leading-relaxed text-center max-w-3xl mx-auto">
-          <span className="text-white font-black">A verdade incômoda:</span> criadores que vendem com conteúdo não têm mais talento que você. Eles têm um sistema. O sistema define o que falar, como falar e pra quem falar antes de abrir a câmera. Isso é o que o Mapa faz.
+          <span className="text-white font-black">O que os melhores criadores têm em comum:</span> eles não criam formato novo todo dia. Eles têm uma biblioteca de referências que funcionam e executam com consistência. O Mapa é essa biblioteca.
         </p>
       </div>
     </section>

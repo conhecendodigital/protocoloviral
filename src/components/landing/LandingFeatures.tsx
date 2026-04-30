@@ -1,46 +1,46 @@
-import { Sparkles, Brain, Layers, Mic2, Play, Route } from 'lucide-react'
+import { Library, Sparkles, Play, Brain, Mic2, Route } from 'lucide-react'
 
 const FEATURES = [
   {
-    Icon: Sparkles, color: '#0ea5e9', span: 2,
-    title: 'Roteirista IA',
-    tag: 'O coração do sistema',
-    desc: 'Você descreve o tema. Você escolhe o objetivo do vídeo: atrair, qualificar ou converter. O sistema entrega o roteiro completo em segundos. Gancho. Argumento. CTA. Cada parte com função de venda. Nada é decoração.',
-    detail: 'Usa Claude Sonnet e GPT-4o com troca automática em caso de falha.',
+    Icon: Library, color: '#0ea5e9', span: 2,
+    title: 'Biblioteca de Formatos Virais',
+    tag: 'O coração do produto',
+    desc: 'Centenas de vídeos virais foram estudados, desmontados e documentados. Cada formato na biblioteca tem a estrutura do gancho, o desenvolvimento e o CTA que fizeram funcionar. Você não precisa descobrir por que um vídeo virou viral. Isso já foi feito. Você só adapta pro seu nicho e grava.',
+    detail: null,
   },
   {
-    Icon: Brain, color: '#a78bfa', span: 1,
+    Icon: Play, color: '#a78bfa', span: 1,
+    title: 'Analisar Qualquer Vídeo Viral',
+    tag: null,
+    desc: 'Cole a URL de um Reels ou TikTok que você quer estudar. A IA desmonta o vídeo, extrai a estrutura e salva como formato na sua biblioteca. Você transforma referência em método.',
+    detail: null,
+  },
+  {
+    Icon: Sparkles, color: '#22d3ee', span: 1,
+    title: 'Roteirista IA',
+    tag: null,
+    desc: 'Escolheu o formato. A IA escreve o roteiro completo no formato escolhido, no seu tom de voz. Em 30 segundos. Você grava.',
+    detail: 'Claude Sonnet e GPT-4o com fallback automático.',
+  },
+  {
+    Icon: Brain, color: '#34d399', span: 1,
     title: 'Banco de Ganchos',
     tag: null,
-    desc: '100 aberturas organizadas por gatilho: medo, curiosidade, contraste, promessa, provocação. Você escolhe o gancho certo pra parar o scroll de quem você quer que pare.',
+    desc: '100 aberturas extraídas de vídeos virais reais. Organizadas por gatilho: medo, curiosidade, contraste, promessa. Você não começa o vídeo do zero nunca mais.',
     detail: null,
   },
   {
-    Icon: Layers, color: '#22d3ee', span: 1,
-    title: 'Formatos com Intenção',
-    tag: null,
-    desc: '15 estruturas testadas com objetivo claro: Antes e Depois, Objeção e Resposta, Autoridade, Storytelling de venda. A IA aplica o formato no seu tema.',
-    detail: null,
-  },
-  {
-    Icon: Mic2, color: '#34d399', span: 1,
+    Icon: Mic2, color: '#fb923c', span: 1,
     title: 'Tom de Voz',
     tag: null,
-    desc: 'Configure uma vez. A IA aprende como você fala, o que você evita e quem é sua audiência. O roteiro sai como se você tivesse escrito. Porque é baseado em você.',
-    detail: null,
-  },
-  {
-    Icon: Play, color: '#fb923c', span: 1,
-    title: 'Engenharia Reversa',
-    tag: null,
-    desc: 'Cole a URL de qualquer vídeo viral do seu nicho. O sistema desmonta e extrai o que funcionou. Você adapta e replica com seu conteúdo.',
+    desc: 'Configura uma vez. A IA aprende como você fala e escreve no seu estilo. O roteiro parece que você escreveu, não um robô.',
     detail: null,
   },
   {
     Icon: Route, color: '#f472b6', span: 1,
-    title: 'Agentes por Nicho',
-    tag: 'Plano Pro',
-    desc: 'Agentes especializados em Coach, Ecommerce, Saúde e Negócios. Cada um treinado pra falar com o cliente do seu mercado da maneira que ele compra.',
+    title: 'Agentes Especialistas',
+    tag: 'Pro',
+    desc: 'Consultores de IA treinados por nicho. Cada um adaptado pra falar com o cliente do seu mercado da maneira que ele responde.',
     detail: null,
   },
 ]
@@ -49,12 +49,12 @@ export function LandingFeatures() {
   return (
     <section id="ferramentas" className="max-w-7xl mx-auto px-6 py-24">
       <div className="mb-14">
-        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">As ferramentas</p>
+        <p className="text-xs font-black uppercase tracking-widest text-[#0ea5e9] mb-4">O que tem dentro</p>
         <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white mb-4">
-          Cada peça tem função.
+          Tudo começa com os formatos.
         </h2>
         <p className="text-white/50 text-lg max-w-2xl">
-          Não são features soltas. São as etapas de um processo que começa no gancho e termina no cliente pagando.
+          A biblioteca é o centro. O roteirista, os ganchos e os agentes existem pra executar os formatos que já foram validados. Nada é feature isolada.
         </p>
       </div>
 
