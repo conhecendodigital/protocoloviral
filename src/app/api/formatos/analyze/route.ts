@@ -51,28 +51,42 @@ export async function POST(req: Request) {
       })
     }
 
-    // 1.5 Rate Limiting para Contas Gratuitas (Máx 3 Análises/dia)
+    // ─── Gatekeeper: limite de análises ─────────────────────────────────────
     const { data: profile } = await supabase
       .from('profiles')
       .select('plan_tier, is_admin')
       .eq('id', user.id)
       .single()
 
-    const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || profile?.is_admin === true
+    const isAdmin = profile?.is_admin === true
+    const isPro = (profile?.plan_tier && profile.plan_tier !== 'free') || isAdmin
 
+    // Free: sem acesso a análise de vídeo
     if (!isPro) {
-      const startOfDay = new Date()
-      startOfDay.setHours(0,0,0,0)
-      
+      return NextResponse.json(
+        { error: 'A análise de vídeos virais está disponível apenas para assinantes. Faça upgrade para desbloquear.' },
+        { status: 403 }
+      )
+    }
+
+    // Pro: máximo 10 análises por mês calendário
+    if (!isAdmin) {
+      const startOfMonth = new Date()
+      startOfMonth.setDate(1)
+      startOfMonth.setHours(0, 0, 0, 0)
+
       const { count } = await supabase
         .from('roteiros')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id)
         .eq('titulo', 'SYSTEM_ANALYSIS_LOG')
-        .gte('created_at', startOfDay.toISOString())
+        .gte('created_at', startOfMonth.toISOString())
 
-      if (count !== null && count >= 3) {
-        return NextResponse.json({ error: 'Limite de 3 análises de vídeos diárias atingido para o plano Gratuito.' }, { status: 403 })
+      if (count !== null && count >= 10) {
+        return NextResponse.json(
+          { error: 'Você atingiu o limite de 10 análises de vídeos por mês. O contador reinicia no primeiro dia do próximo mês.' },
+          { status: 429 }
+        )
       }
     }
 
@@ -94,8 +108,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nosso analisador está sobrecarregado no momento. Tente novamente em alguns minutos.' }, { status: 502 })
     }
 
-    // Grava log de uso para controle de franquia gratuita
-    if (!isPro) {
+    // Grava log de uso para controle do limite mensal (todos os planos exceto admin)
+    if (!isAdmin) {
       await supabase.from('roteiros').insert({
         user_id: user.id,
         titulo: 'SYSTEM_ANALYSIS_LOG',
